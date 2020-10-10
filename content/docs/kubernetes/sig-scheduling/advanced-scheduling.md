@@ -1,8 +1,8 @@
 ---
 author: Yuan Hao
 date: 2020-03-22
-title: Advanced Scheduling
-tag: [taint, toleration]
+title: 高级调度
+tag: [scheduling, taint, toleration]
 weight: 1
 ---
 

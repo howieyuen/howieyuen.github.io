@@ -1,12 +1,12 @@
 ---
 author: Yuan Hao
 date: 2020-09-10
-title: Topology Manager
+title: kubelet 拓扑管理器
 tag: [kubelet, topology manager]
 weight: 1
 ---
 
-注：本文翻译自[0035-20190130-topology-manager.md](https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/0035-20190130-topology-manager.md)
+> 注：本文翻译自[Node Topology Manager](https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/0035-20190130-topology-manager.md)
 
 # 1. 概要
 
