@@ -23,7 +23,7 @@ kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.k
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY=">
-<script defer src="/en.search.min.b34ca5c2bccb76b160a2f07e0df9b8fc23e9362f32b03e1fe68e85d9e4a707ac.js" integrity="sha256-s0ylwrzLdrFgovB&#43;Dfm4/CPpNi8ysD4f5o6F2eSnB6w="></script>
+<script defer src="/en.search.min.62b6ce5b5bee121177b8735928824b3008f25cf0a913247d0b47a6548f0a5c13.js" integrity="sha256-YrbOW1vuEhF3uHNZKIJLMAjyXPCpEyR9C0emVI8KXBM="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -350,7 +350,7 @@ https://github.com/alex-shpak/hugo-book
           <ul>
             <li><a href="#31-使用-pod-亲和将多个-pod-部署到同一个节点上">3.1 使用 Pod 亲和将多个 Pod 部署到同一个节点上</a></li>
             <li><a href="#32-将pod部署到同一个机柜可用性区域或者地理地域">3.2 将pod部署到同一个机柜、可用性区域或者地理地域</a></li>
-            <li><a href="#33-pod优先级亲和性">3.3 pod优先级亲和性</a></li>
+            <li><a href="#33-pod-优先级亲和性">3.3 Pod 优先级亲和性</a></li>
             <li><a href="#34-pod反亲和分开调度pod">3.4 pod反亲和分开调度pod</a></li>
           </ul>
         </li>
@@ -601,12 +601,12 @@ kubectl label node node2.k8s share-type<span style="color:#f92672">=</span>share
 可以将 topologyKey 设置成 failure-domain.beta.kubernetes.io/region。</p>
 <p><strong>了解 topologyKey 如何工作</strong>
 topologyKey 的工作方式很简单，上面提到的三个属性并没有什么特别。可以设置成任意你想要的值。</p>
-<p>当调度器决定决定 Pod 调度到哪里时，首先检查 podAffinity 配置，选择满足条件的 pod，
+<p>当调度器决定决定 Pod 调度到哪里时，首先检查 podAffinity 配置，选择满足条件的 Pod，
 接着查询这些 Pod 运行在那些节点上。特别寻找能匹配 podAffinity 配置的 topologyKey 的节点。
 接着，会优先选择所有标签匹配的 Pod 的值的节点。</p>
-<h3 id="33-pod优先级亲和性">
-  3.3 pod优先级亲和性
-  <a class="anchor" href="#33-pod%e4%bc%98%e5%85%88%e7%ba%a7%e4%ba%b2%e5%92%8c%e6%80%a7">#</a>
+<h3 id="33-pod-优先级亲和性">
+  3.3 Pod 优先级亲和性
+  <a class="anchor" href="#33-pod-%e4%bc%98%e5%85%88%e7%ba%a7%e4%ba%b2%e5%92%8c%e6%80%a7">#</a>
 </h3>
 <p>与节点亲和一样，pod 之间也可以用 prefereddDuringSchdulingIgnoredDuringExecution。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
@@ -634,7 +634,7 @@ topologyKey 的工作方式很简单，上面提到的三个属性并没有什�
 </h3>
 <p>同理，有 nodeAntiAffinity，也有 podAntiAffinity。
 这将导致调度器永远不会选择包含 podAntiAffinity 的 Pod 所在的节点。</p>
-<p><strong>使用反亲和分散pod</strong></p>
+<p><strong>使用反亲和分散 Pod</strong></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
 <span style="color:#f92672">metadata</span>:
@@ -713,7 +713,7 @@ topologyKey 的工作方式很简单，上面提到的三个属性并没有什�
           <ul>
             <li><a href="#31-使用-pod-亲和将多个-pod-部署到同一个节点上">3.1 使用 Pod 亲和将多个 Pod 部署到同一个节点上</a></li>
             <li><a href="#32-将pod部署到同一个机柜可用性区域或者地理地域">3.2 将pod部署到同一个机柜、可用性区域或者地理地域</a></li>
-            <li><a href="#33-pod优先级亲和性">3.3 pod优先级亲和性</a></li>
+            <li><a href="#33-pod-优先级亲和性">3.3 Pod 优先级亲和性</a></li>
             <li><a href="#34-pod反亲和分开调度pod">3.4 pod反亲和分开调度pod</a></li>
           </ul>
         </li>
