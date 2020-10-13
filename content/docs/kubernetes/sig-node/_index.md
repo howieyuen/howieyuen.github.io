@@ -1,5 +1,5 @@
 ---
 weight: 4
 bookFlatSection: false
-title: SIG-Node
+title: sig-node
 ---

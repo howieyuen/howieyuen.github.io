@@ -1,5 +1,5 @@
 ---
 weight: 5
 bookFlatSection: false
-title: SIG-Scheduling
+title: sig-scheduling
 ---
