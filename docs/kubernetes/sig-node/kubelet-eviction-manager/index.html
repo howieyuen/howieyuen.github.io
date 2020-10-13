@@ -19,7 +19,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY=">
-<script defer src="/en.search.min.b1d9dff6360f54a7f2a03f05be8f7a5f8f0b105902e558714488f15377e85834.js" integrity="sha256-sdnf9jYPVKfyoD8Fvo96X48LEFkC5VhxRIjxU3foWDQ="></script>
+<script defer src="/en.search.min.b34ca5c2bccb76b160a2f07e0df9b8fc23e9362f32b03e1fe68e85d9e4a707ac.js" integrity="sha256-s0ylwrzLdrFgovB&#43;Dfm4/CPpNi8ysD4f5o6F2eSnB6w="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -575,11 +575,11 @@ kubelet 首先根据他们对短缺资源的使用是否超过请求来排除 po
   1.8 最小驱逐回收
   <a class="anchor" href="#18-%e6%9c%80%e5%b0%8f%e9%a9%b1%e9%80%90%e5%9b%9e%e6%94%b6">#</a>
 </h2>
-<p>有些情况下，可能只回收一小部分的资源就能使得<code>Evication Signal</code>的值低于<code>eviction thresholds</code>。
-但是，可能随着资源使用的波动或者新的调度Pod使得在该Node上很快又会触发evict pods的动作，
-eviction毕竟是耗时的动作，所以应该尽量避免这种情况的发生。</p>
-<p>为了减少这类问题，每次Evict Pods后，Node上对应的Resource不仅要比Eviction Thresholds低，
-还要保证最少比Eviction Thresholds，再低<code>--eviction-minimum-reclaim</code>中配置的数量。</p>
+<p>有些情况下，可能只回收一小部分的资源就能使得 <code>Evication Signal</code> 的值低于 <code>eviction thresholds</code>。
+但是，可能随着资源使用的波动或者新的调度 Pod 使得在该 Node 上很快又会触发 evict pods 的动作，
+eviction 毕竟是耗时的动作，所以应该尽量避免这种情况的发生。</p>
+<p>为了减少这类问题，每次 Evict Pods 后，Node 上对应的 Resource 不仅要比 Eviction Thresholds 低，
+还要保证最少比 Eviction Thresholds，再低 <code>--eviction-minimum-reclaim</code> 中配置的数量。</p>
 <p>例如使用下面的配置：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">--</span><span style="color:#a6e22e">eviction</span><span style="color:#f92672">-</span><span style="color:#a6e22e">hard</span>=<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">available</span>&lt;<span style="color:#ae81ff">500</span><span style="color:#a6e22e">Mi</span>,<span style="color:#a6e22e">nodefs</span>.<span style="color:#a6e22e">available</span>&lt;<span style="color:#ae81ff">1</span><span style="color:#a6e22e">Gi</span>,<span style="color:#a6e22e">imagefs</span>.<span style="color:#a6e22e">available</span>&lt;<span style="color:#ae81ff">100</span><span style="color:#a6e22e">Gi</span>
 <span style="color:#f92672">--</span><span style="color:#a6e22e">eviction</span><span style="color:#f92672">-</span><span style="color:#a6e22e">minimum</span><span style="color:#f92672">-</span><span style="color:#a6e22e">reclaim</span>=<span style="color:#e6db74">&#34;memory.available=0Mi,nodefs.available=500Mi,imagefs.available=2Gi&#34;</span>
