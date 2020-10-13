@@ -4,16 +4,16 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于：滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询， 滚动历史记录，以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
-2. Deployment 滚动更新 #  Deployment更新方式有 2 种：
- RollingUpdate Recreate  其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648，可以看到 2 种方式分别对应的业务逻辑：
-func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate，则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
+<meta name="description" content="1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
+2. Deployment 滚动更新 #  Deployment 更新方式有 2 种：
+ RollingUpdate Recreate  其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：
+func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
 func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 	newRS, oldRSs, err := dc.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="k8s应用滚动更新" />
-<meta property="og:description" content="1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于：滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询， 滚动历史记录，以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
-2. Deployment 滚动更新 #  Deployment更新方式有 2 种：
- RollingUpdate Recreate  其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648，可以看到 2 种方式分别对应的业务逻辑：
-func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate，则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
+<meta property="og:description" content="1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
+2. Deployment 滚动更新 #  Deployment 更新方式有 2 种：
+ RollingUpdate Recreate  其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：
+func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
 func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 	newRS, oldRSs, err := dc." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/sig-apps/k8s-apps-rolling-update/" />
@@ -23,7 +23,7 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY=">
-<script defer src="/en.search.min.2d2ac72aaebd5a1ac5b424b61564454fa28284e358328145eac8fd650f6cd314.js" integrity="sha256-LSrHKq69WhrFtCS2FWRFT6KChONYMoFF6sj9ZQ9s0xQ="></script>
+<script defer src="/en.search.min.b1d9dff6360f54a7f2a03f05be8f7a5f8f0b105902e558714488f15377e85834.js" integrity="sha256-sdnf9jYPVKfyoD8Fvo96X48LEFkC5VhxRIjxU3foWDQ="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -358,18 +358,20 @@ https://github.com/alex-shpak/hugo-book
   1. 概念
   <a class="anchor" href="#1-%e6%a6%82%e5%bf%b5">#</a>
 </h1>
-<p>滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于：滚动更新不但提供了更新服务，而且通常还提供了滚动<strong>进度查询</strong>，
-滚动<strong>历史记录</strong>，以及最重要的<strong>回滚</strong>等能力。通俗地说，就是具有系统或是软件的主动降级的能力。</p>
+<p>滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于：
+滚动更新不但提供了更新服务，而且通常还提供了滚动<strong>进度查询</strong>，滚动<strong>历史记录</strong>，
+以及最重要的<strong>回滚</strong>等能力。通俗地说，就是具有系统或是软件的主动降级的能力。</p>
 <h1 id="2-deployment-滚动更新">
   2. Deployment 滚动更新
   <a class="anchor" href="#2-deployment-%e6%bb%9a%e5%8a%a8%e6%9b%b4%e6%96%b0">#</a>
 </h1>
-<p>Deployment更新方式有 2 种：</p>
+<p>Deployment 更新方式有 2 种：</p>
 <ul>
 <li>RollingUpdate</li>
 <li>Recreate</li>
 </ul>
-<p>其中，滚动更新是最常见的，阅读代码 <code>pkg/controller/deployment/deployment_controller.go:648</code>，可以看到 2 种方式分别对应的业务逻辑：</p>
+<p>其中，滚动更新是最常见的，阅读代码 <code>pkg/controller/deployment/deployment_controller.go:648</code>，
+可以看到 2 种方式分别对应的业务逻辑：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">syncDeployment</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
     <span style="color:#f92672">...</span>
 	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Strategy</span>.<span style="color:#a6e22e">Type</span> {
@@ -380,7 +382,8 @@ https://github.com/alex-shpak/hugo-book
 	}
 	<span style="color:#f92672">...</span>
 }
-</code></pre></div><p>根据 <code>d.Spec.Strategy.Type</code>，若更新策略为 <code>RollingUpdate</code>，则执行 <code>dc.rolloutRecreate()</code> 方法，具体逻辑如下：</p>
+</code></pre></div><p>根据 <code>d.Spec.Strategy.Type</code>，若更新策略为 <code>RollingUpdate</code>，
+则执行 <code>dc.rolloutRecreate()</code> 方法，具体逻辑如下：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">rolloutRolling</span>(<span style="color:#a6e22e">d</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>, <span style="color:#a6e22e">rsList</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>) <span style="color:#66d9ef">error</span> {
     <span style="color:#75715e">// 1、获取所有的 rs，若没有 newRS 则创建
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">getAllReplicaSetsAndSyncRevision</span>(<span style="color:#a6e22e">d</span>, <span style="color:#a6e22e">rsList</span>, <span style="color:#66d9ef">true</span>)
@@ -423,7 +426,7 @@ https://github.com/alex-shpak/hugo-book
   2.1 滚动更新概述
   <a class="anchor" href="#21-%e6%bb%9a%e5%8a%a8%e6%9b%b4%e6%96%b0%e6%a6%82%e8%bf%b0">#</a>
 </h2>
-<p>上面代码中5个重要的步骤总结如下：</p>
+<p>上面代码中 5 个重要的步骤总结如下：</p>
 <ol>
 <li>调用 <code>getAllReplicaSetsAndSyncRevision()</code> 获取所有的 rs，若没有 newRS 则创建；</li>
 <li>调用 <code>reconcileNewReplicaSet()</code> 判断是否需要对 newRS 进行 scaleUp 操作；如果需要 scaleUp，更新 Deployment 的 status，
@@ -494,15 +497,19 @@ graph LR
 }
 </code></pre></div><p>从上面的源码可以得出，<code>reconcileNewReplicaSet()</code> 的主要逻辑如下：</p>
 <ol>
-<li>判断 <code>newRS.Spec.Replicas</code> 和 <code>deployment.Spec.Replicas</code> 是否相等，如果相等则直接返回，说明已经达到期望状态；</li>
-<li>若 <code>newRS.Spec.Replicas &gt; deployment.Spec.Replicas</code>，则说明 newRS 副本数已经超过期望值，
-调用 <code>dc.scaleReplicaSetAndRecordEvent()</code> 进行 scale down；</li>
+<li>判断 <code>newRS.Spec.Replicas</code> 和 <code>deployment.Spec.Replicas</code> 是否相等，
+如果相等则直接返回，说明已经达到期望状态；</li>
+<li>若 <code>newRS.Spec.Replicas &gt; deployment.Spec.Replicas</code>，
+则说明 newRS 副本数已经超过期望值，调用 <code>dc.scaleReplicaSetAndRecordEvent()</code> 进行 scale down；</li>
 <li>此时 <code>newRS.Spec.Replicas &lt;  deployment.Spec.Replicas</code>，
-调用 <code>deploymentutil.NewRSNewReplicas()</code> 为 newRS 计算所需要的副本数，计算原则遵守 maxSurge 和 maxUnavailable 的约束；</li>
+调用 <code>deploymentutil.NewRSNewReplicas()</code> 为 newRS 计算所需要的副本数，
+计算原则遵守 maxSurge 和 maxUnavailable 的约束；</li>
 <li>调用 <code>dc.scaleReplicaSetAndRecordEvent()</code> 更新 newRS 对象，设置
-<code>rs.Spec.Replicas</code>、<code>rs.Annotations[DesiredReplicasAnnotation]</code> 以及 <code>rs.Annotations[MaxReplicasAnnotation]</code>；</li>
+<code>rs.Spec.Replicas</code>、<code>rs.Annotations[DesiredReplicasAnnotation]</code> 
+以及 <code>rs.Annotations[MaxReplicasAnnotation]</code>；</li>
 </ol>
-<p>其中，计算 newRS 的副本数，是滚动更新核心过程的第一步，阅读源码 <code>pkg/controller/deployment/util/deployment_util.go:816</code>：</p>
+<p>其中，计算 newRS 的副本数，是滚动更新核心过程的第一步，
+阅读源码 <code>pkg/controller/deployment/util/deployment_util.go:816</code>：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewRSNewReplicas</span>(<span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>, <span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>) (<span style="color:#66d9ef">int32</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Strategy</span>.<span style="color:#a6e22e">Type</span> {
 	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">RollingUpdateDeploymentStrategyType</span>:
@@ -587,7 +594,8 @@ graph LR
 <ol>
 <li>通过 oldRSs 和 allRSs 获取 oldPodsCount 和 allPodsCount；</li>
 <li>计算 deployment 的 maxUnavailable、minAvailable、newRSUnavailablePodCount、maxScaledDown 值，
-当 deployment 的 maxSurge 和 maxUnavailable 值为百分数时，计算 maxSurge 向上取整而 maxUnavailable 则向下取整；</li>
+当 deployment 的 maxSurge 和 maxUnavailable 值为百分数时，
+计算 maxSurge 向上取整而 maxUnavailable 则向下取整；</li>
 <li>清理异常的 rs；</li>
 <li>计算 oldRS 的 scaleDownCount；</li>
 <li>最后 oldRS 缩容；</li>
