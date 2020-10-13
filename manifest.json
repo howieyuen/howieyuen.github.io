@@ -1,6 +1,6 @@
 {
-  "name": "学习笔记",
-  "short_name": "学习笔记",
+  "name": "袁昊的学习笔记",
+  "short_name": "袁昊的学习笔记",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

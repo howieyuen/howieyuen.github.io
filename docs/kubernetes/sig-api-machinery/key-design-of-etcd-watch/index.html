@@ -37,11 +37,11 @@
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/key-design-of-etcd-watch/" />
 <meta property="article:published_time" content="2020-09-24T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-09-24T00:00:00+00:00" />
-<title>ETCD watch 关键设计 | 学习笔记</title>
+<title>ETCD watch 关键设计 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY=">
-<script defer src="/en.search.min.c586e1086f5814744fd18565d0d189311a3d9d4f51801136b3a7b9270d257053.js" integrity="sha256-xYbhCG9YFHRP0YVl0NGJMRo9nU9RgBE2s6e5Jw0lcFM="></script>
+<script defer src="/en.search.min.2d2ac72aaebd5a1ac5b424b61564454fa28284e358328145eac8fd650f6cd314.js" integrity="sha256-LSrHKq69WhrFtCS2FWRFT6KChONYMoFF6sj9ZQ9s0xQ="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -60,7 +60,7 @@ https://github.com/alex-shpak/hugo-book
       
   <nav>
 <h2 class="book-brand">
-  <a href="/"><img src="/logo.jpeg" alt="Logo" /><span>学习笔记</span>
+  <a href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
   </a>
 </h2>
 
@@ -108,7 +108,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>SIG-API-Machinery</span>
+    <span>sig-api-machinery</span>
   
 
           
@@ -170,7 +170,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>SIG-Network</span>
+    <span>sig-network</span>
   
 
           
@@ -183,7 +183,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/" class="">学习 Service</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
   
 
         </li>
@@ -201,7 +201,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>SIG-Node</span>
+    <span>sig-node</span>
   
 
           
@@ -214,7 +214,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/topology-manager/" class="">kubelet 拓扑管理器</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/topology-manager/" class="">kubelet topology manager</a>
   
 
         </li>
@@ -227,7 +227,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-eviction-manager/" class="">kubelet 驱逐管理器</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-eviction-manager/" class="">kubelet eviction manager</a>
   
 
         </li>
@@ -245,7 +245,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>SIG-Scheduling</span>
+    <span>sig-scheduling</span>
   
 
           
@@ -523,53 +523,9 @@ https://github.com/alex-shpak/hugo-book
         
   <div class="flex flex-wrap justify-between">
 
-  
-
-
-  
-
-  
 
 
 
-<div class="book-languages" tabindex="0" aria-haspopup="true">
-  <ul>
-    <li class="flex align-center">
-      <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
-      English
-    </li> 
-  </ul>
-
-  <ul class="book-languages-list">
-    
-    <li class="active">
-      <a href="https://howieyuen.github.io/" class="flex align-center">
-        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
-        English
-      </a>
-    </li>
-    
-    <li class="">
-      <a href="https://howieyuen.github.io/zh/" class="flex align-center">
-        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
-        Chinese
-      </a>
-    </li>
-    
-  </ul>
-</div>
-
-
-
-
-
-
-  <div>
-    <a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/edit/master/content/docs/kubernetes/sig-api-machinery/key-design-of-etcd-watch.md" target="_blank" rel="noopener">
-      <img src="/svg/edit.svg" class="book-icon" alt="Edit" />
-      <span>Edit this page</span>
-    </a>
-  </div>
 
 </div>
 
