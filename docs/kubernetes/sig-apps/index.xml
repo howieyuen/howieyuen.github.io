@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Mon, 12 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/docs/kubernetes/sig-apps/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>k8s应用滚动更新</title>
+      <title>k8s 应用滚动更新</title>
       <link>https://howieyuen.github.io/docs/kubernetes/sig-apps/k8s-apps-rolling-update/</link>
       <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
       

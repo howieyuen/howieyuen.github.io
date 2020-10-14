@@ -3,17 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/garbage-collector/</loc>
+    <lastmod>2020-10-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/</loc>
+    <lastmod>2020-10-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://howieyuen.github.io/docs/kubernetes/sig-apps/k8s-apps-rolling-update/</loc>
     <lastmod>2020-10-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/key-design-of-etcd-watch/</loc>
-    <lastmod>2020-09-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/</loc>
     <lastmod>2020-09-24T00:00:00+00:00</lastmod>
   </url>
   
@@ -34,7 +39,7 @@
   
   <url>
     <loc>https://howieyuen.github.io/docs/kubernetes/</loc>
-    <lastmod>2020-10-12T00:00:00+00:00</lastmod>
+    <lastmod>2020-10-14T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -64,12 +69,12 @@
   
   <url>
     <loc>https://howieyuen.github.io/docs/</loc>
-    <lastmod>2020-10-12T00:00:00+00:00</lastmod>
+    <lastmod>2020-10-14T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://howieyuen.github.io/</loc>
-    <lastmod>2020-10-12T00:00:00+00:00</lastmod>
+    <lastmod>2020-10-14T00:00:00+00:00</lastmod>
   </url>
   
   <url>

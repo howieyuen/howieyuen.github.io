@@ -9,7 +9,7 @@
  RollingUpdate Recreate  其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：
 func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
 func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 	newRS, oldRSs, err := dc.">
-<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="k8s应用滚动更新" />
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="k8s 应用滚动更新" />
 <meta property="og:description" content="1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
 2. Deployment 滚动更新 #  Deployment 更新方式有 2 种：
  RollingUpdate Recreate  其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：
@@ -19,11 +19,11 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/sig-apps/k8s-apps-rolling-update/" />
 <meta property="article:published_time" content="2020-10-12T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-10-12T00:00:00+00:00" />
-<title>k8s应用滚动更新 | 袁昊的学习笔记</title>
+<title>k8s 应用滚动更新 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY=">
-<script defer src="/en.search.min.62b6ce5b5bee121177b8735928824b3008f25cf0a913247d0b47a6548f0a5c13.js" integrity="sha256-YrbOW1vuEhF3uHNZKIJLMAjyXPCpEyR9C0emVI8KXBM="></script>
+<script defer src="/en.search.min.d043a57530bc01ada4c9feb870192c74a681460cae147efb99efad34cc80ade3.js" integrity="sha256-0EOldTC8Aa2kyf64cBksdKaBRgyuFH77me&#43;tNMyAreM="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -103,7 +103,20 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/key-design-of-etcd-watch/" class="">ETCD watch 关键设计</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/garbage-collector/" class="">garbage collector</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/key-design-of-etcd-watch/" class="">k8s watch 关键设计</a>
   
 
         </li>
@@ -134,7 +147,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-apps/k8s-apps-rolling-update/" class=" active">k8s应用滚动更新</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-apps/k8s-apps-rolling-update/" class=" active">k8s 应用滚动更新</a>
   
 
         </li>
@@ -315,7 +328,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>k8s应用滚动更新</strong>
+  <strong>k8s 应用滚动更新</strong>
 
   <label for="toc-control">
     
@@ -624,7 +637,82 @@ graph LR
   2.3 滚动更新示例
   <a class="anchor" href="#23-%e6%bb%9a%e5%8a%a8%e6%9b%b4%e6%96%b0%e7%a4%ba%e4%be%8b">#</a>
 </h2>
-</article>
+<ol>
+<li>创建一个deployment，replica = 10</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx-deployment</span>
+  <span style="color:#f92672">labels</span>:
+    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">10</span>
+  <span style="color:#f92672">selector</span>:
+    <span style="color:#f92672">matchLabels</span>:
+      <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+  <span style="color:#f92672">template</span>:
+    <span style="color:#f92672">metadata</span>:
+      <span style="color:#f92672">labels</span>:
+        <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+    <span style="color:#f92672">spec</span>:
+      <span style="color:#f92672">containers</span>:
+      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx:1.18.0</span>
+        <span style="color:#f92672">ports</span>:
+        - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
+</code></pre></div><p>10 个 Pod 创建成功后如下所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get rs
+NAME                          DESIRED   CURRENT   READY   AGE
+nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>      70s
+</code></pre></div><ol start="2">
+<li>更新 nginx-deployment 的镜像，默认使用滚动更新的方式</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl set image deploy/nginx-deployment nginx-deployment<span style="color:#f92672">=</span>nginx:1.19.1
+</code></pre></div><p>此时通过源码可知会计算该 deployment 的 maxSurge=3，maxUnavailable=2，maxAvailable=13，计算方法如下所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 向上取整 maxSurge = 10 * 0.25 = 3
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">maxSurge</span> = <span style="color:#a6e22e">replicas</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">spec</span>.<span style="color:#a6e22e">strategy</span>.<span style="color:#a6e22e">rollingUpdate</span>.<span style="color:#a6e22e">maxSurge</span>
+<span style="color:#75715e">// 向下取整 maxUnavailable = 10 * 0.25 = 2
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">maxUnavailable</span> = <span style="color:#a6e22e">replicas</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">spec</span>.<span style="color:#a6e22e">strategy</span>.<span style="color:#a6e22e">rollingUpdate</span>.<span style="color:#a6e22e">maxUnavailable</span>
+<span style="color:#75715e">// maxAvailable = 10 + 3 = 13
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">maxAvailable</span> = <span style="color:#a6e22e">replicas</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">MaxSurge</span>
+</code></pre></div><p>如上面代码所说，更新时首先创建 newRS，然后为其设定 replicas，计算 newRS 的 replicas 值的方法在 <code>NewRSNewReplicas()</code> 中，
+此时计算出 replicas 结果为 3，然后更新 deployment 的 annotation，创建 events，本次 syncLoop 完成。
+等到下一个 syncLoop 时，所有 rs 的 replicas 已经达到最大值 10 + 3 = 13，此时需要 oldRS 缩容。
+scale down 的数量是通过以下公式得到的：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 13 = 10 + 3
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">allPodsCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">GetReplicaCountForReplicaSets</span>(<span style="color:#a6e22e">allRSs</span>)
+<span style="color:#75715e">// 8 = 10 - 2
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">minAvailable</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">-</span> <span style="color:#a6e22e">maxUnavailable</span>
+<span style="color:#75715e">// ???
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">newRSUnavailablePodCount</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">-</span> <span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Status</span>.<span style="color:#a6e22e">AvailableReplicas</span>
+<span style="color:#75715e">// 13 - 8 - ???
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">maxScaledDown</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">allPodsCount</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">minAvailable</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">newRSUnavailablePodCount</span>
+</code></pre></div><p>allPodsCount = 13，minAvailable = 8 ，newRSUnavailablePodCount 此时不确定，但是值在 [0,3] 范围内。
+此时假设 newRS 的 3 个 pod 还处于 containerCreating 状态，则 newRSUnavailablePodCount = 3，
+根据以上公式计算所知 maxScaledDown = 2，则 oldRS 需要缩容 2 个 pod，其 replicas 需要改为 8，此时该 syncLoop 完成。
+下一个 syncLoop 时在 scaleUp 处计算得知 scaleUpCount = 13 - 8 - 3 = 2， 
+此时 newRS 需要更新 replicase 增加 2。以此轮询直到 newRS 扩容到 10，oldRS 缩容至 0。</p>
+<p>对于上面的示例，可以使用 kubectl get rs -w 进行观察，以下为输出：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get rs -w
+NAME                          DESIRED   CURRENT   READY   AGE
+nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">5</span>       3s
+nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>       4m47s
+nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">6</span>       3s
+nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>       4m47s
+nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>       4m47s
+nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>       4m47s
+nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">7</span>       4s
+nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>       4m48s
+nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>       4m48s
+nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       4m48s
+nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">8</span>       4s
+nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       4m48s
+nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       4m48s
+nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">0</span>       4m48s
+nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">9</span>       5s
+nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>      6s
+</code></pre></div></article>
  
       
 
