@@ -366,11 +366,9 @@ https://github.com/alex-shpak/hugo-book
     <li><a href="#4-cacher的优化">4. Cacher的优化</a>
       <ul>
         <li><a href="#41-序列化缓存">4.1 序列化缓存</a></li>
-        <li><a href="#42-nonblocking">4.2 nonblocking</a>
-          <ul>
-            <li></li>
-          </ul>
-        </li>
+        <li><a href="#42-nonblocking">4.2 nonblocking</a></li>
+        <li><a href="#43-timebudget">4.3 TimeBudget</a></li>
+        <li><a href="#44-forget机制">4.4 forget机制</a></li>
         <li><a href="#45-bookmark-机制">4.5 bookmark 机制</a></li>
         <li><a href="#46-watchcache-中的-ringbuffer">4.6 watchCache 中的 ringbuffer</a></li>
       </ul>
@@ -508,17 +506,17 @@ cacher 中在分发的时候，如果发现超过指定数量的watcher， 则�
 <p>在上面我们提到过事件缓冲区，但是如果某个 watcher 消费过慢依然会影响事件的分发，
 为此 cacher 中通过是否阻塞(是否可以直接将数据写入到管道中)来将 watcher 分为两类，
 针对不能立即投递事件的 watcher， 则会在后续进行重试。</p>
-<h4 id="43-timebudget">
+<h2 id="43-timebudget">
   4.3 TimeBudget
   <a class="anchor" href="#43-timebudget">#</a>
-</h4>
+</h2>
 <p>针对阻塞的 watcher 在进行重试的时候，会通过 dispatchTimeoutBudget 构建一个定时器来进行超时控制，
 那什么叫 Budget 呢，其实如果在这段时间内，如果重试立马就成功，则本次剩余的时间，
 在下一次进行定时的时候，则可以使用之前剩余的余额，但是后台也还有个线程，用于周期性重置。</p>
-<h4 id="44-forget机制">
+<h2 id="44-forget机制">
   4.4 forget机制
   <a class="anchor" href="#44-forget%e6%9c%ba%e5%88%b6">#</a>
-</h4>
+</h2>
 <p>
   <img src="/kubernetes/sig-apimachinery/watch/image12.png" alt="image12" /></p>
 <p>针对上面的 TimeBudget 如果在给定的时间内依旧无法进行重试成功，
@@ -607,11 +605,9 @@ bookmark 通过构建一种 BookMark 类型的事件来进行 revision 的传递
     <li><a href="#4-cacher的优化">4. Cacher的优化</a>
       <ul>
         <li><a href="#41-序列化缓存">4.1 序列化缓存</a></li>
-        <li><a href="#42-nonblocking">4.2 nonblocking</a>
-          <ul>
-            <li></li>
-          </ul>
-        </li>
+        <li><a href="#42-nonblocking">4.2 nonblocking</a></li>
+        <li><a href="#43-timebudget">4.3 TimeBudget</a></li>
+        <li><a href="#44-forget机制">4.4 forget机制</a></li>
         <li><a href="#45-bookmark-机制">4.5 bookmark 机制</a></li>
         <li><a href="#46-watchcache-中的-ringbuffer">4.6 watchCache 中的 ringbuffer</a></li>
       </ul>
