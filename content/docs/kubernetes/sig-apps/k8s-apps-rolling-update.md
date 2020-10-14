@@ -1,7 +1,7 @@
 ---
 author: Yuan Hao
 date: 2020-10-12
-title: k8s应用滚动更新
+title: k8s 应用滚动更新
 tag: [rolling update, deployment]
 weight: 1
 ---
@@ -258,3 +258,93 @@ graph LR
 {{< /mermaid >}}
 
 ## 2.3 滚动更新示例
+
+1. 创建一个deployment，replica = 10
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.18.0
+        ports:
+        - containerPort: 80
+```
+
+10 个 Pod 创建成功后如下所示：
+```shell script
+$ kubectl get rs
+NAME                          DESIRED   CURRENT   READY   AGE
+nginx-deployment-67dfd6c8f9   10        10        10      70s
+```
+
+2. 更新 nginx-deployment 的镜像，默认使用滚动更新的方式
+``` shell script
+$ kubectl set image deploy/nginx-deployment nginx-deployment=nginx:1.19.1
+```
+
+此时通过源码可知会计算该 deployment 的 maxSurge=3，maxUnavailable=2，maxAvailable=13，计算方法如下所示：
+```go
+// 向上取整 maxSurge = 10 * 0.25 = 3
+maxSurge = replicas * deployment.spec.strategy.rollingUpdate.maxSurge
+// 向下取整 maxUnavailable = 10 * 0.25 = 2
+maxUnavailable = replicas * deployment.spec.strategy.rollingUpdate.maxUnavailable
+// maxAvailable = 10 + 3 = 13
+maxAvailable = replicas + MaxSurge
+```
+
+如上面代码所说，更新时首先创建 newRS，然后为其设定 replicas，计算 newRS 的 replicas 值的方法在 `NewRSNewReplicas()` 中，
+此时计算出 replicas 结果为 3，然后更新 deployment 的 annotation，创建 events，本次 syncLoop 完成。
+等到下一个 syncLoop 时，所有 rs 的 replicas 已经达到最大值 10 + 3 = 13，此时需要 oldRS 缩容。
+scale down 的数量是通过以下公式得到的：
+```go
+// 13 = 10 + 3
+allPodsCount := deploymentutil.GetReplicaCountForReplicaSets(allRSs)
+// 8 = 10 - 2
+minAvailable := *(deployment.Spec.Replicas) - maxUnavailable
+// ???
+newRSUnavailablePodCount := *(newRS.Spec.Replicas) - newRS.Status.AvailableReplicas
+// 13 - 8 - ???
+maxScaledDown := allPodsCount - minAvailable - newRSUnavailablePodCount
+```
+
+allPodsCount = 13，minAvailable = 8 ，newRSUnavailablePodCount 此时不确定，但是值在 [0,3] 范围内。
+此时假设 newRS 的 3 个 pod 还处于 containerCreating 状态，则 newRSUnavailablePodCount = 3，
+根据以上公式计算所知 maxScaledDown = 2，则 oldRS 需要缩容 2 个 pod，其 replicas 需要改为 8，此时该 syncLoop 完成。
+下一个 syncLoop 时在 scaleUp 处计算得知 scaleUpCount = 13 - 8 - 3 = 2， 
+此时 newRS 需要更新 replicase 增加 2。以此轮询直到 newRS 扩容到 10，oldRS 缩容至 0。
+
+对于上面的示例，可以使用 kubectl get rs -w 进行观察，以下为输出：
+```shell script
+$ kubectl get rs -w
+NAME                          DESIRED   CURRENT   READY   AGE
+nginx-deployment-5bbdfb5879   10        10        5       3s
+nginx-deployment-67dfd6c8f9   3         3         3       4m47s
+nginx-deployment-5bbdfb5879   10        10        6       3s
+nginx-deployment-67dfd6c8f9   2         3         3       4m47s
+nginx-deployment-67dfd6c8f9   2         3         3       4m47s
+nginx-deployment-67dfd6c8f9   2         2         2       4m47s
+nginx-deployment-5bbdfb5879   10        10        7       4s
+nginx-deployment-67dfd6c8f9   1         2         2       4m48s
+nginx-deployment-67dfd6c8f9   1         2         2       4m48s
+nginx-deployment-67dfd6c8f9   1         1         1       4m48s
+nginx-deployment-5bbdfb5879   10        10        8       4s
+nginx-deployment-67dfd6c8f9   0         1         1       4m48s
+nginx-deployment-67dfd6c8f9   0         1         1       4m48s
+nginx-deployment-67dfd6c8f9   0         0         0       4m48s
+nginx-deployment-5bbdfb5879   10        10        9       5s
+nginx-deployment-5bbdfb5879   10        10        10      6s
+```
