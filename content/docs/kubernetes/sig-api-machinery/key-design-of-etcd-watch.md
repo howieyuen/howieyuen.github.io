@@ -1,7 +1,7 @@
 ---
 author: Yuan Hao
 date: 2020-09-24
-title: ETCD watch 关键设计
+title: k8s watch 关键设计
 tag: [watch, client-go, kube-apiserver, etcd]
 weight: 1
 ---
