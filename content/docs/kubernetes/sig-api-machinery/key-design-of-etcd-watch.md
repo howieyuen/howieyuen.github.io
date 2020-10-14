@@ -116,13 +116,13 @@ cacher 中在分发的时候，如果发现超过指定数量的watcher， 则�
 为此 cacher 中通过是否阻塞(是否可以直接将数据写入到管道中)来将 watcher 分为两类，
 针对不能立即投递事件的 watcher， 则会在后续进行重试。
 
-#### 4.3 TimeBudget
+## 4.3 TimeBudget
 
 针对阻塞的 watcher 在进行重试的时候，会通过 dispatchTimeoutBudget 构建一个定时器来进行超时控制，
 那什么叫 Budget 呢，其实如果在这段时间内，如果重试立马就成功，则本次剩余的时间，
 在下一次进行定时的时候，则可以使用之前剩余的余额，但是后台也还有个线程，用于周期性重置。
 
-#### 4.4 forget机制
+## 4.4 forget机制
 
 ![image12](/kubernetes/sig-apimachinery/watch/image12.png)
 
