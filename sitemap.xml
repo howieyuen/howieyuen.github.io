@@ -18,6 +18,11 @@
   </url>
   
   <url>
+    <loc>https://howieyuen.github.io/docs/kubernetes/sig-apps/code-analysis-of-statefulset-controller/</loc>
+    <lastmod>2020-10-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/key-design-of-etcd-watch/</loc>
     <lastmod>2020-09-24T00:00:00+00:00</lastmod>
   </url>
