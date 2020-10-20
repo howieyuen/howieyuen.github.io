@@ -25,17 +25,12 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
       <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
       
       <guid>https://howieyuen.github.io/docs/kubernetes/sig-apps/code-analysis-of-statefulset-controller/</guid>
-      <description>1. StatefulSet 简介 #  1.1 特点 #    稳定、唯一的网络标识符
-如: Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则Redis集群将无法找到这段数据。
-  稳定、持久的存储
-可实现持久存储，新增或减少 Pod，存储不会随之发生变化。
-  有序的、平滑的部署、扩容
-如 MySQL 集群，要先启动主节点， 若从节点没有要求，则可一起启动，若从节点有启动顺序要求，可先启动第一个从节点，接着第二从节点等；这个过程就是有顺序，平滑安全的启动。
-  有序的、自动的缩容和删除
-我们先终止从节点，若从节点是有启动顺序的，那么关闭时，也要按照逆序终止，即启动时是从 S1~S4 以此启动，则关闭时，则是先关闭 S4，然后是 S3，依次关闭，最后在关闭主节点。
-  有序的、自动的滚动更新
-MySQL 在更新时，应该先更新从节点，全部的从节点都更新完了，最后在更新主节点，因为新版本一般可兼容老版本，但是一定要注意，若新版本不兼容老版本就很很麻烦
-  1.2 限制 #   Pod的存储必须使用 PersistVolume 删除或者缩容时，不会删除关联的卷 使用 headless service 关联 Pod，需要手动创建 Pod 的管理策略为 OrderedReady 时使用滚动更新能力，可能需要人工干预  1.</description>
+      <description>1. StatefulSet 简介 #  Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
+这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
+是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
+适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb集群，Redis 集群等等。
+1.1 特点 #    稳定、唯一的网络标识符
+如: Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则Redis集群将无法找到这段数据。</description>
     </item>
     
   </channel>
