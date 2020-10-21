@@ -23,7 +23,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY=">
-<script defer src="/en.search.min.004a18f08f4e0631f3d90361747df5bbc35cc1f70b49532338fada210398af00.js" integrity="sha256-AEoY8I9OBjHz2QNhdH31u8NcwfcLSVMjOPraIQOYrwA="></script>
+<script defer src="/en.search.min.8b8f82d3a104b706e862f3edb643372adb7af7fd69346030cb996c79a2648f7e.js" integrity="sha256-i4&#43;C06EEtwboYvPttkM3Ktt69/1pNGAwy5lseaJkj34="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -496,7 +496,7 @@ https://github.com/alex-shpak/hugo-book
   2.1 startDaemonSetController()
   <a class="anchor" href="#21-startdaemonsetcontroller">#</a>
 </h2>
-<p>与其他资源的 Controller 启动方式一致，在 <code>startDaemonSetController()</code> 中初始化 DaemonSetController 对象，并调用 <code>Run()</code> 方法启动。从该方法可以看出，DaemonSet Controller 关心的是 <code>daemonset</code>、<code>controllerrevision</code>、<code>pod</code>、<code>node</code> 四种资源的变动，其中 <code>ConcurrentDaemonSetSyncs</code>  默认是2。</p>
+<p>与其他资源的 Controller 启动方式一致，在 <code>startDaemonSetController()</code> 中初始化 DaemonSetController 对象，并调用 <code>Run()</code> 方法启动。从该方法可以看出，DaemonSet Controller 关心的是 <code>daemonset</code>、<code>controllerrevision</code>、<code>pod</code>、<code>node</code> 四种资源的变动，其中 <code>ConcurrentDaemonSetSyncs</code>  默认是 2。</p>
 <p><code>cmd/kube-controller-manager/app/apps.go:36</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">startDaemonSetController</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">ControllerContext</span>) (<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">AvailableResources</span>[<span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupVersionResource</span>{<span style="color:#a6e22e">Group</span>: <span style="color:#e6db74">&#34;apps&#34;</span>, <span style="color:#a6e22e">Version</span>: <span style="color:#e6db74">&#34;v1&#34;</span>, <span style="color:#a6e22e">Resource</span>: <span style="color:#e6db74">&#34;daemonsets&#34;</span>}] {
@@ -520,7 +520,7 @@ https://github.com/alex-shpak/hugo-book
   2.2 Run()
   <a class="anchor" href="#22-run">#</a>
 </h2>
-<p>Run() 方法中执行2个核心操作：sync 和 gc。其中 sync 操作是 controller 的核心代码，响应上述所有操作。在初始化 controller 对象时，指定了 failedPodsBackoff 的参数，defaultDuration 是 1s，超时时间（maxDuration）是 15min；gc 的主要作用是发现 daemonset 的 pod 的 phase 为 failed，就会重启该 Pod，如果已经超时（2*15min）会删除该条记录。</p>
+<p>Run() 方法中执行 2 个核心操作：<code>sync</code> 和 <code>gc</code>。其中 sync 操作是 controller 的核心代码，响应上述所有操作。在初始化 controller 对象时，指定了 <code>failedPodsBackoff</code> 的参数，<code>defaultDuration = 1s</code>，<code>maxDuration = 15min</code>；<code>gc</code> 的主要作用是发现 daemonset 的 pod 的 phase 为 failed，就会重启该 Pod，如果已经超时（2*15min）会删除该条记录。</p>
 <p><code>pkg/controller/daemon/daemon_controller.go:281</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">Run</span>(<span style="color:#a6e22e">workers</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) {
 	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">utilruntime</span>.<span style="color:#a6e22e">HandleCrash</span>()
@@ -546,18 +546,18 @@ https://github.com/alex-shpak/hugo-book
   2.3 syncDaemonSet()
   <a class="anchor" href="#23-syncdaemonset">#</a>
 </h2>
-<p>DaemonSet 的 Pod 的创建/删除都是和 Node 相关，所以每次 sync 操作，需要遍历所有的 Node 进行判断。syncDaemonSet 的主要逻辑为：</p>
+<p>DaemonSet 的 Pod 的创建/删除都是和 Node 相关，所以每次 <code>sync</code> 操作，需要遍历所有的 Node 进行判断。<code>syncDaemonSet()</code> 的主要逻辑为：</p>
 <ol>
 <li>通过 key 获取 ns 和 name</li>
 <li>从 dsLister 获取 ds 对象</li>
 <li>从 nodeLister 获取全部 node 对象</li>
-<li>获取 dsKey， 即：<namespace>/<name></li>
+<li>获取 dsKey， 即：<code>&lt;namespace&gt;/&lt;name&gt;</code></li>
 <li>判断 ds 是否处于删除中，如果正在删除，则等待删除完毕后再次进入 sync</li>
-<li>获取 cur 和 old controllerrevision</li>
-<li>判断是否满足 expectation 机制，expectation 机制就是为了减少不必要的 sync 操作</li>
+<li>获取 cur 和 old <code>controllerrevision</code></li>
+<li>判断是否满足 <code>expectation</code> 机制，<code>expectation</code> 机制就是为了减少不必要的 <code>sync</code> 操作</li>
 <li>调用 <code>dsc.manage()</code>，执行实际的 sync  操作</li>
 <li>判断是否为更新操作，并执行</li>
-<li>调用 <code>dsc.cleanupHistory()</code> 根据 <code>spec.revisionHistroyLimit</code> 清理过期的 controllerrevision</li>
+<li>调用 <code>dsc.cleanupHistory()</code> 根据 <code>spec.revisionHistroyLimit</code> 清理过期的 <code>controllerrevision</code></li>
 <li>调用 <code>dsc.updateDaemonSetStatus()</code>，更新 status 子资源</li>
 </ol>
 <p><code>pkg/controller/daemon/daemon_controller.go:1129</code></p>
@@ -627,10 +627,10 @@ https://github.com/alex-shpak/hugo-book
 </h2>
 <p><code>dsc.manage()</code> 是为了保证ds 的 Pod 正常运行在应该存在的节点，该方法做了这几件事：</p>
 <ol>
-<li>调用 <code>dsc.getNodesToDaemonPods()</code>，获取当前的节点和 daemonset pod 的映射关系（<code>map[nodeName][]*v1.Pod</code>）</li>
+<li>调用 <code>dsc.getNodesToDaemonPods()</code>，获取当前的节点和 daemon pod 的映射关系（<code>map[nodeName][]*v1.Pod</code>）</li>
 <li>遍历所有节点，判断每个节点是需要创建还是删除 daemonset pod</li>
-<li>从 1.12 开始，daemonset pod 已经由 <code>kube-scheduler</code> 负责调度，可能会出现把 daemonset pod 调度到不存在的节点上，如果存在这种情况，就要删除该 pod</li>
-<li>调用 <code>dsc.syncNodes()</code> 为对应的 node 创建 daemonset pod 以及删除多余的 pods；</li>
+<li>从 1.12 开始，daemon pod 已经由 <code>kube-scheduler</code> 负责调度，可能会出现把 daemon pod 调度到不存在的节点上，如果存在这种情况，就要删除该 pod</li>
+<li>调用 <code>dsc.syncNodes()</code> 为对应的 node 创建 daemon pod 以及删除多余的 pods；</li>
 </ol>
 <p><code>pkg/controller/daemon/daemon_controller.go:881</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">manage</span>(<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">DaemonSet</span>, <span style="color:#a6e22e">nodeList</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Node</span>, <span style="color:#a6e22e">hash</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
@@ -860,12 +860,30 @@ https://github.com/alex-shpak/hugo-book
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">utilerrors</span>.<span style="color:#a6e22e">NewAggregate</span>(<span style="color:#a6e22e">errors</span>)
 }
 </code></pre></div><p>到此，总结一下，<code>dsc.manage()</code> 方法的主要流程：</p>
-<pre><code class="language-mermaid" data-lang="mermaid">graph LR
-    op1(dsc.manage) --&gt;  op2(dsc.getNodesToDaemonPods)
-    op1 --&gt; op3(dsc.podsShouldBeOnNode)
-    op1 --&gt; op4(dsc.syncNodes)
-    op3 --&gt; op5(dsc.nodeShouldRunDaemonPod)
-</code></pre><h2 id="25-dscrollingupdate">
+
+
+<script src="/mermaid.min.js"></script>
+
+  <script>mermaid.initialize({
+  "flowchart": {
+    "useMaxWidth":true
+  },
+  "theme": "default"
+}
+)</script>
+
+
+
+
+<p class="mermaid">
+graph LR
+    op1(dsc.manage) -->  op2(dsc.getNodesToDaemonPods)
+    op1 --> op3(dsc.podsShouldBeOnNode)
+    op1 --> op4(dsc.syncNodes)
+    op3 --> op5(dsc.nodeShouldRunDaemonPod)
+</p>
+
+<h2 id="25-dscrollingupdate">
   2.5 dsc.rollingUpdate()
   <a class="anchor" href="#25-dscrollingupdate">#</a>
 </h2>
@@ -1015,17 +1033,22 @@ https://github.com/alex-shpak/hugo-book
   2.7 源码分析小结
   <a class="anchor" href="#27-%e6%ba%90%e7%a0%81%e5%88%86%e6%9e%90%e5%b0%8f%e7%bb%93">#</a>
 </h1>
-<pre><code class="language-mermaid" data-lang="mermaid">graph LR
-op(startDaeonSetController) --&gt; op0(dsc.Run)
-op0 --&gt; op1(dsc.syncDaemonSet)
-op1 --&gt; op1.1(dsc.manage)
-op1 --&gt; op1.2(dsc.rollingUpdate)
-op1 --&gt; op1.3(dsc.updateDaemonSetStatus)
-op1.1 --&gt; op1.1.1(dsc.getNodesToDaemonPods)
-op1.1 --&gt; op1.1.2(dsc.podsShouldBeOnNode)
-op1.1 --&gt; op1.1.3(dsc.syncNodes)
-op1.1.2 --&gt; op1.1.2.1(dsc.nodeShouldRunDaemonPod)
-</code></pre><h1 id="3-总结">
+
+
+<p class="mermaid">
+graph LR
+op(startDaeonSetController) --> op0(dsc.Run)
+op0 --> op1(dsc.syncDaemonSet)
+op1 --> op1.1(dsc.manage)
+op1 --> op1.2(dsc.rollingUpdate)
+op1 --> op1.3(dsc.updateDaemonSetStatus)
+op1.1 --> op1.1.1(dsc.getNodesToDaemonPods)
+op1.1 --> op1.1.2(dsc.podsShouldBeOnNode)
+op1.1 --> op1.1.3(dsc.syncNodes)
+op1.1.2 --> op1.1.2.1(dsc.nodeShouldRunDaemonPod)
+</p>
+
+<h1 id="3-总结">
   3. 总结
   <a class="anchor" href="#3-%e6%80%bb%e7%bb%93">#</a>
 </h1>
