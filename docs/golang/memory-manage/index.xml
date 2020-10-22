@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>内存管理 on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/docs/golang/memory-manage/</link>
+    <description>Recent content in 内存管理 on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/docs/golang/memory-manage/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>内存模型</title>
+      <link>https://howieyuen.github.io/docs/golang/memory-manage/memory-model/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/docs/golang/memory-manage/memory-model/</guid>
+      <description>1. happens-before #  假设A和B表示一个多线程的程序执行的两个操作。如果A happens-before B，那么 A 操作对内存的影响将对执行B的线程(且执行 B 之前)可见。
+单一 goroutine 中当满足下面条件时候，对一个变量的写操作 w1 对读操作 r1 可见：
+ 读操作 r1 不是发生在写操作 w1 前 在读操作 r1 之前，写操作 w1 之后没有其他的写操作 w2 对变量进行了修改  多 goroutine 下则需要满足下面条件才能保证写操作 w1 对读操作 r1 可见：
+ 写操作 w1 先于读操作 r1 任何对变量的写操作 w2 要先于写操作 w1 或者晚于读操作 r1  关于 channel 的 happens-before 在 Go 的内存模型中提到了三种情况：
+ 带缓冲的 channel 的发送操作 happens-before 相应 channel 的接收操作完成 不带缓冲的 channel 的接收操作 happens-before 相应 channel 的发送操作完成 关闭一个 channel happens-before 从该 channel 接收到最后的返回值 0  2.</description>
+    </item>
+    
+  </channel>
+</rss>

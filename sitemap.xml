@@ -48,6 +48,26 @@
   </url>
   
   <url>
+    <loc>https://howieyuen.github.io/docs/golang/</loc>
+  </url>
+  
+  <url>
+    <loc>https://howieyuen.github.io/docs/golang/memory-manage/memory-model/</loc>
+  </url>
+  
+  <url>
+    <loc>https://howieyuen.github.io/docs/golang/data-structure/slice/</loc>
+  </url>
+  
+  <url>
+    <loc>https://howieyuen.github.io/docs/golang/language-basics/reflect/</loc>
+  </url>
+  
+  <url>
+    <loc>https://howieyuen.github.io/docs/golang/data-structure/</loc>
+  </url>
+  
+  <url>
     <loc>https://howieyuen.github.io/docs/kubernetes/</loc>
     <lastmod>2020-10-21T00:00:00+00:00</lastmod>
   </url>
@@ -63,8 +83,20 @@
   </url>
   
   <url>
+    <loc>https://howieyuen.github.io/docs/golang/data-structure/map/</loc>
+  </url>
+  
+  <url>
+    <loc>https://howieyuen.github.io/docs/golang/language-basics/</loc>
+  </url>
+  
+  <url>
     <loc>https://howieyuen.github.io/docs/kubernetes/sig-network/</loc>
     <lastmod>2020-01-24T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://howieyuen.github.io/docs/golang/memory-manage/</loc>
   </url>
   
   <url>

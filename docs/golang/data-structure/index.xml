@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>数据结构 on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/docs/golang/data-structure/</link>
+    <description>Recent content in 数据结构 on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/docs/golang/data-structure/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>切片</title>
+      <link>https://howieyuen.github.io/docs/golang/data-structure/slice/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/docs/golang/data-structure/slice/</guid>
+      <description>1. 数据结构 #  type slice struct { array unsafe.Pointer len int cap int }  slice 的底层数据结构中的 array 是一个指针，指向的是一个 Array len 代表这个 slice 的元素个数 cap 表示 slice 指向的底层数组容量  对 slice 的赋值，以值作为函数参数时，只拷贝 1 个指针和 2 个 int 值。
+2. 操作 #  2.1 创建 #   var []T 或 []T{} func make([]T，len，cap) []T  2.2 nil 切片和空切片 #   nil 切片被用在很多标准库和内置函数中，描述一个不存在的切片的时候，就需要用到 nil 切片。比如函数在发生异常的时候，返回的切片就是 nil 切片。nil 切片的指针指向 nil. 空切片一般会用来表示一个空集合。比如数据库查询，一条结果也没有查到，那么就可以返回一个空切片。  2.</description>
+    </item>
+    
+    <item>
+      <title>哈希表</title>
+      <link>https://howieyuen.github.io/docs/golang/data-structure/map/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/docs/golang/data-structure/map/</guid>
+      <description>1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表，由一个key通过哈希函数得到哈希值，64 位系统中就生成一个 64 bit 的哈希值，由这个哈希值将 key 对应到不同的桶（bucket）中，当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
+1.1 hash函数 #  首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找，就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个bucket 的哪个 cell。golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
+1.2 数据结构 #  hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。
+type hmap struct { // map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 	count int // map状态标识，比如是否在被写或者迁移等，因为map不是线程安全的所以操作时需要判断flags 	flags uint8 // log_2 of buckets (最多可以放 loadFactor * 2^B 个元素即6.</description>
+    </item>
+    
+  </channel>
+</rss>
