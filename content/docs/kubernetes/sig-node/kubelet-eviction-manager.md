@@ -1,7 +1,7 @@
 ---
 author: Yuan Hao
 date: 2020-02-26
-title: kubelet eviction manager
+title: Eviction Manager 工作机制
 tag: [kubelet, eviction manager]
 weight: 2
 ---

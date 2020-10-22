@@ -132,7 +132,7 @@ Endpoint 对象需要与服务具有相同的名称，并包含该服务的目�
 服务和 Endpoint 资源都发布到服务器后，这样服务就可以像具有 Pod 选择器那样的服务正常使用。
 在服务创建后创建的容器将包含服务的环境变量，并且与其 IP:Port 对的所有连接都将在服务端点之间进行负载均衡。
 
-### 2.1.2 创建 ExternalName的service
+### 2.1.2 创建 ExternalName 的 service
 
 除了手动配置服务的 Endpoint 来代替公开外部服务方法，有一种更简单的方法，
 就是通过其完全限定域名(FQDN)访问外部服务。
@@ -165,7 +165,7 @@ ExternalName 服务仅在DNS级别实施——为服务创建了简单的 CNAME 
 
 ## 2.2 集群外访问集群内服务
 
-### 2.2.1 NodePort服务
+### 2.2.1 NodePort 服务
 
 将服务的类型设置成 `NodePort`：每个集群节点都会在节点上打开一个端口，对于 NodePort 服务，
 每个集群节点在节点本身(因此得名叫 NodePort)上打开一个端口，
@@ -247,7 +247,7 @@ Ingress Controller 需要实现基于不同 HTTP URL 向后转发的负载分发
 另外，由于 Nginx 通过 default-backend-service 的服务名称（Service Name）去访问它，
 所以需要 DNS 服务正确运行。
 
-## 3.2 创建 ingress 资源
+## 3.2 创建 Ingress 资源
 
 ### 3.2.1 转发到单个后端服务上
 

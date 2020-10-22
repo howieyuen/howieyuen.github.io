@@ -1,7 +1,7 @@
 ---
 author: Yuan Hao
 date: 2020-10-14
-title: garbage collector
+title: 垃圾回收
 tag: [garbage collector, controller]
 weight: 1
 ---
@@ -149,7 +149,7 @@ k8s 中默认有两种 finalizer：`OrphanFinalizer` 和 `ForegroundFinalizer`�
 
 通过 `OrphanFinalizer` 我们能够在删除一个 Kubernetes 对象时保留它的全部依赖，为使用者提供一种更灵活的方法来保留和删除对象。
 
-# 3. controller/garbagecollector 源码解析
+# 3. 源码解析
 
 
 # 4. 参考资料

@@ -136,7 +136,7 @@ func startStatefulSetController(ctx ControllerContext) (http.Handler, bool, erro
 }
 ```
 
-## 2.2 sync()
+## 2.2 ssc.sync()
 
 `run()` 方法会通过 informer 同步 cache 并监听 pod、statefulset、pvc 和 controllerrevision 对象的变更事件，然后启动 5 个 worker 协程，每个 worker 调用 `sync()` 方法，正式进入业务逻辑处理。
 
@@ -184,7 +184,7 @@ func (ssc *StatefulSetController) sync(key string) error {
 4. 调用 `ssc.getPodsForStatefulSet` 通过 selector 获取 sts 关联的 pod，若有孤儿 pod 的 label 与 sts 的能匹配则进行关联，若已关联的 pod label 有变化则解除与 sts 的关联关系；
 5. 最后调用 ssc.syncStatefulSet 执行真正的 sync 操作；
 
-## 2.3 syncStatefulSet()
+## 2.3 ssc.syncStatefulSet()
 
 在 `syncStatefulSet()` 中仅仅是调用了 `ssc.control.UpdateStatefulSet()` 方法进行处理。`ssc.control.UpdateStatefulSet()` 会调用 `ssc.performUpdate()` 方法，最终走到更新逻辑 `ssc.updateStatefulSet()` 和 `ssc.updateStatefulSetStatus()`。
 

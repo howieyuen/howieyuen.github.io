@@ -122,7 +122,7 @@ cacher 中在分发的时候，如果发现超过指定数量的watcher， 则�
 那什么叫 Budget 呢，其实如果在这段时间内，如果重试立马就成功，则本次剩余的时间，
 在下一次进行定时的时候，则可以使用之前剩余的余额，但是后台也还有个线程，用于周期性重置。
 
-## 4.4 forget机制
+## 4.4 forget 机制
 
 ![image12](/kubernetes/sig-apimachinery/watch/image12.png)
 

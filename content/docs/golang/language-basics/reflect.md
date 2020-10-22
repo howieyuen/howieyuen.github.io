@@ -7,7 +7,7 @@ weight: 1
 ---
 
 
-## 1. 引言
+# 1. 引言
 
 计算机中提到的反射一般是指，**程序借助某种手段检查自己结构的一种能力**，通常就是借助编程语言中定义的类型（`types`）。因此，反射是建立在类型系统上的。
 
@@ -21,9 +21,11 @@ weight: 1
 
 所以反射是干嘛的呢？**反射是一种检查存储在接口变量中的（类型/值）对的机制**。reflect 包中提供的 2 个类型 `Type` 和 `Value`，提供了访问接口值的 `reflect.Type` 和 `reflect.Value` 部分。
 
-## 2. 三大法则
+# 2. 三大法则
 
- 1. **Reflection goes from interface value to reflecton object**：从 `interface{}` 变量可以反射出反射对象；
+## 2.1. Reflection goes from interface value to reflecton object
+
+从 `interface{}` 变量可以反射出反射对象
 
 ```go
 type MyInt int32
@@ -42,7 +44,9 @@ func main() {
 
 `reflect.Value的Type` 返回的是静态类型 `MyInt`，而 `kind()` 方法返回的是底层类型 `int32`；为了保持 API 简单，value 的 `Setter` 和 `Getter` 类型方法操作，是包含某个值的最大类型，`v.Int()` 返回的是 `int64`，必要时转化成实际类型。
 
-2. **Reflection goes from reflection object to interface value**：从反射对象可以获取 `interface{}` 变量；
+## 2.2 Reflection goes from reflection object to interface value
+
+从反射对象可以获取 `interface{}` 变量；
 
 ```go
 type MyInt int32
@@ -57,7 +61,9 @@ func main() {
 
 对于一个 `reflect.Value`，可以用 `Interface()` 方法恢复成一个接口值，效果就是包类型和值打包成接口，并返回结果。
 
-3. **To modify a reflection object, the value must be settable**：要修改反射对象，其值必须可设置；
+## 2.3 To modify a reflection object, the value must be settable
+
+要修改反射对象，其值必须可设置；
 
 ```go
 func main() {
@@ -88,7 +94,7 @@ func main() {
 
 如果不能直接操作 `i` 变量修改其持有的值，我们就只能获取 `i` 变量所在地址并使用 `*v` 修改所在地址中存储的整数。
 
-## 3. 相关资料
+# 3. 相关资料
 
 - [Go语言中反射包的实现原理](https://studygolang.com/articles/2157)
 - [4.3反射](https://draveness.me/golang/docs/part2-foundation/ch04-basic/golang-reflect/)

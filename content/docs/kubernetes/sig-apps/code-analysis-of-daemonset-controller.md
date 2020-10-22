@@ -621,7 +621,7 @@ func (dsc *DaemonSetsController) updateDaemonSetStatus(ds *apps.DaemonSet, nodeL
 }
 ```
 
-# 2.7 源码分析小结
+## 2.7 源码分析小结
 
 {{< mermaid >}}
 graph LR
