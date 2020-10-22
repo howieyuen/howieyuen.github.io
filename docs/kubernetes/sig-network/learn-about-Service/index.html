@@ -17,7 +17,7 @@ apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - 
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY=">
-<script defer src="/en.search.min.be8b31e04b0ed4434a5b047f2ec75e1a7182fe0d40733ed98bd3319b3413d75d.js" integrity="sha256-vosx4EsO1ENKWwR/LsdeGnGC/g1Acz7Zi9MxmzQT110="></script>
+<script defer src="/en.search.min.821574b6764a18a36fe25264611a585d17d72663f22bd2ca82639319edab94db.js" integrity="sha256-ghV0tnZKGKNv4lJkYRpYXRfXJmPyK9LKgmOTGe2rlNs="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -221,7 +221,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/garbage-collector/" class="">garbage collector</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/garbage-collector/" class="">垃圾回收</a>
   
 
         </li>
@@ -353,7 +353,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-topology-manager/" class="">kubelet topology manager 设计方案</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
   
 
         </li>
@@ -366,7 +366,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-eviction-manager/" class="">kubelet eviction manager 工作机制</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
   
 
         </li>
@@ -498,12 +498,12 @@ https://github.com/alex-shpak/hugo-book
         <li><a href="#21-集群内访问集群外服务">2.1 集群内访问集群外服务</a>
           <ul>
             <li><a href="#211-创建没有-selector-的-service">2.1.1 创建没有 selector 的 Service</a></li>
-            <li><a href="#212-创建-externalname的service">2.1.2 创建 ExternalName的service</a></li>
+            <li><a href="#212-创建-externalname-的-service">2.1.2 创建 ExternalName 的 service</a></li>
           </ul>
         </li>
         <li><a href="#22-集群外访问集群内服务">2.2 集群外访问集群内服务</a>
           <ul>
-            <li><a href="#221-nodeport服务">2.2.1 NodePort服务</a></li>
+            <li><a href="#221-nodeport-服务">2.2.1 NodePort 服务</a></li>
             <li><a href="#222-loadbalancer-服务">2.2.2 LoadBalancer 服务</a></li>
           </ul>
         </li>
@@ -512,7 +512,7 @@ https://github.com/alex-shpak/hugo-book
     <li><a href="#三通过-ingress-暴露服务">三、通过 Ingress 暴露服务</a>
       <ul>
         <li><a href="#31-创建-ingress-controller-和默认的-backend-服务">3.1 创建 Ingress Controller 和默认的 backend 服务</a></li>
-        <li><a href="#32-创建-ingress-资源">3.2 创建 ingress 资源</a>
+        <li><a href="#32-创建-ingress-资源">3.2 创建 Ingress 资源</a>
           <ul>
             <li><a href="#321-转发到单个后端服务上">3.2.1 转发到单个后端服务上</a></li>
             <li><a href="#322-将不同的服务映射到相同主机的不同路径">3.2.2 将不同的服务映射到相同主机的不同路径</a></li>
@@ -663,9 +663,9 @@ service 根据 selector 找到后端 Pod，用 Pod IP 和端口创建与 service
 </code></pre></div><p>Endpoint 对象需要与服务具有相同的名称，并包含该服务的目标 IP 地址和端口列表。
 服务和 Endpoint 资源都发布到服务器后，这样服务就可以像具有 Pod 选择器那样的服务正常使用。
 在服务创建后创建的容器将包含服务的环境变量，并且与其 IP:Port 对的所有连接都将在服务端点之间进行负载均衡。</p>
-<h3 id="212-创建-externalname的service">
-  2.1.2 创建 ExternalName的service
-  <a class="anchor" href="#212-%e5%88%9b%e5%bb%ba-externalname%e7%9a%84service">#</a>
+<h3 id="212-创建-externalname-的-service">
+  2.1.2 创建 ExternalName 的 service
+  <a class="anchor" href="#212-%e5%88%9b%e5%bb%ba-externalname-%e7%9a%84-service">#</a>
 </h3>
 <p>除了手动配置服务的 Endpoint 来代替公开外部服务方法，有一种更简单的方法，
 就是通过其完全限定域名(FQDN)访问外部服务。</p>
@@ -694,9 +694,9 @@ service 根据 selector 找到后端 Pod，用 Pod IP 和端口创建与 service
   2.2 集群外访问集群内服务
   <a class="anchor" href="#22-%e9%9b%86%e7%be%a4%e5%a4%96%e8%ae%bf%e9%97%ae%e9%9b%86%e7%be%a4%e5%86%85%e6%9c%8d%e5%8a%a1">#</a>
 </h2>
-<h3 id="221-nodeport服务">
-  2.2.1 NodePort服务
-  <a class="anchor" href="#221-nodeport%e6%9c%8d%e5%8a%a1">#</a>
+<h3 id="221-nodeport-服务">
+  2.2.1 NodePort 服务
+  <a class="anchor" href="#221-nodeport-%e6%9c%8d%e5%8a%a1">#</a>
 </h3>
 <p>将服务的类型设置成 <code>NodePort</code>：每个集群节点都会在节点上打开一个端口，对于 NodePort 服务，
 每个集群节点在节点本身(因此得名叫 NodePort)上打开一个端口，
@@ -776,7 +776,7 @@ Ingress Controller 需要实现基于不同 HTTP URL 向后转发的负载分发
 另外，由于 Nginx 通过 default-backend-service 的服务名称（Service Name）去访问它，
 所以需要 DNS 服务正确运行。</p>
 <h2 id="32-创建-ingress-资源">
-  3.2 创建 ingress 资源
+  3.2 创建 Ingress 资源
   <a class="anchor" href="#32-%e5%88%9b%e5%bb%ba-ingress-%e8%b5%84%e6%ba%90">#</a>
 </h2>
 <h3 id="321-转发到单个后端服务上">
@@ -969,12 +969,12 @@ openssl req -new - x509 -key tls.key -out tls.cert -days <span style="color:#ae8
         <li><a href="#21-集群内访问集群外服务">2.1 集群内访问集群外服务</a>
           <ul>
             <li><a href="#211-创建没有-selector-的-service">2.1.1 创建没有 selector 的 Service</a></li>
-            <li><a href="#212-创建-externalname的service">2.1.2 创建 ExternalName的service</a></li>
+            <li><a href="#212-创建-externalname-的-service">2.1.2 创建 ExternalName 的 service</a></li>
           </ul>
         </li>
         <li><a href="#22-集群外访问集群内服务">2.2 集群外访问集群内服务</a>
           <ul>
-            <li><a href="#221-nodeport服务">2.2.1 NodePort服务</a></li>
+            <li><a href="#221-nodeport-服务">2.2.1 NodePort 服务</a></li>
             <li><a href="#222-loadbalancer-服务">2.2.2 LoadBalancer 服务</a></li>
           </ul>
         </li>
@@ -983,7 +983,7 @@ openssl req -new - x509 -key tls.key -out tls.cert -days <span style="color:#ae8
     <li><a href="#三通过-ingress-暴露服务">三、通过 Ingress 暴露服务</a>
       <ul>
         <li><a href="#31-创建-ingress-controller-和默认的-backend-服务">3.1 创建 Ingress Controller 和默认的 backend 服务</a></li>
-        <li><a href="#32-创建-ingress-资源">3.2 创建 ingress 资源</a>
+        <li><a href="#32-创建-ingress-资源">3.2 创建 Ingress 资源</a>
           <ul>
             <li><a href="#321-转发到单个后端服务上">3.2.1 转发到单个后端服务上</a></li>
             <li><a href="#322-将不同的服务映射到相同主机的不同路径">3.2.2 将不同的服务映射到相同主机的不同路径</a></li>

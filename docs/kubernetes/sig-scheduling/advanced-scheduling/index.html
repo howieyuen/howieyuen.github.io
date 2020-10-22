@@ -23,7 +23,7 @@ kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.k
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY=">
-<script defer src="/en.search.min.be8b31e04b0ed4434a5b047f2ec75e1a7182fe0d40733ed98bd3319b3413d75d.js" integrity="sha256-vosx4EsO1ENKWwR/LsdeGnGC/g1Acz7Zi9MxmzQT110="></script>
+<script defer src="/en.search.min.821574b6764a18a36fe25264611a585d17d72663f22bd2ca82639319edab94db.js" integrity="sha256-ghV0tnZKGKNv4lJkYRpYXRfXJmPyK9LKgmOTGe2rlNs="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -227,7 +227,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/garbage-collector/" class="">garbage collector</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/garbage-collector/" class="">垃圾回收</a>
   
 
         </li>
@@ -359,7 +359,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-topology-manager/" class="">kubelet topology manager 设计方案</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
   
 
         </li>
@@ -372,7 +372,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-eviction-manager/" class="">kubelet eviction manager 工作机制</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
   
 
         </li>
@@ -493,30 +493,26 @@ https://github.com/alex-shpak/hugo-book
     
   <nav id="TableOfContents">
   <ul>
-    <li>
+    <li><a href="#1-使用-taint-和-toleration-阻止节点调度到特定节点">1. 使用 taint 和 toleration 阻止节点调度到特定节点</a>
       <ul>
-        <li><a href="#1-使用-taint-和-toleration-阻止节点调度到特定节点">1. 使用 taint 和 toleration 阻止节点调度到特定节点</a>
-          <ul>
-            <li><a href="#11-taint-和-toleration">1.1 taint 和 toleration</a></li>
-            <li><a href="#12-在节点上定义污点">1.2 在节点上定义污点</a></li>
-            <li><a href="#13-在-pod-上添加容忍">1.3 在 Pod 上添加容忍</a></li>
-            <li><a href="#14-了解污点和容忍的使用场景">1.4 了解污点和容忍的使用场景</a></li>
-          </ul>
-        </li>
-        <li><a href="#2-使用节点亲和将pod调度到指定节点">2. 使用节点亲和将pod调度到指定节点</a>
-          <ul>
-            <li><a href="#21-指定强制节点亲和性规则">2.1 指定强制节点亲和性规则</a></li>
-            <li><a href="#22-调度pod时优先考虑某些节点">2.2 调度pod时优先考虑某些节点</a></li>
-          </ul>
-        </li>
-        <li><a href="#3-使用pod亲和和反亲和部署-pod">3. 使用pod亲和和反亲和部署 Pod</a>
-          <ul>
-            <li><a href="#31-使用-pod-亲和将多个-pod-部署到同一个节点上">3.1 使用 Pod 亲和将多个 Pod 部署到同一个节点上</a></li>
-            <li><a href="#32-将pod部署到同一个机柜可用性区域或者地理地域">3.2 将pod部署到同一个机柜、可用性区域或者地理地域</a></li>
-            <li><a href="#33-pod-优先级亲和性">3.3 Pod 优先级亲和性</a></li>
-            <li><a href="#34-pod反亲和分开调度pod">3.4 pod反亲和分开调度pod</a></li>
-          </ul>
-        </li>
+        <li><a href="#11-taint-和-toleration">1.1 taint 和 toleration</a></li>
+        <li><a href="#12-在节点上定义污点">1.2 在节点上定义污点</a></li>
+        <li><a href="#13-在-pod-上添加容忍">1.3 在 Pod 上添加容忍</a></li>
+        <li><a href="#14-了解污点和容忍的使用场景">1.4 了解污点和容忍的使用场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-使用节点亲和将-pod-调度到指定节点">2. 使用节点亲和将 Pod 调度到指定节点</a>
+      <ul>
+        <li><a href="#21-指定强制节点亲和性规则">2.1 指定强制节点亲和性规则</a></li>
+        <li><a href="#22-调度-pod-时优先考虑某些节点">2.2 调度 Pod 时优先考虑某些节点</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-使用亲和反亲和部署-pod">3. 使用亲和/反亲和部署 Pod</a>
+      <ul>
+        <li><a href="#31-使用-pod-亲和将多个-pod-部署到同一个节点上">3.1 使用 Pod 亲和将多个 Pod 部署到同一个节点上</a></li>
+        <li><a href="#32-将-pod-部署到同一个机柜可用性区域或者地理地域">3.2 将 Pod 部署到同一个机柜、可用性区域或者地理地域</a></li>
+        <li><a href="#33-pod-优先级亲和性">3.3 Pod 优先级亲和性</a></li>
+        <li><a href="#34-pod-反亲和分开调度">3.4 Pod 反亲和分开调度</a></li>
       </ul>
     </li>
   </ul>
@@ -530,14 +526,14 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h2 id="1-使用-taint-和-toleration-阻止节点调度到特定节点">
+  <article class="markdown"><h1 id="1-使用-taint-和-toleration-阻止节点调度到特定节点">
   1. 使用 taint 和 toleration 阻止节点调度到特定节点
   <a class="anchor" href="#1-%e4%bd%bf%e7%94%a8-taint-%e5%92%8c-toleration-%e9%98%bb%e6%ad%a2%e8%8a%82%e7%82%b9%e8%b0%83%e5%ba%a6%e5%88%b0%e7%89%b9%e5%ae%9a%e8%8a%82%e7%82%b9">#</a>
-</h2>
-<h3 id="11-taint-和-toleration">
+</h1>
+<h2 id="11-taint-和-toleration">
   1.1 taint 和 toleration
   <a class="anchor" href="#11-taint-%e5%92%8c-toleration">#</a>
-</h3>
+</h2>
 <p>taint，是在不修改已有 Pod 的前提下，通过在节点上添加污点信息，拒绝 Pod 的部署。
 只有当一个 Pod 容忍某个节点的 taint 时，才能被调度到此节点上。</p>
 <p><strong>显示节点 taint 信息</strong></p>
@@ -576,17 +572,17 @@ https://github.com/alex-shpak/hugo-book
 <li>NoExecute，上 2 个在调度期间起作用，而此设定也会影响正在运行中的 Pod。
 如果节点上的 Pod 没有容忍此污点，会被驱逐。</li>
 </ul>
-<h3 id="12-在节点上定义污点">
+<h2 id="12-在节点上定义污点">
   1.2 在节点上定义污点
   <a class="anchor" href="#12-%e5%9c%a8%e8%8a%82%e7%82%b9%e4%b8%8a%e5%ae%9a%e4%b9%89%e6%b1%a1%e7%82%b9">#</a>
-</h3>
+</h2>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">kubectl taint node node1.k8s node-type<span style="color:#f92672">=</span>production:NoSchedule
 </code></pre></div><p>此命令给节点添加污点，key 为 node-type，value 为 production，effect 为 NoSchedule。
 如果现在部署一个常规 Pod 多个副本，没有一个 Pod 会调度到此节点上。</p>
-<h3 id="13-在-pod-上添加容忍">
+<h2 id="13-在-pod-上添加容忍">
   1.3 在 Pod 上添加容忍
   <a class="anchor" href="#13-%e5%9c%a8-pod-%e4%b8%8a%e6%b7%bb%e5%8a%a0%e5%ae%b9%e5%bf%8d">#</a>
-</h3>
+</h2>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
 <span style="color:#f92672">metadata</span>:
@@ -602,10 +598,10 @@ https://github.com/alex-shpak/hugo-book
       <span style="color:#f92672">value</span>: <span style="color:#ae81ff">production</span>
       <span style="color:#f92672">effect</span>: <span style="color:#ae81ff">NoSchedule</span>
 </code></pre></div><p>部署此 deployment，Pod 即可调度到 node1.k8s 节点上。</p>
-<h3 id="14-了解污点和容忍的使用场景">
+<h2 id="14-了解污点和容忍的使用场景">
   1.4 了解污点和容忍的使用场景
   <a class="anchor" href="#14-%e4%ba%86%e8%a7%a3%e6%b1%a1%e7%82%b9%e5%92%8c%e5%ae%b9%e5%bf%8d%e7%9a%84%e4%bd%bf%e7%94%a8%e5%9c%ba%e6%99%af">#</a>
-</h3>
+</h2>
 <p><strong>调度时使用污点和容忍</strong></p>
 <p>污点可以组织新 Pod 的调度，或者定义非有限调度节点，甚至是将已有 Pod 驱逐。
 例如，一个集群分成多个部分，只允许开发团队将 Pod 部署到特定节点上；或者某些特殊 Pod 依赖硬件配置。</p>
@@ -624,10 +620,10 @@ k8s 可以等待该 Pod 重新调度之前的最长等待时间。</p>
   <span style="color:#f92672">tolerationSeconds</span>: <span style="color:#ae81ff">300</span>
 ...
 </code></pre></div><p>上面2个容忍表示，该 Pod 容忍所在节点处于 notReady 和 unreachable 状态维持 300s。超时后，再重新调度。</p>
-<h2 id="2-使用节点亲和将pod调度到指定节点">
-  2. 使用节点亲和将pod调度到指定节点
-  <a class="anchor" href="#2-%e4%bd%bf%e7%94%a8%e8%8a%82%e7%82%b9%e4%ba%b2%e5%92%8c%e5%b0%86pod%e8%b0%83%e5%ba%a6%e5%88%b0%e6%8c%87%e5%ae%9a%e8%8a%82%e7%82%b9">#</a>
-</h2>
+<h1 id="2-使用节点亲和将-pod-调度到指定节点">
+  2. 使用节点亲和将 Pod 调度到指定节点
+  <a class="anchor" href="#2-%e4%bd%bf%e7%94%a8%e8%8a%82%e7%82%b9%e4%ba%b2%e5%92%8c%e5%b0%86-pod-%e8%b0%83%e5%ba%a6%e5%88%b0%e6%8c%87%e5%ae%9a%e8%8a%82%e7%82%b9">#</a>
+</h1>
 <p>污点可以拒绝调度，亲和允许调度。早期的 k8s 版本，节点亲和，就是 Pod 中的 nodeSelector 字段。
 与节点选择器类似，每个节点都可以配置亲和性规则，可以是硬性标注，也可以是偏好。</p>
 <p><strong>检查节点默认标签</strong></p>
@@ -641,10 +637,10 @@ k8s 可以等待该 Pod 重新调度之前的最长等待时间。</p>
         <span style="color:#ae81ff">failure-domain.beta.kubernetes.io/zone=europe-west1-d</span>
         <span style="color:#ae81ff">kubernetes.io/hostname=gke-kubia-default-adj12knzf-2dascjb</span>
 </code></pre></div><p>这是一个 gke 的节点，最后三个标签涉及到亲和性，分别表示所在地理地域，可用性区域，和主机名。</p>
-<h3 id="21-指定强制节点亲和性规则">
+<h2 id="21-指定强制节点亲和性规则">
   2.1 指定强制节点亲和性规则
   <a class="anchor" href="#21-%e6%8c%87%e5%ae%9a%e5%bc%ba%e5%88%b6%e8%8a%82%e7%82%b9%e4%ba%b2%e5%92%8c%e6%80%a7%e8%a7%84%e5%88%99">#</a>
-</h3>
+</h2>
 <p>下面展示了只能被部署到含有 gpu=true 标签的节点上的 Pod：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
@@ -667,10 +663,10 @@ k8s 可以等待该 Pod 重新调度之前的最长等待时间。</p>
 </ul>
 <p><strong>了解节点选择器的条件</strong></p>
 <p>lableSelectorTerms 和 matchExpressions 定义了节点的标签必须满足哪一种表达方式。</p>
-<h3 id="22-调度pod时优先考虑某些节点">
-  2.2 调度pod时优先考虑某些节点
-  <a class="anchor" href="#22-%e8%b0%83%e5%ba%a6pod%e6%97%b6%e4%bc%98%e5%85%88%e8%80%83%e8%99%91%e6%9f%90%e4%ba%9b%e8%8a%82%e7%82%b9">#</a>
-</h3>
+<h2 id="22-调度-pod-时优先考虑某些节点">
+  2.2 调度 Pod 时优先考虑某些节点
+  <a class="anchor" href="#22-%e8%b0%83%e5%ba%a6-pod-%e6%97%b6%e4%bc%98%e5%85%88%e8%80%83%e8%99%91%e6%9f%90%e4%ba%9b%e8%8a%82%e7%82%b9">#</a>
+</h2>
 <p>节点亲和性和节点选择器相比，最大的好处就是，
 当调度某一个 Pod，指定可以优先考某些节点，如果节点均无法满足，调度结果也是可以接受的。
 这是由 preferdDuringSchdulingIgnoredDuringExecution 字段实现的。</p>
@@ -716,16 +712,16 @@ kubectl label node node2.k8s share-type<span style="color:#f92672">=</span>share
 还有其他函数来决定 Pod 调度到哪里。其中之一就是 Selector SpreadPriority 函数，
 此函数保证同一个 ReplicaSet 或者 Service 的 Pod，将分散到不同节点上。
 避免单个节点失效而出现整个服务挂掉。</p>
-<h2 id="3-使用pod亲和和反亲和部署-pod">
-  3. 使用pod亲和和反亲和部署 Pod
-  <a class="anchor" href="#3-%e4%bd%bf%e7%94%a8pod%e4%ba%b2%e5%92%8c%e5%92%8c%e5%8f%8d%e4%ba%b2%e5%92%8c%e9%83%a8%e7%bd%b2-pod">#</a>
-</h2>
+<h1 id="3-使用亲和反亲和部署-pod">
+  3. 使用亲和/反亲和部署 Pod
+  <a class="anchor" href="#3-%e4%bd%bf%e7%94%a8%e4%ba%b2%e5%92%8c%e5%8f%8d%e4%ba%b2%e5%92%8c%e9%83%a8%e7%bd%b2-pod">#</a>
+</h1>
 <p>刚才描述了 Pod 和节点之间的亲和关系，也有 Pod 与 Pod 之间的亲和关系，
 例如前端 Pod 和后端 Pod，尽可能部署较近，减少网络时延。</p>
-<h3 id="31-使用-pod-亲和将多个-pod-部署到同一个节点上">
+<h2 id="31-使用-pod-亲和将多个-pod-部署到同一个节点上">
   3.1 使用 Pod 亲和将多个 Pod 部署到同一个节点上
   <a class="anchor" href="#31-%e4%bd%bf%e7%94%a8-pod-%e4%ba%b2%e5%92%8c%e5%b0%86%e5%a4%9a%e4%b8%aa-pod-%e9%83%a8%e7%bd%b2%e5%88%b0%e5%90%8c%e4%b8%80%e4%b8%aa%e8%8a%82%e7%82%b9%e4%b8%8a">#</a>
-</h3>
+</h2>
 <p>部署 1 个后端 Pod 和 5 个前端 Pod。先部署后端：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">kubectl run backend -l app<span style="color:#f92672">=</span>backend --image busybox --sleep <span style="color:#ae81ff">9999</span>
 </code></pre></div><p>这里没什么区别，只是给 Pod 加了个标签，app=backend。</p>
@@ -752,10 +748,10 @@ kubectl label node node2.k8s share-type<span style="color:#f92672">=</span>share
 <p>上面的应用部署后，5 个前端 Pod 和 1 个后端 Pod 都在 node2 上。
 假设后端 Pod 被误删，重新调度后，依旧在 node2 上。
 虽然后端 Pod 本身没有定义任何亲和性规则，如果调度到其他节点，即会打破已有的亲和规则。</p>
-<h3 id="32-将pod部署到同一个机柜可用性区域或者地理地域">
-  3.2 将pod部署到同一个机柜、可用性区域或者地理地域
-  <a class="anchor" href="#32-%e5%b0%86pod%e9%83%a8%e7%bd%b2%e5%88%b0%e5%90%8c%e4%b8%80%e4%b8%aa%e6%9c%ba%e6%9f%9c%e5%8f%af%e7%94%a8%e6%80%a7%e5%8c%ba%e5%9f%9f%e6%88%96%e8%80%85%e5%9c%b0%e7%90%86%e5%9c%b0%e5%9f%9f">#</a>
-</h3>
+<h2 id="32-将-pod-部署到同一个机柜可用性区域或者地理地域">
+  3.2 将 Pod 部署到同一个机柜、可用性区域或者地理地域
+  <a class="anchor" href="#32-%e5%b0%86-pod-%e9%83%a8%e7%bd%b2%e5%88%b0%e5%90%8c%e4%b8%80%e4%b8%aa%e6%9c%ba%e6%9f%9c%e5%8f%af%e7%94%a8%e6%80%a7%e5%8c%ba%e5%9f%9f%e6%88%96%e8%80%85%e5%9c%b0%e7%90%86%e5%9c%b0%e5%9f%9f">#</a>
+</h2>
 <p><strong>同一个可用性区域协调部署</strong></p>
 <p>如果想要 Pod 在同一个 available zone 部署应用，
 可以将 topologyKey 设置成 failure-domain.beta.kubernetes.io/zone。</p>
@@ -767,10 +763,10 @@ topologyKey 的工作方式很简单，上面提到的三个属性并没有什�
 <p>当调度器决定决定 Pod 调度到哪里时，首先检查 podAffinity 配置，选择满足条件的 Pod，
 接着查询这些 Pod 运行在那些节点上。特别寻找能匹配 podAffinity 配置的 topologyKey 的节点。
 接着，会优先选择所有标签匹配的 Pod 的值的节点。</p>
-<h3 id="33-pod-优先级亲和性">
+<h2 id="33-pod-优先级亲和性">
   3.3 Pod 优先级亲和性
   <a class="anchor" href="#33-pod-%e4%bc%98%e5%85%88%e7%ba%a7%e4%ba%b2%e5%92%8c%e6%80%a7">#</a>
-</h3>
+</h2>
 <p>与节点亲和一样，pod 之间也可以用 prefereddDuringSchdulingIgnoredDuringExecution。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
@@ -791,10 +787,10 @@ topologyKey 的工作方式很简单，上面提到的三个属性并没有什�
                 <span style="color:#f92672">matchLabels</span>:
                   <span style="color:#f92672">app</span>: <span style="color:#ae81ff">backend</span>
 </code></pre></div><p>和 nodeAffinity 一样，设置了权重。也需要设置 topologyKey 和 labelSelector。</p>
-<h3 id="34-pod反亲和分开调度pod">
-  3.4 pod反亲和分开调度pod
-  <a class="anchor" href="#34-pod%e5%8f%8d%e4%ba%b2%e5%92%8c%e5%88%86%e5%bc%80%e8%b0%83%e5%ba%a6pod">#</a>
-</h3>
+<h2 id="34-pod-反亲和分开调度">
+  3.4 Pod 反亲和分开调度
+  <a class="anchor" href="#34-pod-%e5%8f%8d%e4%ba%b2%e5%92%8c%e5%88%86%e5%bc%80%e8%b0%83%e5%ba%a6">#</a>
+</h2>
 <p>同理，有 nodeAntiAffinity，也有 podAntiAffinity。
 这将导致调度器永远不会选择包含 podAntiAffinity 的 Pod 所在的节点。</p>
 <p><strong>使用反亲和分散 Pod</strong></p>
@@ -856,30 +852,26 @@ topologyKey 的工作方式很简单，上面提到的三个属性并没有什�
       
   <nav id="TableOfContents">
   <ul>
-    <li>
+    <li><a href="#1-使用-taint-和-toleration-阻止节点调度到特定节点">1. 使用 taint 和 toleration 阻止节点调度到特定节点</a>
       <ul>
-        <li><a href="#1-使用-taint-和-toleration-阻止节点调度到特定节点">1. 使用 taint 和 toleration 阻止节点调度到特定节点</a>
-          <ul>
-            <li><a href="#11-taint-和-toleration">1.1 taint 和 toleration</a></li>
-            <li><a href="#12-在节点上定义污点">1.2 在节点上定义污点</a></li>
-            <li><a href="#13-在-pod-上添加容忍">1.3 在 Pod 上添加容忍</a></li>
-            <li><a href="#14-了解污点和容忍的使用场景">1.4 了解污点和容忍的使用场景</a></li>
-          </ul>
-        </li>
-        <li><a href="#2-使用节点亲和将pod调度到指定节点">2. 使用节点亲和将pod调度到指定节点</a>
-          <ul>
-            <li><a href="#21-指定强制节点亲和性规则">2.1 指定强制节点亲和性规则</a></li>
-            <li><a href="#22-调度pod时优先考虑某些节点">2.2 调度pod时优先考虑某些节点</a></li>
-          </ul>
-        </li>
-        <li><a href="#3-使用pod亲和和反亲和部署-pod">3. 使用pod亲和和反亲和部署 Pod</a>
-          <ul>
-            <li><a href="#31-使用-pod-亲和将多个-pod-部署到同一个节点上">3.1 使用 Pod 亲和将多个 Pod 部署到同一个节点上</a></li>
-            <li><a href="#32-将pod部署到同一个机柜可用性区域或者地理地域">3.2 将pod部署到同一个机柜、可用性区域或者地理地域</a></li>
-            <li><a href="#33-pod-优先级亲和性">3.3 Pod 优先级亲和性</a></li>
-            <li><a href="#34-pod反亲和分开调度pod">3.4 pod反亲和分开调度pod</a></li>
-          </ul>
-        </li>
+        <li><a href="#11-taint-和-toleration">1.1 taint 和 toleration</a></li>
+        <li><a href="#12-在节点上定义污点">1.2 在节点上定义污点</a></li>
+        <li><a href="#13-在-pod-上添加容忍">1.3 在 Pod 上添加容忍</a></li>
+        <li><a href="#14-了解污点和容忍的使用场景">1.4 了解污点和容忍的使用场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-使用节点亲和将-pod-调度到指定节点">2. 使用节点亲和将 Pod 调度到指定节点</a>
+      <ul>
+        <li><a href="#21-指定强制节点亲和性规则">2.1 指定强制节点亲和性规则</a></li>
+        <li><a href="#22-调度-pod-时优先考虑某些节点">2.2 调度 Pod 时优先考虑某些节点</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-使用亲和反亲和部署-pod">3. 使用亲和/反亲和部署 Pod</a>
+      <ul>
+        <li><a href="#31-使用-pod-亲和将多个-pod-部署到同一个节点上">3.1 使用 Pod 亲和将多个 Pod 部署到同一个节点上</a></li>
+        <li><a href="#32-将-pod-部署到同一个机柜可用性区域或者地理地域">3.2 将 Pod 部署到同一个机柜、可用性区域或者地理地域</a></li>
+        <li><a href="#33-pod-优先级亲和性">3.3 Pod 优先级亲和性</a></li>
+        <li><a href="#34-pod-反亲和分开调度">3.4 Pod 反亲和分开调度</a></li>
       </ul>
     </li>
   </ul>

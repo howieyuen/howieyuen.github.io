@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/docs/kubernetes/sig-node/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>kubelet topology manager 设计方案</title>
+      <title>Topology Manager 设计方案</title>
       <link>https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-topology-manager/</link>
       <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
       
@@ -22,7 +22,7 @@
     </item>
     
     <item>
-      <title>kubelet eviction manager 工作机制</title>
+      <title>Eviction Manager 工作机制</title>
       <link>https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-eviction-manager/</link>
       <pubDate>Wed, 26 Feb 2020 00:00:00 +0000</pubDate>
       

@@ -20,7 +20,7 @@
     </item>
     
     <item>
-      <title>garbage collector</title>
+      <title>垃圾回收</title>
       <link>https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/garbage-collector/</link>
       <pubDate>Wed, 14 Oct 2020 00:00:00 +0000</pubDate>
       
@@ -76,7 +76,7 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
     </item>
     
     <item>
-      <title>kubelet topology manager 设计方案</title>
+      <title>Topology Manager 设计方案</title>
       <link>https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-topology-manager/</link>
       <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
       
@@ -119,11 +119,11 @@ apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://howieyuen.github.io/docs/golang/memory-manage/memory-model/</guid>
-      <description>1. happens-before #  假设A和B表示一个多线程的程序执行的两个操作。如果A happens-before B，那么 A 操作对内存的影响将对执行B的线程(且执行 B 之前)可见。
+      <description>1. 引言 #  Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似java内存模型中内存可见性问题。当多个goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。
+2. 设计原则 #  2.1 happens-before #  假设A和B表示一个多线程的程序执行的两个操作。如果A happens-before B，那么 A 操作对内存的影响将对执行B的线程(且执行 B 之前)可见。
 单一 goroutine 中当满足下面条件时候，对一个变量的写操作 w1 对读操作 r1 可见：
  读操作 r1 不是发生在写操作 w1 前 在读操作 r1 之前，写操作 w1 之后没有其他的写操作 w2 对变量进行了修改  多 goroutine 下则需要满足下面条件才能保证写操作 w1 对读操作 r1 可见：
- 写操作 w1 先于读操作 r1 任何对变量的写操作 w2 要先于写操作 w1 或者晚于读操作 r1  关于 channel 的 happens-before 在 Go 的内存模型中提到了三种情况：
- 带缓冲的 channel 的发送操作 happens-before 相应 channel 的接收操作完成 不带缓冲的 channel 的接收操作 happens-before 相应 channel 的发送操作完成 关闭一个 channel happens-before 从该 channel 接收到最后的返回值 0  2.</description>
+ 写操作 w1 先于读操作 r1 任何对变量的写操作 w2 要先于写操作 w1 或者晚于读操作 r1  关于 channel 的 happens-before 在 Go 的内存模型中提到了三种情况：</description>
     </item>
     
     <item>
@@ -148,11 +148,12 @@ go是静态类型化，每个变量都有一个静态类型，也就是说，在
 一个特殊接口就是空接口 interface{}，任何值都可以说实现了空接口，因为空接口中没有定义方法，所以空接口可以保存任何值。
 一个接口类型变量存储了一对值：赋值给这个接口变量的具体值 + 这个值的类型描述符。更进一步的讲，这个“值”是实现了这个接口的底层具体数据项（underlying concrete data item)，而这个“类型”是描述了具体数据项（item）的全类型（full type）。
 所以反射是干嘛的呢？反射是一种检查存储在接口变量中的（类型/值）对的机制。reflect 包中提供的 2 个类型 Type 和 Value，提供了访问接口值的 reflect.Type 和 reflect.Value 部分。
-2. 三大法则 #   Reflection goes from interface value to reflecton object：从 interface{} 变量可以反射出反射对象；  type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := reflect.TypeOf(x) fmt.Println(&amp;#34;type:&amp;#34;, t) // type: main.</description>
+2. 三大法则 #  2.1. Reflection goes from interface value to reflecton object #  从 interface{} 变量可以反射出反射对象
+type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := reflect.TypeOf(x) fmt.Println(&amp;#34;type:&amp;#34;, t) // type: main.</description>
     </item>
     
     <item>
-      <title>kubelet eviction manager 工作机制</title>
+      <title>Eviction Manager 工作机制</title>
       <link>https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-eviction-manager/</link>
       <pubDate>Wed, 26 Feb 2020 00:00:00 +0000</pubDate>
       

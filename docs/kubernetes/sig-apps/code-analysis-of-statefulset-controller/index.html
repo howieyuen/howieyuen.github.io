@@ -25,7 +25,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY=">
-<script defer src="/en.search.min.be8b31e04b0ed4434a5b047f2ec75e1a7182fe0d40733ed98bd3319b3413d75d.js" integrity="sha256-vosx4EsO1ENKWwR/LsdeGnGC/g1Acz7Zi9MxmzQT110="></script>
+<script defer src="/en.search.min.821574b6764a18a36fe25264611a585d17d72663f22bd2ca82639319edab94db.js" integrity="sha256-ghV0tnZKGKNv4lJkYRpYXRfXJmPyK9LKgmOTGe2rlNs="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -229,7 +229,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/garbage-collector/" class="">garbage collector</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/garbage-collector/" class="">垃圾回收</a>
   
 
         </li>
@@ -361,7 +361,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-topology-manager/" class="">kubelet topology manager 设计方案</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
   
 
         </li>
@@ -374,7 +374,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-eviction-manager/" class="">kubelet eviction manager 工作机制</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
   
 
         </li>
@@ -506,8 +506,8 @@ https://github.com/alex-shpak/hugo-book
     <li><a href="#2-源码解析">2. 源码解析</a>
       <ul>
         <li><a href="#21-startstatefulsetcontroller">2.1 startStatefulSetController()</a></li>
-        <li><a href="#22-sync">2.2 sync()</a></li>
-        <li><a href="#23-syncstatefulset">2.3 syncStatefulSet()</a></li>
+        <li><a href="#22-sscsync">2.2 ssc.sync()</a></li>
+        <li><a href="#23-sscsyncstatefulset">2.3 ssc.syncStatefulSet()</a></li>
         <li><a href="#24-sscupdatestatefulset">2.4 ssc.updateStatefulSet()</a></li>
       </ul>
     </li>
@@ -670,9 +670,9 @@ https://github.com/alex-shpak/hugo-book
 	).<span style="color:#a6e22e">Run</span>(int(<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ComponentConfig</span>.<span style="color:#a6e22e">StatefulSetController</span>.<span style="color:#a6e22e">ConcurrentStatefulSetSyncs</span>), <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Stop</span>)
 	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
 }
-</code></pre></div><h2 id="22-sync">
-  2.2 sync()
-  <a class="anchor" href="#22-sync">#</a>
+</code></pre></div><h2 id="22-sscsync">
+  2.2 ssc.sync()
+  <a class="anchor" href="#22-sscsync">#</a>
 </h2>
 <p><code>run()</code> 方法会通过 informer 同步 cache 并监听 pod、statefulset、pvc 和 controllerrevision 对象的变更事件，然后启动 5 个 worker 协程，每个 worker 调用 <code>sync()</code> 方法，正式进入业务逻辑处理。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">StatefulSetController</span>) <span style="color:#a6e22e">sync</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
@@ -717,9 +717,9 @@ https://github.com/alex-shpak/hugo-book
 <li>调用 <code>ssc.getPodsForStatefulSet</code> 通过 selector 获取 sts 关联的 pod，若有孤儿 pod 的 label 与 sts 的能匹配则进行关联，若已关联的 pod label 有变化则解除与 sts 的关联关系；</li>
 <li>最后调用 ssc.syncStatefulSet 执行真正的 sync 操作；</li>
 </ol>
-<h2 id="23-syncstatefulset">
-  2.3 syncStatefulSet()
-  <a class="anchor" href="#23-syncstatefulset">#</a>
+<h2 id="23-sscsyncstatefulset">
+  2.3 ssc.syncStatefulSet()
+  <a class="anchor" href="#23-sscsyncstatefulset">#</a>
 </h2>
 <p>在 <code>syncStatefulSet()</code> 中仅仅是调用了 <code>ssc.control.UpdateStatefulSet()</code> 方法进行处理。<code>ssc.control.UpdateStatefulSet()</code> 会调用 <code>ssc.performUpdate()</code> 方法，最终走到更新逻辑 <code>ssc.updateStatefulSet()</code> 和 <code>ssc.updateStatefulSetStatus()</code>。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">StatefulSetController</span>) <span style="color:#a6e22e">syncStatefulSet</span>(<span style="color:#a6e22e">set</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">StatefulSet</span>, <span style="color:#a6e22e">pods</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>) <span style="color:#66d9ef">error</span> {
@@ -1133,8 +1133,8 @@ https://github.com/alex-shpak/hugo-book
     <li><a href="#2-源码解析">2. 源码解析</a>
       <ul>
         <li><a href="#21-startstatefulsetcontroller">2.1 startStatefulSetController()</a></li>
-        <li><a href="#22-sync">2.2 sync()</a></li>
-        <li><a href="#23-syncstatefulset">2.3 syncStatefulSet()</a></li>
+        <li><a href="#22-sscsync">2.2 ssc.sync()</a></li>
+        <li><a href="#23-sscsyncstatefulset">2.3 ssc.syncStatefulSet()</a></li>
         <li><a href="#24-sscupdatestatefulset">2.4 ssc.updateStatefulSet()</a></li>
       </ul>
     </li>

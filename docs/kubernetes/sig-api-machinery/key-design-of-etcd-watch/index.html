@@ -27,7 +27,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY=">
-<script defer src="/en.search.min.be8b31e04b0ed4434a5b047f2ec75e1a7182fe0d40733ed98bd3319b3413d75d.js" integrity="sha256-vosx4EsO1ENKWwR/LsdeGnGC/g1Acz7Zi9MxmzQT110="></script>
+<script defer src="/en.search.min.821574b6764a18a36fe25264611a585d17d72663f22bd2ca82639319edab94db.js" integrity="sha256-ghV0tnZKGKNv4lJkYRpYXRfXJmPyK9LKgmOTGe2rlNs="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -231,7 +231,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/garbage-collector/" class="">garbage collector</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/garbage-collector/" class="">垃圾回收</a>
   
 
         </li>
@@ -363,7 +363,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-topology-manager/" class="">kubelet topology manager 设计方案</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
   
 
         </li>
@@ -376,7 +376,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-eviction-manager/" class="">kubelet eviction manager 工作机制</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
   
 
         </li>
@@ -518,7 +518,7 @@ https://github.com/alex-shpak/hugo-book
         <li><a href="#41-序列化缓存">4.1 序列化缓存</a></li>
         <li><a href="#42-nonblocking">4.2 nonblocking</a></li>
         <li><a href="#43-timebudget">4.3 TimeBudget</a></li>
-        <li><a href="#44-forget机制">4.4 forget机制</a></li>
+        <li><a href="#44-forget-机制">4.4 forget 机制</a></li>
         <li><a href="#45-bookmark-机制">4.5 bookmark 机制</a></li>
         <li><a href="#46-watchcache-中的-ringbuffer">4.6 watchCache 中的 ringbuffer</a></li>
       </ul>
@@ -663,9 +663,9 @@ cacher 中在分发的时候，如果发现超过指定数量的watcher， 则�
 <p>针对阻塞的 watcher 在进行重试的时候，会通过 dispatchTimeoutBudget 构建一个定时器来进行超时控制，
 那什么叫 Budget 呢，其实如果在这段时间内，如果重试立马就成功，则本次剩余的时间，
 在下一次进行定时的时候，则可以使用之前剩余的余额，但是后台也还有个线程，用于周期性重置。</p>
-<h2 id="44-forget机制">
-  4.4 forget机制
-  <a class="anchor" href="#44-forget%e6%9c%ba%e5%88%b6">#</a>
+<h2 id="44-forget-机制">
+  4.4 forget 机制
+  <a class="anchor" href="#44-forget-%e6%9c%ba%e5%88%b6">#</a>
 </h2>
 <p>
   <img src="/kubernetes/sig-apimachinery/watch/image12.png" alt="image12" /></p>
@@ -757,7 +757,7 @@ bookmark 通过构建一种 BookMark 类型的事件来进行 revision 的传递
         <li><a href="#41-序列化缓存">4.1 序列化缓存</a></li>
         <li><a href="#42-nonblocking">4.2 nonblocking</a></li>
         <li><a href="#43-timebudget">4.3 TimeBudget</a></li>
-        <li><a href="#44-forget机制">4.4 forget机制</a></li>
+        <li><a href="#44-forget-机制">4.4 forget 机制</a></li>
         <li><a href="#45-bookmark-机制">4.5 bookmark 机制</a></li>
         <li><a href="#46-watchcache-中的-ringbuffer">4.6 watchCache 中的 ringbuffer</a></li>
       </ul>

@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Wed, 14 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>garbage collector</title>
+      <title>垃圾回收</title>
       <link>https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/garbage-collector/</link>
       <pubDate>Wed, 14 Oct 2020 00:00:00 +0000</pubDate>
       
