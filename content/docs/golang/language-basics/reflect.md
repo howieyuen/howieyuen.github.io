@@ -3,7 +3,6 @@ author: Yuan Hao
 date: 2020-5-14
 title: 反射
 tag: [golang, reflect]
-weight: 1
 ---
 
 

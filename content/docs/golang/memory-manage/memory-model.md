@@ -3,7 +3,6 @@ author: Yuan Hao
 date: 2020-5-14
 title: 内存模型
 tag: [golang, memory]
-weight: 1
 ---
 
 # 1. 引言

@@ -3,7 +3,6 @@ author: Yuan Hao
 date: 2020-09-24
 title: k8s watch 关键设计
 tag: [watch, client-go, kube-apiserver, etcd]
-weight: 1
 ---
 
 > 注：本文转自[图解kubernetes中基于etcd的watch关键设计](https://www.kubernetes.org.cn/6889.html)

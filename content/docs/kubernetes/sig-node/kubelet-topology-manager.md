@@ -3,7 +3,6 @@ author: Yuan Hao
 date: 2020-09-10
 title: Topology Manager 设计方案
 tag: [kubelet, topology manager]
-weight: 1
 ---
 
 > 注：本文翻译自[Node Topology Manager](https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/0035-20190130-topology-manager.md)

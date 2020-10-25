@@ -3,7 +3,6 @@ author: Yuan Hao
 date: 2020-10-21
 title: DaemonSet Controller 源码分析
 tag: [daemonset, controller]
-weight: 1
 ---
 
 # 1. DaemonSet 简介

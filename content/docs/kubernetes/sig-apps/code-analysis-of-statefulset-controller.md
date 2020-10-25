@@ -3,7 +3,6 @@ author: Yuan Hao
 date: 2020-10-12
 title: Statefulset Controller 源码分析
 tag: [statefulset, controller]
-weight: 1
 ---
 
 # 1. StatefulSet 简介

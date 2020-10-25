@@ -3,7 +3,6 @@ author: Yuan Hao
 date: 2020-03-22
 title: 高级调度
 tag: [scheduling, taint, toleration]
-weight: 1
 ---
 
 # 1. 使用 taint 和 toleration 阻止节点调度到特定节点

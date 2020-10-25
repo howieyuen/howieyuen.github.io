@@ -3,7 +3,6 @@ author: Yuan Hao
 date: 2020-10-12
 title: k8s 应用滚动更新
 tag: [rolling update, deployment]
-weight: 1
 ---
 
 # 1. 概念
