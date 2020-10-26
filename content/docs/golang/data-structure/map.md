@@ -5,16 +5,17 @@ title: 哈希表
 tag: [golang, map]
 ---
 
+# 哈希表
 
-# 1. 引言
+## 1. 引言
 
 粗略的讲，Go 语言中 map 采用的是哈希查找表，由一个key通过哈希函数得到哈希值，64 位系统中就生成一个 64 bit 的哈希值，由这个哈希值将 key 对应到不同的桶（bucket）中，当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
 
-## 1.1 hash函数
+### 1.1 hash函数
 
 首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找，就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个bucket 的哪个 cell。golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
 
-## 1.2 数据结构
+### 1.2 数据结构
 
 **hmap** 可以理解为 header of map 的缩写，即 map 数据结构的入口。
 
@@ -76,12 +77,12 @@ type bmap struct {
 
 当不同的 key 根据哈希得到的 `tophash` 和低位 hash 都一样，发生哈希碰撞，这个时候就体现 `overflow pointer` 字段的作用了。桶溢出时，就需要把key-value 对存储在 `overflow bucket`（溢出桶），`overflow pointer` 就是指向 `overflow bucket` 的指针。如果 `overflow bucket` 也溢出了呢？那就再给 `overflow bucket` 新建一个 `overflow bucket`，用指针串起来就形成了链式结构，map 本身有 2^B 个 bucket，只有当发生哈希碰撞后才会在 bucket 后链式增加 `overflow bucket`。
 
-# 2. map内存布局
+## 2. map内存布局
 
 ![memory-layout-of-map.png](/golang/data-structure/map/memory-layout-of-map.png)
 
 
-## 2.1 扩容
+### 2.1 扩容
 
 1. 装填因子是否大于 6.5
 
@@ -95,7 +96,7 @@ type bmap struct {
 
 **等量扩容**：重新排列，极端情况下，重新排列也解决不了，map 成了链表，性能大大降低，此时哈希种子 hash0 的设置，可以降低此类极端场景的发生。
 
-## 2.2 查找
+### 2.2 查找
 
 1. 根据 key 计算出哈希值
 2. 根据哈希值低位确定所在 bucket
@@ -104,18 +105,18 @@ type bmap struct {
 5. 对应位置有数据则对比完整的哈希值，确定是否是要查找的数据
 6. 如果当前处于 map 进行了扩容，处于数据搬移状态，则优先从 oldbuckets 查找。
 
-## 2.3 插入
+### 2.3 插入
 
 1. 根据 key 计算出哈希值
 2. 根据哈希值低位确定所在 bucket
 3. 根据哈希值高 8 位确定在 bucket 中的存储位置
 4. 查找该 key 是否存在，已存在则更新，不存在则插入
 
-## 2.4 map无序
+### 2.4 map无序
 
 map 的本质是散列表，而 map 的增长扩容会导致重新进行散列，这就可能使 map 的遍历结果在扩容前后变得不可靠，Go 设计者为了让大家不依赖遍历的顺序，**故意在实现 map 遍历时加入了随机数**，让每次遍历的起点--即起始 bucket 的位置不一样，即不让遍历都从 bucket0 开始，所以即使未扩容时我们遍历出来的 map 也总是无序的。
 
-# 3. 参考资料
+## 3. 参考资料
 
 - [Golang map底层实现](https://bettertxt.top/post/go-map/)
 - [Go语言之map：map的用法到map底层实现分析](https://blog.csdn.net/chenxun_2010/article/details/103768011) 

@@ -5,7 +5,9 @@ title: Statefulset Controller 源码分析
 tag: [statefulset, controller]
 ---
 
-# 1. StatefulSet 简介
+# Statefulset Controller 源码分析
+
+## 1. StatefulSet 简介
 
 Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
 
@@ -15,7 +17,7 @@ Statefulset 是为了解决有状态服务的问题，而产生的一种资源�
 
 适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb集群，Redis 集群等等。
 
-## 1.1 特点
+### 1.1 特点
 
 - 稳定、唯一的网络标识符
 
@@ -37,14 +39,14 @@ Statefulset 是为了解决有状态服务的问题，而产生的一种资源�
 
     MySQL 在更新时，应该先更新从节点，全部的从节点都更新完了，最后在更新主节点，因为新版本一般可兼容老版本，但是一定要注意，若新版本不兼容老版本就很很麻烦
 
-## 1.2 限制
+### 1.2 限制
 
 - Pod的存储必须使用 PersistVolume
 - 删除或者缩容时，不会删除关联的卷
 - 使用 headless service 关联 Pod，需要手动创建
 - Pod 的管理策略为 `OrderedReady` 时使用滚动更新能力，可能需要人工干预
 
-## 1.3 基本功能
+### 1.3 基本功能
 - 创建
 - 删除
     - 级联删除
@@ -57,7 +59,7 @@ Statefulset 是为了解决有状态服务的问题，而产生的一种资源�
     - `OrderedReady`
     - `Parallel`：允许StatefulSet Controller 并行终止所有 Pod，不必按顺序启动或删除 Pod
 
-## 1.4 示例
+### 1.4 示例
 
 ```yaml
 apiVersion: v1
@@ -70,7 +72,7 @@ spec:
   ports:
   - port: 80
     name: web
-  clusterIP: None # headless service
+  clusterIP: None ## headless service
   selector:
     app: nginx
 ---
@@ -80,7 +82,7 @@ metadata:
   name: web
 spec:
   serviceName: "nginx"
-  podManagementPolicy: "OrderedReady" # default is OrderedReady
+  podManagementPolicy: "OrderedReady" ## default is OrderedReady
   replicas: 2
   selector:
     matchLabels:
@@ -109,11 +111,11 @@ spec:
           storage: 1Gi
 ```
 
-# 2. 源码解析
+## 2. 源码解析
 
 > kubernetes version: v1.19
 
-## 2.1 startStatefulSetController()
+### 2.1 startStatefulSetController()
 
 `startStatefulSetController()` 是 StatefulSet Controller 的启动方法，其中调用 `statefulset.NewStatefulSetController()` 方法进行初始化，然后调用对象的 `Run()` 方法启动 Controller。其中 `ConcurrentStatefulSetSyncs` 默认是5，即默认启动 5 个协程处理StatefulSet 相关业务。
 
@@ -135,7 +137,7 @@ func startStatefulSetController(ctx ControllerContext) (http.Handler, bool, erro
 }
 ```
 
-## 2.2 ssc.sync()
+### 2.2 ssc.sync()
 
 `run()` 方法会通过 informer 同步 cache 并监听 pod、statefulset、pvc 和 controllerrevision 对象的变更事件，然后启动 5 个 worker 协程，每个 worker 调用 `sync()` 方法，正式进入业务逻辑处理。
 
@@ -183,7 +185,7 @@ func (ssc *StatefulSetController) sync(key string) error {
 4. 调用 `ssc.getPodsForStatefulSet` 通过 selector 获取 sts 关联的 pod，若有孤儿 pod 的 label 与 sts 的能匹配则进行关联，若已关联的 pod label 有变化则解除与 sts 的关联关系；
 5. 最后调用 ssc.syncStatefulSet 执行真正的 sync 操作；
 
-## 2.3 ssc.syncStatefulSet()
+### 2.3 ssc.syncStatefulSet()
 
 在 `syncStatefulSet()` 中仅仅是调用了 `ssc.control.UpdateStatefulSet()` 方法进行处理。`ssc.control.UpdateStatefulSet()` 会调用 `ssc.performUpdate()` 方法，最终走到更新逻辑 `ssc.updateStatefulSet()` 和 `ssc.updateStatefulSetStatus()`。
 
@@ -250,7 +252,7 @@ func (ssc *defaultStatefulSetControl) performUpdate(
 4. 调用 `ssc.updateStatefulSetStatus()` 更新 status 子资源；
 5. 根据 sts 的 spec.revisionHistoryLimit 字段清理过期的 controllerrevision； 
 
-## 2.4 ssc.updateStatefulSet()
+### 2.4 ssc.updateStatefulSet()
 sts 通过 controllerrevision 保存历史版本，类似于 deployment 的 replicaset，与 replicaset 不同的是 controllerrevision 仅用于回滚阶段，在 sts 的滚动升级过程中是通过 currentRevision 和 updateRevision 进行控制并不会用到 controllerrevision。
 
 ```go
@@ -543,7 +545,7 @@ func (ssc *defaultStatefulSetControl) updateStatefulSet(...) (*apps.StatefulSetS
 - 删除：删除操作就比较明显，会止于第 5 步，但是在此之前检查 pod 状态以及分组的操作确实是多余的；
 
 
-# 3. 参考链接
+## 3. 参考链接
 
 - [StatefulSet 概念](https://kubernetes.io/zh/docs/concepts/workloads/controllers/statefulset/)
 - [StatefulSet 基础](https://kubernetes.io/zh/docs/tutorials/stateful-application/basic-stateful-set/)

@@ -5,15 +5,17 @@ title: GC Controller 源码分析
 tag: [garbage collector, controller]
 ---
 
-# 1. 序言 
+# GC Controller 源码分析
 
-垃圾回收相关，可参考这里[垃圾回收]({{< relref "/docs/kubernetes/sig-api-machinery/garbage-collector.md" >}})
+## 1. 序言 
 
-# 2. 源码解析
+垃圾回收相关，可参考[这里]({{< relref "/docs/kubernetes/sig-api-machinery/garbage-collector.md" >}})
+
+## 2. 源码解析
 
 GarbageCollectorController 负责回收集群中的资源对象，要做到这一点，首先得监控所有资源。gc controller 会监听集群中所有可删除资源的事件，这些事件会放到一个队列中，然后启动多个 worker 协程处理。对于删除事件，则根据删除策略删除对象；其他事件，更新对象之间的依赖关系。
 
-## 2.1 startGarbageCollectorController()
+### 2.1 startGarbageCollectorController()
 
 首先来看 gc controller 的入口方法，也就是 kube-controller-manager 是如何启动它的。它的主要逻辑：
 1. 判断是否启用 gc controller，默认是true
@@ -77,7 +79,7 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
 - `garbagecollector.NewDebugHandler()`
 其中 `garbagecollector.NewGarbageCollector()` 只是初始化 GarbageCollector 和 GraphBuilder 对象，核心逻辑都在 Run() 和 Sync() 中，下面分别来看这几个方法分别做了那些事。
 
-### 2.1.1 garbageCollector.Run()
+#### 2.1.1 garbageCollector.Run()
 
 `garbageCollector.Run()` 方法主要作用是启动生产者和消费者。生产者就是 monitors，监听集群中的资源对象，将产生的新事件分别放入 `attemptToDelete` 和 `attemptToOrphan` 两个队列中。消费者就是处理这 2 个队列中的事件，要么删除对象，要么更新对象依赖关系。该方法的核心在于 `gc.dependencyGraphBuilder.Run()` 启动生产者和 for 循环启动消费者。
 
@@ -354,7 +356,7 @@ func (gb *GraphBuilder) processGraphChanges() bool {
 }
 ```
 
-### 2.1.2 gc.runAttemptToDeleteWorker()
+#### 2.1.2 gc.runAttemptToDeleteWorker()
 
 `gc.runAttemptToDeleteWorker()` 方法就是将 `attemptToDelete` 队列中的对象取出，并删除，如果删除失败则重进队列重试。
 
@@ -512,7 +514,7 @@ func (gc *GarbageCollector) attemptToDeleteItem(item *node) error {
 }
 ```
 
-### 2.1.3 gc.runAttemptToOrphanWorker()
+#### 2.1.3 gc.runAttemptToOrphanWorker()
 
 `gc.runAttemptToOrphanWorker()` 是处理以 Orphan 模式删除的 node，主要逻辑为：
 
@@ -559,7 +561,7 @@ func (gc *GarbageCollector) attemptToOrphanWorker() bool {
 }
 ```
 
-### 2.1.4 小结
+#### 2.1.4 小结
 
 上面的业务逻辑不算复杂，但是方法嵌套有点多，整理一下方法的调用链：
 
@@ -589,7 +591,7 @@ p13 --> p131(gc.orphanDependents)
 p13 --> p132(gc.removeFinalizer)
 {{< /mermaid >}}
 
-## 2.2 garbageCollector.Sync()
+### 2.2 garbageCollector.Sync()
 
 `garbageCollector.Sync()` 方法主要是周期性地查询集群中的所有资源，过滤出 deletableResource，然后对比已经监控的 deletableResource 是否一致，如果不一致，则更新 GraphBuilder 的 monitors，并重启 monitors 监控新拿到的 deletableResource。主要逻辑：
 1. 通过调用 `GetDeletableResources()` 获取集群内所有的 deletableResources 作为 newResources，deletableResources 指支持 “delete”, “list”, “watch” 三种操作的 resource，包括自定义资源
@@ -667,7 +669,7 @@ func (gc *GarbageCollector) Sync(discoveryClient discovery.ServerResourcesInterf
 
 方法主要调用了 `GetDeletableResources()` 和 `gc.resyncMonitors()` 两个方法。前者获取集群中可删除资源，后者更新 monitors。
 
-### 2.2.1 GetDeletableResources()
+#### 2.2.1 GetDeletableResources()
 
 `GetDeletableResources()` 中首先通过调用 `discoveryClient.ServerPreferredResources()` 方法获取集群内所有的 resource 信息，然后通过调用 `discovery.FilteredBy()` 过滤出支持 “delete”, “list”, “watch” 三种方法的 resource 作为 deletableResources。
 
@@ -699,7 +701,7 @@ func GetDeletableResources(discoveryClient discovery.ServerResourcesInterface) m
 }
 ```
 
-### 2.2.2 gc.resyncMonitors()
+#### 2.2.2 gc.resyncMonitors()
 
 `gc.resyncMonitors()` 的功能主要是更新 GraphBuilder 的 monitors 并重新启动 monitors 监控所有的 deletableResources，GraphBuilder 的 `startMonitors()` 方法在前面的流程中已经分析过，此处不再详细说明。`syncMonitors()` 只不过是拿最新的 deletableResources，把老的 monitors 字段值更新，该删的删，该加的加而已。
 
@@ -714,7 +716,7 @@ func (gc *GarbageCollector) resyncMonitors(deletableResources map[schema.GroupVe
 }
 ```
 
-## 2.3 garbagecollector.NewDebugHandler()
+### 2.3 garbagecollector.NewDebugHandler()
 
 `garbagecollector.NewDebugHandler()` 主要功能是对外提供一个接口供用户查询当前集群中所有资源的依赖关系，依赖关系可以以图表的形式展示。
 
@@ -769,7 +771,7 @@ $ dot -Tsvg -o graph.svg tmp.dot
 
 [![tmp.jpg](/kubernetes/sig-apimachinery/gc/tmp.jpg)](/kubernetes/sig-apimachinery/gc/graph.svg)
 
-## 2.4 总结
+### 2.4 总结
 
 `GarbageCollectorController` 是一种典型的生产者消费者模型，所有 deletableResources 的 informer 都是生产者，每种资源的 informer 监听到变化后都会将对应的事件 push 到 `graphChanges` 中，`graphChanges` 是 `GraphBuilder` 对象中的一个数据结构，`GraphBuilder` 会启动另外的 goroutine 对 graphChanges 中的事件进行分类并放在其 `attemptToDelete` 和 `attemptToOrphan` 两个队列中，garbageCollector 会启动多个 goroutine 对 `attemptToDelete` 和 `attemptToOrphan` 两个队列中的事件进行处理，处理的结果就是回收一些需要被删除的对象。最后，再用一个流程图总结一下 `GarbageCollectorController` 的主要流程:
 
@@ -784,7 +786,7 @@ e -->|consume| g[AttemptToOrphanWorker]
 {{< /mermaid >}}
 
 
-# 3. 参考资料
+## 3. 参考资料
 
 - [垃圾收集](https://kubernetes.io/zh/docs/concepts/workloads/controllers/garbage-collection)
 - [garbage collector controller 源码分析](https://cloud.tencent.com/developer/article/1562130)
