@@ -55,7 +55,7 @@ Tolerations:
 
 
 ## 1.2 在节点上定义污点
-```sh
+```s
 kubectl taint node node1.k8s node-type=production:NoSchedule
 ```
 此命令给节点添加污点，key 为 node-type，value 为 production，effect 为 NoSchedule。
@@ -164,7 +164,7 @@ lableSelectorTerms 和 matchExpressions 定义了节点的标签必须满足哪�
 
 **添加标签**
 
-```sh
+```s
 kubectl label node node1.k8s availability-zone=zone1
 kubectl label node node1.k8s share-type=dedicated
 kubectl label node node2.k8s availability-zone=zone2
@@ -224,7 +224,7 @@ spec:
 ## 3.1 使用 Pod 亲和将多个 Pod 部署到同一个节点上
 
 部署 1 个后端 Pod 和 5 个前端 Pod。先部署后端：
-```sh
+```s
 kubectl run backend -l app=backend --image busybox --sleep 9999
 ```
 这里没什么区别，只是给 Pod 加了个标签，app=backend。

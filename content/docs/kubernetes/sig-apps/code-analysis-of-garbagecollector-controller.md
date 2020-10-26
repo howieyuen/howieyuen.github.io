@@ -754,7 +754,7 @@ func (h *debugHTTPHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 ```
 
 使用该服务的方法如下：
-```sh
+```s
 curl http://192.168.199.100:10252/debug/controllers/garbagecollector/graph  > tmp.dot
 
 curl http://192.168.199.100:10252/debug/controllers/garbagecollector/graph?uid=f9555d53-2b5f-4702-9717-54a313ed4fe8 > tmp.dot

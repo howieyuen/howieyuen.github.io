@@ -111,11 +111,11 @@ type OwnerReference struct {
 
 例如执行以下命令时，会使用 `Orphan` 策略进行删除，此时 ds 的依赖对象 `controllerrevision` 不会被删除：
 
-```sh
+```s
 kubectl delete rs my-rs --cascade=false
 ```
 或者使用 curl 命令：
-```sh
+```s
 kubectl proxy --port=8080
 curl -X DELETE localhost:8080/apis/apps/v1/namespaces/default/replicasets/my-rs \
   -d '{"kind":"DeleteOptions","apiVersion":"v1","propagationPolicy":"Orphan"}' \

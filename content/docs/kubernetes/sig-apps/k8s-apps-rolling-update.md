@@ -291,7 +291,7 @@ nginx-deployment-67dfd6c8f9   10        10        10      70s
 ```
 
 2. 更新 nginx-deployment 的镜像，默认使用滚动更新的方式
-``` shell script
+```shell script
 $ kubectl set image deploy/nginx-deployment nginx-deployment=nginx:1.19.1
 ```
 
