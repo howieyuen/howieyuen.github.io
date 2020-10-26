@@ -23,7 +23,7 @@ kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.k
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.bc96313b7eff2859c711746c9dbc5c9b3aca5651b50ecc3f8b1cf89154772a3b.css" integrity="sha256-vJYxO37/KFnHEXRsnbxcmzrKVlG1Dsw/ixz4kVR3Kjs=">
-<script defer src="/en.search.min.7c14bc683fc901a79511e2ff61c61295da8e954e920a5ba81934f6eb99982fb7.js" integrity="sha256-fBS8aD/JAaeVEeL/YcYSldqOlU6SCluoGTT265mYL7c="></script>
+<script defer src="/en.search.min.3d45b5dc006e1a6dbf6c0f34765df682c6e2c7b4c9a6ecc3649d7a77d25b36eb.js" integrity="sha256-PUW13ABuGm2/bA80dl32gsbix7TJpuzDZJ16d9JbNus="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -241,6 +241,19 @@ https://github.com/alex-shpak/hugo-book
 
   
     <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/key-design-of-etcd-watch/" class="">k8s watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/crd/" class="">CRD 入门和使用</a>
   
 
         </li>
@@ -589,7 +602,7 @@ https://github.com/alex-shpak/hugo-book
   1.2 在节点上定义污点
   <a class="anchor" href="#12-%e5%9c%a8%e8%8a%82%e7%82%b9%e4%b8%8a%e5%ae%9a%e4%b9%89%e6%b1%a1%e7%82%b9">#</a>
 </h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">kubectl taint node node1.k8s node-type<span style="color:#f92672">=</span>production:NoSchedule
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">kubectl taint node node1.k8s node<span style="color:#f92672">-</span>type<span style="color:#f92672">=</span>production<span style="color:#f92672">:</span>NoSchedule
 </code></pre></div><p>此命令给节点添加污点，key 为 node-type，value 为 production，effect 为 NoSchedule。
 如果现在部署一个常规 Pod 多个副本，没有一个 Pod 会调度到此节点上。</p>
 <h2 id="13-在-pod-上添加容忍">
@@ -684,10 +697,10 @@ k8s 可以等待该 Pod 重新调度之前的最长等待时间。</p>
 当调度某一个 Pod，指定可以优先考某些节点，如果节点均无法满足，调度结果也是可以接受的。
 这是由 preferdDuringSchdulingIgnoredDuringExecution 字段实现的。</p>
 <p><strong>添加标签</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">kubectl label node node1.k8s availability-zone<span style="color:#f92672">=</span>zone1
-kubectl label node node1.k8s share-type<span style="color:#f92672">=</span>dedicated
-kubectl label node node2.k8s availability-zone<span style="color:#f92672">=</span>zone2
-kubectl label node node2.k8s share-type<span style="color:#f92672">=</span>shared
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">kubectl label node node1.k8s availability<span style="color:#f92672">-</span>zone<span style="color:#f92672">=</span>zone1
+kubectl label node node1.k8s share<span style="color:#f92672">-</span>type<span style="color:#f92672">=</span>dedicated
+kubectl label node node2.k8s availability<span style="color:#f92672">-</span>zone<span style="color:#f92672">=</span>zone2
+kubectl label node node2.k8s share<span style="color:#f92672">-</span>type<span style="color:#f92672">=</span>shared
 </code></pre></div><p><strong>指定优先级节点亲和性</strong></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
@@ -736,7 +749,7 @@ kubectl label node node2.k8s share-type<span style="color:#f92672">=</span>share
   <a class="anchor" href="#31-%e4%bd%bf%e7%94%a8-pod-%e4%ba%b2%e5%92%8c%e5%b0%86%e5%a4%9a%e4%b8%aa-pod-%e9%83%a8%e7%bd%b2%e5%88%b0%e5%90%8c%e4%b8%80%e4%b8%aa%e8%8a%82%e7%82%b9%e4%b8%8a">#</a>
 </h2>
 <p>部署 1 个后端 Pod 和 5 个前端 Pod。先部署后端：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">kubectl run backend -l app<span style="color:#f92672">=</span>backend --image busybox --sleep <span style="color:#ae81ff">9999</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">kubectl run backend <span style="color:#f92672">-</span>l app<span style="color:#f92672">=</span>backend <span style="color:#f92672">--</span>image busybox <span style="color:#f92672">--</span>sleep <span style="color:#ae81ff">9999</span>
 </code></pre></div><p>这里没什么区别，只是给 Pod 加了个标签，app=backend。</p>
 <p><strong>在 Pod 中指定亲和性</strong></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>

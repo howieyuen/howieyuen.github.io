@@ -138,6 +138,20 @@ apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - 
     </item>
     
     <item>
+      <title>CRD 入门和使用</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/crd/</link>
+      <pubDate>Mon, 14 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/crd/</guid>
+      <description>1. Customer Resource #  自定义资源是 Kubernetes API 的扩展，本文将讨什么时候应该向 Kubernetes 集群添加自定义资源以及何时使用独立服务。它描述了添加自定义资源的两种方法以及如何在它们之间进行选择。
+1.1 自定义资源概述 #  资源就是 Kubernetes API 集合中的某个的对象。例如，内置 pods 资源包含 Pod 对象的集合。
+自定义资源是扩展了 Kubernetes API，但在默认的 API 集合中是不可用的，因为没有对应的 controller 处理业务逻辑。使用自定义资源，不仅可以解耦大多数的自研功能，还可用使得 Kubernetes 更加模块化。
+自定义资源可以通过动态注册的方法，于正在 running 的集群中创建、删除和更新，并且与集群本身的资源是相互独立的。当自定义资源被创建，就可以通过 kubectl 创建和访问对象，和对内置资源的操作完全一致。
+1.2 是否需要自定义资源 #  在创建新的API时，应该考虑与Kubernetes的API聚合，还是让API独立运行。
+   API聚合 API独立     声明式 非声明式   kubectl可读可写 不需要kubectl支持   接受k8s的REST限制 特定API路径   可限定为cluster或者namespace 不适用namespace   重用k8s API支持的功能 不需要这些功能    1.</description>
+    </item>
+    
+    <item>
       <title>内存模型</title>
       <link>https://howieyuen.github.io/docs/golang/memory-manage/memory-model/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

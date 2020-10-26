@@ -23,7 +23,7 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.bc96313b7eff2859c711746c9dbc5c9b3aca5651b50ecc3f8b1cf89154772a3b.css" integrity="sha256-vJYxO37/KFnHEXRsnbxcmzrKVlG1Dsw/ixz4kVR3Kjs=">
-<script defer src="/en.search.min.7c14bc683fc901a79511e2ff61c61295da8e954e920a5ba81934f6eb99982fb7.js" integrity="sha256-fBS8aD/JAaeVEeL/YcYSldqOlU6SCluoGTT265mYL7c="></script>
+<script defer src="/en.search.min.3d45b5dc006e1a6dbf6c0f34765df682c6e2c7b4c9a6ecc3649d7a77d25b36eb.js" integrity="sha256-PUW13ABuGm2/bA80dl32gsbix7TJpuzDZJ16d9JbNus="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -241,6 +241,19 @@ https://github.com/alex-shpak/hugo-book
 
   
     <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/key-design-of-etcd-watch/" class="">k8s watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/crd/" class="">CRD 入门和使用</a>
   
 
         </li>
@@ -1286,14 +1299,14 @@ p13 --> p132(gc.removeFinalizer)
 	<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusOK</span>)
 }
 </code></pre></div><p>使用该服务的方法如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">curl http://192.168.199.100:10252/debug/controllers/garbagecollector/graph  &gt; tmp.dot
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">curl http<span style="color:#f92672">://</span><span style="color:#ae81ff">192.168.199.100</span><span style="color:#f92672">:</span><span style="color:#ae81ff">10252</span><span style="color:#f92672">/</span>debug<span style="color:#f92672">/</span>controllers<span style="color:#f92672">/</span>garbagecollector<span style="color:#f92672">/</span>graph  <span style="color:#f92672">&gt;</span> tmp.dot
 
-curl http://192.168.199.100:10252/debug/controllers/garbagecollector/graph?uid<span style="color:#f92672">=</span>f9555d53-2b5f-4702-9717-54a313ed4fe8 &gt; tmp.dot
+curl http<span style="color:#f92672">://</span><span style="color:#ae81ff">192.168.199.100</span><span style="color:#f92672">:</span><span style="color:#ae81ff">10252</span><span style="color:#f92672">/</span>debug<span style="color:#f92672">/</span>controllers<span style="color:#f92672">/</span>garbagecollector<span style="color:#f92672">/</span>graph<span style="color:#f92672">?</span>uid<span style="color:#f92672">=</span>f9555d53<span style="color:#ae81ff">-2</span>b5f<span style="color:#ae81ff">-4702-9717-54</span>a313ed4fe8 <span style="color:#f92672">&gt;</span> tmp.dot
 
-// 生成 svg 文件
-$ dot -Tsvg -o graph.svg tmp.dot
+<span style="color:#f92672">//</span> 生成 svg 文件
+<span style="color:#f92672">$</span> dot <span style="color:#f92672">-</span>Tsvg <span style="color:#f92672">-</span>o graph.svg tmp.dot
 
-// 然后在浏览器中打开 svg 文件
+<span style="color:#f92672">//</span> 然后在浏览器中打开 svg 文件
 </code></pre></div><p>依赖关系如下图所示（点击图片查看更多）：</p>
 <p>
   <a href="/kubernetes/sig-apimachinery/gc/graph.svg">
