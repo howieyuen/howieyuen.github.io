@@ -12,11 +12,11 @@
       <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>https://howieyuen.github.io/docs/kubernetes/sig-scheduling/advanced-scheduling/</guid>
-      <description>1. 使用 taint 和 toleration 阻止节点调度到特定节点 #  1.1 taint 和 toleration #  taint，是在不修改已有 Pod 的前提下，通过在节点上添加污点信息，拒绝 Pod 的部署。 只有当一个 Pod 容忍某个节点的 taint 时，才能被调度到此节点上。
+      <description>高级调度 #  1. 使用 taint 和 toleration 阻止节点调度到特定节点 #  1.1 taint 和 toleration #  taint，是在不修改已有 Pod 的前提下，通过在节点上添加污点信息，拒绝 Pod 的部署。 只有当一个 Pod 容忍某个节点的 taint 时，才能被调度到此节点上。
 显示节点 taint 信息
 kubectl describe node master.k8s ... Name: master.k8s Role: Labels: beta.kubernetes.io/arch=amd64 beta.kubernetes.io/os=linux kubernetes.io/hostname=master.k8s Annotations: node.alpha.kubernetes.io/ttl=0 Taints: node-role.kubernetes.io/master:NoSchedule ... 主节点上包含一个污点，污点包含一个 key 和 value，以及一个 effect，格式为=:。 上面的污点信息表示，key 为 node-role.kubernetes.io/master，value 是空，effect 是 NoSchedule。
 显示 Pod tolerations
-kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.kubernetes.io/master:=NoSchedule node.alpha.kubernetes.io/notReady=:Exists:NoExecute node.alpha.kubernetes.io/unreachable=:Exists:NoExecute ... 第一个 toleration 匹配了主节点的 taint，表示允许这个 Pod 调度到主节点上。</description>
+kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.kubernetes.io/master:=NoSchedule node.</description>
     </item>
     
   </channel>

@@ -4,14 +4,14 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. 序言 #  1.1 什么是垃圾回收 #  参考 Java 中的概念，垃圾回收（Garbage Collection）是 JVM 垃圾回收器提供的一种用于在空闲时间不定时回收无任何对象引用的对象占据的内存空间的一种机制。 垃圾回收回收的是无任何引用的对象占据的内存空间而不是对象本身。换言之，垃圾回收只会负责释放那些对象占有的内存。 对象是个抽象的词，包括引用和其占据的内存空间。当对象没有任何引用时其占据的内存空间随即被收回备用，此时对象也就被销毁。
+<meta name="description" content="垃圾回收 #  1. 序言 #  1.1 什么是垃圾回收 #  参考 Java 中的概念，垃圾回收（Garbage Collection）是 JVM 垃圾回收器提供的一种用于在空闲时间不定时回收无任何对象引用的对象占据的内存空间的一种机制。 垃圾回收回收的是无任何引用的对象占据的内存空间而不是对象本身。换言之，垃圾回收只会负责释放那些对象占有的内存。 对象是个抽象的词，包括引用和其占据的内存空间。当对象没有任何引用时其占据的内存空间随即被收回备用，此时对象也就被销毁。
 因此，垃圾回收关注的是无任何引用的对象。在 kubernetes 中，对象的引用关系又是怎样的呢？
 1.2 k8s 中的对象引用 #  某些 kubernetes 对象是其他一些对象的属主。例如一个 ReplicaSet 是一组 Pod 的属主；反之这组 Pod 就是此 ReplicaSet 的附属。 每个附属对象具有一个指向属主对象的 metadata.ownerReference 字段。
 Kubernetes 会自动为 ReplicationController、ReplicaSet、StatefulSet、DaemonSet、Deployment、Job 和 CronJob 自动设置 ownerReference 的值。 也可以通过手动设置 ownerReference 的值，来指定属主和附属之间的关系。
 先看一个 Pod 的详细信息，例如下面的配置显示 Pod 的属主是名为 my-replicaset 的 ReplicaSet：
 apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 controller: true blockOwnerDeletion: true kind: ReplicaSet name: my-rs uid: d9607e19-f88f-11e6-a518-42010a800195 .">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="垃圾回收" />
-<meta property="og:description" content="1. 序言 #  1.1 什么是垃圾回收 #  参考 Java 中的概念，垃圾回收（Garbage Collection）是 JVM 垃圾回收器提供的一种用于在空闲时间不定时回收无任何对象引用的对象占据的内存空间的一种机制。 垃圾回收回收的是无任何引用的对象占据的内存空间而不是对象本身。换言之，垃圾回收只会负责释放那些对象占有的内存。 对象是个抽象的词，包括引用和其占据的内存空间。当对象没有任何引用时其占据的内存空间随即被收回备用，此时对象也就被销毁。
+<meta property="og:description" content="垃圾回收 #  1. 序言 #  1.1 什么是垃圾回收 #  参考 Java 中的概念，垃圾回收（Garbage Collection）是 JVM 垃圾回收器提供的一种用于在空闲时间不定时回收无任何对象引用的对象占据的内存空间的一种机制。 垃圾回收回收的是无任何引用的对象占据的内存空间而不是对象本身。换言之，垃圾回收只会负责释放那些对象占有的内存。 对象是个抽象的词，包括引用和其占据的内存空间。当对象没有任何引用时其占据的内存空间随即被收回备用，此时对象也就被销毁。
 因此，垃圾回收关注的是无任何引用的对象。在 kubernetes 中，对象的引用关系又是怎样的呢？
 1.2 k8s 中的对象引用 #  某些 kubernetes 对象是其他一些对象的属主。例如一个 ReplicaSet 是一组 Pod 的属主；反之这组 Pod 就是此 ReplicaSet 的附属。 每个附属对象具有一个指向属主对象的 metadata.ownerReference 字段。
 Kubernetes 会自动为 ReplicationController、ReplicaSet、StatefulSet、DaemonSet、Deployment、Job 和 CronJob 自动设置 ownerReference 的值。 也可以通过手动设置 ownerReference 的值，来指定属主和附属之间的关系。
@@ -24,8 +24,8 @@ apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 co
 <title>垃圾回收 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
-<link rel="stylesheet" href="/book.min.bc96313b7eff2859c711746c9dbc5c9b3aca5651b50ecc3f8b1cf89154772a3b.css" integrity="sha256-vJYxO37/KFnHEXRsnbxcmzrKVlG1Dsw/ixz4kVR3Kjs=">
-<script defer src="/en.search.min.3d45b5dc006e1a6dbf6c0f34765df682c6e2c7b4c9a6ecc3649d7a77d25b36eb.js" integrity="sha256-PUW13ABuGm2/bA80dl32gsbix7TJpuzDZJ16d9JbNus="></script>
+<link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
+<script defer src="/en.search.min.d8177fbddab1d5a92f31bc5d9e32e539024b7eb246da79029aed3c65c5b746a3.js" integrity="sha256-2Bd/vdqx1akvMbxdnjLlOQJLfrJG2nkCmu08ZcW3RqM="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -447,6 +447,41 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a  class="">LeetCode</a>
+      <span>▾</span>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
 
@@ -521,21 +556,25 @@ https://github.com/alex-shpak/hugo-book
     
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-序言">1. 序言</a>
+    <li><a href="#垃圾回收">垃圾回收</a>
       <ul>
-        <li><a href="#11-什么是垃圾回收">1.1 什么是垃圾回收</a></li>
-        <li><a href="#12-k8s-中的对象引用">1.2 k8s 中的对象引用</a></li>
+        <li><a href="#1-序言">1. 序言</a>
+          <ul>
+            <li><a href="#11-什么是垃圾回收">1.1 什么是垃圾回收</a></li>
+            <li><a href="#12-k8s-中的对象引用">1.2 k8s 中的对象引用</a></li>
+          </ul>
+        </li>
+        <li><a href="#2-k8s-中的垃圾回收">2. k8s 中的垃圾回收</a>
+          <ul>
+            <li><a href="#21-foreground-模式">2.1 Foreground 模式</a></li>
+            <li><a href="#22-background-模式">2.2 Background 模式</a></li>
+            <li><a href="#23-orphan-模式">2.3 Orphan 模式</a></li>
+            <li><a href="#24-finalizer-机制">2.4 finalizer 机制</a></li>
+          </ul>
+        </li>
+        <li><a href="#3-参考资料">3. 参考资料</a></li>
       </ul>
     </li>
-    <li><a href="#2-k8s-中的垃圾回收">2. k8s 中的垃圾回收</a>
-      <ul>
-        <li><a href="#21-foreground-模式">2.1 Foreground 模式</a></li>
-        <li><a href="#22-background-模式">2.2 Background 模式</a></li>
-        <li><a href="#23-orphan-模式">2.3 Orphan 模式</a></li>
-        <li><a href="#24-finalizer-机制">2.4 finalizer 机制</a></li>
-      </ul>
-    </li>
-    <li><a href="#3-参考资料">3. 参考资料</a></li>
   </ul>
 </nav>
 
@@ -547,22 +586,26 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="1-序言">
+  <article class="markdown"><h1 id="垃圾回收">
+  垃圾回收
+  <a class="anchor" href="#%e5%9e%83%e5%9c%be%e5%9b%9e%e6%94%b6">#</a>
+</h1>
+<h2 id="1-序言">
   1. 序言
   <a class="anchor" href="#1-%e5%ba%8f%e8%a8%80">#</a>
-</h1>
-<h2 id="11-什么是垃圾回收">
+</h2>
+<h3 id="11-什么是垃圾回收">
   1.1 什么是垃圾回收
   <a class="anchor" href="#11-%e4%bb%80%e4%b9%88%e6%98%af%e5%9e%83%e5%9c%be%e5%9b%9e%e6%94%b6">#</a>
-</h2>
+</h3>
 <p>参考 Java 中的概念，垃圾回收（Garbage Collection）是 JVM 垃圾回收器提供的一种用于在空闲时间不定时回收无任何对象引用的对象占据的内存空间的一种机制。
 垃圾回收回收的是无任何引用的对象占据的内存空间而不是对象本身。换言之，垃圾回收只会负责释放那些对象占有的内存。
 对象是个抽象的词，包括引用和其占据的内存空间。当对象没有任何引用时其占据的内存空间随即被收回备用，此时对象也就被销毁。</p>
 <p>因此，垃圾回收关注的是<strong>无任何引用的对象</strong>。在 kubernetes 中，对象的引用关系又是怎样的呢？</p>
-<h2 id="12-k8s-中的对象引用">
+<h3 id="12-k8s-中的对象引用">
   1.2 k8s 中的对象引用
   <a class="anchor" href="#12-k8s-%e4%b8%ad%e7%9a%84%e5%af%b9%e8%b1%a1%e5%bc%95%e7%94%a8">#</a>
-</h2>
+</h3>
 <p>某些 kubernetes 对象是其他一些对象的属主。例如一个 ReplicaSet 是一组 Pod 的属主；反之这组 Pod 就是此 ReplicaSet 的附属。
 每个附属对象具有一个指向属主对象的 <code>metadata.ownerReference</code> 字段。</p>
 <p>Kubernetes 会自动为 ReplicationController、ReplicaSet、StatefulSet、DaemonSet、Deployment、Job 和 CronJob 自动设置 <code>ownerReference</code> 的值。
@@ -608,10 +651,10 @@ https://github.com/alex-shpak/hugo-book
 因此，<code>OwnerReference</code> 结构中不需要 <code>Namespace</code> 属性。</p>
 <p>上面 <code>OwnerReference</code> 的结构体中，最后一个字段 <code>BlockOwnerDeletion</code> 字面意思就是阻止属主删除，那么 k8s 在删除对象上与垃圾收集有什么关系？
 垃圾收集具体是如何执行的呢？后文继续分析。</p>
-<h1 id="2-k8s-中的垃圾回收">
+<h2 id="2-k8s-中的垃圾回收">
   2. k8s 中的垃圾回收
   <a class="anchor" href="#2-k8s-%e4%b8%ad%e7%9a%84%e5%9e%83%e5%9c%be%e5%9b%9e%e6%94%b6">#</a>
-</h1>
+</h2>
 <p>删除对象时，可以指定该对象的附属是否也自动删除。Kubernetes 中有三种删除模式：</p>
 <ul>
 <li>级联删除
@@ -627,10 +670,10 @@ https://github.com/alex-shpak/hugo-book
 </li>
 </ul>
 <p>在 kubernetes v1.9 版本之前，大部分 controller 的默认删除策略为 <code>Orphan</code>，从 v1.9 开始，对 apps/v1 下的资源默认使用 <code>Background</code> 模式。</p>
-<h2 id="21-foreground-模式">
+<h3 id="21-foreground-模式">
   2.1 Foreground 模式
   <a class="anchor" href="#21-foreground-%e6%a8%a1%e5%bc%8f">#</a>
-</h2>
+</h3>
 <p>在 Foreground 模式下，待删除对象首先进入 <code>deletion in progress</code> 状态。 在此状态下存在如下的场景：</p>
 <ul>
 <li>对象仍然可以通过 REST API 获取。</li>
@@ -645,15 +688,15 @@ https://github.com/alex-shpak/hugo-book
 这样未经授权的附属不能够阻止属主对象的删除。</p>
 </blockquote>
 <p>如果一个对象的 ownerReference 字段被一个控制器（例如 Deployment 或 ReplicaSet）设置， blockOwnerDeletion 也会被自动设置，不需要手动修改。</p>
-<h2 id="22-background-模式">
+<h3 id="22-background-模式">
   2.2 Background 模式
   <a class="anchor" href="#22-background-%e6%a8%a1%e5%bc%8f">#</a>
-</h2>
+</h3>
 <p>在 Background 模式下，Kubernetes 会立即删除属主对象，之后垃圾收集器会在后台删除其附属对象。</p>
-<h2 id="23-orphan-模式">
+<h3 id="23-orphan-模式">
   2.3 Orphan 模式
   <a class="anchor" href="#23-orphan-%e6%a8%a1%e5%bc%8f">#</a>
-</h2>
+</h3>
 <p>与 Foreground 模式类似，待删除对象首先进入 <code>deletion in progress</code> 状态。 在此状态下存在如下的场景：</p>
 <ul>
 <li>对象仍然可以通过 REST API 获取。</li>
@@ -668,10 +711,10 @@ https://github.com/alex-shpak/hugo-book
 curl <span style="color:#f92672">-</span>X DELETE localhost<span style="color:#f92672">:</span><span style="color:#ae81ff">8080</span><span style="color:#f92672">/</span>apis<span style="color:#f92672">/</span>apps<span style="color:#f92672">/</span>v1<span style="color:#f92672">/</span>namespaces<span style="color:#f92672">/</span>default<span style="color:#f92672">/</span>replicasets<span style="color:#f92672">/</span>my<span style="color:#f92672">-</span>rs \
   <span style="color:#f92672">-</span>d <span style="color:#e6db74">&#39;{&#34;kind&#34;:&#34;DeleteOptions&#34;,&#34;apiVersion&#34;:&#34;v1&#34;,&#34;propagationPolicy&#34;:&#34;Orphan&#34;}&#39;</span> \
   <span style="color:#f92672">-</span>H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span>
-</code></pre></div><h2 id="24-finalizer-机制">
+</code></pre></div><h3 id="24-finalizer-机制">
   2.4 finalizer 机制
   <a class="anchor" href="#24-finalizer-%e6%9c%ba%e5%88%b6">#</a>
-</h2>
+</h3>
 <p>finalizer 是在对象删除之前需要执行的逻辑。每当 finalizer 成功运行之后，就会将它自己从 <code>Finalizers</code> 数组中删除，
 当最后一个 finalizer 被删除之后，API Server 就会删除该对象。finalizer 提供了一个通用的 API，
 它的功能不只是用于阻止级联删除，还能过通过它在对象删除之前加入钩子。</p>
@@ -685,10 +728,10 @@ curl <span style="color:#f92672">-</span>X DELETE localhost<span style="color:#f
 如此 <code>OrphanFinalizer</code> 应运而生。<code>OrphanFinalizer</code> 会监听对象的更新事件并将它自己从它全部依赖对象的 <code>OwnerReferences</code> 数组中删除，
 与此同时会删除所有依赖对象中已经失效的 <code>OwnerReferences</code> 并将 <code>OrphanFinalizer</code> 从 <code>Finalizers</code> 数组中删除。</p>
 <p>通过 <code>OrphanFinalizer</code> 我们能够在删除一个 Kubernetes 对象时保留它的全部依赖，为使用者提供一种更灵活的方法来保留和删除对象。</p>
-<h1 id="3-参考资料">
+<h2 id="3-参考资料">
   3. 参考资料
   <a class="anchor" href="#3-%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>
-</h1>
+</h2>
 <ul>
 <li>
   <a href="https://kubernetes.io/zh/docs/concepts/workloads/controllers/garbage-collection">垃圾收集</a></li>
@@ -731,21 +774,25 @@ curl <span style="color:#f92672">-</span>X DELETE localhost<span style="color:#f
       
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-序言">1. 序言</a>
+    <li><a href="#垃圾回收">垃圾回收</a>
       <ul>
-        <li><a href="#11-什么是垃圾回收">1.1 什么是垃圾回收</a></li>
-        <li><a href="#12-k8s-中的对象引用">1.2 k8s 中的对象引用</a></li>
+        <li><a href="#1-序言">1. 序言</a>
+          <ul>
+            <li><a href="#11-什么是垃圾回收">1.1 什么是垃圾回收</a></li>
+            <li><a href="#12-k8s-中的对象引用">1.2 k8s 中的对象引用</a></li>
+          </ul>
+        </li>
+        <li><a href="#2-k8s-中的垃圾回收">2. k8s 中的垃圾回收</a>
+          <ul>
+            <li><a href="#21-foreground-模式">2.1 Foreground 模式</a></li>
+            <li><a href="#22-background-模式">2.2 Background 模式</a></li>
+            <li><a href="#23-orphan-模式">2.3 Orphan 模式</a></li>
+            <li><a href="#24-finalizer-机制">2.4 finalizer 机制</a></li>
+          </ul>
+        </li>
+        <li><a href="#3-参考资料">3. 参考资料</a></li>
       </ul>
     </li>
-    <li><a href="#2-k8s-中的垃圾回收">2. k8s 中的垃圾回收</a>
-      <ul>
-        <li><a href="#21-foreground-模式">2.1 Foreground 模式</a></li>
-        <li><a href="#22-background-模式">2.2 Background 模式</a></li>
-        <li><a href="#23-orphan-模式">2.3 Orphan 模式</a></li>
-        <li><a href="#24-finalizer-机制">2.4 finalizer 机制</a></li>
-      </ul>
-    </li>
-    <li><a href="#3-参考资料">3. 参考资料</a></li>
   </ul>
 </nav>
 

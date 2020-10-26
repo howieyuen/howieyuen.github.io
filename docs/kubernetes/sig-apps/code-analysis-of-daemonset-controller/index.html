@@ -4,17 +4,17 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. DaemonSet 简介 #  我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
+<meta name="description" content="DaemonSet Controller 源码分析 #  1. DaemonSet 简介 #  我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
 这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。
 如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。
 1.1 应用场景 #   在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程  一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。
-1.2 基本功能 #   创建 删除  级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false   更新  RollingUpdate OnDelete   回滚  1.3 示例 #  apiVersion: apps/v1 kind: DaemonSet metadata: name: fluentd-elasticsearch namespace: kube-system labels: k8s-app: fluentd-logging spec: selector: matchLabels: name: fluentd-elasticsearch template: metadata: labels: name: fluentd-elasticsearch spec: tolerations: # this toleration is to have the daemonset runnable on master nodes # remove it if your masters can&#39;t run pods - key: node-role.">
+1.2 基本功能 #   创建 删除  级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false   更新  RollingUpdate OnDelete   回滚  1.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="DaemonSet Controller 源码分析" />
-<meta property="og:description" content="1. DaemonSet 简介 #  我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
+<meta property="og:description" content="DaemonSet Controller 源码分析 #  1. DaemonSet 简介 #  我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
 这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。
 如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。
 1.1 应用场景 #   在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程  一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。
-1.2 基本功能 #   创建 删除  级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false   更新  RollingUpdate OnDelete   回滚  1.3 示例 #  apiVersion: apps/v1 kind: DaemonSet metadata: name: fluentd-elasticsearch namespace: kube-system labels: k8s-app: fluentd-logging spec: selector: matchLabels: name: fluentd-elasticsearch template: metadata: labels: name: fluentd-elasticsearch spec: tolerations: # this toleration is to have the daemonset runnable on master nodes # remove it if your masters can&#39;t run pods - key: node-role." />
+1.2 基本功能 #   创建 删除  级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false   更新  RollingUpdate OnDelete   回滚  1." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/sig-apps/code-analysis-of-daemonset-controller/" />
 <meta property="article:published_time" content="2020-10-21T00:00:00+00:00" />
@@ -22,8 +22,8 @@
 <title>DaemonSet Controller 源码分析 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
-<link rel="stylesheet" href="/book.min.bc96313b7eff2859c711746c9dbc5c9b3aca5651b50ecc3f8b1cf89154772a3b.css" integrity="sha256-vJYxO37/KFnHEXRsnbxcmzrKVlG1Dsw/ixz4kVR3Kjs=">
-<script defer src="/en.search.min.3d45b5dc006e1a6dbf6c0f34765df682c6e2c7b4c9a6ecc3649d7a77d25b36eb.js" integrity="sha256-PUW13ABuGm2/bA80dl32gsbix7TJpuzDZJ16d9JbNus="></script>
+<link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
+<script defer src="/en.search.min.d8177fbddab1d5a92f31bc5d9e32e539024b7eb246da79029aed3c65c5b746a3.js" integrity="sha256-2Bd/vdqx1akvMbxdnjLlOQJLfrJG2nkCmu08ZcW3RqM="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -445,6 +445,41 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a  class="">LeetCode</a>
+      <span>▾</span>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
 
@@ -519,26 +554,30 @@ https://github.com/alex-shpak/hugo-book
     
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-daemonset-简介">1. DaemonSet 简介</a>
+    <li><a href="#daemonset-controller-源码分析">DaemonSet Controller 源码分析</a>
       <ul>
-        <li><a href="#11-应用场景">1.1 应用场景</a></li>
-        <li><a href="#12-基本功能">1.2 基本功能</a></li>
-        <li><a href="#13-示例">1.3 示例</a></li>
+        <li><a href="#1-daemonset-简介">1. DaemonSet 简介</a>
+          <ul>
+            <li><a href="#11-应用场景">1.1 应用场景</a></li>
+            <li><a href="#12-基本功能">1.2 基本功能</a></li>
+            <li><a href="#13-示例">1.3 示例</a></li>
+          </ul>
+        </li>
+        <li><a href="#2-源码分析">2. 源码分析</a>
+          <ul>
+            <li><a href="#21-startdaemonsetcontroller">2.1 startDaemonSetController()</a></li>
+            <li><a href="#22-run">2.2 Run()</a></li>
+            <li><a href="#23-syncdaemonset">2.3 syncDaemonSet()</a></li>
+            <li><a href="#24-dscmanage">2.4 dsc.manage()</a></li>
+            <li><a href="#25-dscrollingupdate">2.5 dsc.rollingUpdate()</a></li>
+            <li><a href="#26-dscupdatedaemonsetstatus">2.6 dsc.updateDaemonSetStatus()</a></li>
+            <li><a href="#27-源码分析小结">2.7 源码分析小结</a></li>
+          </ul>
+        </li>
+        <li><a href="#3-总结">3. 总结</a></li>
+        <li><a href="#4-参考资料">4. 参考资料</a></li>
       </ul>
     </li>
-    <li><a href="#2-源码分析">2. 源码分析</a>
-      <ul>
-        <li><a href="#21-startdaemonsetcontroller">2.1 startDaemonSetController()</a></li>
-        <li><a href="#22-run">2.2 Run()</a></li>
-        <li><a href="#23-syncdaemonset">2.3 syncDaemonSet()</a></li>
-        <li><a href="#24-dscmanage">2.4 dsc.manage()</a></li>
-        <li><a href="#25-dscrollingupdate">2.5 dsc.rollingUpdate()</a></li>
-        <li><a href="#26-dscupdatedaemonsetstatus">2.6 dsc.updateDaemonSetStatus()</a></li>
-        <li><a href="#27-源码分析小结">2.7 源码分析小结</a></li>
-      </ul>
-    </li>
-    <li><a href="#3-总结">3. 总结</a></li>
-    <li><a href="#4-参考资料">4. 参考资料</a></li>
   </ul>
 </nav>
 
@@ -550,27 +589,31 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="1-daemonset-简介">
+  <article class="markdown"><h1 id="daemonset-controller-源码分析">
+  DaemonSet Controller 源码分析
+  <a class="anchor" href="#daemonset-controller-%e6%ba%90%e7%a0%81%e5%88%86%e6%9e%90">#</a>
+</h1>
+<h2 id="1-daemonset-简介">
   1. DaemonSet 简介
   <a class="anchor" href="#1-daemonset-%e7%ae%80%e4%bb%8b">#</a>
-</h1>
+</h2>
 <p>我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。</p>
 <p>这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。</p>
 <p>如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。</p>
-<h2 id="11-应用场景">
+<h3 id="11-应用场景">
   1.1 应用场景
   <a class="anchor" href="#11-%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af">#</a>
-</h2>
+</h3>
 <ul>
 <li>在每个节点上运行集群存守护进程</li>
 <li>在每个节点上运行日志收集守护进程</li>
 <li>在每个节点上运行监控守护进程</li>
 </ul>
 <p>一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。</p>
-<h2 id="12-基本功能">
+<h3 id="12-基本功能">
   1.2 基本功能
   <a class="anchor" href="#12-%e5%9f%ba%e6%9c%ac%e5%8a%9f%e8%83%bd">#</a>
-</h2>
+</h3>
 <ul>
 <li>创建</li>
 <li>删除
@@ -587,10 +630,10 @@ https://github.com/alex-shpak/hugo-book
 </li>
 <li>回滚</li>
 </ul>
-<h2 id="13-示例">
+<h3 id="13-示例">
   1.3 示例
   <a class="anchor" href="#13-%e7%a4%ba%e4%be%8b">#</a>
-</h2>
+</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">DaemonSet</span>
 <span style="color:#f92672">metadata</span>:
@@ -608,8 +651,8 @@ https://github.com/alex-shpak/hugo-book
         <span style="color:#f92672">name</span>: <span style="color:#ae81ff">fluentd-elasticsearch</span>
     <span style="color:#f92672">spec</span>:
       <span style="color:#f92672">tolerations</span>:
-      <span style="color:#75715e"># this toleration is to have the daemonset runnable on master nodes</span>
-      <span style="color:#75715e"># remove it if your masters can&#39;t run pods</span>
+      <span style="color:#75715e">## this toleration is to have the daemonset runnable on master nodes</span>
+      <span style="color:#75715e">## remove it if your masters can&#39;t run pods</span>
       - <span style="color:#f92672">key</span>: <span style="color:#ae81ff">node-role.kubernetes.io/master</span>
         <span style="color:#f92672">effect</span>: <span style="color:#ae81ff">NoSchedule</span>
       <span style="color:#f92672">containers</span>:
@@ -635,17 +678,17 @@ https://github.com/alex-shpak/hugo-book
       - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">varlibdockercontainers</span>
         <span style="color:#f92672">hostPath</span>:
           <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/var/lib/docker/containers</span>
-</code></pre></div><h1 id="2-源码分析">
+</code></pre></div><h2 id="2-源码分析">
   2. 源码分析
   <a class="anchor" href="#2-%e6%ba%90%e7%a0%81%e5%88%86%e6%9e%90">#</a>
-</h1>
+</h2>
 <blockquote>
 <p>kubernetes version: v1.19</p>
 </blockquote>
-<h2 id="21-startdaemonsetcontroller">
+<h3 id="21-startdaemonsetcontroller">
   2.1 startDaemonSetController()
   <a class="anchor" href="#21-startdaemonsetcontroller">#</a>
-</h2>
+</h3>
 <p>与其他资源的 Controller 启动方式一致，在 <code>startDaemonSetController()</code> 中初始化 DaemonSetController 对象，并调用 <code>Run()</code> 方法启动。从该方法可以看出，DaemonSet Controller 关心的是 <code>daemonset</code>、<code>controllerrevision</code>、<code>pod</code>、<code>node</code> 四种资源的变动，其中 <code>ConcurrentDaemonSetSyncs</code>  默认是 2。</p>
 <p><code>cmd/kube-controller-manager/app/apps.go:36</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">startDaemonSetController</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">ControllerContext</span>) (<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
@@ -666,10 +709,10 @@ https://github.com/alex-shpak/hugo-book
 	<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">Run</span>(int(<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ComponentConfig</span>.<span style="color:#a6e22e">DaemonSetController</span>.<span style="color:#a6e22e">ConcurrentDaemonSetSyncs</span>), <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Stop</span>)
 	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
 }
-</code></pre></div><h2 id="22-run">
+</code></pre></div><h3 id="22-run">
   2.2 Run()
   <a class="anchor" href="#22-run">#</a>
-</h2>
+</h3>
 <p>Run() 方法中执行 2 个核心操作：<code>sync</code> 和 <code>gc</code>。其中 sync 操作是 controller 的核心代码，响应上述所有操作。在初始化 controller 对象时，指定了 <code>failedPodsBackoff</code> 的参数，<code>defaultDuration = 1s</code>，<code>maxDuration = 15min</code>；<code>gc</code> 的主要作用是发现 daemonset 的 pod 的 phase 为 failed，就会重启该 Pod，如果已经超时（2*15min）会删除该条记录。</p>
 <p><code>pkg/controller/daemon/daemon_controller.go:281</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">Run</span>(<span style="color:#a6e22e">workers</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) {
@@ -692,10 +735,10 @@ https://github.com/alex-shpak/hugo-book
 
 	<span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">stopCh</span>
 }
-</code></pre></div><h2 id="23-syncdaemonset">
+</code></pre></div><h3 id="23-syncdaemonset">
   2.3 syncDaemonSet()
   <a class="anchor" href="#23-syncdaemonset">#</a>
-</h2>
+</h3>
 <p>DaemonSet 的 Pod 的创建/删除都是和 Node 相关，所以每次 <code>sync</code> 操作，需要遍历所有的 Node 进行判断。<code>syncDaemonSet()</code> 的主要逻辑为：</p>
 <ol>
 <li>通过 key 获取 ns 和 name</li>
@@ -771,10 +814,10 @@ https://github.com/alex-shpak/hugo-book
 	<span style="color:#75715e">// 11. 最后更新 status 子资源
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">updateDaemonSetStatus</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">hash</span>, <span style="color:#66d9ef">true</span>)
 }
-</code></pre></div><h2 id="24-dscmanage">
+</code></pre></div><h3 id="24-dscmanage">
   2.4 dsc.manage()
   <a class="anchor" href="#24-dscmanage">#</a>
-</h2>
+</h3>
 <p><code>dsc.manage()</code> 是为了保证ds 的 Pod 正常运行在应该存在的节点，该方法做了这几件事：</p>
 <ol>
 <li>调用 <code>dsc.getNodesToDaemonPods()</code>，获取当前的节点和 daemon pod 的映射关系（<code>map[nodeName][]*v1.Pod</code>）</li>
@@ -1033,10 +1076,10 @@ graph LR
     op3 --> op5(dsc.nodeShouldRunDaemonPod)
 </p>
 
-<h2 id="25-dscrollingupdate">
+<h3 id="25-dscrollingupdate">
   2.5 dsc.rollingUpdate()
   <a class="anchor" href="#25-dscrollingupdate">#</a>
-</h2>
+</h3>
 <p>daemonset update 的方式有两种 <code>OnDelete</code> 和 <code>RollingUpdate</code>，当为 <code>OnDelete</code> 时需要用户手动删除每一个 pod 后完成更新操作，当为 <code>RollingUpdate</code> 时，daemonset controller 会自动控制升级进度。</p>
 <p>当为 <code>RollingUpdate</code> 时，主要逻辑为：</p>
 <ol>
@@ -1092,21 +1135,21 @@ graph LR
 	<span style="color:#75715e">// 7. 调用 syncNodes 方法删除 oldPodsToDelete 数组中的 pods
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">syncNodes</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">oldPodsToDelete</span>, []<span style="color:#66d9ef">string</span>{}, <span style="color:#a6e22e">hash</span>)
 }
-</code></pre></div><h2 id="26-dscupdatedaemonsetstatus">
+</code></pre></div><h3 id="26-dscupdatedaemonsetstatus">
   2.6 dsc.updateDaemonSetStatus()
   <a class="anchor" href="#26-dscupdatedaemonsetstatus">#</a>
-</h2>
+</h3>
 <p><code>dsc.updateDaemonSetStatus()</code> 是 sync 动作的最后一步，主要是用来更新 DaemonSet 的 status 子资源。ds.Status的各个字段如下：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">status</span>:
-  <span style="color:#f92672">collisionCount</span>: <span style="color:#ae81ff">0</span>         <span style="color:#75715e"># hash 冲突数</span>
-  <span style="color:#f92672">currentNumberScheduled</span>: <span style="color:#ae81ff">1</span>  <span style="color:#75715e"># 已经运行了 DaemonSet Pod 的节点数量</span>
-  <span style="color:#f92672">desiredNumberScheduled</span>: <span style="color:#ae81ff">1</span>  <span style="color:#75715e"># 需要运行该DaemonSet Pod的节点数量</span>
-  <span style="color:#f92672">numberAvailable</span>: <span style="color:#ae81ff">1</span>        <span style="color:#75715e"># DaemonSet Pod 状态为 Ready 且运行时间超过 Spec.MinReadySeconds 的节点数量</span>
-  <span style="color:#f92672">numberUnavailable</span>: <span style="color:#ae81ff">0</span>      <span style="color:#75715e"># desiredNumberScheduled - numberAvailable 的节点数量</span>
-  <span style="color:#f92672">numberMisscheduled</span>: <span style="color:#ae81ff">0</span>     <span style="color:#75715e"># 不需要运行 DeamonSet Pod 但是已经运行了的节点数量</span>
-  <span style="color:#f92672">numberReady</span>: <span style="color:#ae81ff">1</span>           <span style="color:#75715e"># DaemonSet Pod状态为Ready的节点数量</span>
+  <span style="color:#f92672">collisionCount</span>: <span style="color:#ae81ff">0</span>         <span style="color:#75715e">## hash 冲突数</span>
+  <span style="color:#f92672">currentNumberScheduled</span>: <span style="color:#ae81ff">1</span>  <span style="color:#75715e">## 已经运行了 DaemonSet Pod 的节点数量</span>
+  <span style="color:#f92672">desiredNumberScheduled</span>: <span style="color:#ae81ff">1</span>  <span style="color:#75715e">## 需要运行该DaemonSet Pod的节点数量</span>
+  <span style="color:#f92672">numberAvailable</span>: <span style="color:#ae81ff">1</span>        <span style="color:#75715e">## DaemonSet Pod 状态为 Ready 且运行时间超过 Spec.MinReadySeconds 的节点数量</span>
+  <span style="color:#f92672">numberUnavailable</span>: <span style="color:#ae81ff">0</span>      <span style="color:#75715e">## desiredNumberScheduled - numberAvailable 的节点数量</span>
+  <span style="color:#f92672">numberMisscheduled</span>: <span style="color:#ae81ff">0</span>     <span style="color:#75715e">## 不需要运行 DeamonSet Pod 但是已经运行了的节点数量</span>
+  <span style="color:#f92672">numberReady</span>: <span style="color:#ae81ff">1</span>           <span style="color:#75715e">## DaemonSet Pod状态为Ready的节点数量</span>
   <span style="color:#f92672">observedGeneration</span>: <span style="color:#ae81ff">1</span>
-  <span style="color:#f92672">updatedNumberScheduled</span>: <span style="color:#ae81ff">1</span> <span style="color:#75715e"># 已经完成DaemonSet Pod更新的节点数量</span>
+  <span style="color:#f92672">updatedNumberScheduled</span>: <span style="color:#ae81ff">1</span> <span style="color:#75715e">## 已经完成DaemonSet Pod更新的节点数量</span>
 </code></pre></div><p>主要逻辑为：</p>
 <ol>
 <li>调用 <code>dsc.getNodesToDaemonPods()</code> 获取node 与已存在的 daemon pods 的映射关系；</li>
@@ -1179,10 +1222,10 @@ graph LR
 	}
 	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
 }
-</code></pre></div><h2 id="27-源码分析小结">
+</code></pre></div><h3 id="27-源码分析小结">
   2.7 源码分析小结
   <a class="anchor" href="#27-%e6%ba%90%e7%a0%81%e5%88%86%e6%9e%90%e5%b0%8f%e7%bb%93">#</a>
-</h2>
+</h3>
 
 
 <p class="mermaid">
@@ -1198,15 +1241,15 @@ op1.1 --> op1.1.3(dsc.syncNodes)
 op1.1.2 --> op1.1.2.1(dsc.nodeShouldRunDaemonPod)
 </p>
 
-<h1 id="3-总结">
+<h2 id="3-总结">
   3. 总结
   <a class="anchor" href="#3-%e6%80%bb%e7%bb%93">#</a>
-</h1>
+</h2>
 <p>在 daemonset controller 中可以看到许多功能都是 deployment 和 statefulset 已有的。在创建 pod 的流程与 replicaset controller 创建 pod 的流程是相似的，都使用了 <code>expectations</code> 机制并且限制了在一个 syncLoop 中最多创建或删除的 pod 数。更新方式与 statefulset 一样都有 <code>OnDelete</code> 和 <code>RollingUpdate</code> 两种， <code>OnDelete</code> 方式与 statefulset 相似，都需要手动删除对应的 pod，而  <code>RollingUpdate</code>  方式与 statefulset 和 deployment 都有点区别，<code>RollingUpdate</code> 方式更新时不支持暂停操作并且 pod 是先删除再创建的顺序进行。版本控制方式与 statefulset 的一样都是使用 <code>controllerRevision</code>。最后要说的一点是在 v1.12 及以后的版本中，使用 daemonset 创建的 pod 已不再使用直接指定 .spec.nodeName的方式绕过调度器进行调度，而是走默认调度器通过 <code>nodeAffinity</code> 的方式调度到每一个节点上。</p>
-<h1 id="4-参考资料">
+<h2 id="4-参考资料">
   4. 参考资料
   <a class="anchor" href="#4-%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>
-</h1>
+</h2>
 <ul>
 <li>
   <a href="https://kubernetes.io/zh/docs/concepts/workloads/controllers/daemonset/">DaemonSet概念</a></li>
@@ -1249,26 +1292,30 @@ op1.1.2 --> op1.1.2.1(dsc.nodeShouldRunDaemonPod)
       
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-daemonset-简介">1. DaemonSet 简介</a>
+    <li><a href="#daemonset-controller-源码分析">DaemonSet Controller 源码分析</a>
       <ul>
-        <li><a href="#11-应用场景">1.1 应用场景</a></li>
-        <li><a href="#12-基本功能">1.2 基本功能</a></li>
-        <li><a href="#13-示例">1.3 示例</a></li>
+        <li><a href="#1-daemonset-简介">1. DaemonSet 简介</a>
+          <ul>
+            <li><a href="#11-应用场景">1.1 应用场景</a></li>
+            <li><a href="#12-基本功能">1.2 基本功能</a></li>
+            <li><a href="#13-示例">1.3 示例</a></li>
+          </ul>
+        </li>
+        <li><a href="#2-源码分析">2. 源码分析</a>
+          <ul>
+            <li><a href="#21-startdaemonsetcontroller">2.1 startDaemonSetController()</a></li>
+            <li><a href="#22-run">2.2 Run()</a></li>
+            <li><a href="#23-syncdaemonset">2.3 syncDaemonSet()</a></li>
+            <li><a href="#24-dscmanage">2.4 dsc.manage()</a></li>
+            <li><a href="#25-dscrollingupdate">2.5 dsc.rollingUpdate()</a></li>
+            <li><a href="#26-dscupdatedaemonsetstatus">2.6 dsc.updateDaemonSetStatus()</a></li>
+            <li><a href="#27-源码分析小结">2.7 源码分析小结</a></li>
+          </ul>
+        </li>
+        <li><a href="#3-总结">3. 总结</a></li>
+        <li><a href="#4-参考资料">4. 参考资料</a></li>
       </ul>
     </li>
-    <li><a href="#2-源码分析">2. 源码分析</a>
-      <ul>
-        <li><a href="#21-startdaemonsetcontroller">2.1 startDaemonSetController()</a></li>
-        <li><a href="#22-run">2.2 Run()</a></li>
-        <li><a href="#23-syncdaemonset">2.3 syncDaemonSet()</a></li>
-        <li><a href="#24-dscmanage">2.4 dsc.manage()</a></li>
-        <li><a href="#25-dscrollingupdate">2.5 dsc.rollingUpdate()</a></li>
-        <li><a href="#26-dscupdatedaemonsetstatus">2.6 dsc.updateDaemonSetStatus()</a></li>
-        <li><a href="#27-源码分析小结">2.7 源码分析小结</a></li>
-      </ul>
-    </li>
-    <li><a href="#3-总结">3. 总结</a></li>
-    <li><a href="#4-参考资料">4. 参考资料</a></li>
   </ul>
 </nav>
 

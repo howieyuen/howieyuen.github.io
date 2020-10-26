@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="注：本文翻译自 Node Topology Manager
+<meta name="description" content="Topology Manager 设计方案 #   注：本文翻译自 Node Topology Manager
  1. 概要 #  越来越多的系统将 CPU 和硬件加速器组合使用，以支撑高延迟和搞吞吐量的并行计算。 包括电信、科学计算、机器学习、金融服务和数据分析等领域的工作。这种的混血儿构成了一个高性能环境。
 为了达到最优性能，需要对 CPU 隔离、内存和设备的物理位置进行优化。 然而，在 kubernetes 中，这些优化没有一个统一的组件管理。
 本次建议提供一个新机制，可以协同kubernetes各个组件，对硬件资源的分配可以有不同的细粒度。
@@ -12,7 +12,7 @@
  CPU 管理器  CPU 管理器限制容器可以使用的 CPU。该能力，在 1.8 只实现了一种策略——静态分配。 该策略不支持在容器的生命周期内，动态上下线 CPU。   设备管理器  设备管理器将某个具体的设备分配给有该设备需求的容器。设备通常是在外围互连线上。 如果设备管理器和 CPU 管理器策略不一致，那么CPU和设备之间的所有通信都可能导致处理器互连结构上的额外跳转。   容器运行时（CNI）  网络接口控制器，包括 SR-IOV 虚拟功能（VF）和套接字有亲和关系，socket 不同，性能不同。    相关问题：
   节点层级的硬件拓扑感知（包括 NUMA）  发现节点的 NUMA 架构  绑定特定 CPU 支持虚拟函数  提议：CPU 亲和与 NUMA 拓扑感知  注意，以上所有的关注点都只适用于多套接字系统。 内核能从底层硬件接收精确的拓扑信息（通常是通过 SLIT 表），是正确操作的前提。 更多信息请参考ACPI规范的 5.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Topology Manager 设计方案" />
-<meta property="og:description" content="注：本文翻译自 Node Topology Manager
+<meta property="og:description" content="Topology Manager 设计方案 #   注：本文翻译自 Node Topology Manager
  1. 概要 #  越来越多的系统将 CPU 和硬件加速器组合使用，以支撑高延迟和搞吞吐量的并行计算。 包括电信、科学计算、机器学习、金融服务和数据分析等领域的工作。这种的混血儿构成了一个高性能环境。
 为了达到最优性能，需要对 CPU 隔离、内存和设备的物理位置进行优化。 然而，在 kubernetes 中，这些优化没有一个统一的组件管理。
 本次建议提供一个新机制，可以协同kubernetes各个组件，对硬件资源的分配可以有不同的细粒度。
@@ -26,8 +26,8 @@
 <title>Topology Manager 设计方案 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
-<link rel="stylesheet" href="/book.min.bc96313b7eff2859c711746c9dbc5c9b3aca5651b50ecc3f8b1cf89154772a3b.css" integrity="sha256-vJYxO37/KFnHEXRsnbxcmzrKVlG1Dsw/ixz4kVR3Kjs=">
-<script defer src="/en.search.min.3d45b5dc006e1a6dbf6c0f34765df682c6e2c7b4c9a6ecc3649d7a77d25b36eb.js" integrity="sha256-PUW13ABuGm2/bA80dl32gsbix7TJpuzDZJ16d9JbNus="></script>
+<link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
+<script defer src="/en.search.min.d8177fbddab1d5a92f31bc5d9e32e539024b7eb246da79029aed3c65c5b746a3.js" integrity="sha256-2Bd/vdqx1akvMbxdnjLlOQJLfrJG2nkCmu08ZcW3RqM="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -449,6 +449,41 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a  class="">LeetCode</a>
+      <span>▾</span>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
 
@@ -523,21 +558,19 @@ https://github.com/alex-shpak/hugo-book
     
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-概要">1. 概要</a></li>
-    <li><a href="#2-启发">2. 启发</a>
+    <li><a href="#topology-manager-设计方案">Topology Manager 设计方案</a>
       <ul>
-        <li><a href="#21-目标">2.1 目标</a></li>
-        <li><a href="#22-非目标">2.2 非目标</a></li>
-        <li><a href="#23-用户故事">2.3 用户故事</a></li>
-      </ul>
-    </li>
-    <li><a href="#3-提议">3. 提议</a>
-      <ul>
-        <li><a href="#31-提议修改点">3.1 提议修改点</a>
+        <li><a href="#1-概要">1. 概要</a></li>
+        <li><a href="#2-启发">2. 启发</a>
           <ul>
-            <li><a href="#311-新概念拓扑管理器">3.1.1 新概念：拓扑管理器</a></li>
-            <li><a href="#312-特性门禁和-kubelet-启动参数">3.1.2 特性门禁和 kubelet 启动参数</a></li>
-            <li><a href="#313-现有组件变更">3.1.3 现有组件变更</a></li>
+            <li><a href="#21-目标">2.1 目标</a></li>
+            <li><a href="#22-非目标">2.2 非目标</a></li>
+            <li><a href="#23-用户故事">2.3 用户故事</a></li>
+          </ul>
+        </li>
+        <li><a href="#3-提议">3. 提议</a>
+          <ul>
+            <li><a href="#31-提议修改点">3.1 提议修改点</a></li>
           </ul>
         </li>
       </ul>
@@ -553,23 +586,27 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><blockquote>
+  <article class="markdown"><h1 id="topology-manager-设计方案">
+  Topology Manager 设计方案
+  <a class="anchor" href="#topology-manager-%e8%ae%be%e8%ae%a1%e6%96%b9%e6%a1%88">#</a>
+</h1>
+<blockquote>
 <p>注：本文翻译自
   <a href="https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/0035-20190130-topology-manager.md">Node Topology Manager</a></p>
 </blockquote>
-<h1 id="1-概要">
+<h2 id="1-概要">
   1. 概要
   <a class="anchor" href="#1-%e6%a6%82%e8%a6%81">#</a>
-</h1>
+</h2>
 <p>越来越多的系统将 CPU 和硬件加速器组合使用，以支撑高延迟和搞吞吐量的并行计算。
 包括电信、科学计算、机器学习、金融服务和数据分析等领域的工作。这种的混血儿构成了一个高性能环境。</p>
 <p>为了达到最优性能，需要对 CPU 隔离、内存和设备的物理位置进行优化。
 然而，在 kubernetes 中，这些优化没有一个统一的组件管理。</p>
 <p>本次建议提供一个新机制，可以协同kubernetes各个组件，对硬件资源的分配可以有不同的细粒度。</p>
-<h1 id="2-启发">
+<h2 id="2-启发">
   2. 启发
   <a class="anchor" href="#2-%e5%90%af%e5%8f%91">#</a>
-</h1>
+</h2>
 <p>当前，kubelet 中多个组件决定系统拓扑相关的分配：</p>
 <ul>
 <li>CPU 管理器
@@ -604,18 +641,18 @@ https://github.com/alex-shpak/hugo-book
 <p>注意，以上所有的关注点都只适用于多套接字系统。
 内核能从底层硬件接收精确的拓扑信息（通常是通过 SLIT 表），是正确操作的前提。
 更多信息请参考ACPI规范的 5.2.16 和 5.2.17节。</p>
-<h2 id="21-目标">
+<h3 id="21-目标">
   2.1 目标
   <a class="anchor" href="#21-%e7%9b%ae%e6%a0%87">#</a>
-</h2>
+</h3>
 <ul>
 <li>根据 CPU 管理器和设备管理器的输入，给容器选择最优的 NUMA 亲和节点。</li>
 <li>集成 kubelet 中其他支持拓扑感知的组件，提供一个统一的内部接口。</li>
 </ul>
-<h2 id="22-非目标">
+<h3 id="22-非目标">
   2.2 非目标
   <a class="anchor" href="#22-%e9%9d%9e%e7%9b%ae%e6%a0%87">#</a>
-</h2>
+</h3>
 <ul>
 <li>设备间连接：根据直接设备互连来决定设备分配。此问题不同于套接字局部性。设备间的拓扑关系，
 可以都在设备管理器中考虑，可以做到套接字的亲和性。实现这一策略，可以从逐渐支持任何设备之间的拓扑关系。</li>
@@ -625,32 +662,32 @@ https://github.com/alex-shpak/hugo-book
 此次提出的方案应该具有良好的扩展性，以适配网络接口的局部性。对于特殊的网络需求，
 可以使用设备插件API作为临时方案，以减少网络接口的局限性。</li>
 </ul>
-<h2 id="23-用户故事">
+<h3 id="23-用户故事">
   2.3 用户故事
   <a class="anchor" href="#23-%e7%94%a8%e6%88%b7%e6%95%85%e4%ba%8b">#</a>
-</h2>
+</h3>
 <p><em>故事1: 快速虚拟化的网络功能</em></p>
 <p>要求在一个首选的 NUMA 节点上，既要“网络快”，又能自动完成各个组件（大页，cpu 集，网络设备）的协同。
 在大多数场景下，只有极少数的 NUMA 节点才能满足。</p>
 <p><em>故事2: 加速神经网络训练</em></p>
 <p>NUMA 节点中的已分配的 CPU 和设备，可满足神经网络训练的加速器和独占的CPU的需求，以达到性能最优。</p>
-<h1 id="3-提议">
+<h2 id="3-提议">
   3. 提议
   <a class="anchor" href="#3-%e6%8f%90%e8%ae%ae">#</a>
-</h1>
+</h2>
 <p><em>主要思想：两相拓扑一致性协议</em>
 拓扑亲和性在容器级别，与设备和 CPU 的亲和类似。在 Pod 准入期间，
 一个新组件可以从设备管理器和 CPU 管理器收集 Pod 中每个容器的配置，这个组件名为拓扑管理器。
 当这些组件进行资源分配时，拓扑管理器扮演本地对齐的预分配角色。
 我们希望各个组件能利用 Pod 中隐含的 QoS 类型进行优先级排序，以满足局部重要性最优。</p>
-<h2 id="31-提议修改点">
+<h3 id="31-提议修改点">
   3.1 提议修改点
   <a class="anchor" href="#31-%e6%8f%90%e8%ae%ae%e4%bf%ae%e6%94%b9%e7%82%b9">#</a>
-</h2>
-<h3 id="311-新概念拓扑管理器">
+</h3>
+<h4 id="311-新概念拓扑管理器">
   3.1.1 新概念：拓扑管理器
   <a class="anchor" href="#311-%e6%96%b0%e6%a6%82%e5%bf%b5%e6%8b%93%e6%89%91%e7%ae%a1%e7%90%86%e5%99%a8">#</a>
-</h3>
+</h4>
 <p>这个提议主要关注 kubelet 中一个新组件，叫做拓扑管理器。拓扑管理器实现了 Pod 的 <code>Admit()</code> 接口，
 并参与 kubelet 的对 Pod 的准入。当 <code>Admit()</code> 方法被调用，拓扑管理器根据 kubelet 标志，
 逐个 Pod 或逐个容器收集 kubelet 其他组件的的拓扑信息。</p>
@@ -855,10 +892,10 @@ https://github.com/alex-shpak/hugo-book
 <p><em>图：拓扑管理器实例化并出现在Pod准入生命周期中</em></p>
 <p>
   <img src="/kubernetes/sig-node/topology-manager/topology-manager-instantiation.png" alt="" /></p>
-<h3 id="312-特性门禁和-kubelet-启动参数">
+<h4 id="312-特性门禁和-kubelet-启动参数">
   3.1.2 特性门禁和 kubelet 启动参数
   <a class="anchor" href="#312-%e7%89%b9%e6%80%a7%e9%97%a8%e7%a6%81%e5%92%8c-kubelet-%e5%90%af%e5%8a%a8%e5%8f%82%e6%95%b0">#</a>
-</h3>
+</h4>
 <p>将添加一个特性门禁，控制拓扑管理器特性的启动。此门禁将在 Kubelet 启用，并在 Alpha 版本中默认关闭。</p>
 <ul>
 <li>
@@ -880,10 +917,10 @@ https://github.com/alex-shpak/hugo-book
 <p><code>--topology-manager-scope=container|Pod</code></p>
 </li>
 </ul>
-<h3 id="313-现有组件变更">
+<h4 id="313-现有组件变更">
   3.1.3 现有组件变更
   <a class="anchor" href="#313-%e7%8e%b0%e6%9c%89%e7%bb%84%e4%bb%b6%e5%8f%98%e6%9b%b4">#</a>
-</h3>
+</h4>
 <ol>
 <li>Kubelet 向拓扑管理器咨询 Pod 准入(上面讨论过)</li>
 <li>添加两个拓扑管理器接口的实现和一个特性门禁
@@ -1034,21 +1071,19 @@ index 758da317fe..1e55d9c541 100644
       
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-概要">1. 概要</a></li>
-    <li><a href="#2-启发">2. 启发</a>
+    <li><a href="#topology-manager-设计方案">Topology Manager 设计方案</a>
       <ul>
-        <li><a href="#21-目标">2.1 目标</a></li>
-        <li><a href="#22-非目标">2.2 非目标</a></li>
-        <li><a href="#23-用户故事">2.3 用户故事</a></li>
-      </ul>
-    </li>
-    <li><a href="#3-提议">3. 提议</a>
-      <ul>
-        <li><a href="#31-提议修改点">3.1 提议修改点</a>
+        <li><a href="#1-概要">1. 概要</a></li>
+        <li><a href="#2-启发">2. 启发</a>
           <ul>
-            <li><a href="#311-新概念拓扑管理器">3.1.1 新概念：拓扑管理器</a></li>
-            <li><a href="#312-特性门禁和-kubelet-启动参数">3.1.2 特性门禁和 kubelet 启动参数</a></li>
-            <li><a href="#313-现有组件变更">3.1.3 现有组件变更</a></li>
+            <li><a href="#21-目标">2.1 目标</a></li>
+            <li><a href="#22-非目标">2.2 非目标</a></li>
+            <li><a href="#23-用户故事">2.3 用户故事</a></li>
+          </ul>
+        </li>
+        <li><a href="#3-提议">3. 提议</a>
+          <ul>
+            <li><a href="#31-提议修改点">3.1 提议修改点</a></li>
           </ul>
         </li>
       </ul>

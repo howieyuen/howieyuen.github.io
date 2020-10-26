@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
+<meta name="description" content="k8s 应用滚动更新 #  1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
 2. Deployment 滚动更新 #  Deployment 更新方式有 2 种：
  RollingUpdate Recreate  其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：
 func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
 func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 	newRS, oldRSs, err := dc.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="k8s 应用滚动更新" />
-<meta property="og:description" content="1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
+<meta property="og:description" content="k8s 应用滚动更新 #  1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
 2. Deployment 滚动更新 #  Deployment 更新方式有 2 种：
  RollingUpdate Recreate  其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：
 func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
@@ -22,8 +22,8 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
 <title>k8s 应用滚动更新 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
-<link rel="stylesheet" href="/book.min.bc96313b7eff2859c711746c9dbc5c9b3aca5651b50ecc3f8b1cf89154772a3b.css" integrity="sha256-vJYxO37/KFnHEXRsnbxcmzrKVlG1Dsw/ixz4kVR3Kjs=">
-<script defer src="/en.search.min.3d45b5dc006e1a6dbf6c0f34765df682c6e2c7b4c9a6ecc3649d7a77d25b36eb.js" integrity="sha256-PUW13ABuGm2/bA80dl32gsbix7TJpuzDZJ16d9JbNus="></script>
+<link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
+<script defer src="/en.search.min.d8177fbddab1d5a92f31bc5d9e32e539024b7eb246da79029aed3c65c5b746a3.js" integrity="sha256-2Bd/vdqx1akvMbxdnjLlOQJLfrJG2nkCmu08ZcW3RqM="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -445,6 +445,41 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a  class="">LeetCode</a>
+      <span>▾</span>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
 
@@ -519,17 +554,16 @@ https://github.com/alex-shpak/hugo-book
     
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-概念">1. 概念</a></li>
-    <li><a href="#2-deployment-滚动更新">2. Deployment 滚动更新</a>
+    <li><a href="#k8s-应用滚动更新">k8s 应用滚动更新</a>
       <ul>
-        <li><a href="#21-滚动更新概述">2.1 滚动更新概述</a>
+        <li><a href="#1-概念">1. 概念</a></li>
+        <li><a href="#2-deployment-滚动更新">2. Deployment 滚动更新</a>
           <ul>
-            <li><a href="#211-newrs-scale-up">2.1.1 newRS scale up</a></li>
-            <li><a href="#212-oldrs-scale-down">2.1.2 oldRS scale down</a></li>
+            <li><a href="#21-滚动更新概述">2.1 滚动更新概述</a></li>
+            <li><a href="#22-滚动更新总结">2.2 滚动更新总结</a></li>
+            <li><a href="#23-滚动更新示例">2.3 滚动更新示例</a></li>
           </ul>
         </li>
-        <li><a href="#22-滚动更新总结">2.2 滚动更新总结</a></li>
-        <li><a href="#23-滚动更新示例">2.3 滚动更新示例</a></li>
       </ul>
     </li>
   </ul>
@@ -543,17 +577,21 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="1-概念">
+  <article class="markdown"><h1 id="k8s-应用滚动更新">
+  k8s 应用滚动更新
+  <a class="anchor" href="#k8s-%e5%ba%94%e7%94%a8%e6%bb%9a%e5%8a%a8%e6%9b%b4%e6%96%b0">#</a>
+</h1>
+<h2 id="1-概念">
   1. 概念
   <a class="anchor" href="#1-%e6%a6%82%e5%bf%b5">#</a>
-</h1>
+</h2>
 <p>滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于：
 滚动更新不但提供了更新服务，而且通常还提供了滚动<strong>进度查询</strong>，滚动<strong>历史记录</strong>，
 以及最重要的<strong>回滚</strong>等能力。通俗地说，就是具有系统或是软件的主动降级的能力。</p>
-<h1 id="2-deployment-滚动更新">
+<h2 id="2-deployment-滚动更新">
   2. Deployment 滚动更新
   <a class="anchor" href="#2-deployment-%e6%bb%9a%e5%8a%a8%e6%9b%b4%e6%96%b0">#</a>
-</h1>
+</h2>
 <p>Deployment 更新方式有 2 种：</p>
 <ul>
 <li>RollingUpdate</li>
@@ -611,10 +649,10 @@ https://github.com/alex-shpak/hugo-book
 	<span style="color:#75715e">// 5、同步 deployment 状态
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">syncRolloutStatus</span>(<span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">d</span>)
 }
-</code></pre></div><h2 id="21-滚动更新概述">
+</code></pre></div><h3 id="21-滚动更新概述">
   2.1 滚动更新概述
   <a class="anchor" href="#21-%e6%bb%9a%e5%8a%a8%e6%9b%b4%e6%96%b0%e6%a6%82%e8%bf%b0">#</a>
-</h2>
+</h3>
 <p>上面代码中 5 个重要的步骤总结如下：</p>
 <ol>
 <li>调用 <code>getAllReplicaSetsAndSyncRevision()</code> 获取所有的 rs，若没有 newRS 则创建；</li>
@@ -655,10 +693,10 @@ graph LR
     x3 --> stop
 </p>
 
-<h3 id="211-newrs-scale-up">
+<h4 id="211-newrs-scale-up">
   2.1.1 newRS scale up
   <a class="anchor" href="#211-newrs-scale-up">#</a>
-</h3>
+</h4>
 <p>阅读代码 <code>pkg/controller/deployment/rolling.go:68</code>，详细如下：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">reconcileNewReplicaSet</span>(<span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>) (<span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
     <span style="color:#75715e">// 1、判断副本数是否已达到了期望值
@@ -734,10 +772,10 @@ graph LR
 <li>通过 allRSs 计算 currentPodCount 的值；</li>
 <li>最后计算 scaleUpCount 值；</li>
 </ol>
-<h3 id="212-oldrs-scale-down">
+<h4 id="212-oldrs-scale-down">
   2.1.2 oldRS scale down
   <a class="anchor" href="#212-oldrs-scale-down">#</a>
-</h3>
+</h4>
 <p>同理，oldRS 规模缩小，阅读源码 <code>pkg/controller/deployment/rolling.go:68</code>:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">reconcileOldReplicaSets</span>(<span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">oldRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>) (<span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
     <span style="color:#75715e">// 1、计算 oldPodsCount
@@ -789,10 +827,10 @@ graph LR
 <li>计算 oldRS 的 scaleDownCount；</li>
 <li>最后 oldRS 缩容；</li>
 </ol>
-<h2 id="22-滚动更新总结">
+<h3 id="22-滚动更新总结">
   2.2 滚动更新总结
   <a class="anchor" href="#22-%e6%bb%9a%e5%8a%a8%e6%9b%b4%e6%96%b0%e6%80%bb%e7%bb%93">#</a>
-</h2>
+</h3>
 <p>通过上面的代码可以看出，滚动更新过程中主要是通过调用 <code>reconcileNewReplicaSet()</code> 对 newRS 不断扩容，
 调用 <code>reconcileOldReplicaSets()</code> 对 oldRS 不断缩容，最终达到期望状态，并且在整个升级过程中，
 都严格遵守 maxSurge 和 maxUnavailable 的约束。</p>
@@ -809,10 +847,10 @@ graph LR
     op3(dc.scaleReplicaSetAndRecordEvent) --> op4(dc.scaleReplicaSet)
 </p>
 
-<h2 id="23-滚动更新示例">
+<h3 id="23-滚动更新示例">
   2.3 滚动更新示例
   <a class="anchor" href="#23-%e6%bb%9a%e5%8a%a8%e6%9b%b4%e6%96%b0%e7%a4%ba%e4%be%8b">#</a>
-</h2>
+</h3>
 <ol>
 <li>创建一个deployment，replica = 10</li>
 </ol>
@@ -922,17 +960,16 @@ nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span
       
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-概念">1. 概念</a></li>
-    <li><a href="#2-deployment-滚动更新">2. Deployment 滚动更新</a>
+    <li><a href="#k8s-应用滚动更新">k8s 应用滚动更新</a>
       <ul>
-        <li><a href="#21-滚动更新概述">2.1 滚动更新概述</a>
+        <li><a href="#1-概念">1. 概念</a></li>
+        <li><a href="#2-deployment-滚动更新">2. Deployment 滚动更新</a>
           <ul>
-            <li><a href="#211-newrs-scale-up">2.1.1 newRS scale up</a></li>
-            <li><a href="#212-oldrs-scale-down">2.1.2 oldRS scale down</a></li>
+            <li><a href="#21-滚动更新概述">2.1 滚动更新概述</a></li>
+            <li><a href="#22-滚动更新总结">2.2 滚动更新总结</a></li>
+            <li><a href="#23-滚动更新示例">2.3 滚动更新示例</a></li>
           </ul>
         </li>
-        <li><a href="#22-滚动更新总结">2.2 滚动更新总结</a></li>
-        <li><a href="#23-滚动更新示例">2.3 滚动更新示例</a></li>
       </ul>
     </li>
   </ul>

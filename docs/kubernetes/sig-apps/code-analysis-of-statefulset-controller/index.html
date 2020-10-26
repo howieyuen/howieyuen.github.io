@@ -4,14 +4,14 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. StatefulSet 简介 #  Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
+<meta name="description" content="Statefulset Controller 源码分析 #  1. StatefulSet 简介 #  Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
 这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
 是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
 适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb集群，Redis 集群等等。
 1.1 特点 #    稳定、唯一的网络标识符
 如: Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则Redis集群将无法找到这段数据。">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Statefulset Controller 源码分析" />
-<meta property="og:description" content="1. StatefulSet 简介 #  Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
+<meta property="og:description" content="Statefulset Controller 源码分析 #  1. StatefulSet 简介 #  Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
 这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
 是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
 适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb集群，Redis 集群等等。
@@ -24,8 +24,8 @@
 <title>Statefulset Controller 源码分析 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
-<link rel="stylesheet" href="/book.min.bc96313b7eff2859c711746c9dbc5c9b3aca5651b50ecc3f8b1cf89154772a3b.css" integrity="sha256-vJYxO37/KFnHEXRsnbxcmzrKVlG1Dsw/ixz4kVR3Kjs=">
-<script defer src="/en.search.min.3d45b5dc006e1a6dbf6c0f34765df682c6e2c7b4c9a6ecc3649d7a77d25b36eb.js" integrity="sha256-PUW13ABuGm2/bA80dl32gsbix7TJpuzDZJ16d9JbNus="></script>
+<link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
+<script defer src="/en.search.min.d8177fbddab1d5a92f31bc5d9e32e539024b7eb246da79029aed3c65c5b746a3.js" integrity="sha256-2Bd/vdqx1akvMbxdnjLlOQJLfrJG2nkCmu08ZcW3RqM="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -447,6 +447,41 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a  class="">LeetCode</a>
+      <span>▾</span>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
 
@@ -521,23 +556,27 @@ https://github.com/alex-shpak/hugo-book
     
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-statefulset-简介">1. StatefulSet 简介</a>
+    <li><a href="#statefulset-controller-源码分析">Statefulset Controller 源码分析</a>
       <ul>
-        <li><a href="#11-特点">1.1 特点</a></li>
-        <li><a href="#12-限制">1.2 限制</a></li>
-        <li><a href="#13-基本功能">1.3 基本功能</a></li>
-        <li><a href="#14-示例">1.4 示例</a></li>
+        <li><a href="#1-statefulset-简介">1. StatefulSet 简介</a>
+          <ul>
+            <li><a href="#11-特点">1.1 特点</a></li>
+            <li><a href="#12-限制">1.2 限制</a></li>
+            <li><a href="#13-基本功能">1.3 基本功能</a></li>
+            <li><a href="#14-示例">1.4 示例</a></li>
+          </ul>
+        </li>
+        <li><a href="#2-源码解析">2. 源码解析</a>
+          <ul>
+            <li><a href="#21-startstatefulsetcontroller">2.1 startStatefulSetController()</a></li>
+            <li><a href="#22-sscsync">2.2 ssc.sync()</a></li>
+            <li><a href="#23-sscsyncstatefulset">2.3 ssc.syncStatefulSet()</a></li>
+            <li><a href="#24-sscupdatestatefulset">2.4 ssc.updateStatefulSet()</a></li>
+          </ul>
+        </li>
+        <li><a href="#3-参考链接">3. 参考链接</a></li>
       </ul>
     </li>
-    <li><a href="#2-源码解析">2. 源码解析</a>
-      <ul>
-        <li><a href="#21-startstatefulsetcontroller">2.1 startStatefulSetController()</a></li>
-        <li><a href="#22-sscsync">2.2 ssc.sync()</a></li>
-        <li><a href="#23-sscsyncstatefulset">2.3 ssc.syncStatefulSet()</a></li>
-        <li><a href="#24-sscupdatestatefulset">2.4 ssc.updateStatefulSet()</a></li>
-      </ul>
-    </li>
-    <li><a href="#3-参考链接">3. 参考链接</a></li>
   </ul>
 </nav>
 
@@ -549,18 +588,22 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="1-statefulset-简介">
+  <article class="markdown"><h1 id="statefulset-controller-源码分析">
+  Statefulset Controller 源码分析
+  <a class="anchor" href="#statefulset-controller-%e6%ba%90%e7%a0%81%e5%88%86%e6%9e%90">#</a>
+</h1>
+<h2 id="1-statefulset-简介">
   1. StatefulSet 简介
   <a class="anchor" href="#1-statefulset-%e7%ae%80%e4%bb%8b">#</a>
-</h1>
+</h2>
 <p>Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。</p>
 <p>这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。</p>
 <p>是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。</p>
 <p>适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb集群，Redis 集群等等。</p>
-<h2 id="11-特点">
+<h3 id="11-特点">
   1.1 特点
   <a class="anchor" href="#11-%e7%89%b9%e7%82%b9">#</a>
-</h2>
+</h3>
 <ul>
 <li>
 <p>稳定、唯一的网络标识符</p>
@@ -583,20 +626,20 @@ https://github.com/alex-shpak/hugo-book
 <p>MySQL 在更新时，应该先更新从节点，全部的从节点都更新完了，最后在更新主节点，因为新版本一般可兼容老版本，但是一定要注意，若新版本不兼容老版本就很很麻烦</p>
 </li>
 </ul>
-<h2 id="12-限制">
+<h3 id="12-限制">
   1.2 限制
   <a class="anchor" href="#12-%e9%99%90%e5%88%b6">#</a>
-</h2>
+</h3>
 <ul>
 <li>Pod的存储必须使用 PersistVolume</li>
 <li>删除或者缩容时，不会删除关联的卷</li>
 <li>使用 headless service 关联 Pod，需要手动创建</li>
 <li>Pod 的管理策略为 <code>OrderedReady</code> 时使用滚动更新能力，可能需要人工干预</li>
 </ul>
-<h2 id="13-基本功能">
+<h3 id="13-基本功能">
   1.3 基本功能
   <a class="anchor" href="#13-%e5%9f%ba%e6%9c%ac%e5%8a%9f%e8%83%bd">#</a>
-</h2>
+</h3>
 <ul>
 <li>创建</li>
 <li>删除
@@ -619,10 +662,10 @@ https://github.com/alex-shpak/hugo-book
 </ul>
 </li>
 </ul>
-<h2 id="14-示例">
+<h3 id="14-示例">
   1.4 示例
   <a class="anchor" href="#14-%e7%a4%ba%e4%be%8b">#</a>
-</h2>
+</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
 <span style="color:#f92672">metadata</span>:
@@ -633,7 +676,7 @@ https://github.com/alex-shpak/hugo-book
   <span style="color:#f92672">ports</span>:
   - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
     <span style="color:#f92672">name</span>: <span style="color:#ae81ff">web</span>
-  <span style="color:#f92672">clusterIP</span>: <span style="color:#ae81ff">None</span> <span style="color:#75715e"># headless service</span>
+  <span style="color:#f92672">clusterIP</span>: <span style="color:#ae81ff">None</span> <span style="color:#75715e">## headless service</span>
   <span style="color:#f92672">selector</span>:
     <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
 ---
@@ -643,7 +686,7 @@ https://github.com/alex-shpak/hugo-book
   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">web</span>
 <span style="color:#f92672">spec</span>:
   <span style="color:#f92672">serviceName</span>: <span style="color:#e6db74">&#34;nginx&#34;</span>
-  <span style="color:#f92672">podManagementPolicy</span>: <span style="color:#e6db74">&#34;OrderedReady&#34;</span> <span style="color:#75715e"># default is OrderedReady</span>
+  <span style="color:#f92672">podManagementPolicy</span>: <span style="color:#e6db74">&#34;OrderedReady&#34;</span> <span style="color:#75715e">## default is OrderedReady</span>
   <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">2</span>
   <span style="color:#f92672">selector</span>:
     <span style="color:#f92672">matchLabels</span>:
@@ -670,17 +713,17 @@ https://github.com/alex-shpak/hugo-book
       <span style="color:#f92672">resources</span>:
         <span style="color:#f92672">requests</span>:
           <span style="color:#f92672">storage</span>: <span style="color:#ae81ff">1Gi</span>
-</code></pre></div><h1 id="2-源码解析">
+</code></pre></div><h2 id="2-源码解析">
   2. 源码解析
   <a class="anchor" href="#2-%e6%ba%90%e7%a0%81%e8%a7%a3%e6%9e%90">#</a>
-</h1>
+</h2>
 <blockquote>
 <p>kubernetes version: v1.19</p>
 </blockquote>
-<h2 id="21-startstatefulsetcontroller">
+<h3 id="21-startstatefulsetcontroller">
   2.1 startStatefulSetController()
   <a class="anchor" href="#21-startstatefulsetcontroller">#</a>
-</h2>
+</h3>
 <p><code>startStatefulSetController()</code> 是 StatefulSet Controller 的启动方法，其中调用 <code>statefulset.NewStatefulSetController()</code> 方法进行初始化，然后调用对象的 <code>Run()</code> 方法启动 Controller。其中 <code>ConcurrentStatefulSetSyncs</code> 默认是5，即默认启动 5 个协程处理StatefulSet 相关业务。</p>
 <p>可以看到 StatefulSetController 初始化时直接相关的对象类型分别是 Pod、StatefulSet、PVC 和 ControllerRevision。印证了之前提到的 StatefulSet 的特殊之处：使用 PV 作为存储；ControllerRevision 表示升级/回滚记录。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">startStatefulSetController</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">ControllerContext</span>) (<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
@@ -696,10 +739,10 @@ https://github.com/alex-shpak/hugo-book
 	).<span style="color:#a6e22e">Run</span>(int(<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ComponentConfig</span>.<span style="color:#a6e22e">StatefulSetController</span>.<span style="color:#a6e22e">ConcurrentStatefulSetSyncs</span>), <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Stop</span>)
 	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
 }
-</code></pre></div><h2 id="22-sscsync">
+</code></pre></div><h3 id="22-sscsync">
   2.2 ssc.sync()
   <a class="anchor" href="#22-sscsync">#</a>
-</h2>
+</h3>
 <p><code>run()</code> 方法会通过 informer 同步 cache 并监听 pod、statefulset、pvc 和 controllerrevision 对象的变更事件，然后启动 5 个 worker 协程，每个 worker 调用 <code>sync()</code> 方法，正式进入业务逻辑处理。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">StatefulSetController</span>) <span style="color:#a6e22e">sync</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
 	<span style="color:#f92672">...</span>
@@ -743,10 +786,10 @@ https://github.com/alex-shpak/hugo-book
 <li>调用 <code>ssc.getPodsForStatefulSet</code> 通过 selector 获取 sts 关联的 pod，若有孤儿 pod 的 label 与 sts 的能匹配则进行关联，若已关联的 pod label 有变化则解除与 sts 的关联关系；</li>
 <li>最后调用 ssc.syncStatefulSet 执行真正的 sync 操作；</li>
 </ol>
-<h2 id="23-sscsyncstatefulset">
+<h3 id="23-sscsyncstatefulset">
   2.3 ssc.syncStatefulSet()
   <a class="anchor" href="#23-sscsyncstatefulset">#</a>
-</h2>
+</h3>
 <p>在 <code>syncStatefulSet()</code> 中仅仅是调用了 <code>ssc.control.UpdateStatefulSet()</code> 方法进行处理。<code>ssc.control.UpdateStatefulSet()</code> 会调用 <code>ssc.performUpdate()</code> 方法，最终走到更新逻辑 <code>ssc.updateStatefulSet()</code> 和 <code>ssc.updateStatefulSetStatus()</code>。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">StatefulSetController</span>) <span style="color:#a6e22e">syncStatefulSet</span>(<span style="color:#a6e22e">set</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">StatefulSet</span>, <span style="color:#a6e22e">pods</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>) <span style="color:#66d9ef">error</span> {
 	<span style="color:#f92672">...</span>
@@ -809,10 +852,10 @@ https://github.com/alex-shpak/hugo-book
 <li>调用 <code>ssc.updateStatefulSetStatus()</code> 更新 status 子资源；</li>
 <li>根据 sts 的 spec.revisionHistoryLimit 字段清理过期的 controllerrevision；</li>
 </ol>
-<h2 id="24-sscupdatestatefulset">
+<h3 id="24-sscupdatestatefulset">
   2.4 ssc.updateStatefulSet()
   <a class="anchor" href="#24-sscupdatestatefulset">#</a>
-</h2>
+</h3>
 <p>sts 通过 controllerrevision 保存历史版本，类似于 deployment 的 replicaset，与 replicaset 不同的是 controllerrevision 仅用于回滚阶段，在 sts 的滚动升级过程中是通过 currentRevision 和 updateRevision 进行控制并不会用到 controllerrevision。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">defaultStatefulSetControl</span>) <span style="color:#a6e22e">updateStatefulSet</span>(<span style="color:#f92672">...</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">StatefulSetStatus</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#75715e">// 1. 分别获取 currentRevision 和 updateRevision 对应的的 statefulset object
@@ -1102,10 +1145,10 @@ https://github.com/alex-shpak/hugo-book
 <li>更新：可以看出在第 6 步之后的所有操作就是与更新相关，所以更新操作会执行完整个方法，在更新过程中通过 pod 的 currentRevision 和 updateRevision 来计算 currentReplicas、updatedReplicas 的值，最终完成所有 pod 的更新；</li>
 <li>删除：删除操作就比较明显，会止于第 5 步，但是在此之前检查 pod 状态以及分组的操作确实是多余的；</li>
 </ul>
-<h1 id="3-参考链接">
+<h2 id="3-参考链接">
   3. 参考链接
   <a class="anchor" href="#3-%e5%8f%82%e8%80%83%e9%93%be%e6%8e%a5">#</a>
-</h1>
+</h2>
 <ul>
 <li>
   <a href="https://kubernetes.io/zh/docs/concepts/workloads/controllers/statefulset/">StatefulSet 概念</a></li>
@@ -1148,23 +1191,27 @@ https://github.com/alex-shpak/hugo-book
       
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-statefulset-简介">1. StatefulSet 简介</a>
+    <li><a href="#statefulset-controller-源码分析">Statefulset Controller 源码分析</a>
       <ul>
-        <li><a href="#11-特点">1.1 特点</a></li>
-        <li><a href="#12-限制">1.2 限制</a></li>
-        <li><a href="#13-基本功能">1.3 基本功能</a></li>
-        <li><a href="#14-示例">1.4 示例</a></li>
+        <li><a href="#1-statefulset-简介">1. StatefulSet 简介</a>
+          <ul>
+            <li><a href="#11-特点">1.1 特点</a></li>
+            <li><a href="#12-限制">1.2 限制</a></li>
+            <li><a href="#13-基本功能">1.3 基本功能</a></li>
+            <li><a href="#14-示例">1.4 示例</a></li>
+          </ul>
+        </li>
+        <li><a href="#2-源码解析">2. 源码解析</a>
+          <ul>
+            <li><a href="#21-startstatefulsetcontroller">2.1 startStatefulSetController()</a></li>
+            <li><a href="#22-sscsync">2.2 ssc.sync()</a></li>
+            <li><a href="#23-sscsyncstatefulset">2.3 ssc.syncStatefulSet()</a></li>
+            <li><a href="#24-sscupdatestatefulset">2.4 ssc.updateStatefulSet()</a></li>
+          </ul>
+        </li>
+        <li><a href="#3-参考链接">3. 参考链接</a></li>
       </ul>
     </li>
-    <li><a href="#2-源码解析">2. 源码解析</a>
-      <ul>
-        <li><a href="#21-startstatefulsetcontroller">2.1 startStatefulSetController()</a></li>
-        <li><a href="#22-sscsync">2.2 ssc.sync()</a></li>
-        <li><a href="#23-sscsyncstatefulset">2.3 ssc.syncStatefulSet()</a></li>
-        <li><a href="#24-sscupdatestatefulset">2.4 ssc.updateStatefulSet()</a></li>
-      </ul>
-    </li>
-    <li><a href="#3-参考链接">3. 参考链接</a></li>
   </ul>
 </nav>
 
