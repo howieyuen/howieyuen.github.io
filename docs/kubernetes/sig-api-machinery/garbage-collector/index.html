@@ -25,7 +25,7 @@ apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 co
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.d8177fbddab1d5a92f31bc5d9e32e539024b7eb246da79029aed3c65c5b746a3.js" integrity="sha256-2Bd/vdqx1akvMbxdnjLlOQJLfrJG2nkCmu08ZcW3RqM="></script>
+<script defer src="/en.search.min.37e70f1d3c67efeadca0a84e04491fc5f2664beb062e400839f3789834670772.js" integrity="sha256-N&#43;cPHTxn7&#43;rcoKhOBEkfxfJmS&#43;sGLkAIOfN4mDRnB3I="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -670,6 +670,11 @@ https://github.com/alex-shpak/hugo-book
 </li>
 </ul>
 <p>在 kubernetes v1.9 版本之前，大部分 controller 的默认删除策略为 <code>Orphan</code>，从 v1.9 开始，对 apps/v1 下的资源默认使用 <code>Background</code> 模式。</p>
+<p>针对 Pod 存在特有的删除方式：<code>Gracefully terminate</code>，允许优雅地终止容器。
+先发送 TERM 信号，过了宽限期还未终止，则发送 KILL 信号。
+kube-apiserver 先设置 ObjectMeta.DeletionGracePeriodSeconds，默认为 30s，
+再由 kubelet 发送删除请求，请求参数中 DeleteOptions.GracePeriodSeconds = 0，
+kube-apiserver 判断到 lastGraceful = options.GracePeriodSeconds = 0，就直接删除对象了。</p>
 <h3 id="21-foreground-模式">
   2.1 Foreground 模式
   <a class="anchor" href="#21-foreground-%e6%a8%a1%e5%bc%8f">#</a>

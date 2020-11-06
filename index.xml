@@ -184,7 +184,7 @@ apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - 
       
       <guid>https://howieyuen.github.io/docs/golang/data-structure/slice/</guid>
       <description>切片 #  1. 数据结构 #  type slice struct { array unsafe.Pointer len int cap int }  slice 的底层数据结构中的 array 是一个指针，指向的是一个 Array len 代表这个 slice 的元素个数 cap 表示 slice 指向的底层数组容量  对 slice 的赋值，以值作为函数参数时，只拷贝 1 个指针和 2 个 int 值。
-2. 操作 #  2.1 创建 #   var []T 或 []T{} func make([]T，len，cap) []T  2.2 nil 切片和空切片 #   nil 切片被用在很多标准库和内置函数中，描述一个不存在的切片的时候，就需要用到 nil 切片。比如函数在发生异常的时候，返回的切片就是 nil 切片。nil 切片的指针指向 nil.</description>
+2. 操作 #  2.1 创建 #   var []T 或 []T{} func make([]T,len,cap) []T  2.2 nil 切片和空切片 #   nil 切片被用在很多标准库和内置函数中，描述一个不存在的切片的时候，就需要用到 nil 切片。比如函数在发生异常的时候，返回的切片就是 nil 切片。nil 切片的指针指向 nil.</description>
     </item>
     
     <item>
