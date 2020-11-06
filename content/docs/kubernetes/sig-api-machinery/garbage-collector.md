@@ -82,6 +82,12 @@ type OwnerReference struct {
 
 在 kubernetes v1.9 版本之前，大部分 controller 的默认删除策略为 `Orphan`，从 v1.9 开始，对 apps/v1 下的资源默认使用 `Background` 模式。
 
+针对 Pod 存在特有的删除方式：`Gracefully terminate`，允许优雅地终止容器。
+先发送 TERM 信号，过了宽限期还未终止，则发送 KILL 信号。
+kube-apiserver 先设置 ObjectMeta.DeletionGracePeriodSeconds，默认为 30s，
+再由 kubelet 发送删除请求，请求参数中 DeleteOptions.GracePeriodSeconds = 0，
+kube-apiserver 判断到 lastGraceful = options.GracePeriodSeconds = 0，就直接删除对象了。
+
 ### 2.1 Foreground 模式
 
 在 Foreground 模式下，待删除对象首先进入 `deletion in progress` 状态。 在此状态下存在如下的场景：

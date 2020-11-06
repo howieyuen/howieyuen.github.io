@@ -28,7 +28,7 @@ type slice struct {
 ### 2.1 创建
 
 - `var []T` 或 `[]T{}`
-- `func make([]T，len，cap) []T`
+- `func make([]T,len,cap) []T`
 
 ### 2.2 nil 切片和空切片
 
