@@ -1,5 +1,5 @@
 ---
-weight: 4
+weight: 3
 bookFlatSection: false
-title: sig-node
+title: kube-proxy
 ---

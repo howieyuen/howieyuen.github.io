@@ -1,19 +1,17 @@
 ---
 author: Yuan Hao
 date: 2020-10-12
-title: k8s 应用滚动更新
+title: 无状态应用滚动更新
 tag: [rolling update, deployment]
 ---
 
-# k8s 应用滚动更新
-
-## 1. 概念
+# 1. 概念
 
 滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于：
 滚动更新不但提供了更新服务，而且通常还提供了滚动**进度查询**，滚动**历史记录**，
 以及最重要的**回滚**等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
 
-## 2. Deployment 滚动更新
+# 2. Deployment 滚动更新
 
 Deployment 更新方式有 2 种：
 - RollingUpdate
@@ -77,7 +75,7 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
 }
 ```
 
-### 2.1 滚动更新概述
+## 2.1 滚动更新概述
 
 上面代码中 5 个重要的步骤总结如下：
 1. 调用 `getAllReplicaSetsAndSyncRevision()` 获取所有的 rs，若没有 newRS 则创建；
@@ -104,7 +102,7 @@ graph LR
     x3 --> stop
 {{< /mermaid >}}
 
-#### 2.1.1 newRS scale up
+### 2.1.1 newRS scale up
 
 阅读代码 `pkg/controller/deployment/rolling.go:68`，详细如下： 
 ```go
@@ -184,7 +182,7 @@ func NewRSNewReplicas(deployment *apps.Deployment, allRSs []*apps.ReplicaSet, ne
 3. 通过 allRSs 计算 currentPodCount 的值；
 4. 最后计算 scaleUpCount 值；
 
-#### 2.1.2 oldRS scale down
+### 2.1.2 oldRS scale down
 
 同理，oldRS 规模缩小，阅读源码 `pkg/controller/deployment/rolling.go:68`:
 ```go
@@ -239,7 +237,7 @@ func (dc *DeploymentController) reconcileOldReplicaSets(allRSs []*apps.ReplicaSe
 4. 计算 oldRS 的 scaleDownCount；
 5. 最后 oldRS 缩容；
 
-### 2.2 滚动更新总结
+## 2.2 滚动更新总结
 
 通过上面的代码可以看出，滚动更新过程中主要是通过调用 `reconcileNewReplicaSet()` 对 newRS 不断扩容，
 调用 `reconcileOldReplicaSets()` 对 oldRS 不断缩容，最终达到期望状态，并且在整个升级过程中，
@@ -258,7 +256,7 @@ graph LR
     op3(dc.scaleReplicaSetAndRecordEvent) --> op4(dc.scaleReplicaSet)
 {{< /mermaid >}}
 
-### 2.3 滚动更新示例
+## 2.3 滚动更新示例
 
 1. 创建一个deployment，replica = 10
 ```yaml

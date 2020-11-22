@@ -5,11 +5,9 @@ title: 高级调度
 tag: [scheduling, taint, toleration]
 ---
 
-# 高级调度
+# 1. 使用 taint 和 toleration 阻止节点调度到特定节点
 
-## 1. 使用 taint 和 toleration 阻止节点调度到特定节点
-
-### 1.1 taint 和 toleration
+## 1.1 taint 和 toleration
 
 taint，是在不修改已有 Pod 的前提下，通过在节点上添加污点信息，拒绝 Pod 的部署。
 只有当一个 Pod 容忍某个节点的 taint 时，才能被调度到此节点上。
@@ -56,14 +54,14 @@ Tolerations:
   如果节点上的 Pod 没有容忍此污点，会被驱逐。
 
 
-### 1.2 在节点上定义污点
+## 1.2 在节点上定义污点
 ```s
 kubectl taint node node1.k8s node-type=production:NoSchedule
 ```
 此命令给节点添加污点，key 为 node-type，value 为 production，effect 为 NoSchedule。
 如果现在部署一个常规 Pod 多个副本，没有一个 Pod 会调度到此节点上。
 
-### 1.3 在 Pod 上添加容忍
+## 1.3 在 Pod 上添加容忍
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -82,7 +80,7 @@ spec:
 ```
 部署此 deployment，Pod 即可调度到 node1.k8s 节点上。
 
-### 1.4 了解污点和容忍的使用场景
+## 1.4 了解污点和容忍的使用场景
 
 **调度时使用污点和容忍**
 
@@ -109,7 +107,7 @@ tolerations:
 ```
 上面2个容忍表示，该 Pod 容忍所在节点处于 notReady 和 unreachable 状态维持 300s。超时后，再重新调度。
 
-## 2. 使用节点亲和将 Pod 调度到指定节点
+# 2. 使用节点亲和将 Pod 调度到指定节点
 
 污点可以拒绝调度，亲和允许调度。早期的 k8s 版本，节点亲和，就是 Pod 中的 nodeSelector 字段。
 与节点选择器类似，每个节点都可以配置亲和性规则，可以是硬性标注，也可以是偏好。
@@ -129,7 +127,7 @@ Labels: beta.kubernetes.io/arch=amd64
 ```
 这是一个 gke 的节点，最后三个标签涉及到亲和性，分别表示所在地理地域，可用性区域，和主机名。
 
-### 2.1 指定强制节点亲和性规则
+## 2.1 指定强制节点亲和性规则
 
 下面展示了只能被部署到含有 gpu=true 标签的节点上的 Pod：
 ```yaml
@@ -158,7 +156,7 @@ spec:
 
 lableSelectorTerms 和 matchExpressions 定义了节点的标签必须满足哪一种表达方式。
 
-### 2.2 调度 Pod 时优先考虑某些节点
+## 2.2 调度 Pod 时优先考虑某些节点
 
 节点亲和性和节点选择器相比，最大的好处就是，
 当调度某一个 Pod，指定可以优先考某些节点，如果节点均无法满足，调度结果也是可以接受的。
@@ -218,12 +216,12 @@ spec:
 此函数保证同一个 ReplicaSet 或者 Service 的 Pod，将分散到不同节点上。
 避免单个节点失效而出现整个服务挂掉。
 
-## 3. 使用亲和/反亲和部署 Pod
+# 3. 使用亲和/反亲和部署 Pod
 
 刚才描述了 Pod 和节点之间的亲和关系，也有 Pod 与 Pod 之间的亲和关系，
 例如前端 Pod 和后端 Pod，尽可能部署较近，减少网络时延。
 
-### 3.1 使用 Pod 亲和将多个 Pod 部署到同一个节点上
+## 3.1 使用 Pod 亲和将多个 Pod 部署到同一个节点上
 
 部署 1 个后端 Pod 和 5 个前端 Pod。先部署后端：
 ```s
@@ -260,7 +258,7 @@ spec:
 假设后端 Pod 被误删，重新调度后，依旧在 node2 上。
 虽然后端 Pod 本身没有定义任何亲和性规则，如果调度到其他节点，即会打破已有的亲和规则。
 
-### 3.2 将 Pod 部署到同一个机柜、可用性区域或者地理地域
+## 3.2 将 Pod 部署到同一个机柜、可用性区域或者地理地域
 
 **同一个可用性区域协调部署**
 
@@ -278,7 +276,7 @@ topologyKey 的工作方式很简单，上面提到的三个属性并没有什�
 接着查询这些 Pod 运行在那些节点上。特别寻找能匹配 podAffinity 配置的 topologyKey 的节点。
 接着，会优先选择所有标签匹配的 Pod 的值的节点。
 
-### 3.3 Pod 优先级亲和性
+## 3.3 Pod 优先级亲和性
 与节点亲和一样，pod 之间也可以用 prefereddDuringSchdulingIgnoredDuringExecution。
 
 ```yaml
@@ -303,7 +301,7 @@ spec:
 ```
 和 nodeAffinity 一样，设置了权重。也需要设置 topologyKey 和 labelSelector。
 
-### 3.4 Pod 反亲和分开调度
+## 3.4 Pod 反亲和分开调度
 
 同理，有 nodeAntiAffinity，也有 podAntiAffinity。
 这将导致调度器永远不会选择包含 podAntiAffinity 的 Pod 所在的节点。

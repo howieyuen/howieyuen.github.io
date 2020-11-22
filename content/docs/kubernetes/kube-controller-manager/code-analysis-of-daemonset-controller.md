@@ -5,9 +5,7 @@ title: DaemonSet Controller 源码分析
 tag: [daemonset, controller]
 ---
 
-# DaemonSet Controller 源码分析
-
-## 1. DaemonSet 简介
+# 1. DaemonSet 简介
 
 我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
 
@@ -15,7 +13,7 @@ tag: [daemonset, controller]
 
 如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。
 
-### 1.1 应用场景
+## 1.1 应用场景
 
 - 在每个节点上运行集群存守护进程
 - 在每个节点上运行日志收集守护进程
@@ -23,7 +21,7 @@ tag: [daemonset, controller]
 
 一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。
 
-### 1.2 基本功能
+## 1.2 基本功能
 
 - 创建
 - 删除
@@ -34,7 +32,7 @@ tag: [daemonset, controller]
     - OnDelete
 - 回滚
 
-### 1.3 示例
+## 1.3 示例
 
 ```yaml
 apiVersion: apps/v1
@@ -54,8 +52,8 @@ spec:
         name: fluentd-elasticsearch
     spec:
       tolerations:
-      ## this toleration is to have the daemonset runnable on master nodes
-      ## remove it if your masters can't run pods
+      # this toleration is to have the daemonset runnable on master nodes
+      # remove it if your masters can't run pods
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       containers:
@@ -83,11 +81,11 @@ spec:
           path: /var/lib/docker/containers
 ```
 
-## 2. 源码分析
+# 2. 源码分析
 
 > kubernetes version: v1.19
 
-### 2.1 startDaemonSetController()
+## 2.1 startDaemonSetController()
 
 与其他资源的 Controller 启动方式一致，在 `startDaemonSetController()` 中初始化 DaemonSetController 对象，并调用 `Run()` 方法启动。从该方法可以看出，DaemonSet Controller 关心的是 `daemonset`、`controllerrevision`、`pod`、`node` 四种资源的变动，其中 `ConcurrentDaemonSetSyncs`  默认是 2。
 
@@ -114,7 +112,7 @@ func startDaemonSetController(ctx ControllerContext) (http.Handler, bool, error)
 }
 ```
 
-### 2.2 Run()
+## 2.2 Run()
 
 Run() 方法中执行 2 个核心操作：`sync` 和 `gc`。其中 sync 操作是 controller 的核心代码，响应上述所有操作。在初始化 controller 对象时，指定了 `failedPodsBackoff` 的参数，`defaultDuration = 1s`，`maxDuration = 15min`；`gc` 的主要作用是发现 daemonset 的 pod 的 phase 为 failed，就会重启该 Pod，如果已经超时（2*15min）会删除该条记录。
 
@@ -143,7 +141,7 @@ func (dsc *DaemonSetsController) Run(workers int, stopCh <-chan struct{}) {
 }
 ```
 
-### 2.3 syncDaemonSet()
+## 2.3 syncDaemonSet()
 
 DaemonSet 的 Pod 的创建/删除都是和 Node 相关，所以每次 `sync` 操作，需要遍历所有的 Node 进行判断。`syncDaemonSet()` 的主要逻辑为：
 
@@ -224,7 +222,7 @@ func (dsc *DaemonSetsController) syncDaemonSet(key string) error {
 }
 ```
 
-### 2.4 dsc.manage()
+## 2.4 dsc.manage()
 
 `dsc.manage()` 是为了保证ds 的 Pod 正常运行在应该存在的节点，该方法做了这几件事：
 1. 调用 `dsc.getNodesToDaemonPods()`，获取当前的节点和 daemon pod 的映射关系（`map[nodeName][]*v1.Pod`）
@@ -470,7 +468,7 @@ graph LR
     op3 --> op5(dsc.nodeShouldRunDaemonPod)
 {{< /mermaid >}}
 
-### 2.5 dsc.rollingUpdate()
+## 2.5 dsc.rollingUpdate()
 
 daemonset update 的方式有两种 `OnDelete` 和 `RollingUpdate`，当为 `OnDelete` 时需要用户手动删除每一个 pod 后完成更新操作，当为 `RollingUpdate` 时，daemonset controller 会自动控制升级进度。
 
@@ -531,20 +529,20 @@ func (dsc *DaemonSetsController) rollingUpdate(ds *apps.DaemonSet, nodeList []*v
 }
 ```
 
-### 2.6 dsc.updateDaemonSetStatus()
+## 2.6 dsc.updateDaemonSetStatus()
 
 `dsc.updateDaemonSetStatus()` 是 sync 动作的最后一步，主要是用来更新 DaemonSet 的 status 子资源。ds.Status的各个字段如下：
 ```yaml
 status:
-  collisionCount: 0         ## hash 冲突数
-  currentNumberScheduled: 1  ## 已经运行了 DaemonSet Pod 的节点数量
-  desiredNumberScheduled: 1  ## 需要运行该DaemonSet Pod的节点数量
-  numberAvailable: 1        ## DaemonSet Pod 状态为 Ready 且运行时间超过 Spec.MinReadySeconds 的节点数量
-  numberUnavailable: 0      ## desiredNumberScheduled - numberAvailable 的节点数量
-  numberMisscheduled: 0     ## 不需要运行 DeamonSet Pod 但是已经运行了的节点数量
-  numberReady: 1           ## DaemonSet Pod状态为Ready的节点数量
+  collisionCount: 0         # hash 冲突数
+  currentNumberScheduled: 1  # 已经运行了 DaemonSet Pod 的节点数量
+  desiredNumberScheduled: 1  # 需要运行该DaemonSet Pod的节点数量
+  numberAvailable: 1        # DaemonSet Pod 状态为 Ready 且运行时间超过 Spec.MinReadySeconds 的节点数量
+  numberUnavailable: 0      # desiredNumberScheduled - numberAvailable 的节点数量
+  numberMisscheduled: 0     # 不需要运行 DeamonSet Pod 但是已经运行了的节点数量
+  numberReady: 1           # DaemonSet Pod状态为Ready的节点数量
   observedGeneration: 1
-  updatedNumberScheduled: 1 ## 已经完成DaemonSet Pod更新的节点数量
+  updatedNumberScheduled: 1 # 已经完成DaemonSet Pod更新的节点数量
 ```
 
 主要逻辑为：
@@ -622,7 +620,7 @@ func (dsc *DaemonSetsController) updateDaemonSetStatus(ds *apps.DaemonSet, nodeL
 }
 ```
 
-### 2.7 源码分析小结
+## 2.7 源码分析小结
 
 {{< mermaid >}}
 graph LR
@@ -637,11 +635,11 @@ op1.1 --> op1.1.3(dsc.syncNodes)
 op1.1.2 --> op1.1.2.1(dsc.nodeShouldRunDaemonPod)
 {{< /mermaid >}}
 
-## 3. 总结
+# 3. 总结
 
 在 daemonset controller 中可以看到许多功能都是 deployment 和 statefulset 已有的。在创建 pod 的流程与 replicaset controller 创建 pod 的流程是相似的，都使用了 `expectations` 机制并且限制了在一个 syncLoop 中最多创建或删除的 pod 数。更新方式与 statefulset 一样都有 `OnDelete` 和 `RollingUpdate` 两种， `OnDelete` 方式与 statefulset 相似，都需要手动删除对应的 pod，而  `RollingUpdate`  方式与 statefulset 和 deployment 都有点区别，`RollingUpdate` 方式更新时不支持暂停操作并且 pod 是先删除再创建的顺序进行。版本控制方式与 statefulset 的一样都是使用 `controllerRevision`。最后要说的一点是在 v1.12 及以后的版本中，使用 daemonset 创建的 pod 已不再使用直接指定 .spec.nodeName的方式绕过调度器进行调度，而是走默认调度器通过 `nodeAffinity` 的方式调度到每一个节点上。
 
-## 4. 参考资料
+# 4. 参考资料
 
 - [DaemonSet概念](https://kubernetes.io/zh/docs/concepts/workloads/controllers/daemonset/)
 - [DaemonSet 滚动更新](https://kubernetes.io/zh/docs/tasks/manage-daemon/update-daemon-set/)

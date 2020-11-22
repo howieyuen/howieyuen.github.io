@@ -5,11 +5,9 @@ title: Topology Manager 设计方案
 tag: [kubelet, topology manager]
 ---
 
-# Topology Manager 设计方案
+> 注：本文翻译自[Node Topology Manager](https://github.com/kubernetes/enhancements/blob/master/keps/kubelet/0035-20190130-topology-manager.md)
 
-> 注：本文翻译自[Node Topology Manager](https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/0035-20190130-topology-manager.md)
-
-## 1. 概要
+# 1. 概要
 
 越来越多的系统将 CPU 和硬件加速器组合使用，以支撑高延迟和搞吞吐量的并行计算。
 包括电信、科学计算、机器学习、金融服务和数据分析等领域的工作。这种的混血儿构成了一个高性能环境。
@@ -19,7 +17,7 @@ tag: [kubelet, topology manager]
 
 本次建议提供一个新机制，可以协同kubernetes各个组件，对硬件资源的分配可以有不同的细粒度。
 
-## 2. 启发
+# 2. 启发
 
 当前，kubelet 中多个组件决定系统拓扑相关的分配：
 
@@ -43,12 +41,12 @@ tag: [kubelet, topology manager]
 内核能从底层硬件接收精确的拓扑信息（通常是通过 SLIT 表），是正确操作的前提。
 更多信息请参考ACPI规范的 5.2.16 和 5.2.17节。
 
-### 2.1 目标
+## 2.1 目标
 
 - 根据 CPU 管理器和设备管理器的输入，给容器选择最优的 NUMA 亲和节点。
 - 集成 kubelet 中其他支持拓扑感知的组件，提供一个统一的内部接口。
 
-### 2.2 非目标
+## 2.2 非目标
 
 - 设备间连接：根据直接设备互连来决定设备分配。此问题不同于套接字局部性。设备间的拓扑关系，
   可以都在设备管理器中考虑，可以做到套接字的亲和性。实现这一策略，可以从逐渐支持任何设备之间的拓扑关系。
@@ -58,7 +56,7 @@ tag: [kubelet, topology manager]
   此次提出的方案应该具有良好的扩展性，以适配网络接口的局部性。对于特殊的网络需求，
   可以使用设备插件API作为临时方案，以减少网络接口的局限性。
 
-### 2.3 用户故事
+## 2.3 用户故事
 
 *故事1: 快速虚拟化的网络功能*
 
@@ -69,7 +67,7 @@ tag: [kubelet, topology manager]
 
 NUMA 节点中的已分配的 CPU 和设备，可满足神经网络训练的加速器和独占的CPU的需求，以达到性能最优。
 
-## 3. 提议
+# 3. 提议
 
 *主要思想：两相拓扑一致性协议*
 拓扑亲和性在容器级别，与设备和 CPU 的亲和类似。在 Pod 准入期间，
@@ -77,9 +75,9 @@ NUMA 节点中的已分配的 CPU 和设备，可满足神经网络训练的加�
 当这些组件进行资源分配时，拓扑管理器扮演本地对齐的预分配角色。
 我们希望各个组件能利用 Pod 中隐含的 QoS 类型进行优先级排序，以满足局部重要性最优。
 
-### 3.1 提议修改点
+## 3.1 提议修改点
 
-#### 3.1.1 新概念：拓扑管理器
+### 3.1.1 新概念：拓扑管理器
 
 这个提议主要关注 kubelet 中一个新组件，叫做拓扑管理器。拓扑管理器实现了 Pod 的 `Admit()` 接口，
 并参与 kubelet 的对 Pod 的准入。当 `Admit()` 方法被调用，拓扑管理器根据 kubelet 标志，
@@ -283,14 +281,14 @@ type Policy interface {
 
 *图：拓扑管理器组件*
 
-![](/kubernetes/sig-node/topology-manager/topology-manager-components.png)
+![](/kubernetes/kubelet/topology-manager/topology-manager-components.png)
 
 
 *图：拓扑管理器实例化并出现在Pod准入生命周期中*
 
-![](/kubernetes/sig-node/topology-manager/topology-manager-instantiation.png)
+![](/kubernetes/kubelet/topology-manager/topology-manager-instantiation.png)
 
-#### 3.1.2 特性门禁和 kubelet 启动参数
+### 3.1.2 特性门禁和 kubelet 启动参数
 
 将添加一个特性门禁，控制拓扑管理器特性的启动。此门禁将在 Kubelet 启用，并在 Alpha 版本中默认关闭。
 
@@ -310,7 +308,7 @@ type Policy interface {
 
   `--topology-manager-scope=container|Pod`
 
-#### 3.1.3 现有组件变更
+### 3.1.3 现有组件变更
 
 1. Kubelet 向拓扑管理器咨询 Pod 准入(上面讨论过)
 2. 添加两个拓扑管理器接口的实现和一个特性门禁
@@ -359,11 +357,11 @@ index efbd72c133..f86a1a5512 100644
 
 *图：拓扑管理器提示提供者注册*
 
-![](/kubernetes/sig-node/topology-manager/topology-manager-wiring.png)
+![](/kubernetes/kubelet/topology-manager/topology-manager-wiring.png)
 
 *图：拓扑管理器从HintProvider获取拓扑提示*
 
-![](/kubernetes/sig-node/topology-manager/topology-manager-hints.png)
+![](/kubernetes/kubelet/topology-manager/topology-manager-hints.png)
 
 此外，我们提议将设备插件接口扩展为“最后一级”过滤器，以帮助影响设备管理器做出的总体分配决策。
 下面的差异显示了提议的改动：
