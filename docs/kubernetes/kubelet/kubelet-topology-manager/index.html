@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="注：本文翻译自 Node Topology Manager
+ 1. 概要 #  越来越多的系统将 CPU 和硬件加速器组合使用，以支撑高延迟和搞吞吐量的并行计算。 包括电信、科学计算、机器学习、金融服务和数据分析等领域的工作。这种的混血儿构成了一个高性能环境。
+为了达到最优性能，需要对 CPU 隔离、内存和设备的物理位置进行优化。 然而，在 kubernetes 中，这些优化没有一个统一的组件管理。
+本次建议提供一个新机制，可以协同kubernetes各个组件，对硬件资源的分配可以有不同的细粒度。
+2. 启发 #  当前，kubelet 中多个组件决定系统拓扑相关的分配：
+ CPU 管理器  CPU 管理器限制容器可以使用的 CPU。该能力，在 1.8 只实现了一种策略——静态分配。 该策略不支持在容器的生命周期内，动态上下线 CPU。   设备管理器  设备管理器将某个具体的设备分配给有该设备需求的容器。设备通常是在外围互连线上。 如果设备管理器和 CPU 管理器策略不一致，那么CPU和设备之间的所有通信都可能导致处理器互连结构上的额外跳转。   容器运行时（CNI）  网络接口控制器，包括 SR-IOV 虚拟功能（VF）和套接字有亲和关系，socket 不同，性能不同。    相关问题：
+  节点层级的硬件拓扑感知（包括 NUMA）  发现节点的 NUMA 架构  绑定特定 CPU 支持虚拟函数  提议：CPU 亲和与 NUMA 拓扑感知  注意，以上所有的关注点都只适用于多套接字系统。 内核能从底层硬件接收精确的拓扑信息（通常是通过 SLIT 表），是正确操作的前提。 更多信息请参考ACPI规范的 5.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Topology Manager 设计方案" />
+<meta property="og:description" content="注：本文翻译自 Node Topology Manager
+ 1. 概要 #  越来越多的系统将 CPU 和硬件加速器组合使用，以支撑高延迟和搞吞吐量的并行计算。 包括电信、科学计算、机器学习、金融服务和数据分析等领域的工作。这种的混血儿构成了一个高性能环境。
+为了达到最优性能，需要对 CPU 隔离、内存和设备的物理位置进行优化。 然而，在 kubernetes 中，这些优化没有一个统一的组件管理。
+本次建议提供一个新机制，可以协同kubernetes各个组件，对硬件资源的分配可以有不同的细粒度。
+2. 启发 #  当前，kubelet 中多个组件决定系统拓扑相关的分配：
+ CPU 管理器  CPU 管理器限制容器可以使用的 CPU。该能力，在 1.8 只实现了一种策略——静态分配。 该策略不支持在容器的生命周期内，动态上下线 CPU。   设备管理器  设备管理器将某个具体的设备分配给有该设备需求的容器。设备通常是在外围互连线上。 如果设备管理器和 CPU 管理器策略不一致，那么CPU和设备之间的所有通信都可能导致处理器互连结构上的额外跳转。   容器运行时（CNI）  网络接口控制器，包括 SR-IOV 虚拟功能（VF）和套接字有亲和关系，socket 不同，性能不同。    相关问题：
+  节点层级的硬件拓扑感知（包括 NUMA）  发现节点的 NUMA 架构  绑定特定 CPU 支持虚拟函数  提议：CPU 亲和与 NUMA 拓扑感知  注意，以上所有的关注点都只适用于多套接字系统。 内核能从底层硬件接收精确的拓扑信息（通常是通过 SLIT 表），是正确操作的前提。 更多信息请参考ACPI规范的 5." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/" />
+<meta property="article:published_time" content="2020-09-10T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-09-10T00:00:00+00:00" />
+<title>Topology Manager 设计方案 | 袁昊的学习笔记</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
+<script defer src="/en.search.min.23fe8222ff7614fbc4fc82e61d57a3c152148a70b78614b385e3931740e98dee.js" integrity="sha256-I/6CIv92FPvE/ILmHVejwVIUinC3hhSzheOTF0Dpje4="></script>
+
+<script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Golang</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>数据结构</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/slice/" class="">切片</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/map/" class="">哈希表</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>语言基础</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/language-basics/reflect/" class="">反射</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>内存管理</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Kubernetes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-apisever</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-controller-manager</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-proxy</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-proxy/learn-about-Service/" class="">深入了解 Service</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kubelet</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/" class=" active">Topology Manager 设计方案</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-scheduler</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a  class="">LeetCode</a>
+      <span>▾</span>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="/posts/" >
+        Blog
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://github.com/howieyuen/" target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/" target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Topology Manager 设计方案</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-概要">1. 概要</a></li>
+    <li><a href="#2-启发">2. 启发</a>
+      <ul>
+        <li><a href="#21-目标">2.1 目标</a></li>
+        <li><a href="#22-非目标">2.2 非目标</a></li>
+        <li><a href="#23-用户故事">2.3 用户故事</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-提议">3. 提议</a>
+      <ul>
+        <li><a href="#31-提议修改点">3.1 提议修改点</a>
+          <ul>
+            <li><a href="#311-新概念拓扑管理器">3.1.1 新概念：拓扑管理器</a></li>
+            <li><a href="#312-特性门禁和-kubelet-启动参数">3.1.2 特性门禁和 kubelet 启动参数</a></li>
+            <li><a href="#313-现有组件变更">3.1.3 现有组件变更</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><blockquote>
+<p>注：本文翻译自
+  <a href="https://github.com/kubernetes/enhancements/blob/master/keps/kubelet/0035-20190130-topology-manager.md">Node Topology Manager</a></p>
+</blockquote>
+<h1 id="1-概要">
+  1. 概要
+  <a class="anchor" href="#1-%e6%a6%82%e8%a6%81">#</a>
+</h1>
+<p>越来越多的系统将 CPU 和硬件加速器组合使用，以支撑高延迟和搞吞吐量的并行计算。
+包括电信、科学计算、机器学习、金融服务和数据分析等领域的工作。这种的混血儿构成了一个高性能环境。</p>
+<p>为了达到最优性能，需要对 CPU 隔离、内存和设备的物理位置进行优化。
+然而，在 kubernetes 中，这些优化没有一个统一的组件管理。</p>
+<p>本次建议提供一个新机制，可以协同kubernetes各个组件，对硬件资源的分配可以有不同的细粒度。</p>
+<h1 id="2-启发">
+  2. 启发
+  <a class="anchor" href="#2-%e5%90%af%e5%8f%91">#</a>
+</h1>
+<p>当前，kubelet 中多个组件决定系统拓扑相关的分配：</p>
+<ul>
+<li>CPU 管理器
+<ul>
+<li>CPU 管理器限制容器可以使用的 CPU。该能力，在 1.8 只实现了一种策略——静态分配。
+该策略不支持在容器的生命周期内，动态上下线 CPU。</li>
+</ul>
+</li>
+<li>设备管理器
+<ul>
+<li>设备管理器将某个具体的设备分配给有该设备需求的容器。设备通常是在外围互连线上。
+如果设备管理器和 CPU 管理器策略不一致，那么CPU和设备之间的所有通信都可能导致处理器互连结构上的额外跳转。</li>
+</ul>
+</li>
+<li>容器运行时（CNI）
+<ul>
+<li>网络接口控制器，包括 SR-IOV 虚拟功能（VF）和套接字有亲和关系，socket 不同，性能不同。</li>
+</ul>
+</li>
+</ul>
+<p><em>相关问题：</em></p>
+<ul>
+<li>
+  <a href="https://github.com/kubernetes/kubernetes/issues/49964">节点层级的硬件拓扑感知（包括 NUMA）</a></li>
+<li>
+  <a href="https://github.com/kubernetes-incubator/node-feature-discovery/issues/84">发现节点的 NUMA 架构</a></li>
+<li>
+  <a href="https://github.com/hustcat/sriov-cni/issues/10">绑定特定 CPU 支持虚拟函数</a></li>
+<li>
+  <a href="https://github.com/kubernetes/community/pull/171">提议：CPU 亲和与 NUMA 拓扑感知</a></li>
+</ul>
+<p>注意，以上所有的关注点都只适用于多套接字系统。
+内核能从底层硬件接收精确的拓扑信息（通常是通过 SLIT 表），是正确操作的前提。
+更多信息请参考ACPI规范的 5.2.16 和 5.2.17节。</p>
+<h2 id="21-目标">
+  2.1 目标
+  <a class="anchor" href="#21-%e7%9b%ae%e6%a0%87">#</a>
+</h2>
+<ul>
+<li>根据 CPU 管理器和设备管理器的输入，给容器选择最优的 NUMA 亲和节点。</li>
+<li>集成 kubelet 中其他支持拓扑感知的组件，提供一个统一的内部接口。</li>
+</ul>
+<h2 id="22-非目标">
+  2.2 非目标
+  <a class="anchor" href="#22-%e9%9d%9e%e7%9b%ae%e6%a0%87">#</a>
+</h2>
+<ul>
+<li>设备间连接：根据直接设备互连来决定设备分配。此问题不同于套接字局部性。设备间的拓扑关系，
+可以都在设备管理器中考虑，可以做到套接字的亲和性。实现这一策略，可以从逐渐支持任何设备之间的拓扑关系。</li>
+<li>大页：本次提议有 2 个前提，一是集群中的节点已经预分配了大页；
+二是操作系统能给容器做好本地页分配（只需要本地内存节点上有空闲的大页即可）。</li>
+<li>容器网络接口：本次提议不包含修改 CNI。但是，如果 CNI 后续支持拓扑管理，
+此次提出的方案应该具有良好的扩展性，以适配网络接口的局部性。对于特殊的网络需求，
+可以使用设备插件API作为临时方案，以减少网络接口的局限性。</li>
+</ul>
+<h2 id="23-用户故事">
+  2.3 用户故事
+  <a class="anchor" href="#23-%e7%94%a8%e6%88%b7%e6%95%85%e4%ba%8b">#</a>
+</h2>
+<p><em>故事1: 快速虚拟化的网络功能</em></p>
+<p>要求在一个首选的 NUMA 节点上，既要“网络快”，又能自动完成各个组件（大页，cpu 集，网络设备）的协同。
+在大多数场景下，只有极少数的 NUMA 节点才能满足。</p>
+<p><em>故事2: 加速神经网络训练</em></p>
+<p>NUMA 节点中的已分配的 CPU 和设备，可满足神经网络训练的加速器和独占的CPU的需求，以达到性能最优。</p>
+<h1 id="3-提议">
+  3. 提议
+  <a class="anchor" href="#3-%e6%8f%90%e8%ae%ae">#</a>
+</h1>
+<p><em>主要思想：两相拓扑一致性协议</em>
+拓扑亲和性在容器级别，与设备和 CPU 的亲和类似。在 Pod 准入期间，
+一个新组件可以从设备管理器和 CPU 管理器收集 Pod 中每个容器的配置，这个组件名为拓扑管理器。
+当这些组件进行资源分配时，拓扑管理器扮演本地对齐的预分配角色。
+我们希望各个组件能利用 Pod 中隐含的 QoS 类型进行优先级排序，以满足局部重要性最优。</p>
+<h2 id="31-提议修改点">
+  3.1 提议修改点
+  <a class="anchor" href="#31-%e6%8f%90%e8%ae%ae%e4%bf%ae%e6%94%b9%e7%82%b9">#</a>
+</h2>
+<h3 id="311-新概念拓扑管理器">
+  3.1.1 新概念：拓扑管理器
+  <a class="anchor" href="#311-%e6%96%b0%e6%a6%82%e5%bf%b5%e6%8b%93%e6%89%91%e7%ae%a1%e7%90%86%e5%99%a8">#</a>
+</h3>
+<p>这个提议主要关注 kubelet 中一个新组件，叫做拓扑管理器。拓扑管理器实现了 Pod 的 <code>Admit()</code> 接口，
+并参与 kubelet 的对 Pod 的准入。当 <code>Admit()</code> 方法被调用，拓扑管理器根据 kubelet 标志，
+逐个 Pod 或逐个容器收集 kubelet 其他组件的的拓扑信息。</p>
+<p>如果提示不兼容，拓扑管理器可以选择拒绝 Pod，这是由 kubelet 配置的拓扑策略所决定的。
+拓扑管理器支持4中策略：none（默认）、best-erffort、restricted 和 single-numa-node。</p>
+<p>拓扑信息中包含了对本地资源的偏好。拓扑信息当前由以下组成：</p>
+<ul>
+<li>位掩码表——可能满足请求的 NUMA 节点</li>
+<li>首选属性
+<ul>
+<li>属性定义如下：
+<ul>
+<li>每个拓扑信息提供者，都有一个满足请求的可能资源分配，这样就可以尽可能减少NUMA节点数量（节点为空那样计算）</li>
+<li>有一种可能的分配方式，相关NUMA节点联合总量，不大于任何个单个资源的的请求量</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Pod 的有效资源请求/限制</strong></p>
+<p>所有提供拓扑信息的组件，都应该先考虑资源的请求和限制，再计算得出可靠的拓扑提示，
+这个规则是由 init 容器的概念定义的。</p>
+<p>Pod 对资源的请求和限制的有效值，由以下 2 个条件中较大的一个决定：</p>
+<ul>
+<li>所有 init 容器中，请求或限制的最大值（<code>max([]initcontainer.Request)</code>，<code>max([]initcontainer.Limit)</code>）</li>
+<li>所有应用的请求和限制的总和（<code>sum([]containers.Request)</code>，<code>sum([]containers.Limit)</code>）</li>
+</ul>
+<p>下面这个例子简要说明它是如何工作的：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">example</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">containers</span>:
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">appContainer1</span>
+    <span style="color:#f92672">resources</span>:
+      <span style="color:#f92672">requests</span>:
+        <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">2</span>
+        <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">1G</span>
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">appContainer2</span>
+      <span style="color:#f92672">resources</span>:
+      <span style="color:#f92672">requests</span>:
+        <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">1</span>
+        <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">1G</span>
+  <span style="color:#f92672">initContainers</span>:
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">initContainer1</span>
+      <span style="color:#f92672">resources</span>:
+      <span style="color:#f92672">requests</span>:
+        <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">2</span>
+        <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">1G</span>
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">initContainer2</span>
+      <span style="color:#f92672">resources</span>:
+      <span style="color:#f92672">requests</span>:
+        <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">2</span>
+        <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">3G</span>
+
+<span style="color:#75715e">#资源请求的有效值: CPU: 3, Memory: 3G</span>
+</code></pre></div><p>debug/ephemeral 容器不能指定资源请求/限制，因为不会影响拓扑提示的结果。</p>
+<p><strong>范围</strong></p>
+<p>拓扑管理器将根据新 kubelet 标志 <code>--topology-manager-scope</code> 的值，
+尝试逐个 Pod 或逐个容器地对资源进行对齐。该标志可以显示的值详细如下:</p>
+<ul>
+<li>
+<p><strong>Container</strong>（默认）：逐个容器地收集拓扑信息。
+然后，拓扑策略将为每个容器单独调整资源，只有调整成功，Pod 准入成功。</p>
+</li>
+<li>
+<p><strong>Pod</strong>：逐个 Pod 地收集拓扑信息。
+然后，拓扑策略将为所有容器集体调整资源，只有调整成功，Pod 准入成功。</p>
+</li>
+</ul>
+<p><strong>策略</strong></p>
+<ul>
+<li><strong>none</strong>（默认）：kubelet 不会参考拓扑管理器的决定</li>
+<li><strong>best-effort</strong>：拓扑管理器会基于拓扑信息，给出首选分配。
+在此策略下，即使分配结果不合理，Pod 也成功准入。</li>
+<li><strong>restricted</strong>：与 best-effort 不同，在此策略下，如果分配结果不合理，Pod 会被拒绝。
+同时，因准入失败，进入 <code>Terminated</code> 状态。</li>
+<li><strong>single-numa-node</strong>：拓扑管理器会在 NUMA 节点上强制执行资源分配，如果分配失败，Pod 会被拒绝。
+同时，因准入失败，进入 <code>Terminated</code> 状态。</li>
+</ul>
+<p>拓扑管理器组件默认被禁用，直到从 alpha 到 beta 级别解禁。</p>
+<p><strong>亲和计算</strong></p>
+<p>拓扑管理策略基于收集的所有拓扑信息，执行亲和计算，然后决定接受或拒绝 Pod。</p>
+<p><strong>亲和算法</strong></p>
+<ul>
+<li><strong>best-effort/restricted (亲和算法相同)</strong></li>
+</ul>
+<ol>
+<li>循环遍历所有拓扑信息提供者，并以列表保存每个信息源的返回。</li>
+<li>遍历步骤1中的列表，执行按位与运算，合并为单个亲和信息。如果循环中任何字段的亲和返回了 false，则最终结果该字段也为 false。</li>
+<li>返回的亲和信息的最小集，最小集意味着至少有一个 NUMA 节点满足资源请求。</li>
+<li>如果没有找到任何 NUMA 节点集的提示，则返回一个默认提示，该值包含了所有 NUMA 节点，并把首选设置为false。</li>
+</ol>
+<ul>
+<li><strong>single-numa-node</strong></li>
+</ul>
+<ol>
+<li>循环遍历所有拓扑信息提供者，并以列表保存每个信息源的返回</li>
+<li>过滤步骤 1 中累积的列表，使其只包含具有单个 NUMA 节点和空 NUMA 节点的提示</li>
+<li>遍历步骤 1 中的列表，执行按位与运算，合并为单个亲和信息。如果循环中任何字段的亲和返回了 false，则最终结果该字段也为false</li>
+<li>如果没有找到具有单 NUMA 节点集的提示，则返回一个默认提示，该提示包含所有NUMA节点集并且首选设置为 false。</li>
+</ol>
+<p><strong>策略决断</strong></p>
+<ul>
+<li><strong>best-effort</strong>：总是遵循拓扑信息提示，准入 Pod</li>
+<li><strong>restricted</strong>：只有拓扑提示的首选字段为 true，才准入 Pod</li>
+<li><strong>single-numa-node</strong>：既需要拓扑的首选字段为 true，又需要位掩码设置为单个 NUMA 节点，才准入 Pod</li>
+</ul>
+<p><strong>新的接口</strong></p>
+<p><em>清单: 拓扑管理器和相关接口</em></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">bitmask</span>
+
+<span style="color:#75715e">// BitMask interface allows hint providers to create BitMasks for TopologyHints
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">BitMask</span> <span style="color:#66d9ef">interface</span> {
+	<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">sockets</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">error</span>
+	<span style="color:#a6e22e">Remove</span>(<span style="color:#a6e22e">sockets</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">error</span>
+	<span style="color:#a6e22e">And</span>(<span style="color:#a6e22e">masks</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">BitMask</span>)
+	<span style="color:#a6e22e">Or</span>(<span style="color:#a6e22e">masks</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">BitMask</span>)
+	<span style="color:#a6e22e">Clear</span>()
+	<span style="color:#a6e22e">Fill</span>()
+	<span style="color:#a6e22e">IsEqual</span>(<span style="color:#a6e22e">mask</span> <span style="color:#a6e22e">BitMask</span>) <span style="color:#66d9ef">bool</span>
+	<span style="color:#a6e22e">IsEmpty</span>() <span style="color:#66d9ef">bool</span>
+	<span style="color:#a6e22e">IsSet</span>(<span style="color:#a6e22e">socket</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">bool</span>
+	<span style="color:#a6e22e">IsNarrowerThan</span>(<span style="color:#a6e22e">mask</span> <span style="color:#a6e22e">BitMask</span>) <span style="color:#66d9ef">bool</span>
+	<span style="color:#a6e22e">String</span>() <span style="color:#66d9ef">string</span>
+	<span style="color:#a6e22e">Count</span>() <span style="color:#66d9ef">int</span>
+	<span style="color:#a6e22e">GetSockets</span>() []<span style="color:#66d9ef">int</span>
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewBitMask</span>(<span style="color:#a6e22e">sockets</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">int</span>) (<span style="color:#a6e22e">BitMask</span>, <span style="color:#66d9ef">error</span>) { <span style="color:#f92672">...</span> }
+
+<span style="color:#f92672">package</span> <span style="color:#a6e22e">topologymanager</span>
+
+<span style="color:#75715e">// Manager interface provides methods for Kubelet to manage Pod topology hints
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Manager</span> <span style="color:#66d9ef">interface</span> {
+    <span style="color:#75715e">// Implements Pod admit handler interface
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">lifecycle</span>.<span style="color:#a6e22e">PodAdmitHandler</span>
+    <span style="color:#75715e">// Adds a hint provider to manager to indicate the hint provider
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">//wants to be consoluted when making topology hints
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">AddHintProvider</span>(<span style="color:#a6e22e">HintProvider</span>)
+    <span style="color:#75715e">// Adds Pod to Manager for tracking
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">AddContainer</span>(<span style="color:#a6e22e">Pod</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>, <span style="color:#a6e22e">containerID</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span>
+    <span style="color:#75715e">// Removes Pod from Manager tracking
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">RemoveContainer</span>(<span style="color:#a6e22e">containerID</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span>
+    <span style="color:#75715e">// Interface for storing Pod topology hints
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">Store</span>
+}
+
+<span style="color:#75715e">// TopologyHint encodes locality to local resources. Each HintProvider provides
+</span><span style="color:#75715e">// a list of these hints to the TopoologyManager for each container at Pod
+</span><span style="color:#75715e">// admission time.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">TopologyHint</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">NUMANodeAffinity</span> <span style="color:#a6e22e">bitmask</span>.<span style="color:#a6e22e">BitMask</span>
+    <span style="color:#75715e">// Preferred is set to true when the BitMask encodes a preferred
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// allocation for the Container. It is set to false otherwise.
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">Preferred</span> <span style="color:#66d9ef">bool</span>
+}
+
+<span style="color:#75715e">// HintProvider is implemented by Kubelet components that make
+</span><span style="color:#75715e">// topology-related resource assignments. The Topology Manager consults each
+</span><span style="color:#75715e">// hint provider at Pod admission time.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">HintProvider</span> <span style="color:#66d9ef">interface</span> {
+  <span style="color:#75715e">// GetTopologyHints returns a map of resource names with a list of possible
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// resource allocations in terms of NUMA locality hints. Each hint
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// is optionally marked &#34;preferred&#34; and indicates the set of NUMA nodes
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// involved in the hypothetical allocation. The topology manager calls
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// this function for each hint provider, and merges the hints to produce
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// a consensus &#34;best&#34; hint. The hint providers may subsequently query the
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// topology manager to influence actual resource assignment.
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">GetTopologyHints</span>(<span style="color:#a6e22e">Pod</span> <span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>, <span style="color:#a6e22e">containerName</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>][]<span style="color:#a6e22e">TopologyHint</span>
+  <span style="color:#75715e">// GetPodLevelTopologyHints returns a map of resource names with a list of 
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// possible resource allocations in terms of NUMA locality hints.
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// The returned map contains TopologyHint of requested resource by all containers
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// in a Pod spec.
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">GetPodLevelTopologyHints</span>(<span style="color:#a6e22e">Pod</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>) <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>][]<span style="color:#a6e22e">TopologyHint</span>
+  <span style="color:#75715e">// Allocate triggers resource allocation to occur on the HintProvider after
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// all hints have been gathered and the aggregated Hint is available via a
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// call to Store.GetAffinity().
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">Allocate</span>(<span style="color:#a6e22e">Pod</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>, <span style="color:#a6e22e">container</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Container</span>) <span style="color:#66d9ef">error</span>
+}
+
+<span style="color:#75715e">// Store manages state related to the Topology Manager.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Store</span> <span style="color:#66d9ef">interface</span> {
+  <span style="color:#75715e">// GetAffinity returns the preferred affinity as calculated by the
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// TopologyManager across all hint providers for the supplied Pod and
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// container.
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">GetAffinity</span>(<span style="color:#a6e22e">PodUID</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">containerName</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">TopologyHint</span>
+}
+
+<span style="color:#75715e">// Policy interface for Topology Manager Pod Admit Result
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Policy</span> <span style="color:#66d9ef">interface</span> {
+  <span style="color:#75715e">// Returns Policy Name
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">Name</span>() <span style="color:#66d9ef">string</span>
+  <span style="color:#75715e">// Returns a merged TopologyHint based on input from hint providers
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// and a Pod Admit Handler Response based on hints and policy type
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">Merge</span>(<span style="color:#a6e22e">providersHints</span> []<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>][]<span style="color:#a6e22e">TopologyHint</span>) (<span style="color:#a6e22e">TopologyHint</span>, <span style="color:#a6e22e">lifecycle</span>.<span style="color:#a6e22e">PodAdmitResult</span>)
+}
+</code></pre></div><p><em>图：拓扑管理器组件</em></p>
+<p>
+  <img src="/kubernetes/kubelet/topology-manager/topology-manager-components.png" alt="" /></p>
+<p><em>图：拓扑管理器实例化并出现在Pod准入生命周期中</em></p>
+<p>
+  <img src="/kubernetes/kubelet/topology-manager/topology-manager-instantiation.png" alt="" /></p>
+<h3 id="312-特性门禁和-kubelet-启动参数">
+  3.1.2 特性门禁和 kubelet 启动参数
+  <a class="anchor" href="#312-%e7%89%b9%e6%80%a7%e9%97%a8%e7%a6%81%e5%92%8c-kubelet-%e5%90%af%e5%8a%a8%e5%8f%82%e6%95%b0">#</a>
+</h3>
+<p>将添加一个特性门禁，控制拓扑管理器特性的启动。此门禁将在 Kubelet 启用，并在 Alpha 版本中默认关闭。</p>
+<ul>
+<li>
+<p>门禁定义建议：</p>
+<p><code>--feature-gate=TopologyManager=true</code></p>
+</li>
+</ul>
+<p>如上所述，kubelet 还新增一个标志，用于标识拓扑管理器策略。默认策略将会是 <code>none</code>。</p>
+<ul>
+<li>
+<p>策略标志建议：</p>
+<p><code>--topology-manager-policy=none|best-effort|restricted|single-numa-node</code></p>
+</li>
+</ul>
+<p>根据选择的策略，以下标志将确定应用策略的范围（逐个 Pod 或逐个容器）。范围的默认值是 <code>container</code></p>
+<ul>
+<li>
+<p>范围标志建议：</p>
+<p><code>--topology-manager-scope=container|Pod</code></p>
+</li>
+</ul>
+<h3 id="313-现有组件变更">
+  3.1.3 现有组件变更
+  <a class="anchor" href="#313-%e7%8e%b0%e6%9c%89%e7%bb%84%e4%bb%b6%e5%8f%98%e6%9b%b4">#</a>
+</h3>
+<ol>
+<li>Kubelet 向拓扑管理器咨询 Pod 准入(上面讨论过)</li>
+<li>添加两个拓扑管理器接口的实现和一个特性门禁
+<ol>
+<li>当功能门被禁用时，尽可能保证拓扑管理器功能失效。</li>
+<li>添加一个功能性拓扑管理器，用来查询拓扑信息，以便为每个容器计算首选套接字掩码。</li>
+</ol>
+</li>
+<li>CPU 管理器添加 2 个方法：<code>GetTopologyHints()</code> 和 <code>GetPodLevelTopologyHints()</code>
+<ol>
+<li>CPU 管理器的 static 策略在决定 CPU 的亲和性是，调用拓扑管理器的 <code>GetAffinity()</code> 方法</li>
+</ol>
+</li>
+<li>设备管理器添加 2 个方法：<code>GetTopologyHints()</code> 和 <code>GetPodLevelTopologyHints()</code>
+<ol>
+<li>在设备插件接口的设备结构中添加 <code>TopologyInfo</code>。
+插件在枚举受支持的设备时应该能够确定 NUMA 节点。请参阅下面的协议差异。</li>
+<li>设备管理器决定设备分配时，调用拓扑管理器的 <code>GetAffinity()</code> 方法</li>
+</ol>
+</li>
+</ol>
+<p><em>清单: 修改后的设备插件 gRPC 协议</em></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff">diff --git a/pkg/kubelet/apis/deviceplugin/v1beta1/api.proto b/pkg/kubelet/apis/deviceplugin/v1beta1/api.proto
+index efbd72c133..f86a1a5512 100644
+<span style="color:#f92672">--- a/pkg/kubelet/apis/deviceplugin/v1beta1/api.proto
+</span><span style="color:#f92672"></span><span style="color:#a6e22e">+++ b/pkg/kubelet/apis/deviceplugin/v1beta1/api.proto
+</span><span style="color:#a6e22e"></span><span style="color:#75715e">@@ -73,6 +73,10 @@ message ListAndWatchResponse {
+</span><span style="color:#75715e"></span> 	repeated Device devices = 1;
+ }
+
+<span style="color:#a6e22e">+message TopologyInfo {
+</span><span style="color:#a6e22e">+  repeated NUMANode nodes = 1;
+</span><span style="color:#a6e22e">+}
+</span><span style="color:#a6e22e">+
+</span><span style="color:#a6e22e">+message NUMANode {
+</span><span style="color:#a6e22e">+    int64 ID = 1;
+</span><span style="color:#a6e22e">+}
+</span><span style="color:#a6e22e">+
+</span><span style="color:#a6e22e"></span> /* E.g:
+ * struct Device {
+ *    ID: &#34;GPU-fef8089b-4820-abfc-e83e-94318197576e&#34;,
+ *    State: &#34;Healthy&#34;,
+<span style="color:#a6e22e">+ *    Topology: 
+</span><span style="color:#a6e22e">+ *      Nodes: 
+</span><span style="color:#a6e22e">+ *        ID: 1 
+</span><span style="color:#a6e22e"></span><span style="color:#75715e">@@ -85,6 +89,8 @@ message Device {
+</span><span style="color:#75715e"></span> 	string ID = 1;
+ 	// Health of the device, can be healthy or unhealthy, see constants.go
+ 	string health = 2;
+<span style="color:#a6e22e">+	// Topology details of the device
+</span><span style="color:#a6e22e">+	TopologyInfo topology = 3;
+</span><span style="color:#a6e22e"></span> }
+</code></pre></div><p><em>图：拓扑管理器提示提供者注册</em></p>
+<p>
+  <img src="/kubernetes/kubelet/topology-manager/topology-manager-wiring.png" alt="" /></p>
+<p><em>图：拓扑管理器从HintProvider获取拓扑提示</em></p>
+<p>
+  <img src="/kubernetes/kubelet/topology-manager/topology-manager-hints.png" alt="" /></p>
+<p>此外，我们提议将设备插件接口扩展为“最后一级”过滤器，以帮助影响设备管理器做出的总体分配决策。
+下面的差异显示了提议的改动：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff">diff --git a/pkg/kubelet/apis/deviceplugin/v1beta1/api.proto b/pkg/kubelet/apis/deviceplugin/v1beta1/api.proto
+index 758da317fe..1e55d9c541 100644
+<span style="color:#f92672">--- a/pkg/kubelet/apis/deviceplugin/v1beta1/api.proto
+</span><span style="color:#f92672"></span><span style="color:#a6e22e">+++ b/pkg/kubelet/apis/deviceplugin/v1beta1/api.proto
+</span><span style="color:#a6e22e"></span><span style="color:#75715e">@@ -55,6 +55,11 @@ service DevicePlugin {
+</span><span style="color:#75715e"></span>    // returns the new list
+    rpc ListAndWatch(Empty) returns (stream ListAndWatchResponse) {}
+
+<span style="color:#a6e22e">+   // GetPreferredAllocation returns a preferred set of devices to allocate 
+</span><span style="color:#a6e22e">+   // from a list of available ones. The resulting preferred allocation is not
+</span><span style="color:#a6e22e">+   // guaranteed to be the allocation ultimately performed by the
+</span><span style="color:#a6e22e">+   // `devicemanager`. It is only designed to help the `devicemanager` make a
+</span><span style="color:#a6e22e">+   //  more informed allocation decision when possible.
+</span><span style="color:#a6e22e">+   rpc GetPreferredAllocation(PreferredAllocationRequest) returns (PreferredAllocationResponse) {}
+</span><span style="color:#a6e22e">+
+</span><span style="color:#a6e22e"></span>    // Allocate is called during container creation so that the Device
+    // Plugin can run device specific operations and instruct Kubelet
+    // of the steps to make the Device available in the container
+<span style="color:#75715e">@@ -99,6 +104,31 @@ message PreStartContainerRequest {
+</span><span style="color:#75715e"></span> message PreStartContainerResponse {
+ }
+
+<span style="color:#a6e22e">+// PreferredAllocationRequest is passed via a call to
+</span><span style="color:#a6e22e">+// `GetPreferredAllocation()` at Pod admission time. The device plugin should
+</span><span style="color:#a6e22e">+// take the list of `available_deviceIDs` and calculate a preferred allocation
+</span><span style="color:#a6e22e">+// of size `size` from them, making sure to include the set of devices listed
+</span><span style="color:#a6e22e">+// in `must_include_deviceIDs`.
+</span><span style="color:#a6e22e">+message PreferredAllocationRequest {
+</span><span style="color:#a6e22e">+   repeated string available_deviceIDs = 1;
+</span><span style="color:#a6e22e">+   repeated string must_include_deviceIDs = 2;
+</span><span style="color:#a6e22e">+   int32 size = 3;
+</span><span style="color:#a6e22e">+}
+</span><span style="color:#a6e22e">+
+</span><span style="color:#a6e22e">+// PreferredAllocationResponse returns a preferred allocation,
+</span><span style="color:#a6e22e">+// resulting from a PreferredAllocationRequest.
+</span><span style="color:#a6e22e">+message PreferredAllocationResponse {
+</span><span style="color:#a6e22e">+   ContainerAllocateRequest preferred_allocation = 1;
+</span><span style="color:#a6e22e">+}
+</span><span style="color:#a6e22e">+
+</span><span style="color:#a6e22e"></span> // - Allocate is expected to be called during Pod creation since allocation
+ //   failures for any container would result in Pod startup failure.
+ // - Allocate allows kubelet to exposes additional artifacts in a Pod&#39;s
+</code></pre></div><p>使用这个新的 API 调用，设备管理器将在 Pod 准入时调用一个插件，
+要求它从可用设备列表中获得一个给定大小的首选设备分配。Pod 中的每个容器都会调用一次。</p>
+<p>传给 <code>GetPreferredAllocation()</code> 方法的可用设备列表不一定与系统上可用的完整列表相匹配。
+相反，在考虑所有 <code>TopologyHint</code> 之后，设备管理器调用 <code>GetPreferredAllocation()</code> 方法，
+是最后一次筛选，方法执行结束必须要做出选择。因此，这个可用列表已经经过 <code>TopologyHint</code> 的预筛选。</p>
+<p>首选分配并不保证是最终由设备管理器执行的分配。它的设计只是为了帮助设备管理者在可能的情况下做出更明智的分配决策。</p>
+<p>在决定首选分配时，设备插件可能会考虑设备管理器不知道的内部拓扑约束。分配 NVIDIA 图形处理器对，
+总是包括一个 NVLINK，就是一个很好的例子。</p>
+<p>在一台 8 GPU 的机器上，如果需要 2 个 GPU，NVLINK 提供的最佳连接对可能是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">{{</span>0,3<span style="color:#f92672">}</span>, <span style="color:#f92672">{</span>1,2<span style="color:#f92672">}</span>, <span style="color:#f92672">{</span>4,7<span style="color:#f92672">}</span>, <span style="color:#f92672">{</span>5,6<span style="color:#f92672">}}</span>
+</code></pre></div><p>使用 <code>GetPreferredAllocation ()</code> ，NVIDIA 设备插件可以将这些首选分配之一转发给设备管理器，
+如果仍然有合适的设备集可用的话。如果没有这些额外的信息，
+设备管理器最终会在 <code>TopologyHint</code> 过滤之后从可用的 gpu 列表中随机选择 gpu。
+这个 API 允许它最终以最小的成本执行更好的分配。</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-概要">1. 概要</a></li>
+    <li><a href="#2-启发">2. 启发</a>
+      <ul>
+        <li><a href="#21-目标">2.1 目标</a></li>
+        <li><a href="#22-非目标">2.2 非目标</a></li>
+        <li><a href="#23-用户故事">2.3 用户故事</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-提议">3. 提议</a>
+      <ul>
+        <li><a href="#31-提议修改点">3.1 提议修改点</a>
+          <ul>
+            <li><a href="#311-新概念拓扑管理器">3.1.1 新概念：拓扑管理器</a></li>
+            <li><a href="#312-特性门禁和-kubelet-启动参数">3.1.2 特性门禁和 kubelet 启动参数</a></li>
+            <li><a href="#313-现有组件变更">3.1.3 现有组件变更</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

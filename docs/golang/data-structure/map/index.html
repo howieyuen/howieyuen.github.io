@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="哈希表 #  1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表，由一个key通过哈希函数得到哈希值，64 位系统中就生成一个 64 bit 的哈希值，由这个哈希值将 key 对应到不同的桶（bucket）中，当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
+<meta name="description" content="1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表，由一个key通过哈希函数得到哈希值，64 位系统中就生成一个 64 bit 的哈希值，由这个哈希值将 key 对应到不同的桶（bucket）中，当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
 1.1 hash函数 #  首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找，就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个bucket 的哪个 cell。golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
 1.2 数据结构 #  hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。
 type hmap struct { // map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 	count int // map状态标识，比如是否在被写或者迁移等，因为map不是线程安全的所以操作时需要判断flags 	flags uint8 // log_2 of buckets (最多可以放 loadFactor * 2^B 个元素即6.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="哈希表" />
-<meta property="og:description" content="哈希表 #  1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表，由一个key通过哈希函数得到哈希值，64 位系统中就生成一个 64 bit 的哈希值，由这个哈希值将 key 对应到不同的桶（bucket）中，当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
+<meta property="og:description" content="1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表，由一个key通过哈希函数得到哈希值，64 位系统中就生成一个 64 bit 的哈希值，由这个哈希值将 key 对应到不同的桶（bucket）中，当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
 1.1 hash函数 #  首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找，就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个bucket 的哪个 cell。golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
 1.2 数据结构 #  hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。
 type hmap struct { // map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 	count int // map状态标识，比如是否在被写或者迁移等，因为map不是线程安全的所以操作时需要判断flags 	flags uint8 // log_2 of buckets (最多可以放 loadFactor * 2^B 个元素即6." />
@@ -20,7 +20,7 @@ type hmap struct { // map 中的元素个数，必须放在 struct 的第一个�
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.37e70f1d3c67efeadca0a84e04491fc5f2664beb062e400839f3789834670772.js" integrity="sha256-N&#43;cPHTxn7&#43;rcoKhOBEkfxfJmS&#43;sGLkAIOfN4mDRnB3I="></script>
+<script defer src="/en.search.min.23fe8222ff7614fbc4fc82e61d57a3c152148a70b78614b385e3931740e98dee.js" integrity="sha256-I/6CIv92FPvE/ILmHVejwVIUinC3hhSzheOTF0Dpje4="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -211,7 +211,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>sig-api-machinery</span>
+    <span>kube-apisever</span>
   
 
           
@@ -224,7 +224,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/garbage-collector/" class="">垃圾回收</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
   
 
         </li>
@@ -237,7 +237,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/key-design-of-etcd-watch/" class="">k8s watch 关键设计</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
   
 
         </li>
@@ -250,7 +250,20 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-api-machinery/crd/" class="">CRD 入门和使用</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
   
 
         </li>
@@ -268,7 +281,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>sig-apps</span>
+    <span>kube-controller-manager</span>
   
 
           
@@ -281,7 +294,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-apps/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
   
 
         </li>
@@ -294,7 +307,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-apps/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
   
 
         </li>
@@ -307,7 +320,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-apps/k8s-apps-rolling-update/" class="">k8s 应用滚动更新</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
   
 
         </li>
@@ -320,7 +333,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-apps/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
   
 
         </li>
@@ -338,7 +351,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>sig-network</span>
+    <span>kube-proxy</span>
   
 
           
@@ -351,7 +364,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-proxy/learn-about-Service/" class="">深入了解 Service</a>
   
 
         </li>
@@ -369,7 +382,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>sig-node</span>
+    <span>kubelet</span>
   
 
           
@@ -382,7 +395,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
   
 
         </li>
@@ -395,7 +408,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-node/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
   
 
         </li>
@@ -413,7 +426,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>sig-scheduling</span>
+    <span>kube-scheduler</span>
   
 
           
@@ -426,7 +439,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-scheduling/advanced-scheduling/" class="">高级调度</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
   
 
         </li>
@@ -551,25 +564,21 @@ https://github.com/alex-shpak/hugo-book
     
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#哈希表">哈希表</a>
+    <li><a href="#1-引言">1. 引言</a>
       <ul>
-        <li><a href="#1-引言">1. 引言</a>
-          <ul>
-            <li><a href="#11-hash函数">1.1 hash函数</a></li>
-            <li><a href="#12-数据结构">1.2 数据结构</a></li>
-          </ul>
-        </li>
-        <li><a href="#2-map内存布局">2. map内存布局</a>
-          <ul>
-            <li><a href="#21-扩容">2.1 扩容</a></li>
-            <li><a href="#22-查找">2.2 查找</a></li>
-            <li><a href="#23-插入">2.3 插入</a></li>
-            <li><a href="#24-map无序">2.4 map无序</a></li>
-          </ul>
-        </li>
-        <li><a href="#3-参考资料">3. 参考资料</a></li>
+        <li><a href="#11-hash函数">1.1 hash函数</a></li>
+        <li><a href="#12-数据结构">1.2 数据结构</a></li>
       </ul>
     </li>
+    <li><a href="#2-map内存布局">2. map内存布局</a>
+      <ul>
+        <li><a href="#21-扩容">2.1 扩容</a></li>
+        <li><a href="#22-查找">2.2 查找</a></li>
+        <li><a href="#23-插入">2.3 插入</a></li>
+        <li><a href="#24-map无序">2.4 map无序</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-参考资料">3. 参考资料</a></li>
   </ul>
 </nav>
 
@@ -581,24 +590,20 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="哈希表">
-  哈希表
-  <a class="anchor" href="#%e5%93%88%e5%b8%8c%e8%a1%a8">#</a>
-</h1>
-<h2 id="1-引言">
+  <article class="markdown"><h1 id="1-引言">
   1. 引言
   <a class="anchor" href="#1-%e5%bc%95%e8%a8%80">#</a>
-</h2>
+</h1>
 <p>粗略的讲，Go 语言中 map 采用的是哈希查找表，由一个key通过哈希函数得到哈希值，64 位系统中就生成一个 64 bit 的哈希值，由这个哈希值将 key 对应到不同的桶（bucket）中，当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。</p>
-<h3 id="11-hash函数">
+<h2 id="11-hash函数">
   1.1 hash函数
   <a class="anchor" href="#11-hash%e5%87%bd%e6%95%b0">#</a>
-</h3>
+</h2>
 <p>首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找，就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个bucket 的哪个 cell。golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。</p>
-<h3 id="12-数据结构">
+<h2 id="12-数据结构">
   1.2 数据结构
   <a class="anchor" href="#12-%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84">#</a>
-</h3>
+</h2>
 <p><strong>hmap</strong> 可以理解为 header of map 的缩写，即 map 数据结构的入口。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">hmap</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#75715e">// map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取
@@ -645,16 +650,16 @@ https://github.com/alex-shpak/hugo-book
 </span><span style="color:#75715e"></span>}
 </code></pre></div><p>根据哈希函数将 key 生成一个哈希值，其中<strong>低位哈希用来判断桶位置，高位哈希用来确定在桶中哪个c ell</strong>。低位哈希就是哈希值的低 B 位，<code>hmap</code> 结构体中的 B，比如 B 为 5，2^5=32，即该 map 有 32 个桶，只需要取哈希值的低 5 位就可以确定当前 key-value 落在哪个桶(bucket)中；高位哈希即 <code>tophash</code>，是指哈希值的高 8 bits，根据 <code>tophash</code> 来确定 key 在桶中的位置。每个桶可以存储 8 对 key-value，存储结构不是 key/value/key/value&hellip;，而是 key/key..value/value，这样可以避免字节对齐时的 padding，节省内存空间。</p>
 <p>当不同的 key 根据哈希得到的 <code>tophash</code> 和低位 hash 都一样，发生哈希碰撞，这个时候就体现 <code>overflow pointer</code> 字段的作用了。桶溢出时，就需要把key-value 对存储在 <code>overflow bucket</code>（溢出桶），<code>overflow pointer</code> 就是指向 <code>overflow bucket</code> 的指针。如果 <code>overflow bucket</code> 也溢出了呢？那就再给 <code>overflow bucket</code> 新建一个 <code>overflow bucket</code>，用指针串起来就形成了链式结构，map 本身有 2^B 个 bucket，只有当发生哈希碰撞后才会在 bucket 后链式增加 <code>overflow bucket</code>。</p>
-<h2 id="2-map内存布局">
+<h1 id="2-map内存布局">
   2. map内存布局
   <a class="anchor" href="#2-map%e5%86%85%e5%ad%98%e5%b8%83%e5%b1%80">#</a>
-</h2>
+</h1>
 <p>
   <img src="/golang/data-structure/map/memory-layout-of-map.png" alt="memory-layout-of-map.png" /></p>
-<h3 id="21-扩容">
+<h2 id="21-扩容">
   2.1 扩容
   <a class="anchor" href="#21-%e6%89%a9%e5%ae%b9">#</a>
-</h3>
+</h2>
 <ol>
 <li>
 <p>装填因子是否大于 6.5</p>
@@ -668,10 +673,10 @@ https://github.com/alex-shpak/hugo-book
 </ol>
 <p><strong>双倍扩容</strong>：装载因子多大，直接翻倍，B+1；扩容也不是申请一块内存，立马开始拷贝，每一次访问旧的 buckets 时，就迁移一部分，直到完成，旧 bucket 被 GC 回收。</p>
 <p><strong>等量扩容</strong>：重新排列，极端情况下，重新排列也解决不了，map 成了链表，性能大大降低，此时哈希种子 hash0 的设置，可以降低此类极端场景的发生。</p>
-<h3 id="22-查找">
+<h2 id="22-查找">
   2.2 查找
   <a class="anchor" href="#22-%e6%9f%a5%e6%89%be">#</a>
-</h3>
+</h2>
 <ol>
 <li>根据 key 计算出哈希值</li>
 <li>根据哈希值低位确定所在 bucket</li>
@@ -680,25 +685,25 @@ https://github.com/alex-shpak/hugo-book
 <li>对应位置有数据则对比完整的哈希值，确定是否是要查找的数据</li>
 <li>如果当前处于 map 进行了扩容，处于数据搬移状态，则优先从 oldbuckets 查找。</li>
 </ol>
-<h3 id="23-插入">
+<h2 id="23-插入">
   2.3 插入
   <a class="anchor" href="#23-%e6%8f%92%e5%85%a5">#</a>
-</h3>
+</h2>
 <ol>
 <li>根据 key 计算出哈希值</li>
 <li>根据哈希值低位确定所在 bucket</li>
 <li>根据哈希值高 8 位确定在 bucket 中的存储位置</li>
 <li>查找该 key 是否存在，已存在则更新，不存在则插入</li>
 </ol>
-<h3 id="24-map无序">
+<h2 id="24-map无序">
   2.4 map无序
   <a class="anchor" href="#24-map%e6%97%a0%e5%ba%8f">#</a>
-</h3>
+</h2>
 <p>map 的本质是散列表，而 map 的增长扩容会导致重新进行散列，这就可能使 map 的遍历结果在扩容前后变得不可靠，Go 设计者为了让大家不依赖遍历的顺序，<strong>故意在实现 map 遍历时加入了随机数</strong>，让每次遍历的起点&ndash;即起始 bucket 的位置不一样，即不让遍历都从 bucket0 开始，所以即使未扩容时我们遍历出来的 map 也总是无序的。</p>
-<h2 id="3-参考资料">
+<h1 id="3-参考资料">
   3. 参考资料
   <a class="anchor" href="#3-%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>
-</h2>
+</h1>
 <ul>
 <li>
   <a href="https://bettertxt.top/post/go-map/">Golang map底层实现</a></li>
@@ -743,25 +748,21 @@ https://github.com/alex-shpak/hugo-book
       
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#哈希表">哈希表</a>
+    <li><a href="#1-引言">1. 引言</a>
       <ul>
-        <li><a href="#1-引言">1. 引言</a>
-          <ul>
-            <li><a href="#11-hash函数">1.1 hash函数</a></li>
-            <li><a href="#12-数据结构">1.2 数据结构</a></li>
-          </ul>
-        </li>
-        <li><a href="#2-map内存布局">2. map内存布局</a>
-          <ul>
-            <li><a href="#21-扩容">2.1 扩容</a></li>
-            <li><a href="#22-查找">2.2 查找</a></li>
-            <li><a href="#23-插入">2.3 插入</a></li>
-            <li><a href="#24-map无序">2.4 map无序</a></li>
-          </ul>
-        </li>
-        <li><a href="#3-参考资料">3. 参考资料</a></li>
+        <li><a href="#11-hash函数">1.1 hash函数</a></li>
+        <li><a href="#12-数据结构">1.2 数据结构</a></li>
       </ul>
     </li>
+    <li><a href="#2-map内存布局">2. map内存布局</a>
+      <ul>
+        <li><a href="#21-扩容">2.1 扩容</a></li>
+        <li><a href="#22-查找">2.2 查找</a></li>
+        <li><a href="#23-插入">2.3 插入</a></li>
+        <li><a href="#24-map无序">2.4 map无序</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-参考资料">3. 参考资料</a></li>
   </ul>
 </nav>
 
