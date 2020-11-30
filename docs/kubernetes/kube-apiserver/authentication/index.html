@@ -29,7 +29,7 @@ API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.7d6f6d69cb4c7128efe3b01217a9cfece6411086728122b74e1c72e926fdd67f.js" integrity="sha256-fW9tactMcSjv47ASF6nP7OZBEIZygSK3Thxy6Sb91n8="></script>
+<script defer src="/en.search.min.fae945d3048f0822fccc18c26950d857debd5fae1eebceaea912eae21660fe55.js" integrity="sha256-&#43;ulF0wSPCCL8zBjCaVDYV969X64e686uqRLq4hZg/lU="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -952,7 +952,7 @@ sequenceDiagram
 <ol>
 <li>登录到身份服务（即 Auth Server）</li>
 <li>身份服务将为你提供 access_token、id_token 和 refresh_token</li>
-<li>用户在使用 kubectl 时，将 id_token 设置为 &ndash;token 标志值，或者将其直接添加到 kubeconfig 中</li>
+<li>用户在使用 kubectl 时，将 id_token 设置为 <code>--token</code> 标志值，或者将其直接添加到 kubeconfig 中</li>
 <li>kubectl 将 id_token 设置为 Authorization 的请求头，发送给 API 服务器</li>
 <li>API 服务器将负责通过检查配置中引用的证书来确认 JWT 的签名是合法的</li>
 <li>检查确认 id_token 尚未过期</li>
