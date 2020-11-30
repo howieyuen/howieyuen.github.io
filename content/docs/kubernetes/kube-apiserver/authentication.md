@@ -319,11 +319,37 @@ OpenID Connect Token(OIDC) 是一套基于 OAuth2.0 协议的轻量级认证规�
 
 kube-apiserver 和 Auth Service 没有直接交互，而是鉴定客户端发送过来的 Token 是否合法。完整的 OIDC 认证过程如下图所示：
 
-![k8s_oidc_login.svg](/kubernetes/kube-apiserver/authenticate/k8s_oidc_login.svg)
+{{< mermaid >}}
+sequenceDiagram
+    participant user as 用户
+    participant idp as 身份提供者 
+    participant kube as Kubectl
+    participant api as API 服务器
+
+    user ->> idp: 1. 登录到 IdP
+    activate idp
+    idp -->> user: 2. 提供 access_token,<br>id_token, 和 refresh_token
+    deactivate idp
+    activate user
+    user ->> kube: 3. 调用 Kubectl 并<br>设置 --token 为 id_token<br>或者将令牌添加到 .kube/config
+    deactivate user
+    activate kube
+    kube ->> api: 4. Authorization: Bearer...
+    deactivate kube
+    activate api
+    api ->> api: 5. JWT 签名合法么？
+    api ->> api: 6. JWT 是否已过期？(iat+exp)
+    api ->> api: 7. 用户被授权了么？
+    api -->> kube: 8. 已授权：执行<br>操作并返回结果
+    deactivate api
+    activate kube
+    kube --x user: 9. 返回结果
+    deactivate kube
+{{< /mermaid >}}
 
 1. 登录到身份服务（即 Auth Server）
 2. 身份服务将为你提供 access_token、id_token 和 refresh_token
-3. 用户在使用 kubectl 时，将 id_token 设置为 --token 标志值，或者将其直接添加到 kubeconfig 中
+3. 用户在使用 kubectl 时，将 id_token 设置为 `--token` 标志值，或者将其直接添加到 kubeconfig 中
 4. kubectl 将 id_token 设置为 Authorization 的请求头，发送给 API 服务器
 5. API 服务器将负责通过检查配置中引用的证书来确认 JWT 的签名是合法的
 6. 检查确认 id_token 尚未过期
