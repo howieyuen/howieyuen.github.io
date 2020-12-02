@@ -4,14 +4,16 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="416. 分割等和子集 #   给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+<meta name="description" content="416. 分割等和子集 #   leetcode 链接： https://leetcode-cn.com/problems/partition-equal-subset-sum/
+  给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
 注意:
  每个数组中的元素不会超过 100 数组的大小不会超过 200  示例 1:
 输入: [1, 5, 11, 5] 输出: true 解释: 数组可以分割成 [1, 5, 5] 和 [11]. 示例 2:
 输入: [1, 2, 3, 5] 输出: false 解释: 数组不能分割成两个元素和相等的子集.  方法一：0-1背包问题
 // 0-1背包问题 // dp[i][target]表示nums[0, i]区间内是否能找到和为target的组合 // 对于每个nums[i]，如果nums[i] &lt;= target，可以选择or不选，但只要有一个为true，dp[i][target]=true // dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]] // 如果nums[i] &gt; target，只能不选，故： // dp[i][target] = dp[i-1][target] func canPartition(nums []int) bool { n := len(nums) if n &lt; 2 { return false } sum := 0 maxNum := 0 for _, num := range nums { sum &#43;= num if num &gt; maxNum { maxNum = num } } // 和为奇数 	if sum%2 !">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="416. 分割等和子集" />
-<meta property="og:description" content="416. 分割等和子集 #   给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+<meta property="og:description" content="416. 分割等和子集 #   leetcode 链接： https://leetcode-cn.com/problems/partition-equal-subset-sum/
+  给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
 注意:
  每个数组中的元素不会超过 100 数组的大小不会超过 200  示例 1:
 输入: [1, 5, 11, 5] 输出: true 解释: 数组可以分割成 [1, 5, 5] 和 [11]. 示例 2:
@@ -25,7 +27,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.8cf5db0fba2acd111bc4a8748f29069b6010acdb93e3a21a27f6095850a4e0e0.js" integrity="sha256-jPXbD7oqzREbxKh0jykGm2AQrNuT46IaJ/YJWFCk4OA="></script>
+<script defer src="/en.search.min.dee1658e8fc36d0b4c8b9bea3c537651b6e82bb021e204d8b2a667c1df474c07.js" integrity="sha256-3uFljo/DbQtMi5vqPFN2UbboK7Ah4gTYsqZnwd9HTAc="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -582,7 +584,7 @@ https://github.com/alex-shpak/hugo-book
     
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#416-分割等和子集httpsleetcode-cncomproblemspartition-equal-subset-sum"><a href="https://leetcode-cn.com/problems/partition-equal-subset-sum/">416. 分割等和子集</a></a></li>
+    <li><a href="#416-分割等和子集">416. 分割等和子集</a></li>
   </ul>
 </nav>
 
@@ -594,11 +596,14 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="416-分割等和子集httpsleetcode-cncomproblemspartition-equal-subset-sum">
-  
-  <a href="https://leetcode-cn.com/problems/partition-equal-subset-sum/">416. 分割等和子集</a>
-  <a class="anchor" href="#416-%e5%88%86%e5%89%b2%e7%ad%89%e5%92%8c%e5%ad%90%e9%9b%86httpsleetcode-cncomproblemspartition-equal-subset-sum">#</a>
+  <article class="markdown"><h1 id="416-分割等和子集">
+  416. 分割等和子集
+  <a class="anchor" href="#416-%e5%88%86%e5%89%b2%e7%ad%89%e5%92%8c%e5%ad%90%e9%9b%86">#</a>
 </h1>
+<blockquote>
+<p>leetcode 链接：
+  <a href="https://leetcode-cn.com/problems/partition-equal-subset-sum/">https://leetcode-cn.com/problems/partition-equal-subset-sum/</a></p>
+</blockquote>
 <hr>
 <p>给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。</p>
 <p>注意:</p>
@@ -749,7 +754,7 @@ https://github.com/alex-shpak/hugo-book
       
   <nav id="TableOfContents">
   <ul>
-    <li><a href="#416-分割等和子集httpsleetcode-cncomproblemspartition-equal-subset-sum"><a href="https://leetcode-cn.com/problems/partition-equal-subset-sum/">416. 分割等和子集</a></a></li>
+    <li><a href="#416-分割等和子集">416. 分割等和子集</a></li>
   </ul>
 </nav>
 
