@@ -7,11 +7,17 @@ tag: [golang, map]
 
 # 1. 引言
 
-粗略的讲，Go 语言中 map 采用的是哈希查找表，由一个key通过哈希函数得到哈希值，64 位系统中就生成一个 64 bit 的哈希值，由这个哈希值将 key 对应到不同的桶（bucket）中，当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
+粗略的讲，Go 语言中 map 采用的是哈希查找表，
+由一个key通过哈希函数得到哈希值，
+64 位系统中就生成一个 64 bit 的哈希值，
+由这个哈希值将 key 对应到不同的桶（bucket）中，
+当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
 
 ## 1.1 hash函数
 
-首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找，就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个bucket 的哪个 cell。golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
+首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找，
+就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个bucket 的哪个 cell。
+golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
 
 ## 1.2 数据结构
 
@@ -71,9 +77,17 @@ type bmap struct {
 }
 ```
 
-根据哈希函数将 key 生成一个哈希值，其中**低位哈希用来判断桶位置，高位哈希用来确定在桶中哪个c ell**。低位哈希就是哈希值的低 B 位，`hmap` 结构体中的 B，比如 B 为 5，2^5=32，即该 map 有 32 个桶，只需要取哈希值的低 5 位就可以确定当前 key-value 落在哪个桶(bucket)中；高位哈希即 `tophash`，是指哈希值的高 8 bits，根据 `tophash` 来确定 key 在桶中的位置。每个桶可以存储 8 对 key-value，存储结构不是 key/value/key/value...，而是 key/key..value/value，这样可以避免字节对齐时的 padding，节省内存空间。
+根据哈希函数将 key 生成一个哈希值，其中**低位哈希用来判断桶位置，高位哈希用来确定在桶中哪个cell**。
+低位哈希就是哈希值的低 B 位，`hmap` 结构体中的 B，比如 B 为 5，2^5=32，
+即该 map 有 32 个桶，只需要取哈希值的低 5 位就可以确定当前 key-value 落在哪个桶(bucket)中；
+高位哈希即 `tophash`，是指哈希值的高 8 bits，根据 `tophash` 来确定 key 在桶中的位置。
+每个桶可以存储 8 对 key-value，存储结构不是 key/value/key/value...，而是 key/key..value/value，
+这样可以避免字节对齐时的 padding，节省内存空间。
 
-当不同的 key 根据哈希得到的 `tophash` 和低位 hash 都一样，发生哈希碰撞，这个时候就体现 `overflow pointer` 字段的作用了。桶溢出时，就需要把key-value 对存储在 `overflow bucket`（溢出桶），`overflow pointer` 就是指向 `overflow bucket` 的指针。如果 `overflow bucket` 也溢出了呢？那就再给 `overflow bucket` 新建一个 `overflow bucket`，用指针串起来就形成了链式结构，map 本身有 2^B 个 bucket，只有当发生哈希碰撞后才会在 bucket 后链式增加 `overflow bucket`。
+当不同的 key 根据哈希得到的 `tophash` 和低位 hash 都一样，发生哈希碰撞，这个时候就体现 `overflow pointer` 字段的作用了。
+桶溢出时，就需要把key-value 对存储在 `overflow bucket`（溢出桶），`overflow pointer` 就是指向 `overflow bucket` 的指针。
+如果 `overflow bucket` 也溢出了呢？那就再给 `overflow bucket` 新建一个 `overflow bucket`，用指针串起来就形成了链式结构，
+map 本身有 2^B 个 bucket，只有当发生哈希碰撞后才会在 bucket 后链式增加 `overflow bucket`。
 
 # 2. map内存布局
 
@@ -87,6 +101,7 @@ type bmap struct {
    装填因子 = 元素个数/桶个数，大于 6.5 时，说明桶快要装满，需要扩容
 
 2. `overflow bucket` 是否太多
+   
    ​当 bucket 的数量 < 2^15，但 `overflow bucket` 的数量大于桶数量
    ​当 bucket 的数量 >= 2^15，但 `overflow bucket` 的数量大于 2^15
 
@@ -112,7 +127,10 @@ type bmap struct {
 
 ## 2.4 map无序
 
-map 的本质是散列表，而 map 的增长扩容会导致重新进行散列，这就可能使 map 的遍历结果在扩容前后变得不可靠，Go 设计者为了让大家不依赖遍历的顺序，**故意在实现 map 遍历时加入了随机数**，让每次遍历的起点--即起始 bucket 的位置不一样，即不让遍历都从 bucket0 开始，所以即使未扩容时我们遍历出来的 map 也总是无序的。
+map 的本质是散列表，而 map 的增长扩容会导致重新进行散列，这就可能使 map 的遍历结果在扩容前后变得不可靠，
+Go 设计者为了让大家不依赖遍历的顺序，**故意在实现 map 遍历时加入了随机数**，
+让每次遍历的起点--即起始 bucket 的位置不一样，即不让遍历都从 bucket0 开始，
+所以即使未扩容时我们遍历出来的 map 也总是无序的。
 
 # 3. 参考资料
 
