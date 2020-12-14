@@ -1,7 +1,7 @@
 ---
 author: Yuan Hao
 date: 2020-5-14
-title: 哈希表
+title: map
 tag: [golang, map]
 ---
 
