@@ -21,7 +21,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.a1cd20d60638839e946a9e2e67180160e2908dc4a29c26d2bf587a77a6086f4b.js" integrity="sha256-oc0g1gY4g56Uap4uZxgBYOKQjcSinCbSv1h6d6YIb0s="></script>
+<script defer src="/en.search.min.c271bb59be095a5f524d4cfc2f42edac80b24920a3af53ee813c04ec4eb37991.js" integrity="sha256-wnG7Wb4JWl9STUz8L0LtrICySSCjr1PugTwE7E6zeZE="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -608,6 +608,7 @@ https://github.com/alex-shpak/hugo-book
         <li><a href="#34-关闭-channel">3.4 关闭 channel</a></li>
       </ul>
     </li>
+    <li><a href="#4-参考资料">4. 参考资料</a></li>
   </ul>
 </nav>
 
@@ -662,8 +663,8 @@ https://github.com/alex-shpak/hugo-book
 |  dataqsiz=2 |
 +-------------+       +-------------------+
 |     buf     |------&gt;| 0 | 1 | 1 | 0 | 0 |             
-+-------------+       +-------------------+
-|   sendx=3   |-------------^---^    
++-------------+       +-----^-------^-----+
+|   sendx=3   |-------------|-------|    
 +-------------+             |       
 |   recvq=1   |-------------+
 +-------------+
@@ -856,6 +857,16 @@ e0 --> d3
 <li>关闭已经被关闭的 channel</li>
 <li>向已经关闭的 channel 写数据</li>
 </ol>
+<h1 id="4-参考资料">
+  4. 参考资料
+  <a class="anchor" href="#4-%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>
+</h1>
+<ul>
+<li>
+  <a href="https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-channel/">Go Channel实现原理精要</a></li>
+<li>
+  <a href="https://www.bookstack.cn/read/GoExpertProgramming/chapter01-1.1-chan.md">Go专家编程：1.1 chan</a></li>
+</ul>
 </article>
  
       
@@ -907,6 +918,7 @@ e0 --> d3
         <li><a href="#34-关闭-channel">3.4 关闭 channel</a></li>
       </ul>
     </li>
+    <li><a href="#4-参考资料">4. 参考资料</a></li>
   </ul>
 </nav>
 
