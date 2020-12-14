@@ -242,8 +242,8 @@ type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := refl
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://howieyuen.github.io/docs/golang/data-structure/map/</guid>
-      <description>1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表，由一个key通过哈希函数得到哈希值，64 位系统中就生成一个 64 bit 的哈希值，由这个哈希值将 key 对应到不同的桶（bucket）中，当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
-1.1 hash函数 #  首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找，就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个bucket 的哪个 cell。golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
+      <description>1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表， 由一个key通过哈希函数得到哈希值， 64 位系统中就生成一个 64 bit 的哈希值， 由这个哈希值将 key 对应到不同的桶（bucket）中， 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
+1.1 hash函数 #  首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找， 就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个bucket 的哪个 cell。 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
 1.2 数据结构 #  hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。
 type hmap struct { // map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 	count int // map状态标识，比如是否在被写或者迁移等，因为map不是线程安全的所以操作时需要判断flags 	flags uint8 // log_2 of buckets (最多可以放 loadFactor * 2^B 个元素即6.</description>
     </item>
