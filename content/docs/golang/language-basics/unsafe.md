@@ -27,7 +27,7 @@ Go 1 兼容性指南这么说：
 
 当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。
 
-# Unsafe包的作用
+# Unsafe 包的作用
 
 直到现在（Go1.7），unsafe 包含以下资源：
 
@@ -60,7 +60,7 @@ Go 1 兼容性指南这么说：
 - `uintptr` 可以转换为 `unsafe.Pointer`。
 - `unsafe.Pointer` 可以转换为 `uintptr`。
 
-这些规则与Go规范一致：
+这些规则与 Go 规范一致：
 
 {{< hint info >}}
 底层类型 uintptr 的任何指针或值都可以转换为指针类型，反之亦然。
@@ -235,7 +235,7 @@ func main() {
 这就是为什么使用不安全的包是危险的。
 
 # 转换 T1 为 T2
-对于将 T1 转换为 `unsafe.Pointer`，然后转换为 T2，unsafe 包 docs说：
+对于将 T1 转换为 `unsafe.Pointer`，然后转换为 T2，unsafe 包 docs 说：
 
 {{< hint info >}}
 如果 T2 比 T1 大，并且两者共享等效内存布局，则该转换允许将一种类型的数据重新解释为另一类型的数据。

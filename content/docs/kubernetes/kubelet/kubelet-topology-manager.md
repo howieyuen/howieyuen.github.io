@@ -5,7 +5,7 @@ title: Topology Manager 设计方案
 tag: [kubelet, topology manager]
 ---
 
-> 注：本文翻译自[Node Topology Manager](https://github.com/kubernetes/enhancements/blob/master/keps/kubelet/0035-20190130-topology-manager.md)
+> 注：本文翻译自 [Node Topology Manager](https://github.com/kubernetes/enhancements/blob/master/keps/kubelet/0035-20190130-topology-manager.md)
 
 # 1. 概要
 
@@ -15,7 +15,7 @@ tag: [kubelet, topology manager]
 为了达到最优性能，需要对 CPU 隔离、内存和设备的物理位置进行优化。
 然而，在 kubernetes 中，这些优化没有一个统一的组件管理。
 
-本次建议提供一个新机制，可以协同kubernetes各个组件，对硬件资源的分配可以有不同的细粒度。
+本次建议提供一个新机制，可以协同 kubernetes 各个组件，对硬件资源的分配可以有不同的细粒度。
 
 # 2. 启发
 
@@ -26,7 +26,7 @@ tag: [kubelet, topology manager]
   该策略不支持在容器的生命周期内，动态上下线 CPU。
 - 设备管理器
   - 设备管理器将某个具体的设备分配给有该设备需求的容器。设备通常是在外围互连线上。
-  如果设备管理器和 CPU 管理器策略不一致，那么CPU和设备之间的所有通信都可能导致处理器互连结构上的额外跳转。
+  如果设备管理器和 CPU 管理器策略不一致，那么 CPU 和设备之间的所有通信都可能导致处理器互连结构上的额外跳转。
 - 容器运行时（CNI）
   - 网络接口控制器，包括 SR-IOV 虚拟功能（VF）和套接字有亲和关系，socket 不同，性能不同。
 
@@ -39,7 +39,7 @@ tag: [kubelet, topology manager]
 
 注意，以上所有的关注点都只适用于多套接字系统。
 内核能从底层硬件接收精确的拓扑信息（通常是通过 SLIT 表），是正确操作的前提。
-更多信息请参考ACPI规范的 5.2.16 和 5.2.17节。
+更多信息请参考 ACPI 规范的 5.2.16 和 5.2.17 节。
 
 ## 2.1 目标
 
@@ -54,18 +54,18 @@ tag: [kubelet, topology manager]
   二是操作系统能给容器做好本地页分配（只需要本地内存节点上有空闲的大页即可）。
 - 容器网络接口：本次提议不包含修改 CNI。但是，如果 CNI 后续支持拓扑管理，
   此次提出的方案应该具有良好的扩展性，以适配网络接口的局部性。对于特殊的网络需求，
-  可以使用设备插件API作为临时方案，以减少网络接口的局限性。
+  可以使用设备插件 API 作为临时方案，以减少网络接口的局限性。
 
 ## 2.3 用户故事
 
-*故事1: 快速虚拟化的网络功能*
+*故事 1: 快速虚拟化的网络功能*
 
 要求在一个首选的 NUMA 节点上，既要“网络快”，又能自动完成各个组件（大页，cpu 集，网络设备）的协同。
 在大多数场景下，只有极少数的 NUMA 节点才能满足。
 
-*故事2: 加速神经网络训练*
+*故事 2: 加速神经网络训练*
 
-NUMA 节点中的已分配的 CPU 和设备，可满足神经网络训练的加速器和独占的CPU的需求，以达到性能最优。
+NUMA 节点中的已分配的 CPU 和设备，可满足神经网络训练的加速器和独占的 CPU 的需求，以达到性能最优。
 
 # 3. 提议
 
@@ -84,15 +84,15 @@ NUMA 节点中的已分配的 CPU 和设备，可满足神经网络训练的加�
 逐个 Pod 或逐个容器收集 kubelet 其他组件的的拓扑信息。
 
 如果提示不兼容，拓扑管理器可以选择拒绝 Pod，这是由 kubelet 配置的拓扑策略所决定的。
-拓扑管理器支持4中策略：none（默认）、best-erffort、restricted 和 single-numa-node。
+拓扑管理器支持 4 中策略：none（默认）、best-erffort、restricted 和 single-numa-node。
 
 拓扑信息中包含了对本地资源的偏好。拓扑信息当前由以下组成：
 
 - 位掩码表——可能满足请求的 NUMA 节点
 - 首选属性
   - 属性定义如下：
-    - 每个拓扑信息提供者，都有一个满足请求的可能资源分配，这样就可以尽可能减少NUMA节点数量（节点为空那样计算）
-    - 有一种可能的分配方式，相关NUMA节点联合总量，不大于任何个单个资源的的请求量
+    - 每个拓扑信息提供者，都有一个满足请求的可能资源分配，这样就可以尽可能减少 NUMA 节点数量（节点为空那样计算）
+    - 有一种可能的分配方式，相关 NUMA 节点联合总量，不大于任何个单个资源的的请求量
 
 **Pod 的有效资源请求/限制**
 
@@ -134,7 +134,7 @@ spec:
         cpu: 2
         memory: 3G
 
-#资源请求的有效值: CPU: 3, Memory: 3G
+#资源请求的有效值：CPU: 3, Memory: 3G
 ```
 
 debug/ephemeral 容器不能指定资源请求/限制，因为不会影响拓扑提示的结果。
@@ -142,7 +142,7 @@ debug/ephemeral 容器不能指定资源请求/限制，因为不会影响拓扑
 **范围**
 
 拓扑管理器将根据新 kubelet 标志 `--topology-manager-scope` 的值，
-尝试逐个 Pod 或逐个容器地对资源进行对齐。该标志可以显示的值详细如下:
+尝试逐个 Pod 或逐个容器地对资源进行对齐。该标志可以显示的值详细如下：
 
 - **Container**（默认）：逐个容器地收集拓扑信息。
 然后，拓扑策略将为每个容器单独调整资源，只有调整成功，Pod 准入成功。
@@ -168,17 +168,17 @@ debug/ephemeral 容器不能指定资源请求/限制，因为不会影响拓扑
 
 **亲和算法**
 
-- **best-effort/restricted (亲和算法相同)**
+- **best-effort/restricted （亲和算法相同）**
 1. 循环遍历所有拓扑信息提供者，并以列表保存每个信息源的返回。
-2. 遍历步骤1中的列表，执行按位与运算，合并为单个亲和信息。如果循环中任何字段的亲和返回了 false，则最终结果该字段也为 false。
+2. 遍历步骤 1 中的列表，执行按位与运算，合并为单个亲和信息。如果循环中任何字段的亲和返回了 false，则最终结果该字段也为 false。
 1. 返回的亲和信息的最小集，最小集意味着至少有一个 NUMA 节点满足资源请求。
-2. 如果没有找到任何 NUMA 节点集的提示，则返回一个默认提示，该值包含了所有 NUMA 节点，并把首选设置为false。
+2. 如果没有找到任何 NUMA 节点集的提示，则返回一个默认提示，该值包含了所有 NUMA 节点，并把首选设置为 false。
 
 - **single-numa-node**
 1. 循环遍历所有拓扑信息提供者，并以列表保存每个信息源的返回
 2. 过滤步骤 1 中累积的列表，使其只包含具有单个 NUMA 节点和空 NUMA 节点的提示
-3. 遍历步骤 1 中的列表，执行按位与运算，合并为单个亲和信息。如果循环中任何字段的亲和返回了 false，则最终结果该字段也为false
-1. 如果没有找到具有单 NUMA 节点集的提示，则返回一个默认提示，该提示包含所有NUMA节点集并且首选设置为 false。
+3. 遍历步骤 1 中的列表，执行按位与运算，合并为单个亲和信息。如果循环中任何字段的亲和返回了 false，则最终结果该字段也为 false
+1. 如果没有找到具有单 NUMA 节点集的提示，则返回一个默认提示，该提示包含所有 NUMA 节点集并且首选设置为 false。
 
 **策略决断**
 
@@ -188,7 +188,7 @@ debug/ephemeral 容器不能指定资源请求/限制，因为不会影响拓扑
 
 **新的接口**
 
-*清单: 拓扑管理器和相关接口*
+*清单：拓扑管理器和相关接口*
 ```go
 package bitmask
 
@@ -283,8 +283,7 @@ type Policy interface {
 
 ![](/kubernetes/kubelet/topology-manager/topology-manager-components.png)
 
-
-*图：拓扑管理器实例化并出现在Pod准入生命周期中*
+*图：拓扑管理器实例化并出现在 Pod 准入生命周期中*
 
 ![](/kubernetes/kubelet/topology-manager/topology-manager-instantiation.png)
 
@@ -310,7 +309,7 @@ type Policy interface {
 
 ### 3.1.3 现有组件变更
 
-1. Kubelet 向拓扑管理器咨询 Pod 准入(上面讨论过)
+1. Kubelet 向拓扑管理器咨询 Pod 准入（上面讨论过）
 2. 添加两个拓扑管理器接口的实现和一个特性门禁
    1. 当功能门被禁用时，尽可能保证拓扑管理器功能失效。
    2. 添加一个功能性拓扑管理器，用来查询拓扑信息，以便为每个容器计算首选套接字掩码。
@@ -321,7 +320,7 @@ type Policy interface {
    插件在枚举受支持的设备时应该能够确定 NUMA 节点。请参阅下面的协议差异。
    2. 设备管理器决定设备分配时，调用拓扑管理器的 `GetAffinity()` 方法
 
-_清单: 修改后的设备插件 gRPC 协议_
+_清单：修改后的设备插件 gRPC 协议_
 ```diff
 diff --git a/pkg/kubelet/apis/deviceplugin/v1beta1/api.proto b/pkg/kubelet/apis/deviceplugin/v1beta1/api.proto
 index efbd72c133..f86a1a5512 100644
@@ -359,7 +358,7 @@ index efbd72c133..f86a1a5512 100644
 
 ![](/kubernetes/kubelet/topology-manager/topology-manager-wiring.png)
 
-*图：拓扑管理器从HintProvider获取拓扑提示*
+*图：拓扑管理器从 HintProvider 获取拓扑提示*
 
 ![](/kubernetes/kubelet/topology-manager/topology-manager-hints.png)
 

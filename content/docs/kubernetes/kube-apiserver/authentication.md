@@ -42,10 +42,6 @@ API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他
 
 ## 2.1 身份验证策略
 
-
-
-
-
 ### 2.1.1 X509 Client Cert
 
 X509 客户端证书认证，也被称为 TLS 双向认证，即为服务端和客户端互相验证证书的正确性。使用此认证方式，只要是 CA 签名过的证书都能通过认证。
@@ -146,7 +142,7 @@ Token 也被称为令牌，服务端为了验证客户端身份，需要客户�
    }
    ```
 
-   该认证方式相对简单，a.tokens 保存了服务端 Token 列表，通过map查询客户端提供的 Token 是否存在，存在即认证成功，反之则认证失败。
+   该认证方式相对简单，a.tokens 保存了服务端 Token 列表，通过 map 查询客户端提供的 Token 是否存在，存在即认证成功，反之则认证失败。
 
 ### 2.1.3 Bootstrap Tokens
 
@@ -169,13 +165,13 @@ Bootstrap Token 是一种简单的 Bearer Token，这种令牌是在新建集群
    ```go
    // plugin/pkg/auth/authenticator/token/bootstrap/bootstrap.go
    func (t *TokenAuthenticator) AuthenticateToken(ctx context.Context, token string) (*authenticator.Response, bool, error) {
-   	// 1.校验token格式
+   	// 1. 校验 token 格式
    	tokenID, tokenSecret, err := bootstraptokenutil.ParseToken(token)
    	if err != nil {
    		return nil, false, nil
    	}
    
-   	// 2.拼接secret name，获取secret对象
+   	// 2. 拼接 secret name，获取 secret 对象
    	secretName := bootstrapapi.BootstrapTokenSecretPrefix + tokenID
    	secret, err := t.lister.Get(secretName)
    	if err != nil {
@@ -186,45 +182,45 @@ Bootstrap Token 是一种简单的 Bearer Token，这种令牌是在新建集群
    		return nil, false, err
    	}
    
-   	// 3.校验secret有效，不在删除中
+   	// 3. 校验 secret 有效，不在删除中
    	if secret.DeletionTimestamp != nil {
    		tokenErrorf(secret, "is deleted and awaiting removal")
    		return nil, false, nil
    	}
    
-   	// 4.校验secret类型必须是 bootstrap.kubernetes.io/token
+   	// 4. 校验 secret 类型必须是 bootstrap.kubernetes.io/token
    	if string(secret.Type) != string(bootstrapapi.SecretTypeBootstrapToken) || secret.Data == nil {
    		tokenErrorf(secret, "has invalid type, expected %s.", bootstrapapi.SecretTypeBootstrapToken)
    		return nil, false, nil
    	}
    
-   	// 5.校验token secret有效
+   	// 5. 校验 token secret 有效
    	ts := bootstrapsecretutil.GetData(secret, bootstrapapi.BootstrapTokenSecretKey)
    	if subtle.ConstantTimeCompare([]byte(ts), []byte(tokenSecret)) != 1 {
    		tokenErrorf(secret, "has invalid value for key %s, expected %s.", bootstrapapi.BootstrapTokenSecretKey, tokenSecret)
    		return nil, false, nil
    	}
    
-   	// 6.校验token id有效
+   	// 6. 校验 token id 有效
    	id := bootstrapsecretutil.GetData(secret, bootstrapapi.BootstrapTokenIDKey)
    	if id != tokenID {
    		tokenErrorf(secret, "has invalid value for key %s, expected %s.", bootstrapapi.BootstrapTokenIDKey, tokenID)
    		return nil, false, nil
    	}
    
-   	// 7.校验token是否过期
+   	// 7. 校验 token 是否过期
    	if bootstrapsecretutil.HasExpired(secret, time.Now()) {
    		// logging done in isSecretExpired method.
    		return nil, false, nil
    	}
    
-   	// 8.校验secret对象的data字段中，key为usage-bootstrap-authentication，value为true
+   	// 8. 校验 secret 对象的 data 字段中，key 为 usage-bootstrap-authentication，value 为 true
    	if bootstrapsecretutil.GetData(secret, bootstrapapi.BootstrapTokenUsageAuthentication) != "true" {
    		tokenErrorf(secret, "not marked %s=true.", bootstrapapi.BootstrapTokenUsageAuthentication)
    		return nil, false, nil
    	}
    
-   	// 9.获取secret.data[auth-extra-groups]，与default group组合
+   	// 9. 获取 secret.data[auth-extra-groups]，与 default group 组合
    	groups, err := bootstrapsecretutil.GetGroups(secret)
    	if err != nil {
    		tokenErrorf(secret, "has invalid value for key %s: %v.", bootstrapapi.BootstrapTokenExtraGroupsKey, err)
@@ -266,12 +262,12 @@ Bootstrap Token 是一种简单的 Bearer Token，这种令牌是在新建集群
    ```go
    // pkg/serviceaccount/jwt.go
    func (j *jwtTokenAuthenticator) AuthenticateToken(ctx context.Context, tokenData string) (*authenticator.Response, bool, error) {
-   	// 1.校验token格式正确
+   	// 1. 校验 token 格式正确
    	if !j.hasCorrectIssuer(tokenData) {
    		return nil, false, nil
    	}
    
-   	// 2.解析JWT对象
+   	// 2. 解析 JWT 对象
    	tok, err := jwt.ParseSigned(tokenData)
    	...
    
@@ -283,7 +279,7 @@ Bootstrap Token 是一种简单的 Bearer Token，这种令牌是在新建集群
    		found   bool
    		errlist []error
    	)
-   	// 3.使用--service-account-key-file提供的密钥，反序列化JWT
+   	// 3. 使用--service-account-key-file 提供的密钥，反序列化 JWT
    	for _, key := range j.keys {
    		if err := tok.Claims(key, public, private); err != nil {
    			errlist = append(errlist, err)
@@ -295,7 +291,7 @@ Bootstrap Token 是一种简单的 Bearer Token，这种令牌是在新建集群
    
    	...
        
-   	// 4.验证namespace是否正确、serviceAccountName、serviceAccountID是否存在，token是否失效
+   	// 4. 验证 namespace 是否正确、serviceAccountName、serviceAccountID 是否存在，token 是否失效
    	sa, err := j.validator.Validate(ctx, tokenData, public, private)
    	if err != nil {
    		return nil, false, err
@@ -310,10 +306,9 @@ Bootstrap Token 是一种简单的 Bearer Token，这种令牌是在新建集群
 
    服务账号被身份认证后，所确定的用户名为 `system:serviceaccount:<NAMESPACE>:<SERVICEACCOUNT>`， 并被分配到用户组 `system:serviceaccounts` 和 `system:serviceaccounts:<NAMESPACE>`。
 
-
 ### 2.1.5 OpenID Connect Token
 OpenID Connect Token(OIDC) 是一套基于 OAuth2.0 协议的轻量级认证规范，其提供了通过 API 进行身份交互的框架。OIDC 认证除了认证请求外，还会标明请求的用户身份（ID Token）。其中 Token 被称为 ID Token，此 ID Token 是 JWT，具有服务器签名的相关字段。认证流程如下：
-1. 用户想要访问 kube-apiserver，先通过认证服务（Auth Service，例如 Google Accounts 服务）认证自己，得到access_token、id_token 和 refresh_token。
+1. 用户想要访问 kube-apiserver，先通过认证服务（Auth Service，例如 Google Accounts 服务）认证自己，得到 access_token、id_token 和 refresh_token。
 2. 用户把 access_token、id_token 和 refresh_token 配置到客户端应用程序，例如：kubectl 或者 dashboard 工具
 3. 客户端使用 Token 以用户身份访问 kube-apiserver
 
@@ -357,7 +352,7 @@ sequenceDiagram
 8. 鉴权成功之后，API 服务器向 kubectl 返回响应
 9. kubectl 向用户提供反馈信息
 
-kube-apiserver 不与 Auth Service 交互就可以认证 Token 的合法性，关键在于第 5 步，所有 JWT 都由颁发给它的 Auth Service进行了数字签名，只需要在 kube-apiserver 的启动参数中，配置信任的 Auth Server 证书，用它来验证 id_token 是否合法。
+kube-apiserver 不与 Auth Service 交互就可以认证 Token 的合法性，关键在于第 5 步，所有 JWT 都由颁发给它的 Auth Service 进行了数字签名，只需要在 kube-apiserver 的启动参数中，配置信任的 Auth Server 证书，用它来验证 id_token 是否合法。
 
 1. 启用
 
@@ -519,8 +514,7 @@ func (a *requestHeaderAuthRequestHandler) AuthenticateRequest(req *http.Request)
 	}, true, nil
 }
 ```
-在进行认证代理认证时，requestHeader就是实现方式，分别从 HTTP Header 读出用户、组和额外信息，返回给客户端。
-
+在进行认证代理认证时，requestHeader 就是实现方式，分别从 HTTP Header 读出用户、组和额外信息，返回给客户端。
 
 ## 2.2 其他
 

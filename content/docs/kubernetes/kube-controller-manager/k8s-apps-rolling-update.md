@@ -92,11 +92,11 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
 
 {{< mermaid >}}
 graph LR
-    start((开始)) --> condtion1{newRS need scale up ?}
+    start(（开始）) --> condtion1{newRS need scale up ?}
     condtion1 -- No --> condtion2{oldRS need scale down ?}
     condtion2 -- NO --> x3(3. sync deploment status)
     condtion1 -- YES --> x1(1. newRS scale up)
-    x1 --> stop((结束))
+    x1 --> stop(（结束）)
     condtion2 -- YES --> x2(2. oldRS scale down)
     x2 --> stop
     x3 --> stop
@@ -258,7 +258,7 @@ graph LR
 
 ## 2.3 滚动更新示例
 
-1. 创建一个deployment，replica = 10
+1. 创建一个 deployment，replica = 10
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -334,14 +334,11 @@ nginx-deployment-5bbdfb5879   10        10        5       3s
 nginx-deployment-67dfd6c8f9   3         3         3       4m47s
 nginx-deployment-5bbdfb5879   10        10        6       3s
 nginx-deployment-67dfd6c8f9   2         3         3       4m47s
-nginx-deployment-67dfd6c8f9   2         3         3       4m47s
 nginx-deployment-67dfd6c8f9   2         2         2       4m47s
 nginx-deployment-5bbdfb5879   10        10        7       4s
 nginx-deployment-67dfd6c8f9   1         2         2       4m48s
-nginx-deployment-67dfd6c8f9   1         2         2       4m48s
 nginx-deployment-67dfd6c8f9   1         1         1       4m48s
 nginx-deployment-5bbdfb5879   10        10        8       4s
-nginx-deployment-67dfd6c8f9   0         1         1       4m48s
 nginx-deployment-67dfd6c8f9   0         1         1       4m48s
 nginx-deployment-67dfd6c8f9   0         0         0       4m48s
 nginx-deployment-5bbdfb5879   10        10        9       5s

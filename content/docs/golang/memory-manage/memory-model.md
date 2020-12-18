@@ -7,13 +7,13 @@ tag: [golang, memory]
 
 # 1. 引言
 
-Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似java内存模型中内存可见性问题。当多个goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。
+Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。
 
 # 2. 设计原则
 
 ## 2.1 happens-before
 
-假设A和B表示一个多线程的程序执行的两个操作。**如果A happens-before B，那么 A 操作对内存的影响将对执行B的线程(且执行 B 之前)可见**。
+假设 A 和 B 表示一个多线程的程序执行的两个操作。**如果 A happens-before B，那么 A 操作对内存的影响将对执行 B 的线程（且执行 B 之前）可见**。
 
 单一 goroutine 中当满足下面条件时候，对一个变量的写操作 w1 对读操作 r1 可见：
 
@@ -51,19 +51,18 @@ go 语句启动一个新的 goroutine 的动作 happen before 该新 goroutine �
 
 - 在有缓冲的通道时候向通道写入一个数据总是 happen  before 这个数据被从通道中读取完成。
 - 对应无缓冲的通道来说从通道接受（获取叫做读取）元素 happen before 向通道发送（写入）数据完成。
-- 从容量为C的通道接受第K个元素 happen before 向通道第k+C次写入完成，比如从容量为1的通道接受第3个元素 happen before 向通道第 3+1 次写入完成。
-
+- 从容量为 C 的通道接受第 K 个元素 happen before 向通道第 k+C 次写入完成，比如从容量为 1 的通道接受第 3 个元素 happen before 向通道第 3+1 次写入完成。
 
 ## 2.3 Locks
 
-1. 对应任何 `sync.Mutex` 或 `sync.RWMutex` 类型的变量I来说，调用 n 次 `l.Unlock()` 操作 happen before 调用 m 次 `l.Lock()` 操作返回，其中 n<m。
+1. 对应任何 `sync.Mutex` 或 `sync.RWMutex` 类型的变量 I 来说，调用 n 次 `l.Unlock()` 操作 happen before 调用 m 次 `l.Lock()` 操作返回，其中 n<m。
 2. 对任何一个 `sync.RWMutex` 类型的变量 l 来说，存在一个次数 n，调用 `l.RLock()`（读锁）操作 happens after 调用 n 次 `l.Unlock()`（释放写锁）并且相应的 `l.RUnlock()`（释放读锁） happen before 调用 n+1 次 `l.Lock()`（写锁）。
 
 ## 2.4 Once
 
-多 goroutine 下同时调用 `once.Do(f)` 时，真正执行 `f()` 函数的 goroutine， happen before 任何其他由于调用 `once.Do(f)` 而被阻塞的goroutine 返回。
+多 goroutine 下同时调用 `once.Do(f)` 时，真正执行 `f()` 函数的 goroutine， happen before 任何其他由于调用 `once.Do(f)` 而被阻塞的 goroutine 返回。
 
 # 3. 参考资料
 
-- [Golang内存模型](http://ifeve.com/golang-mem/)
+- [Golang 内存模型](http://ifeve.com/golang-mem/)
 - [The Go Memory Model](https://golang.org/ref/mem)

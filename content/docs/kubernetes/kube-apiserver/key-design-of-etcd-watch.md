@@ -5,7 +5,7 @@ title: watch 关键设计
 tag: [watch, client-go, kube-apiserver, etcd]
 ---
 
-> 注：本文转自[图解kubernetes中基于etcd的watch关键设计](https://www.kubernetes.org.cn/6889.html)
+> 注：本文转自 [图解 kubernetes 中基于 etcd 的 watch 关键设计](https://www.kubernetes.org.cn/6889.html)
 
 本文介绍了 kubernetes 针对 etcd 的 watch 场景，k8s 在性能优化上面的一些设计，
 逐个介绍缓存、定时器、序列化缓存、bookmark 机制、forget 机制、
@@ -18,7 +18,6 @@ tag: [watch, client-go, kube-apiserver, etcd]
 
 k8s 中并没有将业务的具体处理逻辑耦合在 rest 接口中，rest 接口只负责数据的存储，
 通过控制器模式，分离数据存储与业务逻辑的耦合，保证 apiserver 业务逻辑的简洁。
-
 
 ![image2](/kubernetes/kube-apiserver/watch/image2.png)
 
@@ -44,8 +43,8 @@ k8s 中并没有将业务的具体处理逻辑耦合在 rest 接口中，rest �
 
 事件管道则是负责事件的传递，在 watch 的实现中通过两级管道来实现消息的分发，
 首先通过 watch etcd 中的 key 获取感兴趣的事件，并进行数据的解析，
-完成从bytes到内部事件的转换并且发送到输入管道(incomingEventChan)中，
-然后后台会有线程负责输入管道中获取数据，并进行解析发送到输出管道(resultChan)中，
+完成从 bytes 到内部事件的转换并且发送到输入管道 (incomingEventChan) 中，
+然后后台会有线程负责输入管道中获取数据，并进行解析发送到输出管道 (resultChan) 中，
 后续会从该管道来进行事件的读取发送给对应的客户端。
 
 ## 2.3 事件缓冲区
@@ -69,8 +68,8 @@ kubernetes 中所有的数据和系统都基于 etcd 来实现，如何减轻访
 
 ![image6](/kubernetes/kube-apiserver/watch/image6.png)
 
-Reflector 是 client-go 中的一个组件，其通过listwatch接口获取数据存储在自己内部的 store 中，
-cacher中通过该组件对 etcd 进行 watch 操作，避免为每个组件都创建一个 etcd 的 watcher。
+Reflector 是 client-go 中的一个组件，其通过 listwatch 接口获取数据存储在自己内部的 store 中，
+cacher 中通过该组件对 etcd 进行 watch 操作，避免为每个组件都创建一个 etcd 的 watcher。
 
 ## 3.2 watchCache
 
@@ -84,7 +83,7 @@ wacthCache 负责存储 watch 到的事件，并且将 watch 的事件建立对�
 
 ![image8](/kubernetes/kube-apiserver/watch/image8.png)
 
-cacheWatcher 顾名思义其是就是针对 cache 的一个 watcher(watch.Interface)实现，
+cacheWatcher 顾名思义其是就是针对 cache 的一个 watcher(watch.Interface) 实现，
 前端的 watchServer 负责从 ResultChan 里面获取事件进行转发。
 
 ## 3.4 Cacher
@@ -95,16 +94,16 @@ Cacher 基于 etcd 的 store 结合上面的 watchCache 和 Reflector 共同构�
 针对普通的增删改功能其直接转发给 etcd 的 store 来进行底层的操作，而对于 watch 操作则进行拦截，
 构建并返回 cacheWatcher 组件。
 
-# 4. Cacher的优化
+# 4. Cacher 的优化
 
-看完基础组件的实现，接着我们看下针对watch这个场景k8s中还做了那些优化，学习针对类似场景的优化方案。
+看完基础组件的实现，接着我们看下针对 watch 这个场景 k8s 中还做了那些优化，学习针对类似场景的优化方案。
 
 ## 4.1 序列化缓存
 
 ![image10](/kubernetes/kube-apiserver/watch/image10.png)
 
 如果我们有多个 watcher 都 wacth 同一个事件，在最终的时候我们都需要进行序列化，
-cacher 中在分发的时候，如果发现超过指定数量的watcher， 则会在进行 dispatch 的时候，
+cacher 中在分发的时候，如果发现超过指定数量的 watcher， 则会在进行 dispatch 的时候，
 为其构建构建一个缓存函数，针对多个 watcher 只会进行一次的序列化。
 
 ## 4.2 nonblocking
@@ -112,7 +111,7 @@ cacher 中在分发的时候，如果发现超过指定数量的watcher， 则�
 ![image11](/kubernetes/kube-apiserver/watch/image11.png)
 
 在上面我们提到过事件缓冲区，但是如果某个 watcher 消费过慢依然会影响事件的分发，
-为此 cacher 中通过是否阻塞(是否可以直接将数据写入到管道中)来将 watcher 分为两类，
+为此 cacher 中通过是否阻塞（是否可以直接将数据写入到管道中）来将 watcher 分为两类，
 针对不能立即投递事件的 watcher， 则会在后续进行重试。
 
 ## 4.3 TimeBudget
@@ -128,13 +127,13 @@ cacher 中在分发的时候，如果发现超过指定数量的watcher， 则�
 针对上面的 TimeBudget 如果在给定的时间内依旧无法进行重试成功，
 则就会通过 forget 来删除对应的 watcher， 
 由此针对消费特别缓慢的 watcher 则可以通过后续的重试来重新建立 watch，
-从而减小对a piserver 的 watch 压力。
+从而减小对 a piserver 的 watch 压力。
 
 ## 4.5 bookmark 机制
 
 ![image13](/kubernetes/kube-apiserver/watch/image13.png)
 
-bookmark机制是大阿里提供的一种优化方案，其核心是为了避免单个某个资源一直没有对应的事件，
+bookmark 机制是大阿里提供的一种优化方案，其核心是为了避免单个某个资源一直没有对应的事件，
 此时对应的 informer 的 revision 会落后集群很大，
 bookmark 通过构建一种 BookMark 类型的事件来进行 revision 的传递，
 从而让 informer 在重启后不至于落后特别多。

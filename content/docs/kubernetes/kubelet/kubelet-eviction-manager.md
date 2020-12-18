@@ -12,8 +12,8 @@ tag: [kubelet, eviction manager]
 下面来具体研究下 Kubelet Eviction Policy 的工作机制。
 
 - kubelet 预先监控本节点的资源使用，防止资源被耗尽，保证节点稳定性。
-- kubelet 会预先 Fail N(>=1)个Pod，以回收出现紧缺的资源。
-- kubelet 在 Fail一个 pod 时，kill掉pod内所有 container，并设置 pod.status.phase = Failed。
+- kubelet 会预先 Fail N(>=1) 个 Pod，以回收出现紧缺的资源。
+- kubelet 在 Fail 一个 pod 时，kill 掉 pod 内所有 container，并设置 pod.status.phase = Failed。
 - kubelet 按照事先设定好的 Eviction Threshold 来触发驱逐动作，实现资源回收。
 
 ## 1.1 驱逐信号
@@ -33,7 +33,7 @@ tag: [kubelet, eviction manager]
 上表主要涉及三个方面，memory、file system 和 pid。其中 kubelet 值支持 2 种文件系统分区：
 
 1. nodefs：kubelet 用来存储 volume 和 daemon logs 等
-2. imagesfs：容器运行时( docker 等)用来保存镜像和容器的 writable layer
+2. imagesfs：容器运行时 ( docker 等）用来保存镜像和容器的 writable layer
 
 ## 1.2 驱逐阈值
 
@@ -57,7 +57,7 @@ Soft Eviction Thresholds，它与以下三个参数配合使用：
   则取`min(eviction-max-pod-grace-period, pod.Spec.TerminationGracePeriodSeconds)`
   作为 Pod Termination 真正的 Grace Period。
 
-因此，在软驱逐策略下，从 kubelet 检测到驱逐信号达到了阈值设定开始，到 pod 真正被 kill掉，
+因此，在软驱逐策略下，从 kubelet 检测到驱逐信号达到了阈值设定开始，到 pod 真正被 kill 掉，
 共花费的时间是：`sum(eviction-max-pod-grace-period, min(eviction-max-pod-grace-period, pod.Spec.TerminationGracePeriodSeconds))`
 
 ### 1.2.2 硬驱逐
@@ -76,21 +76,21 @@ kubelet 立马回收关联的短缺资源，并且使用的就立即结束，而
 ## 1.3 驱逐周期
 
 有了驱逐信号和阈值，也有了策略，接下来就是 Eviction Monitoring Interval。
-kubelet对应的监控周期，就通过 cAdvisor 的 `housekeeping-interval` 配置的，默认 10s。
+kubelet 对应的监控周期，就通过 cAdvisor 的 `housekeeping-interval` 配置的，默认 10s。
 
 ## 1.4 节点状态
 
 kubelet 监测到配置的驱逐策略被触发，会将驱逐信号映射到对应的节点状态。
 Kubelet 会将对应的 Eviction Signals 映射到对应的 Node Conditions，
-源码[`pkg/kubelet/eviction/helpers.go`]，其映射关系如下：
+源码 [`pkg/kubelet/eviction/helpers.go`]，其映射关系如下：
 
 | 节点状态 | 驱逐信号 | 描述  |
 | ------ | ------- | ----- |
-| MemoryPressure | memory.avaliable, allocatableMemory.available | 节点或pod的可用内存触发驱逐阈值 |
-| DiskPressure | nodefs.avaliable, nodefs.inodesFree, imagefs.available, imagesfs.inodesFree | 节点的 root fs 或i mage fs 上的可用磁盘空间和索引节点已满足收回阈值 |
+| MemoryPressure | memory.avaliable, allocatableMemory.available | 节点或 pod 的可用内存触发驱逐阈值 |
+| DiskPressure | nodefs.avaliable, nodefs.inodesFree, imagefs.available, imagesfs.inodesFree | 节点的 root fs 或 i mage fs 上的可用磁盘空间和索引节点已满足收回阈值 |
 | PIDPressure | pid.available | 节点的可用 PID 触发驱逐阈值 |
 
-kubelet 映射了 Node Condition之 后，会继续按照`--node-status-update-frequency`(default 10s)配置的时间间隔，
+kubelet 映射了 Node Condition 之 后，会继续按照`--node-status-update-frequency`(default 10s) 配置的时间间隔，
 周期性的与 kube-apiserver 进行 node status updates。
 
 ## 1.5 节点状态振荡
@@ -99,25 +99,25 @@ kubelet 映射了 Node Condition之 后，会继续按照`--node-status-update-f
 那么 kubelet 就会将该 node 对应的 node condition 在 true 和 false 之间来回切换。
 给 kube-scheduler 产生错误的调度结果。
 
-​因此，kubelet 添加参数 `eviction-pressure-transition-period` (default 5m0s)配置，
-使 Kubelet 在解除由 Evicion Signal 映射的 Node Pressure之前，必须等待 5 分钟。
+​因此，kubelet 添加参数 `eviction-pressure-transition-period` (default 5m0s) 配置，
+使 Kubelet 在解除由 Evicion Signal 映射的 Node Pressure 之前，必须等待 5 分钟。
 
 ​驱逐逻辑添加了一步：
 
 - `Soft Evction Singal` 高于 `Soft Eviction Thresholds` 时，
   Kubelet 还是会立刻设置对应的 MemoryPressure 或 DiskPressure 为 True。
-- 当 MemoryPressure 或 DiskPressure为True 的前提下，
+- 当 MemoryPressure 或 DiskPressure 为 True 的前提下，
   发生了 `Soft Evction Singal` 低于 `Soft Eviction Thresholds` 的情况，
-  则需要等待 `eviction-pressure-transition-period`(default 5m0s)配置的这么长时间，
+  则需要等待 `eviction-pressure-transition-period`(default 5m0s) 配置的这么长时间，
   才会将 condition pressure 切换回 False。
 
-**一句话总结**：Node Condition Pressure成为True容易，切换回False则要等`eviction-pressure-transition-period`。
+**一句话总结**：Node Condition Pressure 成为 True 容易，切换回 False 则要等`eviction-pressure-transition-period`。
 
 ## 1.6 回收节点层级资源
 
 如果满足驱逐阈值并超过了宽限期，kubelet 将启动回收压力资源的过程，
 直到它发现低于设定阈值的信号为止。
-kubelet将尝试在驱逐终端用户 pod 前回收节点层级资源。
+kubelet 将尝试在驱逐终端用户 pod 前回收节点层级资源。
 发现磁盘压力时，如果节点针对容器运行时配置有独占的 imagefs，
 kubelet 回收节点层级资源的方式将会不同。
 
@@ -168,9 +168,9 @@ eviction 毕竟是耗时的动作，所以应该尽量避免这种情况的发�
 --eviction-minimum-reclaim="memory.available=0Mi,nodefs.available=500Mi,imagefs.available=2Gi"
 ```
 
-如果 `memory.available` 驱逐阈值被触发，kubelet将保证 `memory.available` 至少为 `500Mi`。
-对于 `nodefs.available`，kubelet将保证 `nodefs.available` 至少为 `1.5Gi`。
-对于 `imagefs.available`，kubelet将保证 `imagefs.available` 至少为 `102Gi`，
+如果 `memory.available` 驱逐阈值被触发，kubelet 将保证 `memory.available` 至少为 `500Mi`。
+对于 `nodefs.available`，kubelet 将保证 `nodefs.available` 至少为 `1.5Gi`。
+对于 `imagefs.available`，kubelet 将保证 `imagefs.available` 至少为 `102Gi`，
 直到不再有相关资源报告压力为止。
 
 所有资源的默认 `eviction-minimum-reclaim` 值为 0。

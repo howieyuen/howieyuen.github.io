@@ -48,11 +48,10 @@ Tolerations:
 **了解污点效果**
 另外 2 个在 kube-proxy Pod 上容忍定义了当前节点状态是没有 ready 或者是 unreachable 时，
 该 Pod 允许运行在该节点上多长时间。污点可以包含以下三种效果：
-- NoSchedule，表示如果pod没有容忍此污点，将无法调度
+- NoSchedule，表示如果 pod 没有容忍此污点，将无法调度
 - PreferNoSchedule，是上面的宽松版本，如果没有其他节点可调度，依旧可以调度到本节点
 - NoExecute，上 2 个在调度期间起作用，而此设定也会影响正在运行中的 Pod。
   如果节点上的 Pod 没有容忍此污点，会被驱逐。
-
 
 ## 1.2 在节点上定义污点
 ```s
@@ -87,7 +86,7 @@ spec:
 污点可以组织新 Pod 的调度，或者定义非有限调度节点，甚至是将已有 Pod 驱逐。
 例如，一个集群分成多个部分，只允许开发团队将 Pod 部署到特定节点上；或者某些特殊 Pod 依赖硬件配置。
 
-**配置节点失效后的pod重新调度最长等待时间**
+**配置节点失效后的 pod 重新调度最长等待时间**
 
 容忍程度也可以配置，当某个 Pod 所在节点 NotReady 或者 Unreachable 是，
 k8s 可以等待该 Pod 重新调度之前的最长等待时间。
@@ -105,7 +104,7 @@ tolerations:
   tolerationSeconds: 300
 ...
 ```
-上面2个容忍表示，该 Pod 容忍所在节点处于 notReady 和 unreachable 状态维持 300s。超时后，再重新调度。
+上面 2 个容忍表示，该 Pod 容忍所在节点处于 notReady 和 unreachable 状态维持 300s。超时后，再重新调度。
 
 # 2. 使用节点亲和将 Pod 调度到指定节点
 
@@ -149,7 +148,7 @@ spec:
 
 **较长的节点亲和性属性名的含义**
 
-- requireDuringScheduling...表示该字段下定义的规则，为了让 Pod 调度到该节点上，必须满足的标签。
+- requireDuringScheduling... 表示该字段下定义的规则，为了让 Pod 调度到该节点上，必须满足的标签。
 - ...IgnoredDuringExecution 表明该字段下的规则，不会影响已经在节点上的 Pod。
 
 **了解节点选择器的条件**
@@ -252,7 +251,7 @@ spec:
 这里强制要求，frontend 的 Pod 被调度到和其他包含 app=backend 标签的 Pod 所在的相同节点上。
 这是通过 topologyKey 指定的。
 
-**了解调度器如何使用pod亲和规则**
+**了解调度器如何使用 pod 亲和规则**
 
 上面的应用部署后，5 个前端 Pod 和 1 个后端 Pod 都在 node2 上。
 假设后端 Pod 被误删，重新调度后，依旧在 node2 上。

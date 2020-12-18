@@ -48,7 +48,7 @@ type slice struct {
 
 ## 2.4 拷贝
 
-`slicecopy()` 方法会把源切片值(即 from Slice )中的元素复制到目标切片(即 to Slice )中，并返回被复制的元素个数，copy 的两个类型必须一致。`slicecopy()` 方法最终的**复制结果取决于较短的那个切片**，当较短的切片复制完成，整个复制过程就全部完成了。
+`slicecopy()` 方法会把源切片值（即 from Slice ) 中的元素复制到目标切片（即 to Slice ) 中，并返回被复制的元素个数，copy 的两个类型必须一致。`slicecopy()` 方法最终的**复制结果取决于较短的那个切片**，当较短的切片复制完成，整个复制过程就全部完成了。
 
 # 3. 特性
 
@@ -58,9 +58,9 @@ slice 的 array 存储在连续内存上，因此具有以下特点：
 2. 动态扩容会涉及内存拷贝和开辟新内存，会带来 gc 压力，内存碎片化；
 3. 如果可预估使用空间，提前分配 cap 的大小是极好的；
 4. 新、老 slice 共用底层数组，对底层数组的更改都会影响到彼此；
-5. append可以掰断新老 slice 共用底层数组的关系；
+5. append 可以掰断新老 slice 共用底层数组的关系；
 
 # 4. 参考资料
 
-- [深入解析Go中Slice底层实现](https://halfrost.com/go_slice/)
-- [深入解析Go Slice](https://segmentfault.com/a/1190000017341615)
+- [深入解析 Go 中 Slice 底层实现](https://halfrost.com/go_slice/)
+- [深入解析 Go Slice](https://segmentfault.com/a/1190000017341615)

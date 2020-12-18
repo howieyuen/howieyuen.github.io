@@ -13,13 +13,13 @@ Statefulset 是为了解决有状态服务的问题，而产生的一种资源�
 
 是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
 
-适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb集群，Redis 集群等等。
+适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。
 
 ## 1.1 特点
 
 - 稳定、唯一的网络标识符
 
-    如: Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则Redis集群将无法找到这段数据。
+    如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。
 
 - 稳定、持久的存储
   
@@ -39,7 +39,7 @@ Statefulset 是为了解决有状态服务的问题，而产生的一种资源�
 
 ## 1.2 限制
 
-- Pod的存储必须使用 PersistVolume
+- Pod 的存储必须使用 PersistVolume
 - 删除或者缩容时，不会删除关联的卷
 - 使用 headless service 关联 Pod，需要手动创建
 - Pod 的管理策略为 `OrderedReady` 时使用滚动更新能力，可能需要人工干预
@@ -55,7 +55,7 @@ Statefulset 是为了解决有状态服务的问题，而产生的一种资源�
     - `OnDelete`
 - Pod 管理策略：对于某些分布式系统来说，StatefulSet 的顺序性保证是不必要的，所以引入了 `statefulset.spec.podManagementPolicy` 字段
     - `OrderedReady`
-    - `Parallel`：允许StatefulSet Controller 并行终止所有 Pod，不必按顺序启动或删除 Pod
+    - `Parallel`：允许 StatefulSet Controller 并行终止所有 Pod，不必按顺序启动或删除 Pod
 
 ## 1.4 示例
 
@@ -115,7 +115,7 @@ spec:
 
 ## 2.1 startStatefulSetController()
 
-`startStatefulSetController()` 是 StatefulSet Controller 的启动方法，其中调用 `statefulset.NewStatefulSetController()` 方法进行初始化，然后调用对象的 `Run()` 方法启动 Controller。其中 `ConcurrentStatefulSetSyncs` 默认是5，即默认启动 5 个协程处理StatefulSet 相关业务。
+`startStatefulSetController()` 是 StatefulSet Controller 的启动方法，其中调用 `statefulset.NewStatefulSetController()` 方法进行初始化，然后调用对象的 `Run()` 方法启动 Controller。其中 `ConcurrentStatefulSetSyncs` 默认是 5，即默认启动 5 个协程处理 StatefulSet 相关业务。
 
 可以看到 StatefulSetController 初始化时直接相关的对象类型分别是 Pod、StatefulSet、PVC 和 ControllerRevision。印证了之前提到的 StatefulSet 的特殊之处：使用 PV 作为存储；ControllerRevision 表示升级/回滚记录。
 
@@ -279,7 +279,7 @@ func (ssc *defaultStatefulSetControl) updateStatefulSet(...) (*apps.StatefulSetS
 	firstUnhealthyOrdinal := math.MaxInt32
 	var firstUnhealthyPod *v1.Pod
 
-    // 4. 计算 status 字段中的值，将 pod 分配到 replicas 和 condemned两个数组中
+    // 4. 计算 status 字段中的值，将 pod 分配到 replicas 和 condemned 两个数组中
 	for i := range pods {
 		status.Replicas++
 
@@ -309,7 +309,7 @@ func (ssc *defaultStatefulSetControl) updateStatefulSet(...) (*apps.StatefulSetS
 		// 其余的 Pod 忽略
 	}
 
-    // 5. 检查 replicas数组中 [0,set.Spec.Replicas) 下标是否有缺失的 pod，若有缺失的则创建对应的 Pod 
+    // 5. 检查 replicas 数组中 [0,set.Spec.Replicas) 下标是否有缺失的 pod，若有缺失的则创建对应的 Pod 
 	// 在 newVersionedStatefulSetPod 中会判断是使用 currentSet 还是 updateSet 来创建
 	for ord := 0; ord < replicaCount; ord++ {
 		if replicas[ord] == nil {
@@ -402,7 +402,7 @@ func (ssc *defaultStatefulSetControl) updateStatefulSet(...) (*apps.StatefulSetS
 				status.UpdatedReplicas++
 			}
 
-			// 13. 如果为 Parallel，直接 return status 结束；如果为 OrderedReady，循环处理下一个pod。
+			// 13. 如果为 Parallel，直接 return status 结束；如果为 OrderedReady，循环处理下一个 pod。
 			if monotonic {
 				return &status, nil
 			}
@@ -410,7 +410,7 @@ func (ssc *defaultStatefulSetControl) updateStatefulSet(...) (*apps.StatefulSetS
 			continue
 		}
         // 14、如果 pod 正在删除中，且 Spec.PodManagementPolicy 不为 Parallel，
-        // 直接return status结束，结束后会在下一个 syncLoop 继续进行处理，pod 状态的改变会触发下一次 syncLoop
+        // 直接 return status 结束，结束后会在下一个 syncLoop 继续进行处理，pod 状态的改变会触发下一次 syncLoop
 		if isTerminating(replicas[i]) && monotonic {
 			klog.V(4).Infof(
 				"StatefulSet %s/%s is waiting for Pod %s to Terminate",
@@ -420,7 +420,7 @@ func (ssc *defaultStatefulSetControl) updateStatefulSet(...) (*apps.StatefulSetS
 			return &status, nil
 		}
         // 15. 如果 pod 状态不是 Running & Ready，且 Spec.PodManagementPolicy 不为 Parallel
-        // 则直接return status结束
+        // 则直接 return status 结束
 		if !isRunningAndReady(replicas[i]) && monotonic {
 			klog.V(4).Infof(
 				"StatefulSet %s/%s is waiting for Pod %s to be Running and Ready",
@@ -443,7 +443,7 @@ func (ssc *defaultStatefulSetControl) updateStatefulSet(...) (*apps.StatefulSetS
     // 17. 逆序处理 condemned 中的 pod
 	for target := len(condemned) - 1; target >= 0; target-- {
         // 18. 如果 pod 正在删除，检查 Spec.PodManagementPolicy 的值
-        // 如果为 Parallel，循环处理下一个pod 否则直接退出
+        // 如果为 Parallel，循环处理下一个 pod 否则直接退出
 		if isTerminating(condemned[target]) {
 			klog.V(4).Infof(
 				"StatefulSet %s/%s is waiting for Pod %s to Terminate prior to scale down",
@@ -541,7 +541,6 @@ func (ssc *defaultStatefulSetControl) updateStatefulSet(...) (*apps.StatefulSetS
 - 扩缩容：对于扩若容操作仅仅是创建或者删除对应的 pod，在操作前也会判断所有 pod 是否处于 running & ready 状态，然后进行对应的创建/删除操作，在上面的步骤中也会执行到第 6 步就结束；
 - 更新：可以看出在第 6 步之后的所有操作就是与更新相关，所以更新操作会执行完整个方法，在更新过程中通过 pod 的 currentRevision 和 updateRevision 来计算 currentReplicas、updatedReplicas 的值，最终完成所有 pod 的更新；
 - 删除：删除操作就比较明显，会止于第 5 步，但是在此之前检查 pod 状态以及分组的操作确实是多余的；
-
 
 # 3. 参考链接
 

@@ -25,9 +25,9 @@ type hchan struct {
 	elemtype *_type // 元素类型
 	sendx    uint   // 发送操作处理到的位置
 	recvx    uint   // 接收操作处理到的位置
-	recvq    waitq  // 等待读消息的goroutine队列
-	sendq    waitq  // 等待写消息的goroutine队列
-	lock mutex      // 互斥锁，chan不允许并发读写
+	recvq    waitq  // 等待读消息的 goroutine 队列
+	sendq    waitq  // 等待写消息的 goroutine 队列
+	lock mutex      // 互斥锁，chan 不允许并发读写
 }
 ```
 从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。
@@ -61,7 +61,7 @@ chan 内部实现了一个环形队列作为其缓冲区，队列的长度是创
 - buf 指向队列的内存，队列中还剩余两个元素；
 - qcount 表示队列中还有两个元素；
 - sendx 指示后续写入的数据存储的位置，取值 [0, 6)；
-- recvx 指示从该位置读取数据, 取值 [0, 6)；
+- recvx 指示从该位置读取数据，取值 [0, 6)；
 
 ## 2.2 等待队列
 从 channel 读数据，如果 channel 缓冲区为空或者没有缓冲区，当前 goroutine 会被阻塞。
@@ -102,7 +102,7 @@ chan 内部实现了一个环形队列作为其缓冲区，队列的长度是创
 ## 2.3 类型信息
 一个 channel 只能传递一种类型的值，类型信息存储在 hchan 数据结构中。
 - elemtype 代表类型，用于数据传递过程中的赋值；
-- elemsize 代表类型大小，用于在buf中定位元素位置。
+- elemsize 代表类型大小，用于在 buf 中定位元素位置。
 
 ## 2.4 锁
 一个 channel 同时仅允许被一个 goroutine 读写。
@@ -152,7 +152,7 @@ func makechan(t *chantype, size int) *hchan {
 
 向一个 channel 中发送数据简单过程如下：
 1. 如果等待接收队列 recvq 不为空，说明缓冲区中没有数据或者没有缓冲区，
-   此时直接从 recvq 取出 G,并把数据写入，最后把该 G 唤醒，结束发送过程；
+   此时直接从 recvq 取出 G, 并把数据写入，最后把该 G 唤醒，结束发送过程；
 2. 如果缓冲区中有空余位置，将数据写入缓冲区，结束发送过程；
 3. 如果缓冲区中没有空余位置，将待发送数据写入 G，将当前 G 加入 sendq，进入睡眠，等待被读 goroutine 唤醒；
 
@@ -175,7 +175,7 @@ G -.-> H
 ## 3.3 接收数据
 
 从一个 channel 接收数据简单过程如下：
-1. 如果等待发送队列 sendq 不为空，且没有缓冲区，直接从sendq 中取出 G，
+1. 如果等待发送队列 sendq 不为空，且没有缓冲区，直接从 sendq 中取出 G，
    把 G 中数据读出，最后把 G 唤醒，结束读取过程；
 2. 如果等待发送队列 sendq 不为空，此时说明缓冲区已满，从缓冲区中首部读出数据，
    把 G 中数据写入缓冲区尾部，把 G 唤醒，结束读取过程；
@@ -212,5 +212,5 @@ e0 --> d3
 3. 向已经关闭的 channel 写数据
 
 # 4. 参考资料
-- [Go Channel实现原理精要](https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-channel/)
-- [Go专家编程：1.1 chan](https://www.bookstack.cn/read/GoExpertProgramming/chapter01-1.1-chan.md)
+- [Go Channel 实现原理精要](https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-channel/)
+- [Go 专家编程：1.1 chan](https://www.bookstack.cn/read/GoExpertProgramming/chapter01-1.1-chan.md)
