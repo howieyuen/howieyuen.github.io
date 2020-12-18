@@ -5,7 +5,22 @@
     <link>https://howieyuen.github.io/</link>
     <description>Recent content in 介绍 on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 14 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 18 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>unsafe</title>
+      <link>https://howieyuen.github.io/docs/golang/language-basics/unsafe/</link>
+      <pubDate>Fri, 18 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/docs/golang/language-basics/unsafe/</guid>
+      <description>本文转自： Go 里面的 unsafe 包详解
+ The unsafe Package in Golang #  Golang 的 unsafe 包是一个很特殊的包。为什么这样说呢？本文将详细解释。
+来自 go 语言官方文档的警告 #  unsafe 包的文档是这么说的：
+导入 unsafe 的软件包可能不可移植，并且不受 Go 1 兼容性指南的保护。  Go 1 兼容性指南这么说：
+导入 unsafe 软件包可能取决于 Go 实现的内部属性。我们保留对可能导致程序崩溃的实现进行更改的权利。  当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。
+Unsafe包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
+ 三个函数：  func Alignof(variable ArbitraryType) uintptr func Offsetof(selector ArbitraryType) uintptr func Sizeof(variable ArbitraryType) uintptr   和一种类型：  类型 Pointer *ArbitraryType    这里，ArbitraryType 不是一个真正的类型，它只是一个占位符。</description>
+    </item>
+    
     <item>
       <title>chan</title>
       <link>https://howieyuen.github.io/docs/golang/data-structure/chan/</link>
@@ -222,6 +237,22 @@ type hmap struct { // map 中的元素个数，必须放在 struct 的第一个�
     </item>
     
     <item>
+      <title>reflect</title>
+      <link>https://howieyuen.github.io/docs/golang/language-basics/reflect/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/docs/golang/language-basics/reflect/</guid>
+      <description>1. 引言 #  计算机中提到的反射一般是指，程序借助某种手段检查自己结构的一种能力，通常就是借助编程语言中定义的类型（types）。因此，反射是建立在类型系统上的。
+go是静态类型化，每个变量都有一个静态类型，也就是说，在编译时，变量的类型就已经确定。不显示地去做强制类型转换，不同类型之间是无法相互赋值的。
+有一种特殊的类型叫做接口（interface），一个接口表示的是一组方法集合。一个接口变量能存储任何具体的值，只要这个值实现了这个接口的方法集合。比如io包中的 Reader 和 Writer，io.Reader 接口变量能够保存任意实现了 Read() 方法的类型所定义的值。
+一个特殊接口就是空接口 interface{}，任何值都可以说实现了空接口，因为空接口中没有定义方法，所以空接口可以保存任何值。
+一个接口类型变量存储了一对值：赋值给这个接口变量的具体值 + 这个值的类型描述符。更进一步的讲，这个“值”是实现了这个接口的底层具体数据项（underlying concrete data item)，而这个“类型”是描述了具体数据项（item）的全类型（full type）。
+所以反射是干嘛的呢？反射是一种检查存储在接口变量中的（类型/值）对的机制。reflect 包中提供的 2 个类型 Type 和 Value，提供了访问接口值的 reflect.Type 和 reflect.Value 部分。
+2. 三大法则 #  2.1. Reflection goes from interface value to reflecton object #  从 interface{} 变量可以反射出反射对象
+type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := reflect.TypeOf(x) fmt.Println(&amp;#34;type:&amp;#34;, t) // type: main.</description>
+    </item>
+    
+    <item>
       <title>slice</title>
       <link>https://howieyuen.github.io/docs/golang/data-structure/slice/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -242,22 +273,6 @@ type hmap struct { // map 中的元素个数，必须放在 struct 的第一个�
 单一 goroutine 中当满足下面条件时候，对一个变量的写操作 w1 对读操作 r1 可见：
  读操作 r1 不是发生在写操作 w1 前 在读操作 r1 之前，写操作 w1 之后没有其他的写操作 w2 对变量进行了修改  多 goroutine 下则需要满足下面条件才能保证写操作 w1 对读操作 r1 可见：
  写操作 w1 先于读操作 r1 任何对变量的写操作 w2 要先于写操作 w1 或者晚于读操作 r1  关于 channel 的 happens-before 在 Go 的内存模型中提到了三种情况：</description>
-    </item>
-    
-    <item>
-      <title>反射</title>
-      <link>https://howieyuen.github.io/docs/golang/language-basics/reflect/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://howieyuen.github.io/docs/golang/language-basics/reflect/</guid>
-      <description>1. 引言 #  计算机中提到的反射一般是指，程序借助某种手段检查自己结构的一种能力，通常就是借助编程语言中定义的类型（types）。因此，反射是建立在类型系统上的。
-go是静态类型化，每个变量都有一个静态类型，也就是说，在编译时，变量的类型就已经确定。不显示地去做强制类型转换，不同类型之间是无法相互赋值的。
-有一种特殊的类型叫做接口（interface），一个接口表示的是一组方法集合。一个接口变量能存储任何具体的值，只要这个值实现了这个接口的方法集合。比如io包中的 Reader 和 Writer，io.Reader 接口变量能够保存任意实现了 Read() 方法的类型所定义的值。
-一个特殊接口就是空接口 interface{}，任何值都可以说实现了空接口，因为空接口中没有定义方法，所以空接口可以保存任何值。
-一个接口类型变量存储了一对值：赋值给这个接口变量的具体值 + 这个值的类型描述符。更进一步的讲，这个“值”是实现了这个接口的底层具体数据项（underlying concrete data item)，而这个“类型”是描述了具体数据项（item）的全类型（full type）。
-所以反射是干嘛的呢？反射是一种检查存储在接口变量中的（类型/值）对的机制。reflect 包中提供的 2 个类型 Type 和 Value，提供了访问接口值的 reflect.Type 和 reflect.Value 部分。
-2. 三大法则 #  2.1. Reflection goes from interface value to reflecton object #  从 interface{} 变量可以反射出反射对象
-type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := reflect.TypeOf(x) fmt.Println(&amp;#34;type:&amp;#34;, t) // type: main.</description>
     </item>
     
   </channel>

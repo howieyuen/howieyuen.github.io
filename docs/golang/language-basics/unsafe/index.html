@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="本文转自： Go 里面的 unsafe 包详解
+ The unsafe Package in Golang #  Golang 的 unsafe 包是一个很特殊的包。为什么这样说呢？本文将详细解释。
+来自 go 语言官方文档的警告 #  unsafe 包的文档是这么说的：
+导入 unsafe 的软件包可能不可移植，并且不受 Go 1 兼容性指南的保护。  Go 1 兼容性指南这么说：
+导入 unsafe 软件包可能取决于 Go 实现的内部属性。我们保留对可能导致程序崩溃的实现进行更改的权利。  当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。
+Unsafe包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
+ 三个函数：  func Alignof(variable ArbitraryType) uintptr func Offsetof(selector ArbitraryType) uintptr func Sizeof(variable ArbitraryType) uintptr   和一种类型：  类型 Pointer *ArbitraryType    这里，ArbitraryType 不是一个真正的类型，它只是一个占位符。">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="unsafe" />
+<meta property="og:description" content="本文转自： Go 里面的 unsafe 包详解
+ The unsafe Package in Golang #  Golang 的 unsafe 包是一个很特殊的包。为什么这样说呢？本文将详细解释。
+来自 go 语言官方文档的警告 #  unsafe 包的文档是这么说的：
+导入 unsafe 的软件包可能不可移植，并且不受 Go 1 兼容性指南的保护。  Go 1 兼容性指南这么说：
+导入 unsafe 软件包可能取决于 Go 实现的内部属性。我们保留对可能导致程序崩溃的实现进行更改的权利。  当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。
+Unsafe包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
+ 三个函数：  func Alignof(variable ArbitraryType) uintptr func Offsetof(selector ArbitraryType) uintptr func Sizeof(variable ArbitraryType) uintptr   和一种类型：  类型 Pointer *ArbitraryType    这里，ArbitraryType 不是一个真正的类型，它只是一个占位符。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/golang/language-basics/unsafe/" />
+<meta property="article:published_time" content="2020-12-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-12-18T00:00:00+00:00" />
+<title>unsafe | 袁昊的学习笔记</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
+<script defer src="/en.search.min.d0c3e37ce62e781258e7b899488cb73e9bc716837f4fa0dbfa02423595e9cc23.js" integrity="sha256-0MPjfOYueBJY57iZSIy3PpvHFoN/T6Db&#43;gJCNZXpzCM="></script>
+
+<script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Golang</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>数据结构</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/chan/" class="">chan</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/map/" class="">map</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/slice/" class="">slice</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>语言基础</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/language-basics/unsafe/" class=" active">unsafe</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/language-basics/reflect/" class="">reflect</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>内存管理</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Kubernetes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-apisever</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-controller-manager</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-proxy</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-proxy/learn-about-Service/" class="">深入了解 Service</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kubelet</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-scheduler</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a  class="">LeetCode</a>
+      <span>▾</span>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0321/" class="">321. 拼接最大数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="/posts/" >
+        Blog
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://github.com/howieyuen/" target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/" target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>unsafe</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#the-unsafe-package-in-golang">The unsafe Package in Golang</a></li>
+    <li><a href="#来自-go-语言官方文档的警告">来自 go 语言官方文档的警告</a></li>
+    <li><a href="#unsafe包的作用">Unsafe包的作用</a></li>
+    <li><a href="#unsafepointer-和-uintptr">unsafe.Pointer 和 uintptr</a></li>
+    <li><a href="#unsafe-包有多危险">unsafe 包有多危险</a></li>
+    <li><a href="#转换-t1-为-t2">转换 T1 为 T2</a>
+      <ul>
+        <li><a href="#合法用例-1在-t-和-myt-之间转换">合法用例 1：在 <code>[]T</code> 和 <code>[]MyT</code> 之间转换</a></li>
+        <li><a href="#合法用例-2调用-syncatomic-包中指针相关的函数">合法用例 2：调用 sync/atomic 包中指针相关的函数</a></li>
+      </ul>
+    </li>
+    <li><a href="#结论">结论</a></li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><blockquote>
+<p>本文转自：
+  <a href="https://gocn.vip/topics/371">Go 里面的 unsafe 包详解</a></p>
+</blockquote>
+<h1 id="the-unsafe-package-in-golang">
+  The unsafe Package in Golang
+  <a class="anchor" href="#the-unsafe-package-in-golang">#</a>
+</h1>
+<p>Golang 的 unsafe 包是一个很特殊的包。为什么这样说呢？本文将详细解释。</p>
+<h1 id="来自-go-语言官方文档的警告">
+  来自 go 语言官方文档的警告
+  <a class="anchor" href="#%e6%9d%a5%e8%87%aa-go-%e8%af%ad%e8%a8%80%e5%ae%98%e6%96%b9%e6%96%87%e6%a1%a3%e7%9a%84%e8%ad%a6%e5%91%8a">#</a>
+</h1>
+<p>unsafe 包的文档是这么说的：</p>
+<blockquote class="book-hint danger">
+  导入 unsafe 的软件包可能不可移植，并且不受 Go 1 兼容性指南的保护。
+</blockquote>
+
+<p>Go 1 兼容性指南这么说：</p>
+<blockquote class="book-hint danger">
+  导入 unsafe 软件包可能取决于 Go 实现的内部属性。我们保留对可能导致程序崩溃的实现进行更改的权利。
+</blockquote>
+
+<p>当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。</p>
+<h1 id="unsafe包的作用">
+  Unsafe包的作用
+  <a class="anchor" href="#unsafe%e5%8c%85%e7%9a%84%e4%bd%9c%e7%94%a8">#</a>
+</h1>
+<p>直到现在（Go1.7），unsafe 包含以下资源：</p>
+<ul>
+<li>三个函数：
+<ul>
+<li><code>func Alignof(variable ArbitraryType) uintptr</code></li>
+<li><code>func Offsetof(selector ArbitraryType) uintptr</code></li>
+<li><code>func Sizeof(variable ArbitraryType) uintptr</code></li>
+</ul>
+</li>
+<li>和一种类型：
+<ul>
+<li>类型 <code>Pointer *ArbitraryType</code></li>
+</ul>
+</li>
+</ul>
+<p>这里，ArbitraryType 不是一个真正的类型，它只是一个占位符。</p>
+<p>与 Golang 中的大多数函数不同，上述三个函数的调用将始终在编译时求值，而不是运行时。这意味着它们的返回结果可以分配给常量。</p>
+<blockquote class="book-hint warning">
+  <ul>
+<li>unsafe 包中的函数中非唯一调用将在编译时求值。</li>
+<li>当传递给 len 和 cap 的参数是一个数组值时，内置函数和 cap 函数的调用也可以在编译时被求值。</li>
+</ul>
+
+</blockquote>
+
+<p>除了这三个函数和一个类型外，指针在 unsafe 包也为编译器服务。</p>
+<p>出于安全原因，Golang 不允许以下之间的直接转换：</p>
+<ul>
+<li>两个不同指针类型的值，例如 int64 和 float64。</li>
+<li>指针类型和 uintptr 的值。</li>
+</ul>
+<p>但是借助 <code>unsafe.Pointer</code>，我们可以打破 Go 类型和内存安全性，并使上面的转换成为可能。
+这怎么可能发生？让我们阅读 unsafe 包文档中列出的规则：</p>
+<ul>
+<li>任何类型的指针值都可以转换为 <code>unsafe.Pointer</code>。</li>
+<li><code>unsafe.Pointer</code> 可以转换为任何类型的指针值。</li>
+<li><code>uintptr</code> 可以转换为 <code>unsafe.Pointer</code>。</li>
+<li><code>unsafe.Pointer</code> 可以转换为 <code>uintptr</code>。</li>
+</ul>
+<p>这些规则与Go规范一致：</p>
+<blockquote class="book-hint info">
+  底层类型 uintptr 的任何指针或值都可以转换为指针类型，反之亦然。
+</blockquote>
+
+<p>规则表明 <code>unsafe.Pointe</code>r 类似于 c 语言中的 <code>void*</code> 。当然，<code>void*</code> 在 C 语言里是危险的！</p>
+<p>在上述规则下，对于两种不同类型 T1 和 T2，可以使 T1 值与 <code>unsafe.Pointer</code> 值一致，
+然后将 <code>unsafe.Pointer</code> 值转换为 T2 值（或 uintptr 值）。
+通过这种方式可以绕过 Go 类型系统和内存安全性。当然，滥用这种方式是很危险的。</p>
+<p>举个例子：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
+    <span style="color:#e6db74">&#34;unsafe&#34;</span>
+)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int64</span> = <span style="color:#ae81ff">5</span>
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pn</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">n</span>
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pf</span> = (<span style="color:#f92672">*</span><span style="color:#66d9ef">float64</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">pn</span>))
+    <span style="color:#75715e">// now, pn and pf are pointing at the same memory address
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">pf</span>) <span style="color:#75715e">// 2.5e-323
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">*</span><span style="color:#a6e22e">pf</span> = <span style="color:#ae81ff">3.14159</span>
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">n</span>) <span style="color:#75715e">// 4614256650576692846
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>在这个例子中的转换可能是无意义的，但它是安全和合法的（为什么它是安全的？）。</p>
+<p>因此，资源在 unsafe 包中的作用是为 Go 编译器服务，<code>unsafe.Pointer</code> 类型的作用是绕过 Go 类型系统和内存安全。</p>
+<h1 id="unsafepointer-和-uintptr">
+  unsafe.Pointer 和 uintptr
+  <a class="anchor" href="#unsafepointer-%e5%92%8c-uintptr">#</a>
+</h1>
+<p>这里有一些关于 <code>unsafe.Pointer</code> 和 <code>uintptr</code> 的事实：</p>
+<ul>
+<li><code>uintptr</code> 是一个整数类型。
+<ul>
+<li>即使 <code>uintptr</code> 变量仍然有效，由 <code>uintptr</code> 变量表示的地址处的数据也可能被 GC 回收。</li>
+</ul>
+</li>
+<li><code>unsafe.Pointer</code>是一个指针类型。
+<ul>
+<li>但是 <code>unsafe.Pointer</code> 值不能被取消引用。</li>
+<li>如果 <code>unsafe.Pointer</code> 变量仍然有效，则由 <code>unsafe.Pointer</code> 变量表示的地址处的数据不会被 GC 回收。</li>
+<li><code>unsafe.Pointer</code> 是一个通用的指针类型，就像 <code>*int</code> 等。</li>
+</ul>
+</li>
+</ul>
+<p>由于 <code>uintptr</code> 是一个整数类型，<code>uintptr</code> 值可以进行算术运算。
+所以通过使用 <code>uintptr</code> 和 <code>unsafe.Pointer</code>，我们可以绕过限制，<code>*T</code> 值不能在 Golang 中计算偏移量：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
+    <span style="color:#e6db74">&#34;unsafe&#34;</span>
+)
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>}
+    <span style="color:#a6e22e">p1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">1</span>])
+    <span style="color:#a6e22e">p3</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">p1</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Sizeof</span>(<span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">0</span>]))
+    <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p3</span>) = <span style="color:#ae81ff">6</span>
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;a =&#34;</span>, <span style="color:#a6e22e">a</span>) <span style="color:#75715e">// a = [0 1 2 6]
+</span><span style="color:#75715e"></span>
+    <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Person</span> <span style="color:#66d9ef">struct</span> {
+        <span style="color:#a6e22e">name</span>   <span style="color:#66d9ef">string</span>
+        <span style="color:#a6e22e">age</span>    <span style="color:#66d9ef">int</span>
+        <span style="color:#a6e22e">gender</span> <span style="color:#66d9ef">bool</span>
+    }
+
+    <span style="color:#a6e22e">who</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Person</span>{<span style="color:#e6db74">&#34;John&#34;</span>, <span style="color:#ae81ff">30</span>, <span style="color:#66d9ef">true</span>}
+    <span style="color:#a6e22e">pp</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">who</span>)
+    <span style="color:#a6e22e">pname</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">pp</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Offsetof</span>(<span style="color:#a6e22e">who</span>.<span style="color:#a6e22e">name</span>)))
+    <span style="color:#a6e22e">page</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">pp</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Offsetof</span>(<span style="color:#a6e22e">who</span>.<span style="color:#a6e22e">age</span>)))
+    <span style="color:#a6e22e">pgender</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#66d9ef">bool</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">pp</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Offsetof</span>(<span style="color:#a6e22e">who</span>.<span style="color:#a6e22e">gender</span>)))
+    <span style="color:#f92672">*</span><span style="color:#a6e22e">pname</span> = <span style="color:#e6db74">&#34;Alice&#34;</span>
+    <span style="color:#f92672">*</span><span style="color:#a6e22e">page</span> = <span style="color:#ae81ff">28</span>
+    <span style="color:#f92672">*</span><span style="color:#a6e22e">pgender</span> = <span style="color:#66d9ef">false</span>
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">who</span>) <span style="color:#75715e">// {Alice 28 false}
+</span><span style="color:#75715e"></span>}
+</code></pre></div><h1 id="unsafe-包有多危险">
+  unsafe 包有多危险
+  <a class="anchor" href="#unsafe-%e5%8c%85%e6%9c%89%e5%a4%9a%e5%8d%b1%e9%99%a9">#</a>
+</h1>
+<p>关于 unsafe 包，Ian，Go 团队的核心成员之一，已经确认：</p>
+<ul>
+<li>在 unsafe 包中的函数的签名将不会在以后的 Go 版本中更改，</li>
+<li>并且 <code>unsafe.Pointer</code> 类型将在以后的 Go 版本中始终存在。</li>
+</ul>
+<p>所以，unsafe 包中的三个函数看起来不危险。
+go team leader 甚至想把它们放在别的地方。
+unsafe 包中这几个函数唯一不安全的是它们调用结果可能在后来的版本中返回不同的值。
+很难说这种不安全是一种危险。</p>
+<p>看起来所有的 unsafe 包的危险都与使用 <code>unsafe.Pointer</code> 有关。
+unsafe 包 docs 列出了一些使用 <code>unsafe.Pointer</code> 合法或非法的情况。
+这里只列出部分非法使用案例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
+    <span style="color:#e6db74">&#34;unsafe&#34;</span>
+)
+
+<span style="color:#75715e">// case A: conversions between unsafe.Pointer and uintptr 
+</span><span style="color:#75715e">//         don&#39;t appear in the same expression
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">illegalUseA</span>() {
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;===================== illegalUseA&#34;</span>)
+
+    <span style="color:#a6e22e">pa</span> <span style="color:#f92672">:=</span> new([<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">int</span>)
+
+    <span style="color:#75715e">// split the legal use
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// p1 := unsafe.Pointer(uintptr(unsafe.Pointer(pa)) + unsafe.Sizeof(pa[0]))
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// into two expressions (illegal use):
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">ptr</span> <span style="color:#f92672">:=</span> uintptr(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">pa</span>))
+    <span style="color:#a6e22e">p1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">ptr</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Sizeof</span>(<span style="color:#a6e22e">pa</span>[<span style="color:#ae81ff">0</span>]))
+    <span style="color:#75715e">// &#34;go vet&#34; will make a warning for the above line:
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// possible misuse of unsafe.Pointer
+</span><span style="color:#75715e"></span>
+    <span style="color:#75715e">// the unsafe package docs, https://golang.org/pkg/unsafe/#Pointer,
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// thinks above splitting is illegal.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// but the current Go compiler and runtime (1.7.3) can&#39;t detect
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// this illegal use.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// however, to make your program run well for later Go versions,
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// it is best to comply with the unsafe package docs.
+</span><span style="color:#75715e"></span>
+    <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p1</span>) = <span style="color:#ae81ff">123</span>
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;*(*int)(p1)  :&#34;</span>, <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p1</span>)) <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>}    
+
+<span style="color:#75715e">// case B: pointers are pointing at unknown addresses
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">illegalUseB</span>() {
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;===================== illegalUseB&#34;</span>)
+
+    <span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>}
+    <span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">a</span>)
+    <span style="color:#a6e22e">p</span> = <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">p</span>) <span style="color:#f92672">+</span> uintptr(len(<span style="color:#a6e22e">a</span>)) <span style="color:#f92672">*</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Sizeof</span>(<span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">0</span>]))
+    <span style="color:#75715e">// now p is pointing at the end of the memory occupied by value a.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// up to now, although p is invalid, it is no problem.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// but it is illegal if we modify the value pointed by p
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p</span>) = <span style="color:#ae81ff">123</span>
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;*(*int)(p)  :&#34;</span>, <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p</span>)) <span style="color:#75715e">// 123 or not 123
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// the current Go compiler/runtime (1.7.3) and &#34;go vet&#34; 
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// will not detect the illegal use here.
+</span><span style="color:#75715e"></span>
+    <span style="color:#75715e">// however, the current Go runtime (1.7.3) will 
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// detect the illegal use and panic for the below code.
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">p</span> = <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">a</span>)
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;=</span> len(<span style="color:#a6e22e">a</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+        <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p</span>) = <span style="color:#ae81ff">123</span> <span style="color:#75715e">// Go runtime (1.7.3) never panic here in the tests
+</span><span style="color:#75715e"></span>
+        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">i</span>, <span style="color:#e6db74">&#34;:&#34;</span>, <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p</span>))
+        <span style="color:#75715e">// panic at the above line for the last iteration, when i==4.
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// runtime error: invalid memory address or nil pointer dereference
+</span><span style="color:#75715e"></span>
+        <span style="color:#a6e22e">p</span> = <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">p</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Sizeof</span>(<span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">0</span>]))
+    }
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#a6e22e">illegalUseA</span>()
+    <span style="color:#a6e22e">illegalUseB</span>()
+}
+</code></pre></div><p>编译器很难检测 Go 程序中非法的 <code>unsafe.Pointer</code> 使用。
+运行 <code>go vet</code> 可以帮助找到一些潜在的错误，但不是所有的都能找到。
+同样是 Go 运行时，也不能检测所有的非法使用。
+非法 <code>unsafe.Pointer</code> 使用可能会使程序崩溃或表现得怪异（有时是正常的，有时是异常的）。
+这就是为什么使用不安全的包是危险的。</p>
+<h1 id="转换-t1-为-t2">
+  转换 T1 为 T2
+  <a class="anchor" href="#%e8%bd%ac%e6%8d%a2-t1-%e4%b8%ba-t2">#</a>
+</h1>
+<p>对于将 T1 转换为 <code>unsafe.Pointer</code>，然后转换为 T2，unsafe 包 docs说：</p>
+<blockquote class="book-hint info">
+  如果 T2 比 T1 大，并且两者共享等效内存布局，则该转换允许将一种类型的数据重新解释为另一类型的数据。
+</blockquote>
+
+<p>这种“等效内存布局”的定义是有一些模糊的。看起来 Go 团队故意如此。这使得使用 unsafe 包更危险。</p>
+<p>由于 Go 团队不愿意在这里做出准确的定义，本文也不尝试这样做 这里，列出了已确认的合法用例的一小部分。</p>
+<h2 id="合法用例-1在-t-和-myt-之间转换">
+  合法用例 1：在 <code>[]T</code> 和 <code>[]MyT</code> 之间转换
+  <a class="anchor" href="#%e5%90%88%e6%b3%95%e7%94%a8%e4%be%8b-1%e5%9c%a8-t-%e5%92%8c-myt-%e4%b9%8b%e9%97%b4%e8%bd%ac%e6%8d%a2">#</a>
+</h2>
+<p>在这个例子里，我们用 int 作为 T：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">MyInt</span> <span style="color:#66d9ef">int</span>
+</code></pre></div><p>在 Golang 中，<code>[]int</code> 和 <code>[]MyInt</code> 是两种不同的类型，它们的底层类型是自身。
+因此，<code>[]int</code> 的值不能转换为 <code>[]MyInt</code>，反之亦然。 但是在 <code>unsafe.Pointer</code> 的帮助下，转换是可能的：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
+    <span style="color:#e6db74">&#34;unsafe&#34;</span>
+)
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">MyInt</span> <span style="color:#66d9ef">int</span>
+
+    <span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> []<span style="color:#a6e22e">MyInt</span>{<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>}
+    <span style="color:#75715e">// b := ([]int)(a) // error: cannot convert a (type []MyInt) to type []int
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">b</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>[]<span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">a</span>))
+
+    <span style="color:#a6e22e">b</span>[<span style="color:#ae81ff">0</span>]= <span style="color:#ae81ff">3</span>
+
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;a =&#34;</span>, <span style="color:#a6e22e">a</span>) <span style="color:#75715e">// a = [3 1 2]
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;b =&#34;</span>, <span style="color:#a6e22e">b</span>) <span style="color:#75715e">// b = [3 1 2]
+</span><span style="color:#75715e"></span>
+    <span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">2</span>] = <span style="color:#ae81ff">9</span>
+
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;a =&#34;</span>, <span style="color:#a6e22e">a</span>) <span style="color:#75715e">// a = [3 1 9]
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;b =&#34;</span>, <span style="color:#a6e22e">b</span>) <span style="color:#75715e">// b = [3 1 9]
+</span><span style="color:#75715e"></span>}
+</code></pre></div><h2 id="合法用例-2调用-syncatomic-包中指针相关的函数">
+  合法用例 2：调用 sync/atomic 包中指针相关的函数
+  <a class="anchor" href="#%e5%90%88%e6%b3%95%e7%94%a8%e4%be%8b-2%e8%b0%83%e7%94%a8-syncatomic-%e5%8c%85%e4%b8%ad%e6%8c%87%e9%92%88%e7%9b%b8%e5%85%b3%e7%9a%84%e5%87%bd%e6%95%b0">#</a>
+</h2>
+<p>sync/atomic 包中的以下函数的大多数参数和结果类型都是 <code>unsafe.Pointer</code> 或 <code>*unsafe.Pointer</code>：</p>
+<ul>
+<li><code>func CompareAndSwapPointer(addr *unsafe.Pointer, old，new unsafe.Pointer) (swapped bool)</code></li>
+<li><code>func LoadPointer(addr *unsafe.Pointer) (val unsafe.Pointer)</code></li>
+<li><code>func StorePointer(addr *unsafe.Pointer, val unsafe.Pointer)</code></li>
+<li><code>func SwapPointer(addr *unsafe.Pointer, new unsafe.Pointer) (old unsafe.Pointer)</code></li>
+</ul>
+<p>要使用这些功能，必须导入 unsafe 包。</p>
+<blockquote>
+<p>注意： <code>unsafe.Pointer</code> 是一般类型，因此 <code>unsafe.Pointer</code> 的值可以转换为 <code>unsafe.Pointer</code>，反之亦然。</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
+    <span style="color:#e6db74">&#34;log&#34;</span>
+    <span style="color:#e6db74">&#34;time&#34;</span>
+    <span style="color:#e6db74">&#34;unsafe&#34;</span>
+    <span style="color:#e6db74">&#34;sync/atomic&#34;</span>
+    <span style="color:#e6db74">&#34;sync&#34;</span>
+    <span style="color:#e6db74">&#34;math/rand&#34;</span>
+)
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>
+
+<span style="color:#75715e">// get data atomically
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Data</span>() <span style="color:#66d9ef">string</span> {
+    <span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>)(<span style="color:#a6e22e">atomic</span>.<span style="color:#a6e22e">LoadPointer</span>(
+            (<span style="color:#f92672">*</span><span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">data</span>)),
+        ))
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">p</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>
+    } <span style="color:#66d9ef">else</span> {
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">p</span>
+    }
+}
+
+<span style="color:#75715e">// set data atomically
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">SetData</span>(<span style="color:#a6e22e">d</span> <span style="color:#66d9ef">string</span>) {
+    <span style="color:#a6e22e">atomic</span>.<span style="color:#a6e22e">StorePointer</span>(
+            (<span style="color:#f92672">*</span><span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">data</span>)), 
+            <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">d</span>),
+        )
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">wg</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>
+    <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">200</span>)
+
+    <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">range</span> [<span style="color:#ae81ff">100</span>]<span style="color:#66d9ef">struct</span>{}{} {
+        <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+            <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>(<span style="color:#a6e22e">rand</span>.<span style="color:#a6e22e">Intn</span>(<span style="color:#ae81ff">1000</span>)) <span style="color:#f92672">/</span> <span style="color:#ae81ff">1000</span>)
+
+            <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">Data</span>())
+            <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+        }()
+    }
+
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> [<span style="color:#ae81ff">100</span>]<span style="color:#66d9ef">struct</span>{}{} {
+        <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">int</span>) {
+            <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>(<span style="color:#a6e22e">rand</span>.<span style="color:#a6e22e">Intn</span>(<span style="color:#ae81ff">1000</span>)) <span style="color:#f92672">/</span> <span style="color:#ae81ff">1000</span>)
+            <span style="color:#a6e22e">s</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprint</span>(<span style="color:#e6db74">&#34;#&#34;</span>, <span style="color:#a6e22e">i</span>)
+            <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;====&#34;</span>, <span style="color:#a6e22e">s</span>)
+
+            <span style="color:#a6e22e">SetData</span>(<span style="color:#a6e22e">s</span>)
+            <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+        }(<span style="color:#a6e22e">i</span>)
+    }
+
+    <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;final data = &#34;</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">data</span>)
+}
+</code></pre></div><h1 id="结论">
+  结论
+  <a class="anchor" href="#%e7%bb%93%e8%ae%ba">#</a>
+</h1>
+<ul>
+<li>unsafe 包用于 Go 编译器，而不是 Go 运行时。</li>
+<li>使用 unsafe 作为程序包名称只是让你在使用此包是更加小心。</li>
+<li>使用 <code>unsafe.Pointer</code> 并不总是一个坏主意，有时我们必须使用它。</li>
+<li>Golang 的类型系统是为了安全和效率而设计的。
+但是在 Go 类型系统中，安全性比效率更重要。
+通常 Go 是高效的，但有时安全真的会导致 Go 程序效率低下。
+unsafe 包用于有经验的程序员通过安全地绕过 Go 类型系统的安全性来消除这些低效。</li>
+<li>unsafe 包可能被滥用并且是危险的。</li>
+</ul>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#the-unsafe-package-in-golang">The unsafe Package in Golang</a></li>
+    <li><a href="#来自-go-语言官方文档的警告">来自 go 语言官方文档的警告</a></li>
+    <li><a href="#unsafe包的作用">Unsafe包的作用</a></li>
+    <li><a href="#unsafepointer-和-uintptr">unsafe.Pointer 和 uintptr</a></li>
+    <li><a href="#unsafe-包有多危险">unsafe 包有多危险</a></li>
+    <li><a href="#转换-t1-为-t2">转换 T1 为 T2</a>
+      <ul>
+        <li><a href="#合法用例-1在-t-和-myt-之间转换">合法用例 1：在 <code>[]T</code> 和 <code>[]MyT</code> 之间转换</a></li>
+        <li><a href="#合法用例-2调用-syncatomic-包中指针相关的函数">合法用例 2：调用 sync/atomic 包中指针相关的函数</a></li>
+      </ul>
+    </li>
+    <li><a href="#结论">结论</a></li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
