@@ -7,12 +7,12 @@
 <meta name="description" content="1. 引言 #  Go 语言中最常见的、也是经常被人提及的设计模式就是 —— 不要通过共享内存的方式进行通信，而是应该通过通信的方式共享内存。
 先入先出
 目前的 Channel 收发操作均遵循了先入先出（FIFO）的设计，具体规则如下：
- 先从 Channel 读取数据的 Goroutine 会先接收到数据； 先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利；  2. 数据结构 #  type hchan struct { qcount uint // 当前队列中剩余元素个数 	dataqsiz uint // 环形队列长度，即可以存放的元素个数 	buf unsafe.Pointer // 环形队列指针 	elemsize uint16 // 每个元素的大小 	closed uint32 // 标识关闭状态 	elemtype *_type // 元素类型 	sendx uint // 发送操作处理到的位置 	recvx uint // 接收操作处理到的位置 	recvq waitq // 等待读消息的goroutine队列 	sendq waitq // 等待写消息的goroutine队列 	lock mutex // 互斥锁，chan不允许并发读写 } 从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。">
+ 先从 Channel 读取数据的 Goroutine 会先接收到数据； 先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利；  2. 数据结构 #  type hchan struct { qcount uint // 当前队列中剩余元素个数 	dataqsiz uint // 环形队列长度，即可以存放的元素个数 	buf unsafe.Pointer // 环形队列指针 	elemsize uint16 // 每个元素的大小 	closed uint32 // 标识关闭状态 	elemtype *_type // 元素类型 	sendx uint // 发送操作处理到的位置 	recvx uint // 接收操作处理到的位置 	recvq waitq // 等待读消息的 goroutine 队列 	sendq waitq // 等待写消息的 goroutine 队列 	lock mutex // 互斥锁，chan 不允许并发读写 } 从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="chan" />
 <meta property="og:description" content="1. 引言 #  Go 语言中最常见的、也是经常被人提及的设计模式就是 —— 不要通过共享内存的方式进行通信，而是应该通过通信的方式共享内存。
 先入先出
 目前的 Channel 收发操作均遵循了先入先出（FIFO）的设计，具体规则如下：
- 先从 Channel 读取数据的 Goroutine 会先接收到数据； 先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利；  2. 数据结构 #  type hchan struct { qcount uint // 当前队列中剩余元素个数 	dataqsiz uint // 环形队列长度，即可以存放的元素个数 	buf unsafe.Pointer // 环形队列指针 	elemsize uint16 // 每个元素的大小 	closed uint32 // 标识关闭状态 	elemtype *_type // 元素类型 	sendx uint // 发送操作处理到的位置 	recvx uint // 接收操作处理到的位置 	recvq waitq // 等待读消息的goroutine队列 	sendq waitq // 等待写消息的goroutine队列 	lock mutex // 互斥锁，chan不允许并发读写 } 从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。" />
+ 先从 Channel 读取数据的 Goroutine 会先接收到数据； 先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利；  2. 数据结构 #  type hchan struct { qcount uint // 当前队列中剩余元素个数 	dataqsiz uint // 环形队列长度，即可以存放的元素个数 	buf unsafe.Pointer // 环形队列指针 	elemsize uint16 // 每个元素的大小 	closed uint32 // 标识关闭状态 	elemtype *_type // 元素类型 	sendx uint // 发送操作处理到的位置 	recvx uint // 接收操作处理到的位置 	recvq waitq // 等待读消息的 goroutine 队列 	sendq waitq // 等待写消息的 goroutine 队列 	lock mutex // 互斥锁，chan 不允许并发读写 } 从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/data-structure/chan/" />
 <meta property="article:published_time" content="2020-12-14T00:00:00+00:00" />
@@ -21,7 +21,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.d0c3e37ce62e781258e7b899488cb73e9bc716837f4fa0dbfa02423595e9cc23.js" integrity="sha256-0MPjfOYueBJY57iZSIy3PpvHFoN/T6Db&#43;gJCNZXpzCM="></script>
+<script defer src="/en.search.min.4bc3ee6a77818c2fe13d63b8149d415cf54d4052755645ac9c615023c8f98887.js" integrity="sha256-S8PuaneBjC/hPWO4FJ1BXPVNQFJ1VkWsnGFQI8j5iIc="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -657,9 +657,9 @@ https://github.com/alex-shpak/hugo-book
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">elemtype</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span> <span style="color:#75715e">// 元素类型
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">sendx</span>    <span style="color:#66d9ef">uint</span>   <span style="color:#75715e">// 发送操作处理到的位置
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">recvx</span>    <span style="color:#66d9ef">uint</span>   <span style="color:#75715e">// 接收操作处理到的位置
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">recvq</span>    <span style="color:#a6e22e">waitq</span>  <span style="color:#75715e">// 等待读消息的goroutine队列
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">sendq</span>    <span style="color:#a6e22e">waitq</span>  <span style="color:#75715e">// 等待写消息的goroutine队列
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">lock</span> <span style="color:#a6e22e">mutex</span>      <span style="color:#75715e">// 互斥锁，chan不允许并发读写
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">recvq</span>    <span style="color:#a6e22e">waitq</span>  <span style="color:#75715e">// 等待读消息的 goroutine 队列
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">sendq</span>    <span style="color:#a6e22e">waitq</span>  <span style="color:#75715e">// 等待写消息的 goroutine 队列
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">lock</span> <span style="color:#a6e22e">mutex</span>      <span style="color:#75715e">// 互斥锁，chan 不允许并发读写
 </span><span style="color:#75715e"></span>}
 </code></pre></div><p>从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。</p>
 <h2 id="21-环形队列">
@@ -689,7 +689,7 @@ https://github.com/alex-shpak/hugo-book
 <li>buf 指向队列的内存，队列中还剩余两个元素；</li>
 <li>qcount 表示队列中还有两个元素；</li>
 <li>sendx 指示后续写入的数据存储的位置，取值 [0, 6)；</li>
-<li>recvx 指示从该位置读取数据, 取值 [0, 6)；</li>
+<li>recvx 指示从该位置读取数据，取值 [0, 6)；</li>
 </ul>
 <h2 id="22-等待队列">
   2.2 等待队列
@@ -732,7 +732,7 @@ https://github.com/alex-shpak/hugo-book
 <p>一个 channel 只能传递一种类型的值，类型信息存储在 hchan 数据结构中。</p>
 <ul>
 <li>elemtype 代表类型，用于数据传递过程中的赋值；</li>
-<li>elemsize 代表类型大小，用于在buf中定位元素位置。</li>
+<li>elemsize 代表类型大小，用于在 buf 中定位元素位置。</li>
 </ul>
 <h2 id="24-锁">
   2.4 锁
@@ -788,7 +788,7 @@ buf 的大小则与元素 大小和缓冲区长度共同决定。</p>
 <p>向一个 channel 中发送数据简单过程如下：</p>
 <ol>
 <li>如果等待接收队列 recvq 不为空，说明缓冲区中没有数据或者没有缓冲区，
-此时直接从 recvq 取出 G,并把数据写入，最后把该 G 唤醒，结束发送过程；</li>
+此时直接从 recvq 取出 G, 并把数据写入，最后把该 G 唤醒，结束发送过程；</li>
 <li>如果缓冲区中有空余位置，将数据写入缓冲区，结束发送过程；</li>
 <li>如果缓冲区中没有空余位置，将待发送数据写入 G，将当前 G 加入 sendq，进入睡眠，等待被读 goroutine 唤醒；</li>
 </ol>
@@ -829,7 +829,7 @@ G -.-> H
 </h2>
 <p>从一个 channel 接收数据简单过程如下：</p>
 <ol>
-<li>如果等待发送队列 sendq 不为空，且没有缓冲区，直接从sendq 中取出 G，
+<li>如果等待发送队列 sendq 不为空，且没有缓冲区，直接从 sendq 中取出 G，
 把 G 中数据读出，最后把 G 唤醒，结束读取过程；</li>
 <li>如果等待发送队列 sendq 不为空，此时说明缓冲区已满，从缓冲区中首部读出数据，
 把 G 中数据写入缓冲区尾部，把 G 唤醒，结束读取过程；</li>
@@ -876,9 +876,9 @@ e0 --> d3
 </h1>
 <ul>
 <li>
-  <a href="https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-channel/">Go Channel实现原理精要</a></li>
+  <a href="https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-channel/">Go Channel 实现原理精要</a></li>
 <li>
-  <a href="https://www.bookstack.cn/read/GoExpertProgramming/chapter01-1.1-chan.md">Go专家编程：1.1 chan</a></li>
+  <a href="https://www.bookstack.cn/read/GoExpertProgramming/chapter01-1.1-chan.md">Go 专家编程：1.1 chan</a></li>
 </ul>
 </article>
  

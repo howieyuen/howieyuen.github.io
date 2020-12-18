@@ -6,19 +6,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="416. 分割等和子集 #   leetcode 链接： https://leetcode-cn.com/problems/partition-equal-subset-sum/
   给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
-注意:
+注意：
  每个数组中的元素不会超过 100 数组的大小不会超过 200  示例 1:
-输入: [1, 5, 11, 5] 输出: true 解释: 数组可以分割成 [1, 5, 5] 和 [11]. 示例 2:
-输入: [1, 2, 3, 5] 输出: false 解释: 数组不能分割成两个元素和相等的子集.  方法一：0-1背包问题
-// 0-1背包问题 // dp[i][target]表示nums[0, i]区间内是否能找到和为target的组合 // 对于每个nums[i]，如果nums[i] &lt;= target，可以选择or不选，但只要有一个为true，dp[i][target]=true // dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]] // 如果nums[i] &gt; target，只能不选，故： // dp[i][target] = dp[i-1][target] func canPartition(nums []int) bool { n := len(nums) if n &lt; 2 { return false } sum := 0 maxNum := 0 for _, num := range nums { sum &#43;= num if num &gt; maxNum { maxNum = num } } // 和为奇数 	if sum%2 !">
+输入：[1, 5, 11, 5] 输出：true 解释：数组可以分割成 [1, 5, 5] 和 [11]. 示例 2:
+输入：[1, 2, 3, 5] 输出：false 解释：数组不能分割成两个元素和相等的子集。  方法一：0-1 背包问题
+// 0-1 背包问题 // dp[i][target] 表示 nums[0, i] 区间内是否能找到和为 target 的组合 // 对于每个 nums[i]，如果 nums[i] &lt;= target，可以选择 or 不选，但只要有一个为 true，dp[i][target]=true // dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]] // 如果 nums[i] &gt; target，只能不选，故： // dp[i][target] = dp[i-1][target] func canPartition(nums []int) bool { n := len(nums) if n &lt; 2 { return false } sum := 0 maxNum := 0 for _, num := range nums { sum &#43;= num if num &gt; maxNum { maxNum = num } } // 和为奇数 	if sum%2 !">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="416. 分割等和子集" />
 <meta property="og:description" content="416. 分割等和子集 #   leetcode 链接： https://leetcode-cn.com/problems/partition-equal-subset-sum/
   给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
-注意:
+注意：
  每个数组中的元素不会超过 100 数组的大小不会超过 200  示例 1:
-输入: [1, 5, 11, 5] 输出: true 解释: 数组可以分割成 [1, 5, 5] 和 [11]. 示例 2:
-输入: [1, 2, 3, 5] 输出: false 解释: 数组不能分割成两个元素和相等的子集.  方法一：0-1背包问题
-// 0-1背包问题 // dp[i][target]表示nums[0, i]区间内是否能找到和为target的组合 // 对于每个nums[i]，如果nums[i] &lt;= target，可以选择or不选，但只要有一个为true，dp[i][target]=true // dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]] // 如果nums[i] &gt; target，只能不选，故： // dp[i][target] = dp[i-1][target] func canPartition(nums []int) bool { n := len(nums) if n &lt; 2 { return false } sum := 0 maxNum := 0 for _, num := range nums { sum &#43;= num if num &gt; maxNum { maxNum = num } } // 和为奇数 	if sum%2 !" />
+输入：[1, 5, 11, 5] 输出：true 解释：数组可以分割成 [1, 5, 5] 和 [11]. 示例 2:
+输入：[1, 2, 3, 5] 输出：false 解释：数组不能分割成两个元素和相等的子集。  方法一：0-1 背包问题
+// 0-1 背包问题 // dp[i][target] 表示 nums[0, i] 区间内是否能找到和为 target 的组合 // 对于每个 nums[i]，如果 nums[i] &lt;= target，可以选择 or 不选，但只要有一个为 true，dp[i][target]=true // dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]] // 如果 nums[i] &gt; target，只能不选，故： // dp[i][target] = dp[i-1][target] func canPartition(nums []int) bool { n := len(nums) if n &lt; 2 { return false } sum := 0 maxNum := 0 for _, num := range nums { sum &#43;= num if num &gt; maxNum { maxNum = num } } // 和为奇数 	if sum%2 !" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/leetcode/0416/" />
 <meta property="article:published_time" content="2020-10-14T00:00:00+00:00" />
@@ -27,7 +27,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.d0c3e37ce62e781258e7b899488cb73e9bc716837f4fa0dbfa02423595e9cc23.js" integrity="sha256-0MPjfOYueBJY57iZSIy3PpvHFoN/T6Db&#43;gJCNZXpzCM="></script>
+<script defer src="/en.search.min.4bc3ee6a77818c2fe13d63b8149d415cf54d4052755645ac9c615023c8f98887.js" integrity="sha256-S8PuaneBjC/hPWO4FJ1BXPVNQFJ1VkWsnGFQI8j5iIc="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -632,30 +632,30 @@ https://github.com/alex-shpak/hugo-book
 </blockquote>
 <hr>
 <p>给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。</p>
-<p>注意:</p>
+<p>注意：</p>
 <ol>
 <li>每个数组中的元素不会超过 100</li>
 <li>数组的大小不会超过 200</li>
 </ol>
 <p>示例 1:</p>
-<pre><code>输入: [1, 5, 11, 5]
+<pre><code>输入：[1, 5, 11, 5]
 
-输出: true
+输出：true
 
-解释: 数组可以分割成 [1, 5, 5] 和 [11].
+解释：数组可以分割成 [1, 5, 5] 和 [11].
 </code></pre><p>示例 2:</p>
-<pre><code>输入: [1, 2, 3, 5]
+<pre><code>输入：[1, 2, 3, 5]
 
-输出: false
+输出：false
 
-解释: 数组不能分割成两个元素和相等的子集.
+解释：数组不能分割成两个元素和相等的子集。
 </code></pre><hr>
-<p>方法一：0-1背包问题</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 0-1背包问题
-</span><span style="color:#75715e">// dp[i][target]表示nums[0, i]区间内是否能找到和为target的组合
-</span><span style="color:#75715e">// 对于每个nums[i]，如果nums[i] &lt;= target，可以选择or不选，但只要有一个为true，dp[i][target]=true
+<p>方法一：0-1 背包问题</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 0-1 背包问题
+</span><span style="color:#75715e">// dp[i][target] 表示 nums[0, i] 区间内是否能找到和为 target 的组合
+</span><span style="color:#75715e">// 对于每个 nums[i]，如果 nums[i] &lt;= target，可以选择 or 不选，但只要有一个为 true，dp[i][target]=true
 </span><span style="color:#75715e">//      dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]]
-</span><span style="color:#75715e">// 如果nums[i] &gt; target，只能不选，故：
+</span><span style="color:#75715e">// 如果 nums[i] &gt; target，只能不选，故：
 </span><span style="color:#75715e">//      dp[i][target] = dp[i-1][target]
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">canPartition</span>(<span style="color:#a6e22e">nums</span> []<span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">bool</span> {
 	<span style="color:#a6e22e">n</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">nums</span>)
@@ -685,10 +685,10 @@ https://github.com/alex-shpak/hugo-book
 	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">dp</span> = make([][]<span style="color:#66d9ef">bool</span>, <span style="color:#a6e22e">n</span>)
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">dp</span> {
 		<span style="color:#a6e22e">dp</span>[<span style="color:#a6e22e">i</span>] = make([]<span style="color:#66d9ef">bool</span>, <span style="color:#a6e22e">target</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>)
-		<span style="color:#75715e">// nums数组均为正数，如果不选取任何nums[i]，则被选取的正整数的和等于0
+		<span style="color:#75715e">// nums 数组均为正数，如果不选取任何 nums[i]，则被选取的正整数的和等于 0
 </span><span style="color:#75715e"></span>		<span style="color:#a6e22e">dp</span>[<span style="color:#a6e22e">i</span>][<span style="color:#ae81ff">0</span>] = <span style="color:#66d9ef">true</span>
 	}
-	<span style="color:#75715e">// 只有一个元素nums[0]可取时，构成初始值dp[0][nums[0]]为true
+	<span style="color:#75715e">// 只有一个元素 nums[0] 可取时，构成初始值 dp[0][nums[0]] 为 true
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">dp</span>[<span style="color:#ae81ff">0</span>][<span style="color:#a6e22e">nums</span>[<span style="color:#ae81ff">0</span>]] = <span style="color:#66d9ef">true</span>
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">n</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
 		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">j</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">j</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">target</span>; <span style="color:#a6e22e">j</span><span style="color:#f92672">++</span> {
@@ -705,7 +705,7 @@ https://github.com/alex-shpak/hugo-book
 	}
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dp</span>[<span style="color:#a6e22e">n</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>][<span style="color:#a6e22e">target</span>]
 }
-</code></pre></div><p>方法2：动态规划降维</p>
+</code></pre></div><p>方法 2：动态规划降维</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">canPartition</span>(<span style="color:#a6e22e">nums</span> []<span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">bool</span> {
 	<span style="color:#a6e22e">n</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">nums</span>)
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">n</span> &lt; <span style="color:#ae81ff">2</span> {
@@ -735,7 +735,7 @@ https://github.com/alex-shpak/hugo-book
 	<span style="color:#a6e22e">dp</span>[<span style="color:#ae81ff">0</span>] = <span style="color:#66d9ef">true</span>
 	<span style="color:#a6e22e">dp</span>[<span style="color:#a6e22e">nums</span>[<span style="color:#ae81ff">0</span>]] = <span style="color:#66d9ef">true</span>
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">i</span> &lt; len(<span style="color:#a6e22e">nums</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
-		<span style="color:#75715e">// 采用逆序，如果采用正序dp[j-nums[i]]会被之前的操作更新为新值
+		<span style="color:#75715e">// 采用逆序，如果采用正序 dp[j-nums[i]] 会被之前的操作更新为新值
 </span><span style="color:#75715e"></span>		<span style="color:#75715e">// dp[j](new) = dp[j](old) || dp[j - nums[i]](old)
 </span><span style="color:#75715e"></span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">j</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">target</span>; <span style="color:#a6e22e">j</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">i</span>]; <span style="color:#a6e22e">j</span><span style="color:#f92672">--</span> {
 			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">dp</span>[<span style="color:#a6e22e">target</span>] {

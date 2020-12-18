@@ -4,15 +4,15 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表， 由一个key通过哈希函数得到哈希值， 64 位系统中就生成一个 64 bit 的哈希值， 由这个哈希值将 key 对应到不同的桶（bucket）中， 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
-1.1 hash函数 #  首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找， 就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个bucket 的哪个 cell。 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
+<meta name="description" content="1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表， 由一个 key 通过哈希函数得到哈希值， 64 位系统中就生成一个 64 bit 的哈希值， 由这个哈希值将 key 对应到不同的桶（bucket）中， 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
+1.1 hash 函数 #  首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找， 就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个 bucket 的哪个 cell。 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
 1.2 数据结构 #  hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。
-type hmap struct { // map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 	count int // map状态标识，比如是否在被写或者迁移等，因为map不是线程安全的所以操作时需要判断flags 	flags uint8 // log_2 of buckets (最多可以放 loadFactor * 2^B 个元素即6.">
+type hmap struct { // map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 	count int // map 状态标识，比如是否在被写或者迁移等，因为 map 不是线程安全的所以操作时需要判断 flags 	flags uint8 // log_2 of buckets （最多可以放 loadFactor * 2^B 个元素即 6.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="map" />
-<meta property="og:description" content="1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表， 由一个key通过哈希函数得到哈希值， 64 位系统中就生成一个 64 bit 的哈希值， 由这个哈希值将 key 对应到不同的桶（bucket）中， 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
-1.1 hash函数 #  首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找， 就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个bucket 的哪个 cell。 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
+<meta property="og:description" content="1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表， 由一个 key 通过哈希函数得到哈希值， 64 位系统中就生成一个 64 bit 的哈希值， 由这个哈希值将 key 对应到不同的桶（bucket）中， 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
+1.1 hash 函数 #  首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找， 就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个 bucket 的哪个 cell。 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
 1.2 数据结构 #  hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。
-type hmap struct { // map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 	count int // map状态标识，比如是否在被写或者迁移等，因为map不是线程安全的所以操作时需要判断flags 	flags uint8 // log_2 of buckets (最多可以放 loadFactor * 2^B 个元素即6." />
+type hmap struct { // map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 	count int // map 状态标识，比如是否在被写或者迁移等，因为 map 不是线程安全的所以操作时需要判断 flags 	flags uint8 // log_2 of buckets （最多可以放 loadFactor * 2^B 个元素即 6." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/data-structure/map/" />
 
@@ -20,7 +20,7 @@ type hmap struct { // map 中的元素个数，必须放在 struct 的第一个�
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.d0c3e37ce62e781258e7b899488cb73e9bc716837f4fa0dbfa02423595e9cc23.js" integrity="sha256-0MPjfOYueBJY57iZSIy3PpvHFoN/T6Db&#43;gJCNZXpzCM="></script>
+<script defer src="/en.search.min.4bc3ee6a77818c2fe13d63b8149d415cf54d4052755645ac9c615023c8f98887.js" integrity="sha256-S8PuaneBjC/hPWO4FJ1BXPVNQFJ1VkWsnGFQI8j5iIc="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -605,16 +605,16 @@ https://github.com/alex-shpak/hugo-book
   <ul>
     <li><a href="#1-引言">1. 引言</a>
       <ul>
-        <li><a href="#11-hash函数">1.1 hash函数</a></li>
+        <li><a href="#11-hash-函数">1.1 hash 函数</a></li>
         <li><a href="#12-数据结构">1.2 数据结构</a></li>
       </ul>
     </li>
-    <li><a href="#2-map内存布局">2. map内存布局</a>
+    <li><a href="#2-map-内存布局">2. map 内存布局</a>
       <ul>
         <li><a href="#21-扩容">2.1 扩容</a></li>
         <li><a href="#22-查找">2.2 查找</a></li>
         <li><a href="#23-插入">2.3 插入</a></li>
-        <li><a href="#24-map无序">2.4 map无序</a></li>
+        <li><a href="#24-map-无序">2.4 map 无序</a></li>
       </ul>
     </li>
     <li><a href="#3-参考资料">3. 参考资料</a></li>
@@ -634,16 +634,16 @@ https://github.com/alex-shpak/hugo-book
   <a class="anchor" href="#1-%e5%bc%95%e8%a8%80">#</a>
 </h1>
 <p>粗略的讲，Go 语言中 map 采用的是哈希查找表，
-由一个key通过哈希函数得到哈希值，
+由一个 key 通过哈希函数得到哈希值，
 64 位系统中就生成一个 64 bit 的哈希值，
 由这个哈希值将 key 对应到不同的桶（bucket）中，
 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。</p>
-<h2 id="11-hash函数">
-  1.1 hash函数
-  <a class="anchor" href="#11-hash%e5%87%bd%e6%95%b0">#</a>
+<h2 id="11-hash-函数">
+  1.1 hash 函数
+  <a class="anchor" href="#11-hash-%e5%87%bd%e6%95%b0">#</a>
 </h2>
 <p>首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找，
-就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个bucket 的哪个 cell。
+就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个 bucket 的哪个 cell。
 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。</p>
 <h2 id="12-数据结构">
   1.2 数据结构
@@ -653,26 +653,26 @@ golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使�
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">hmap</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#75715e">// map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">count</span>     <span style="color:#66d9ef">int</span> 
-	<span style="color:#75715e">// map状态标识，比如是否在被写或者迁移等，因为map不是线程安全的所以操作时需要判断flags
+	<span style="color:#75715e">// map 状态标识，比如是否在被写或者迁移等，因为 map 不是线程安全的所以操作时需要判断 flags
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">flags</span>     <span style="color:#66d9ef">uint8</span>
-	<span style="color:#75715e">// log_2 of buckets (最多可以放 loadFactor * 2^B 个元素即6.5*2^B，再多就要 hashGrow 了)
+	<span style="color:#75715e">// log_2 of buckets （最多可以放 loadFactor * 2^B 个元素即 6.5*2^B，再多就要 hashGrow 了）
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">B</span>         <span style="color:#66d9ef">uint8</span>  
 	<span style="color:#75715e">// overflow 的 bucket 的近似数
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">noverflow</span> <span style="color:#66d9ef">uint16</span> 
 	<span style="color:#75715e">// hash seed，随机哈希种子可以防止哈希碰撞攻击
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">hash0</span>     <span style="color:#66d9ef">uint32</span>
-	<span style="color:#75715e">// 存储数据的buckets数组的指针， 大小2^B，如果 count == 0 的话，可能是 nil
+	<span style="color:#75715e">// 存储数据的 buckets 数组的指针， 大小 2^B，如果 count == 0 的话，可能是 nil
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">buckets</span>    <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
 	<span style="color:#75715e">// 一半大小的之前的 bucket 数组，只有在 growing 过程中是非 nil
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">oldbuckets</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
-	<span style="color:#75715e">// 扩容进度标志，小于此地址的buckets已迁移完成。
+	<span style="color:#75715e">// 扩容进度标志，小于此地址的 buckets 已迁移完成。
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">nevacuate</span>  <span style="color:#66d9ef">uintptr</span>
-	<span style="color:#75715e">// 可以减少GC扫描，当 key 和 value 都可以 inline 的时候，就会用这个字段
+	<span style="color:#75715e">// 可以减少 GC 扫描，当 key 和 value 都可以 inline 的时候，就会用这个字段
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">extra</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mapextra</span> <span style="color:#75715e">// optional fields
 </span><span style="color:#75715e"></span>}
 </code></pre></div><p>用 <strong>mapextra</strong> 来存储 key 和 value 都不是指针类型的 map，并且大小都小于 128 字节，这样可以避免 GC 扫描整个 map。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">mapextra</span> <span style="color:#66d9ef">struct</span> {
-    <span style="color:#75715e">// 如果 key 和 value 都不包含指针，并且可以被 inline(&lt;=128 字节)
+    <span style="color:#75715e">// 如果 key 和 value 都不包含指针，并且可以被 inline(&lt;=128 字节）
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// 使用 extra 来存储 overflow bucket，这样可以避免 GC 扫描整个 map
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// 然而 bmap.overflow 也是个指针。这时候我们只能把这些 overflow 的指针
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// 都放在 hmap.extra.overflow 和 hmap.extra.oldoverflow 中了
@@ -688,24 +688,24 @@ golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使�
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">bmap</span> <span style="color:#66d9ef">struct</span> {
     <span style="color:#75715e">// tophash 是 hash 值的高 8 位
 </span><span style="color:#75715e"></span>    <span style="color:#a6e22e">tophash</span> [<span style="color:#a6e22e">bucketCnt</span>]<span style="color:#66d9ef">uint8</span>
-    <span style="color:#75715e">// 以下字段没有显示定义在bmap，但是编译时编译器会自动添加
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// keys              // 每个桶最多可以装8个key
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// values            // 8个key分别有8个value一一对应
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// overflow pointer  // 发生哈希碰撞之后创建的overflow bucket
+    <span style="color:#75715e">// 以下字段没有显示定义在 bmap，但是编译时编译器会自动添加
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// keys              // 每个桶最多可以装 8 个 key
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// values            // 8 个 key 分别有 8 个 value 一一对应
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// overflow pointer  // 发生哈希碰撞之后创建的 overflow bucket
 </span><span style="color:#75715e"></span>}
-</code></pre></div><p>根据哈希函数将 key 生成一个哈希值，其中<strong>低位哈希用来判断桶位置，高位哈希用来确定在桶中哪个cell</strong>。
+</code></pre></div><p>根据哈希函数将 key 生成一个哈希值，其中<strong>低位哈希用来判断桶位置，高位哈希用来确定在桶中哪个 cell</strong>。
 低位哈希就是哈希值的低 B 位，<code>hmap</code> 结构体中的 B，比如 B 为 5，2^5=32，
-即该 map 有 32 个桶，只需要取哈希值的低 5 位就可以确定当前 key-value 落在哪个桶(bucket)中；
+即该 map 有 32 个桶，只需要取哈希值的低 5 位就可以确定当前 key-value 落在哪个桶 (bucket) 中；
 高位哈希即 <code>tophash</code>，是指哈希值的高 8 bits，根据 <code>tophash</code> 来确定 key 在桶中的位置。
 每个桶可以存储 8 对 key-value，存储结构不是 key/value/key/value&hellip;，而是 key/key..value/value，
 这样可以避免字节对齐时的 padding，节省内存空间。</p>
 <p>当不同的 key 根据哈希得到的 <code>tophash</code> 和低位 hash 都一样，发生哈希碰撞，这个时候就体现 <code>overflow pointer</code> 字段的作用了。
-桶溢出时，就需要把key-value 对存储在 <code>overflow bucket</code>（溢出桶），<code>overflow pointer</code> 就是指向 <code>overflow bucket</code> 的指针。
+桶溢出时，就需要把 key-value 对存储在 <code>overflow bucket</code>（溢出桶），<code>overflow pointer</code> 就是指向 <code>overflow bucket</code> 的指针。
 如果 <code>overflow bucket</code> 也溢出了呢？那就再给 <code>overflow bucket</code> 新建一个 <code>overflow bucket</code>，用指针串起来就形成了链式结构，
 map 本身有 2^B 个 bucket，只有当发生哈希碰撞后才会在 bucket 后链式增加 <code>overflow bucket</code>。</p>
-<h1 id="2-map内存布局">
-  2. map内存布局
-  <a class="anchor" href="#2-map%e5%86%85%e5%ad%98%e5%b8%83%e5%b1%80">#</a>
+<h1 id="2-map-内存布局">
+  2. map 内存布局
+  <a class="anchor" href="#2-map-%e5%86%85%e5%ad%98%e5%b8%83%e5%b1%80">#</a>
 </h1>
 <p>
   <img src="/golang/data-structure/map/memory-layout-of-map.png" alt="memory-layout-of-map.png" /></p>
@@ -748,9 +748,9 @@ map 本身有 2^B 个 bucket，只有当发生哈希碰撞后才会在 bucket �
 <li>根据哈希值高 8 位确定在 bucket 中的存储位置</li>
 <li>查找该 key 是否存在，已存在则更新，不存在则插入</li>
 </ol>
-<h2 id="24-map无序">
-  2.4 map无序
-  <a class="anchor" href="#24-map%e6%97%a0%e5%ba%8f">#</a>
+<h2 id="24-map-无序">
+  2.4 map 无序
+  <a class="anchor" href="#24-map-%e6%97%a0%e5%ba%8f">#</a>
 </h2>
 <p>map 的本质是散列表，而 map 的增长扩容会导致重新进行散列，这就可能使 map 的遍历结果在扩容前后变得不可靠，
 Go 设计者为了让大家不依赖遍历的顺序，<strong>故意在实现 map 遍历时加入了随机数</strong>，
@@ -762,11 +762,11 @@ Go 设计者为了让大家不依赖遍历的顺序，<strong>故意在实现 ma
 </h1>
 <ul>
 <li>
-  <a href="https://bettertxt.top/post/go-map/">Golang map底层实现</a></li>
+  <a href="https://bettertxt.top/post/go-map/">Golang map 底层实现</a></li>
 <li>
-  <a href="https://blog.csdn.net/chenxun_2010/article/details/103768011">Go语言之map：map的用法到map底层实现分析</a></li>
+  <a href="https://blog.csdn.net/chenxun_2010/article/details/103768011">Go 语言之 map：map 的用法到 map 底层实现分析</a></li>
 <li>
-  <a href="https://segmentfault.com/a/1190000018380327">Go语言map底层浅析</a></li>
+  <a href="https://segmentfault.com/a/1190000018380327">Go 语言 map 底层浅析</a></li>
 <li>
   <a href="https://draveness.me/golang/docs/part2-foundation/ch03-datastructure/golang-hashmap/">哈希表</a></li>
 </ul>
@@ -806,16 +806,16 @@ Go 设计者为了让大家不依赖遍历的顺序，<strong>故意在实现 ma
   <ul>
     <li><a href="#1-引言">1. 引言</a>
       <ul>
-        <li><a href="#11-hash函数">1.1 hash函数</a></li>
+        <li><a href="#11-hash-函数">1.1 hash 函数</a></li>
         <li><a href="#12-数据结构">1.2 数据结构</a></li>
       </ul>
     </li>
-    <li><a href="#2-map内存布局">2. map内存布局</a>
+    <li><a href="#2-map-内存布局">2. map 内存布局</a>
       <ul>
         <li><a href="#21-扩容">2.1 扩容</a></li>
         <li><a href="#22-查找">2.2 查找</a></li>
         <li><a href="#23-插入">2.3 插入</a></li>
-        <li><a href="#24-map无序">2.4 map无序</a></li>
+        <li><a href="#24-map-无序">2.4 map 无序</a></li>
       </ul>
     </li>
     <li><a href="#3-参考资料">3. 参考资料</a></li>

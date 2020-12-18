@@ -23,7 +23,7 @@ kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.k
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.d0c3e37ce62e781258e7b899488cb73e9bc716837f4fa0dbfa02423595e9cc23.js" integrity="sha256-0MPjfOYueBJY57iZSIy3PpvHFoN/T6Db&#43;gJCNZXpzCM="></script>
+<script defer src="/en.search.min.4bc3ee6a77818c2fe13d63b8149d415cf54d4052755645ac9c615023c8f98887.js" integrity="sha256-S8PuaneBjC/hPWO4FJ1BXPVNQFJ1VkWsnGFQI8j5iIc="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -680,7 +680,7 @@ https://github.com/alex-shpak/hugo-book
 另外 2 个在 kube-proxy Pod 上容忍定义了当前节点状态是没有 ready 或者是 unreachable 时，
 该 Pod 允许运行在该节点上多长时间。污点可以包含以下三种效果：</p>
 <ul>
-<li>NoSchedule，表示如果pod没有容忍此污点，将无法调度</li>
+<li>NoSchedule，表示如果 pod 没有容忍此污点，将无法调度</li>
 <li>PreferNoSchedule，是上面的宽松版本，如果没有其他节点可调度，依旧可以调度到本节点</li>
 <li>NoExecute，上 2 个在调度期间起作用，而此设定也会影响正在运行中的 Pod。
 如果节点上的 Pod 没有容忍此污点，会被驱逐。</li>
@@ -718,7 +718,7 @@ https://github.com/alex-shpak/hugo-book
 <p><strong>调度时使用污点和容忍</strong></p>
 <p>污点可以组织新 Pod 的调度，或者定义非有限调度节点，甚至是将已有 Pod 驱逐。
 例如，一个集群分成多个部分，只允许开发团队将 Pod 部署到特定节点上；或者某些特殊 Pod 依赖硬件配置。</p>
-<p><strong>配置节点失效后的pod重新调度最长等待时间</strong></p>
+<p><strong>配置节点失效后的 pod 重新调度最长等待时间</strong></p>
 <p>容忍程度也可以配置，当某个 Pod 所在节点 NotReady 或者 Unreachable 是，
 k8s 可以等待该 Pod 重新调度之前的最长等待时间。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">...
@@ -732,7 +732,7 @@ k8s 可以等待该 Pod 重新调度之前的最长等待时间。</p>
   <span style="color:#f92672">operator</span>: <span style="color:#ae81ff">Exists</span>
   <span style="color:#f92672">tolerationSeconds</span>: <span style="color:#ae81ff">300</span>
 ...
-</code></pre></div><p>上面2个容忍表示，该 Pod 容忍所在节点处于 notReady 和 unreachable 状态维持 300s。超时后，再重新调度。</p>
+</code></pre></div><p>上面 2 个容忍表示，该 Pod 容忍所在节点处于 notReady 和 unreachable 状态维持 300s。超时后，再重新调度。</p>
 <h1 id="2-使用节点亲和将-pod-调度到指定节点">
   2. 使用节点亲和将 Pod 调度到指定节点
   <a class="anchor" href="#2-%e4%bd%bf%e7%94%a8%e8%8a%82%e7%82%b9%e4%ba%b2%e5%92%8c%e5%b0%86-pod-%e8%b0%83%e5%ba%a6%e5%88%b0%e6%8c%87%e5%ae%9a%e8%8a%82%e7%82%b9">#</a>
@@ -771,7 +771,7 @@ k8s 可以等待该 Pod 重新调度之前的最长等待时间。</p>
             - <span style="color:#e6db74">&#34;true&#34;</span>
 </code></pre></div><p><strong>较长的节点亲和性属性名的含义</strong></p>
 <ul>
-<li>requireDuringScheduling&hellip;表示该字段下定义的规则，为了让 Pod 调度到该节点上，必须满足的标签。</li>
+<li>requireDuringScheduling&hellip; 表示该字段下定义的规则，为了让 Pod 调度到该节点上，必须满足的标签。</li>
 <li>&hellip;IgnoredDuringExecution 表明该字段下的规则，不会影响已经在节点上的 Pod。</li>
 </ul>
 <p><strong>了解节点选择器的条件</strong></p>
@@ -857,7 +857,7 @@ kubectl label node node2.k8s share<span style="color:#f92672">-</span>type<span 
                 <span style="color:#f92672">app</span>: <span style="color:#ae81ff">backend</span>
 </code></pre></div><p>这里强制要求，frontend 的 Pod 被调度到和其他包含 app=backend 标签的 Pod 所在的相同节点上。
 这是通过 topologyKey 指定的。</p>
-<p><strong>了解调度器如何使用pod亲和规则</strong></p>
+<p><strong>了解调度器如何使用 pod 亲和规则</strong></p>
 <p>上面的应用部署后，5 个前端 Pod 和 1 个后端 Pod 都在 node2 上。
 假设后端 Pod 被误删，重新调度后，依旧在 node2 上。
 虽然后端 Pod 本身没有定义任何亲和性规则，如果调度到其他节点，即会打破已有的亲和规则。</p>

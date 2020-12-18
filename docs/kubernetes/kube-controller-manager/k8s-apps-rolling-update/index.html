@@ -23,7 +23,7 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.d0c3e37ce62e781258e7b899488cb73e9bc716837f4fa0dbfa02423595e9cc23.js" integrity="sha256-0MPjfOYueBJY57iZSIy3PpvHFoN/T6Db&#43;gJCNZXpzCM="></script>
+<script defer src="/en.search.min.4bc3ee6a77818c2fe13d63b8149d415cf54d4052755645ac9c615023c8f98887.js" integrity="sha256-S8PuaneBjC/hPWO4FJ1BXPVNQFJ1VkWsnGFQI8j5iIc="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -732,11 +732,11 @@ https://github.com/alex-shpak/hugo-book
 
 <p class="mermaid">
 graph LR
-    start((开始)) --> condtion1{newRS need scale up ?}
+    start(（开始）) --> condtion1{newRS need scale up ?}
     condtion1 -- No --> condtion2{oldRS need scale down ?}
     condtion2 -- NO --> x3(3. sync deploment status)
     condtion1 -- YES --> x1(1. newRS scale up)
-    x1 --> stop((结束))
+    x1 --> stop(（结束）)
     condtion2 -- YES --> x2(2. oldRS scale down)
     x2 --> stop
     x3 --> stop
@@ -901,7 +901,7 @@ graph LR
   <a class="anchor" href="#23-%e6%bb%9a%e5%8a%a8%e6%9b%b4%e6%96%b0%e7%a4%ba%e4%be%8b">#</a>
 </h2>
 <ol>
-<li>创建一个deployment，replica = 10</li>
+<li>创建一个 deployment，replica = 10</li>
 </ol>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
@@ -963,14 +963,11 @@ nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span
 nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>       4m47s
 nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">6</span>       3s
 nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>       4m47s
-nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>       4m47s
 nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>       4m47s
 nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">7</span>       4s
 nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>       4m48s
-nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>       4m48s
 nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       4m48s
 nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">8</span>       4s
-nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       4m48s
 nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       4m48s
 nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">0</span>       4m48s
 nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">9</span>       5s

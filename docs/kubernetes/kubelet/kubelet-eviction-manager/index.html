@@ -5,12 +5,12 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="1. 概述 #  在可用计算资源较少时，kubelet 为保证节点稳定性，会主动地结束一个或多个 pod 以回收短缺地资源， 这在处理内存和磁盘这种不可压缩资源时，驱逐 pod 回收资源的策略，显得尤为重要。 下面来具体研究下 Kubelet Eviction Policy 的工作机制。
- kubelet 预先监控本节点的资源使用，防止资源被耗尽，保证节点稳定性。 kubelet 会预先 Fail N(&gt;=1)个Pod，以回收出现紧缺的资源。 kubelet 在 Fail一个 pod 时，kill掉pod内所有 container，并设置 pod.status.phase = Failed。 kubelet 按照事先设定好的 Eviction Threshold 来触发驱逐动作，实现资源回收。  1.1 驱逐信号 #  在源码 pkg/kubelet/eviction/api/types.go 中定义了以下及几种 Eviction Signals：
-   Eviction Signal Description     memory.available := node.status.capacity[memory] - node.stats.memory.workingSet   nodefs.available := node.stats.fs.available   nodefs.inodesFree := node.">
+ kubelet 预先监控本节点的资源使用，防止资源被耗尽，保证节点稳定性。 kubelet 会预先 Fail N(&gt;=1) 个 Pod，以回收出现紧缺的资源。 kubelet 在 Fail 一个 pod 时，kill 掉 pod 内所有 container，并设置 pod.status.phase = Failed。 kubelet 按照事先设定好的 Eviction Threshold 来触发驱逐动作，实现资源回收。  1.1 驱逐信号 #  在源码 pkg/kubelet/eviction/api/types.go 中定义了以下及几种 Eviction Signals：
+   Eviction Signal Description     memory.available := node.status.capacity[memory] - node.stats.memory.workingSet   nodefs.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Eviction Manager 工作机制" />
 <meta property="og:description" content="1. 概述 #  在可用计算资源较少时，kubelet 为保证节点稳定性，会主动地结束一个或多个 pod 以回收短缺地资源， 这在处理内存和磁盘这种不可压缩资源时，驱逐 pod 回收资源的策略，显得尤为重要。 下面来具体研究下 Kubelet Eviction Policy 的工作机制。
- kubelet 预先监控本节点的资源使用，防止资源被耗尽，保证节点稳定性。 kubelet 会预先 Fail N(&gt;=1)个Pod，以回收出现紧缺的资源。 kubelet 在 Fail一个 pod 时，kill掉pod内所有 container，并设置 pod.status.phase = Failed。 kubelet 按照事先设定好的 Eviction Threshold 来触发驱逐动作，实现资源回收。  1.1 驱逐信号 #  在源码 pkg/kubelet/eviction/api/types.go 中定义了以下及几种 Eviction Signals：
-   Eviction Signal Description     memory.available := node.status.capacity[memory] - node.stats.memory.workingSet   nodefs.available := node.stats.fs.available   nodefs.inodesFree := node." />
+ kubelet 预先监控本节点的资源使用，防止资源被耗尽，保证节点稳定性。 kubelet 会预先 Fail N(&gt;=1) 个 Pod，以回收出现紧缺的资源。 kubelet 在 Fail 一个 pod 时，kill 掉 pod 内所有 container，并设置 pod.status.phase = Failed。 kubelet 按照事先设定好的 Eviction Threshold 来触发驱逐动作，实现资源回收。  1.1 驱逐信号 #  在源码 pkg/kubelet/eviction/api/types.go 中定义了以下及几种 Eviction Signals：
+   Eviction Signal Description     memory.available := node.status.capacity[memory] - node.stats.memory.workingSet   nodefs." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/" />
 <meta property="article:published_time" content="2020-02-26T00:00:00+00:00" />
@@ -19,7 +19,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.d0c3e37ce62e781258e7b899488cb73e9bc716837f4fa0dbfa02423595e9cc23.js" integrity="sha256-0MPjfOYueBJY57iZSIy3PpvHFoN/T6Db&#43;gJCNZXpzCM="></script>
+<script defer src="/en.search.min.4bc3ee6a77818c2fe13d63b8149d415cf54d4052755645ac9c615023c8f98887.js" integrity="sha256-S8PuaneBjC/hPWO4FJ1BXPVNQFJ1VkWsnGFQI8j5iIc="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -644,8 +644,8 @@ https://github.com/alex-shpak/hugo-book
 下面来具体研究下 Kubelet Eviction Policy 的工作机制。</p>
 <ul>
 <li>kubelet 预先监控本节点的资源使用，防止资源被耗尽，保证节点稳定性。</li>
-<li>kubelet 会预先 Fail N(&gt;=1)个Pod，以回收出现紧缺的资源。</li>
-<li>kubelet 在 Fail一个 pod 时，kill掉pod内所有 container，并设置 pod.status.phase = Failed。</li>
+<li>kubelet 会预先 Fail N(&gt;=1) 个 Pod，以回收出现紧缺的资源。</li>
+<li>kubelet 在 Fail 一个 pod 时，kill 掉 pod 内所有 container，并设置 pod.status.phase = Failed。</li>
 <li>kubelet 按照事先设定好的 Eviction Threshold 来触发驱逐动作，实现资源回收。</li>
 </ul>
 <h2 id="11-驱逐信号">
@@ -694,7 +694,7 @@ https://github.com/alex-shpak/hugo-book
 <p>上表主要涉及三个方面，memory、file system 和 pid。其中 kubelet 值支持 2 种文件系统分区：</p>
 <ol>
 <li>nodefs：kubelet 用来存储 volume 和 daemon logs 等</li>
-<li>imagesfs：容器运行时( docker 等)用来保存镜像和容器的 writable layer</li>
+<li>imagesfs：容器运行时 ( docker 等）用来保存镜像和容器的 writable layer</li>
 </ol>
 <h2 id="12-驱逐阈值">
   1.2 驱逐阈值
@@ -722,7 +722,7 @@ https://github.com/alex-shpak/hugo-book
 则取<code>min(eviction-max-pod-grace-period, pod.Spec.TerminationGracePeriodSeconds)</code>
 作为 Pod Termination 真正的 Grace Period。</li>
 </ul>
-<p>因此，在软驱逐策略下，从 kubelet 检测到驱逐信号达到了阈值设定开始，到 pod 真正被 kill掉，
+<p>因此，在软驱逐策略下，从 kubelet 检测到驱逐信号达到了阈值设定开始，到 pod 真正被 kill 掉，
 共花费的时间是：<code>sum(eviction-max-pod-grace-period, min(eviction-max-pod-grace-period, pod.Spec.TerminationGracePeriodSeconds))</code></p>
 <h3 id="122-硬驱逐">
   1.2.2 硬驱逐
@@ -744,14 +744,14 @@ kubelet 立马回收关联的短缺资源，并且使用的就立即结束，而
   <a class="anchor" href="#13-%e9%a9%b1%e9%80%90%e5%91%a8%e6%9c%9f">#</a>
 </h2>
 <p>有了驱逐信号和阈值，也有了策略，接下来就是 Eviction Monitoring Interval。
-kubelet对应的监控周期，就通过 cAdvisor 的 <code>housekeeping-interval</code> 配置的，默认 10s。</p>
+kubelet 对应的监控周期，就通过 cAdvisor 的 <code>housekeeping-interval</code> 配置的，默认 10s。</p>
 <h2 id="14-节点状态">
   1.4 节点状态
   <a class="anchor" href="#14-%e8%8a%82%e7%82%b9%e7%8a%b6%e6%80%81">#</a>
 </h2>
 <p>kubelet 监测到配置的驱逐策略被触发，会将驱逐信号映射到对应的节点状态。
 Kubelet 会将对应的 Eviction Signals 映射到对应的 Node Conditions，
-源码[<code>pkg/kubelet/eviction/helpers.go</code>]，其映射关系如下：</p>
+源码 [<code>pkg/kubelet/eviction/helpers.go</code>]，其映射关系如下：</p>
 <table>
 <thead>
 <tr>
@@ -764,12 +764,12 @@ Kubelet 会将对应的 Eviction Signals 映射到对应的 Node Conditions，
 <tr>
 <td>MemoryPressure</td>
 <td>memory.avaliable, allocatableMemory.available</td>
-<td>节点或pod的可用内存触发驱逐阈值</td>
+<td>节点或 pod 的可用内存触发驱逐阈值</td>
 </tr>
 <tr>
 <td>DiskPressure</td>
 <td>nodefs.avaliable, nodefs.inodesFree, imagefs.available, imagesfs.inodesFree</td>
-<td>节点的 root fs 或i mage fs 上的可用磁盘空间和索引节点已满足收回阈值</td>
+<td>节点的 root fs 或 i mage fs 上的可用磁盘空间和索引节点已满足收回阈值</td>
 </tr>
 <tr>
 <td>PIDPressure</td>
@@ -778,7 +778,7 @@ Kubelet 会将对应的 Eviction Signals 映射到对应的 Node Conditions，
 </tr>
 </tbody>
 </table>
-<p>kubelet 映射了 Node Condition之 后，会继续按照<code>--node-status-update-frequency</code>(default 10s)配置的时间间隔，
+<p>kubelet 映射了 Node Condition 之 后，会继续按照<code>--node-status-update-frequency</code>(default 10s) 配置的时间间隔，
 周期性的与 kube-apiserver 进行 node status updates。</p>
 <h2 id="15-节点状态振荡">
   1.5 节点状态振荡
@@ -787,25 +787,25 @@ Kubelet 会将对应的 Eviction Signals 映射到对应的 Node Conditions，
 <p>​考虑这样一种场景，节点上监控到 soft eviction signal 的值，始终在 eviction threshold 上下波动，
 那么 kubelet 就会将该 node 对应的 node condition 在 true 和 false 之间来回切换。
 给 kube-scheduler 产生错误的调度结果。</p>
-<p>​因此，kubelet 添加参数 <code>eviction-pressure-transition-period</code> (default 5m0s)配置，
-使 Kubelet 在解除由 Evicion Signal 映射的 Node Pressure之前，必须等待 5 分钟。</p>
+<p>​因此，kubelet 添加参数 <code>eviction-pressure-transition-period</code> (default 5m0s) 配置，
+使 Kubelet 在解除由 Evicion Signal 映射的 Node Pressure 之前，必须等待 5 分钟。</p>
 <p>​驱逐逻辑添加了一步：</p>
 <ul>
 <li><code>Soft Evction Singal</code> 高于 <code>Soft Eviction Thresholds</code> 时，
 Kubelet 还是会立刻设置对应的 MemoryPressure 或 DiskPressure 为 True。</li>
-<li>当 MemoryPressure 或 DiskPressure为True 的前提下，
+<li>当 MemoryPressure 或 DiskPressure 为 True 的前提下，
 发生了 <code>Soft Evction Singal</code> 低于 <code>Soft Eviction Thresholds</code> 的情况，
-则需要等待 <code>eviction-pressure-transition-period</code>(default 5m0s)配置的这么长时间，
+则需要等待 <code>eviction-pressure-transition-period</code>(default 5m0s) 配置的这么长时间，
 才会将 condition pressure 切换回 False。</li>
 </ul>
-<p><strong>一句话总结</strong>：Node Condition Pressure成为True容易，切换回False则要等<code>eviction-pressure-transition-period</code>。</p>
+<p><strong>一句话总结</strong>：Node Condition Pressure 成为 True 容易，切换回 False 则要等<code>eviction-pressure-transition-period</code>。</p>
 <h2 id="16-回收节点层级资源">
   1.6 回收节点层级资源
   <a class="anchor" href="#16-%e5%9b%9e%e6%94%b6%e8%8a%82%e7%82%b9%e5%b1%82%e7%ba%a7%e8%b5%84%e6%ba%90">#</a>
 </h2>
 <p>如果满足驱逐阈值并超过了宽限期，kubelet 将启动回收压力资源的过程，
 直到它发现低于设定阈值的信号为止。
-kubelet将尝试在驱逐终端用户 pod 前回收节点层级资源。
+kubelet 将尝试在驱逐终端用户 pod 前回收节点层级资源。
 发现磁盘压力时，如果节点针对容器运行时配置有独占的 imagefs，
 kubelet 回收节点层级资源的方式将会不同。</p>
 <h3 id="161-使用-imagefs">
@@ -859,9 +859,9 @@ eviction 毕竟是耗时的动作，所以应该尽量避免这种情况的发�
 <p>例如使用下面的配置：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">--</span><span style="color:#a6e22e">eviction</span><span style="color:#f92672">-</span><span style="color:#a6e22e">hard</span>=<span style="color:#a6e22e">memory</span>.<span style="color:#a6e22e">available</span>&lt;<span style="color:#ae81ff">500</span><span style="color:#a6e22e">Mi</span>,<span style="color:#a6e22e">nodefs</span>.<span style="color:#a6e22e">available</span>&lt;<span style="color:#ae81ff">1</span><span style="color:#a6e22e">Gi</span>,<span style="color:#a6e22e">imagefs</span>.<span style="color:#a6e22e">available</span>&lt;<span style="color:#ae81ff">100</span><span style="color:#a6e22e">Gi</span>
 <span style="color:#f92672">--</span><span style="color:#a6e22e">eviction</span><span style="color:#f92672">-</span><span style="color:#a6e22e">minimum</span><span style="color:#f92672">-</span><span style="color:#a6e22e">reclaim</span>=<span style="color:#e6db74">&#34;memory.available=0Mi,nodefs.available=500Mi,imagefs.available=2Gi&#34;</span>
-</code></pre></div><p>如果 <code>memory.available</code> 驱逐阈值被触发，kubelet将保证 <code>memory.available</code> 至少为 <code>500Mi</code>。
-对于 <code>nodefs.available</code>，kubelet将保证 <code>nodefs.available</code> 至少为 <code>1.5Gi</code>。
-对于 <code>imagefs.available</code>，kubelet将保证 <code>imagefs.available</code> 至少为 <code>102Gi</code>，
+</code></pre></div><p>如果 <code>memory.available</code> 驱逐阈值被触发，kubelet 将保证 <code>memory.available</code> 至少为 <code>500Mi</code>。
+对于 <code>nodefs.available</code>，kubelet 将保证 <code>nodefs.available</code> 至少为 <code>1.5Gi</code>。
+对于 <code>imagefs.available</code>，kubelet 将保证 <code>imagefs.available</code> 至少为 <code>102Gi</code>，
 直到不再有相关资源报告压力为止。</p>
 <p>所有资源的默认 <code>eviction-minimum-reclaim</code> 值为 0。</p>
 </article>

@@ -7,13 +7,13 @@
 <meta name="description" content="1. 序言 #  垃圾回收相关，可参考 这里
 2. 源码解析 #  GarbageCollectorController 负责回收集群中的资源对象，要做到这一点，首先得监控所有资源。gc controller 会监听集群中所有可删除资源的事件，这些事件会放到一个队列中，然后启动多个 worker 协程处理。对于删除事件，则根据删除策略删除对象；其他事件，更新对象之间的依赖关系。
 2.1 startGarbageCollectorController() #  首先来看 gc controller 的入口方法，也就是 kube-controller-manager 是如何启动它的。它的主要逻辑：
- 判断是否启用 gc controller，默认是true 初始化 clientset，使用 discoveryClient 获取集群中所有资源 注册不考虑 gc 的资源，默认为空 调用 garbagecollector.NewGarbageCollector() 方法 初始化 gc controller 对象 调用 garbageCollector.Run() 启动 gc controller，workers 默认是 20 调用 garbageCollector.Sync() 监听集群中的资源，当出现新的资源时，同步到 minitors 中 调用 garbagecollector.NewDebugHandler() 注册 debug 接口，用来提供集群内所有对象的关联关系；  cmd/kube-controller-manager/app/core.go:538
+ 判断是否启用 gc controller，默认是 true 初始化 clientset，使用 discoveryClient 获取集群中所有资源 注册不考虑 gc 的资源，默认为空 调用 garbagecollector.NewGarbageCollector() 方法 初始化 gc controller 对象 调用 garbageCollector.Run() 启动 gc controller，workers 默认是 20 调用 garbageCollector.Sync() 监听集群中的资源，当出现新的资源时，同步到 minitors 中 调用 garbagecollector.NewDebugHandler() 注册 debug 接口，用来提供集群内所有对象的关联关系；  cmd/kube-controller-manager/app/core.go:538
 func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool, error) { // 1.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="GC Controller 源码分析" />
 <meta property="og:description" content="1. 序言 #  垃圾回收相关，可参考 这里
 2. 源码解析 #  GarbageCollectorController 负责回收集群中的资源对象，要做到这一点，首先得监控所有资源。gc controller 会监听集群中所有可删除资源的事件，这些事件会放到一个队列中，然后启动多个 worker 协程处理。对于删除事件，则根据删除策略删除对象；其他事件，更新对象之间的依赖关系。
 2.1 startGarbageCollectorController() #  首先来看 gc controller 的入口方法，也就是 kube-controller-manager 是如何启动它的。它的主要逻辑：
- 判断是否启用 gc controller，默认是true 初始化 clientset，使用 discoveryClient 获取集群中所有资源 注册不考虑 gc 的资源，默认为空 调用 garbagecollector.NewGarbageCollector() 方法 初始化 gc controller 对象 调用 garbageCollector.Run() 启动 gc controller，workers 默认是 20 调用 garbageCollector.Sync() 监听集群中的资源，当出现新的资源时，同步到 minitors 中 调用 garbagecollector.NewDebugHandler() 注册 debug 接口，用来提供集群内所有对象的关联关系；  cmd/kube-controller-manager/app/core.go:538
+ 判断是否启用 gc controller，默认是 true 初始化 clientset，使用 discoveryClient 获取集群中所有资源 注册不考虑 gc 的资源，默认为空 调用 garbagecollector.NewGarbageCollector() 方法 初始化 gc controller 对象 调用 garbageCollector.Run() 启动 gc controller，workers 默认是 20 调用 garbageCollector.Sync() 监听集群中的资源，当出现新的资源时，同步到 minitors 中 调用 garbagecollector.NewDebugHandler() 注册 debug 接口，用来提供集群内所有对象的关联关系；  cmd/kube-controller-manager/app/core.go:538
 func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool, error) { // 1." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" />
@@ -23,7 +23,7 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.d0c3e37ce62e781258e7b899488cb73e9bc716837f4fa0dbfa02423595e9cc23.js" integrity="sha256-0MPjfOYueBJY57iZSIy3PpvHFoN/T6Db&#43;gJCNZXpzCM="></script>
+<script defer src="/en.search.min.4bc3ee6a77818c2fe13d63b8149d415cf54d4052755645ac9c615023c8f98887.js" integrity="sha256-S8PuaneBjC/hPWO4FJ1BXPVNQFJ1VkWsnGFQI8j5iIc="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -643,7 +643,7 @@ https://github.com/alex-shpak/hugo-book
   1. 序言
   <a class="anchor" href="#1-%e5%ba%8f%e8%a8%80">#</a>
 </h1>
-<p>垃圾回收相关，可参考
+<p>垃圾回收相关，可参考 
   <a href="/docs/kubernetes/kube-apiserver/garbage-collector/">这里</a></p>
 <h1 id="2-源码解析">
   2. 源码解析
@@ -656,7 +656,7 @@ https://github.com/alex-shpak/hugo-book
 </h2>
 <p>首先来看 gc controller 的入口方法，也就是 kube-controller-manager 是如何启动它的。它的主要逻辑：</p>
 <ol>
-<li>判断是否启用 gc controller，默认是true</li>
+<li>判断是否启用 gc controller，默认是 true</li>
 <li>初始化 clientset，使用 discoveryClient 获取集群中所有资源</li>
 <li>注册不考虑 gc 的资源，默认为空</li>
 <li>调用 <code>garbagecollector.NewGarbageCollector()</code> 方法 初始化 gc controller 对象</li>
@@ -666,11 +666,11 @@ https://github.com/alex-shpak/hugo-book
 </ol>
 <p><code>cmd/kube-controller-manager/app/core.go:538</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">startGarbageCollectorController</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">ControllerContext</span>) (<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#75715e">// 1.判断是否启用 gc controller，默认是true
+	<span style="color:#75715e">// 1. 判断是否启用 gc controller，默认是 true
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ComponentConfig</span>.<span style="color:#a6e22e">GarbageCollectorController</span>.<span style="color:#a6e22e">EnableGarbageCollector</span> {
 		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
 	}
-	<span style="color:#75715e">// 2.初始化 clientset
+	<span style="color:#75715e">// 2. 初始化 clientset
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">gcClientset</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ClientBuilder</span>.<span style="color:#a6e22e">ClientOrDie</span>(<span style="color:#e6db74">&#34;generic-garbage-collector&#34;</span>)
 
 	<span style="color:#a6e22e">config</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ClientBuilder</span>.<span style="color:#a6e22e">ConfigOrDie</span>(<span style="color:#e6db74">&#34;generic-garbage-collector&#34;</span>)
@@ -678,12 +678,12 @@ https://github.com/alex-shpak/hugo-book
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>, <span style="color:#a6e22e">err</span>
 	}
-	<span style="color:#75715e">// 3.注册不考虑 gc 的资源，默认为空
+	<span style="color:#75715e">// 3. 注册不考虑 gc 的资源，默认为空
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">ignoredResources</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupResource</span>]<span style="color:#66d9ef">struct</span>{})
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ComponentConfig</span>.<span style="color:#a6e22e">GarbageCollectorController</span>.<span style="color:#a6e22e">GCIgnoredResources</span> {
 		<span style="color:#a6e22e">ignoredResources</span>[<span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupResource</span>{<span style="color:#a6e22e">Group</span>: <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Group</span>, <span style="color:#a6e22e">Resource</span>: <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Resource</span>}] = <span style="color:#66d9ef">struct</span>{}{}
 	}
-	<span style="color:#75715e">// 4.初始化 gc controller 对象
+	<span style="color:#75715e">// 4. 初始化 gc controller 对象
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">garbageCollector</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">garbagecollector</span>.<span style="color:#a6e22e">NewGarbageCollector</span>(
 		<span style="color:#a6e22e">metadataClient</span>,
 		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">RESTMapper</span>,
@@ -695,19 +695,19 @@ https://github.com/alex-shpak/hugo-book
 		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;failed to start the generic garbage collector: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
 	}
 
-	<span style="color:#75715e">// 5.启动 gc，workers 默认是20
+	<span style="color:#75715e">// 5. 启动 gc，workers 默认是 20
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">workers</span> <span style="color:#f92672">:=</span> int(<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ComponentConfig</span>.<span style="color:#a6e22e">GarbageCollectorController</span>.<span style="color:#a6e22e">ConcurrentGCSyncs</span>)
 	<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">garbageCollector</span>.<span style="color:#a6e22e">Run</span>(<span style="color:#a6e22e">workers</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Stop</span>)
 
 	<span style="color:#75715e">// Periodically refresh the RESTMapper with new discovery information and sync
 </span><span style="color:#75715e"></span>	<span style="color:#75715e">// the garbage collector.
-</span><span style="color:#75715e"></span>	<span style="color:#75715e">// 6.监听集群中的资源，周期更新
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// 6. 监听集群中的资源，周期更新
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">garbageCollector</span>.<span style="color:#a6e22e">Sync</span>(<span style="color:#a6e22e">gcClientset</span>.<span style="color:#a6e22e">Discovery</span>(), <span style="color:#ae81ff">30</span><span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Stop</span>)
 
-	<span style="color:#75715e">// 7.注册 debug 接口
+	<span style="color:#75715e">// 7. 注册 debug 接口
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">garbagecollector</span>.<span style="color:#a6e22e">NewDebugHandler</span>(<span style="color:#a6e22e">garbageCollector</span>), <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
 }
-</code></pre></div><p>在 <code>startGarbageCollectorController()</code> 中主要调用了4个方法：</p>
+</code></pre></div><p>在 <code>startGarbageCollectorController()</code> 中主要调用了 4 个方法：</p>
 <ul>
 <li><code>garbagecollector.NewGarbageCollector()</code></li>
 <li><code>garbageCollector.Run()</code></li>
@@ -752,7 +752,7 @@ GraphBuilder 在整个垃圾收集的过程中，起到了承上启下的作用�
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">GraphBuilder</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">restMapper</span> <span style="color:#a6e22e">meta</span>.<span style="color:#a6e22e">RESTMapper</span>
 
-	<span style="color:#75715e">// monitor 就是 informer，一个monitor list/watch 一种资源
+	<span style="color:#75715e">// monitor 就是 informer，一个 monitor list/watch 一种资源
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">monitors</span>    <span style="color:#a6e22e">monitors</span>
 	<span style="color:#a6e22e">monitorLock</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">RWMutex</span>
 	
@@ -833,7 +833,7 @@ GraphBuilder 在整个垃圾收集的过程中，起到了承上启下的作用�
 
 	<span style="color:#75715e">// 2. 启动 monitor，除非 stop channel 收到信号
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">gb</span>.<span style="color:#a6e22e">startMonitors</span>()
-	<span style="color:#75715e">// 调用 gb.runProcessGraphChanges，分类事件，放入2个队列中
+	<span style="color:#75715e">// 调用 gb.runProcessGraphChanges，分类事件，放入 2 个队列中
 </span><span style="color:#75715e"></span>	<span style="color:#75715e">// 此处为死循环，除非收到 stopCh 信号，否则下面的代码不会被执行到
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">wait</span>.<span style="color:#a6e22e">Until</span>(<span style="color:#a6e22e">gb</span>.<span style="color:#a6e22e">runProcessGraphChanges</span>, <span style="color:#ae81ff">1</span><span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>, <span style="color:#a6e22e">stopCh</span>)
 
@@ -934,10 +934,10 @@ GraphBuilder 在整个垃圾收集的过程中，起到了承上启下的作用�
 </span><span style="color:#75715e"></span>		<span style="color:#a6e22e">gb</span>.<span style="color:#a6e22e">processTransitions</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">oldObj</span>, <span style="color:#a6e22e">accessor</span>, <span style="color:#a6e22e">newNode</span>)
 	<span style="color:#75715e">// 3.2 若 event 为 add 或 update 类型且对应的 node 对象存在时，表示更新对象
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">case</span> (<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">eventType</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">addEvent</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">eventType</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">updateEvent</span>) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">found</span>:
-		<span style="color:#75715e">// 3.2.1 检查当前对象和老对象的owner的不同
+		<span style="color:#75715e">// 3.2.1 检查当前对象和老对象的 owner 的不同
 </span><span style="color:#75715e"></span>		<span style="color:#a6e22e">added</span>, <span style="color:#a6e22e">removed</span>, <span style="color:#a6e22e">changed</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">referencesDiffs</span>(<span style="color:#a6e22e">existingNode</span>.<span style="color:#a6e22e">owners</span>, <span style="color:#a6e22e">accessor</span>.<span style="color:#a6e22e">GetOwnerReferences</span>())
 		<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">added</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> len(<span style="color:#a6e22e">removed</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> len(<span style="color:#a6e22e">changed</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
-			<span style="color:#75715e">// 3.2.2 检查依赖变更是否解除了处于等待依赖删除的owner的阻塞状态
+			<span style="color:#75715e">// 3.2.2 检查依赖变更是否解除了处于等待依赖删除的 owner 的阻塞状态
 </span><span style="color:#75715e"></span>			<span style="color:#a6e22e">gb</span>.<span style="color:#a6e22e">addUnblockedOwnersToDeleteQueue</span>(<span style="color:#a6e22e">removed</span>, <span style="color:#a6e22e">changed</span>)
 			<span style="color:#75715e">// 3.2.3 更新 node 本身
 </span><span style="color:#75715e"></span>			<span style="color:#a6e22e">existingNode</span>.<span style="color:#a6e22e">owners</span> = <span style="color:#a6e22e">accessor</span>.<span style="color:#a6e22e">GetOwnerReferences</span>()
@@ -1028,9 +1028,9 @@ GraphBuilder 在整个垃圾收集的过程中，起到了承上启下的作用�
 <li>从 apiserver 获取该 node 最新的状态，该 node 可能为 virtual node，若为 virtual node 则从 apiserver 中获取不到该 node 的对象，此时会将该 node 重新加入到 graphChanges 队列中，再次处理该 node 时会将其从 uidToNode 中删除；</li>
 <li>判断该 node 最新状态的 uid 是否等于本地缓存中的 uid，若不匹配说明该 node 已更新过此时将其设置为 virtual node 并重新加入到 graphChanges 队列中，再次处理该 node 时会将其从 uidToNode 中删除；</li>
 <li>通过 node 的 deletingDependents 字段判断该 node 当前是否处于删除 dependents 的状态，若该 node 处于删除 dependents 的状态则调用 processDeletingDependentsItem 方法检查 node 的 blockingDependents 是否被完全删除，若 blockingDependents 已完全被删除则删除该 node 对应的 finalizer，若 blockingDependents 还未删除完，将未删除的 blockingDependents 加入到 attemptToDelete 中；上文中在 GraphBuilder 处理 graphChanges 中的事件时，若发现 node 处于删除状态，会将 node 的 dependents 加入到 attemptToDelete 中并标记 node 的 deletingDependents 为 true；</li>
-<li>调用 gc.classifyReferences 将 node 的 ownerReferences 分类为 solid, dangling, waitingForDependentsDeletion 三类：dangling(owner 不存在)、waitingForDependentsDeletion(owner 存在，owner 处于删除状态且正在等待其 dependents 被删除)、solid(至少有一个 owner 存在且不处于删除状态)；对以上分类进行不同的处理：
+<li>调用 gc.classifyReferences 将 node 的 ownerReferences 分类为 solid, dangling, waitingForDependentsDeletion 三类：dangling(owner 不存在）、waitingForDependentsDeletion(owner 存在，owner 处于删除状态且正在等待其 dependents 被删除）、solid（至少有一个 owner 存在且不处于删除状态）；对以上分类进行不同的处理：
 <ol>
-<li>第一种情况是若 solid不为 0 即当前 node 至少存在一个 owner，该对象还不能被回收，此时需要将 dangling 和 waitingForDependentsDeletion 列表中的 owner 从 node 的 ownerReferences 删除，即已经被删除或等待删除的引用从对象中删掉；</li>
+<li>第一种情况是若 solid 不为 0 即当前 node 至少存在一个 owner，该对象还不能被回收，此时需要将 dangling 和 waitingForDependentsDeletion 列表中的 owner 从 node 的 ownerReferences 删除，即已经被删除或等待删除的引用从对象中删掉；</li>
 <li>第二种情况是该 node 的 owner 处于 waitingForDependentsDeletion 状态并且 node 的 dependents 未被完全删除，该 node 需要等待删除完所有的 dependents 后才能被删除；</li>
 <li>第三种情况就是该 node 已经没有任何 dependents 了，此时按照 node 中声明的删除策略调用 apiserver 的接口删除即可；</li>
 </ol>
@@ -1402,7 +1402,7 @@ curl http<span style="color:#f92672">://</span><span style="color:#ae81ff">192.1
   2.4 总结
   <a class="anchor" href="#24-%e6%80%bb%e7%bb%93">#</a>
 </h2>
-<p><code>GarbageCollectorController</code> 是一种典型的生产者消费者模型，所有 deletableResources 的 informer 都是生产者，每种资源的 informer 监听到变化后都会将对应的事件 push 到 <code>graphChanges</code> 中，<code>graphChanges</code> 是 <code>GraphBuilder</code> 对象中的一个数据结构，<code>GraphBuilder</code> 会启动另外的 goroutine 对 graphChanges 中的事件进行分类并放在其 <code>attemptToDelete</code> 和 <code>attemptToOrphan</code> 两个队列中，garbageCollector 会启动多个 goroutine 对 <code>attemptToDelete</code> 和 <code>attemptToOrphan</code> 两个队列中的事件进行处理，处理的结果就是回收一些需要被删除的对象。最后，再用一个流程图总结一下 <code>GarbageCollectorController</code> 的主要流程:</p>
+<p><code>GarbageCollectorController</code> 是一种典型的生产者消费者模型，所有 deletableResources 的 informer 都是生产者，每种资源的 informer 监听到变化后都会将对应的事件 push 到 <code>graphChanges</code> 中，<code>graphChanges</code> 是 <code>GraphBuilder</code> 对象中的一个数据结构，<code>GraphBuilder</code> 会启动另外的 goroutine 对 graphChanges 中的事件进行分类并放在其 <code>attemptToDelete</code> 和 <code>attemptToOrphan</code> 两个队列中，garbageCollector 会启动多个 goroutine 对 <code>attemptToDelete</code> 和 <code>attemptToOrphan</code> 两个队列中的事件进行处理，处理的结果就是回收一些需要被删除的对象。最后，再用一个流程图总结一下 <code>GarbageCollectorController</code> 的主要流程：
 
 
 <p class="mermaid">
@@ -1414,7 +1414,7 @@ c --> e(attemptToOrphan)
 d -->|consume| f[AttemptToDeleteWorker]
 e -->|consume| g[AttemptToOrphanWorker]
 </p>
-
+</p>
 <h1 id="3-参考资料">
   3. 参考资料
   <a class="anchor" href="#3-%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>

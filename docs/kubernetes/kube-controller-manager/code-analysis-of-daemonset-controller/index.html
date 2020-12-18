@@ -23,7 +23,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.d0c3e37ce62e781258e7b899488cb73e9bc716837f4fa0dbfa02423595e9cc23.js" integrity="sha256-0MPjfOYueBJY57iZSIy3PpvHFoN/T6Db&#43;gJCNZXpzCM="></script>
+<script defer src="/en.search.min.4bc3ee6a77818c2fe13d63b8149d415cf54d4052755645ac9c615023c8f98887.js" integrity="sha256-S8PuaneBjC/hPWO4FJ1BXPVNQFJ1VkWsnGFQI8j5iIc="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -862,7 +862,7 @@ https://github.com/alex-shpak/hugo-book
   2.4 dsc.manage()
   <a class="anchor" href="#24-dscmanage">#</a>
 </h2>
-<p><code>dsc.manage()</code> 是为了保证ds 的 Pod 正常运行在应该存在的节点，该方法做了这几件事：</p>
+<p><code>dsc.manage()</code> 是为了保证 ds 的 Pod 正常运行在应该存在的节点，该方法做了这几件事：</p>
 <ol>
 <li>调用 <code>dsc.getNodesToDaemonPods()</code>，获取当前的节点和 daemon pod 的映射关系（<code>map[nodeName][]*v1.Pod</code>）</li>
 <li>遍历所有节点，判断每个节点是需要创建还是删除 daemonset pod</li>
@@ -892,7 +892,7 @@ https://github.com/alex-shpak/hugo-book
     <span style="color:#75715e">// 3. 调用 getUnscheduledPodsWithoutNode() 方法找到把调度到不存在的节点的 Pod
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">podsToDelete</span> = append(<span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">getUnscheduledPodsWithoutNode</span>(<span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">nodeToDaemonPods</span>)<span style="color:#f92672">...</span>)
 
-    <span style="color:#75715e">// 4. 调用 dsc.syncNodes()，删除多余的Pod，为应该运行 daemonset Pod 的 node 创建Pod
+    <span style="color:#75715e">// 4. 调用 dsc.syncNodes()，删除多余的 Pod，为应该运行 daemonset Pod 的 node 创建 Pod
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">syncNodes</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">hash</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
 	}
@@ -937,7 +937,7 @@ https://github.com/alex-shpak/hugo-book
 		<span style="color:#75715e">// 3.1 如果节点应该运行而没有运行，则创建该 Pod
 </span><span style="color:#75715e"></span>		<span style="color:#a6e22e">nodesNeedingDaemonPods</span> = append(<span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>)
 	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">shouldContinueRunning</span>:
-		<span style="color:#75715e">// 3.2. 如果 daemon pod应该继续在此节点上运行
+		<span style="color:#75715e">// 3.2. 如果 daemon pod 应该继续在此节点上运行
 </span><span style="color:#75715e"></span>		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">daemonPodsRunning</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>
 		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">pod</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">daemonPods</span> {
 			<span style="color:#75715e">// 3.2.1 pod 在删除中，暂且不管
@@ -971,7 +971,7 @@ https://github.com/alex-shpak/hugo-book
 				<span style="color:#a6e22e">daemonPodsRunning</span> = append(<span style="color:#a6e22e">daemonPodsRunning</span>, <span style="color:#a6e22e">pod</span>)
 			}
 		}
-		<span style="color:#75715e">// 3.2.3 如果 daemon pod 应该在此节点上运行，但存在的pod数 &gt; 1，则保留最早创建的pod，其余删除
+		<span style="color:#75715e">// 3.2.3 如果 daemon pod 应该在此节点上运行，但存在的 pod 数 &gt; 1，则保留最早创建的 pod，其余删除
 </span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">daemonPodsRunning</span>) &gt; <span style="color:#ae81ff">1</span> {
 			<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">podByCreationTimestampAndPhase</span>(<span style="color:#a6e22e">daemonPodsRunning</span>))
 			<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">i</span> &lt; len(<span style="color:#a6e22e">daemonPodsRunning</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
@@ -1039,13 +1039,13 @@ https://github.com/alex-shpak/hugo-book
 </span><span style="color:#75715e"></span>				<span style="color:#a6e22e">podTemplate</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Affinity</span> = <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">ReplaceDaemonSetPodNodeNameNodeAffinity</span>(
 					<span style="color:#a6e22e">podTemplate</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Affinity</span>, <span style="color:#a6e22e">nodesNeedingDaemonPods</span>[<span style="color:#a6e22e">ix</span>])
 
-				<span style="color:#75715e">// 6. 创建Pod 带上 ControllerRef
+				<span style="color:#75715e">// 6. 创建 Pod 带上 ControllerRef
 </span><span style="color:#75715e"></span>				<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">podControl</span>.<span style="color:#a6e22e">CreatePodsWithControllerRef</span>(<span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">podTemplate</span>,
 					<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">NewControllerRef</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">controllerKind</span>))
 
 				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 					<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">HasStatusCause</span>(<span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">NamespaceTerminatingCause</span>) {
-						<span style="color:#75715e">// 如果此时namespace被删除，这里错误可以忽略
+						<span style="color:#75715e">// 如果此时 namespace 被删除，这里错误可以忽略
 </span><span style="color:#75715e"></span>						<span style="color:#66d9ef">return</span>
 					}
 				}
@@ -1183,20 +1183,20 @@ graph LR
   2.6 dsc.updateDaemonSetStatus()
   <a class="anchor" href="#26-dscupdatedaemonsetstatus">#</a>
 </h2>
-<p><code>dsc.updateDaemonSetStatus()</code> 是 sync 动作的最后一步，主要是用来更新 DaemonSet 的 status 子资源。ds.Status的各个字段如下：</p>
+<p><code>dsc.updateDaemonSetStatus()</code> 是 sync 动作的最后一步，主要是用来更新 DaemonSet 的 status 子资源。ds.Status 的各个字段如下：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">status</span>:
   <span style="color:#f92672">collisionCount</span>: <span style="color:#ae81ff">0</span>         <span style="color:#75715e"># hash 冲突数</span>
   <span style="color:#f92672">currentNumberScheduled</span>: <span style="color:#ae81ff">1</span>  <span style="color:#75715e"># 已经运行了 DaemonSet Pod 的节点数量</span>
-  <span style="color:#f92672">desiredNumberScheduled</span>: <span style="color:#ae81ff">1</span>  <span style="color:#75715e"># 需要运行该DaemonSet Pod的节点数量</span>
+  <span style="color:#f92672">desiredNumberScheduled</span>: <span style="color:#ae81ff">1</span>  <span style="color:#75715e"># 需要运行该 DaemonSet Pod 的节点数量</span>
   <span style="color:#f92672">numberAvailable</span>: <span style="color:#ae81ff">1</span>        <span style="color:#75715e"># DaemonSet Pod 状态为 Ready 且运行时间超过 Spec.MinReadySeconds 的节点数量</span>
   <span style="color:#f92672">numberUnavailable</span>: <span style="color:#ae81ff">0</span>      <span style="color:#75715e"># desiredNumberScheduled - numberAvailable 的节点数量</span>
   <span style="color:#f92672">numberMisscheduled</span>: <span style="color:#ae81ff">0</span>     <span style="color:#75715e"># 不需要运行 DeamonSet Pod 但是已经运行了的节点数量</span>
-  <span style="color:#f92672">numberReady</span>: <span style="color:#ae81ff">1</span>           <span style="color:#75715e"># DaemonSet Pod状态为Ready的节点数量</span>
+  <span style="color:#f92672">numberReady</span>: <span style="color:#ae81ff">1</span>           <span style="color:#75715e"># DaemonSet Pod 状态为 Ready 的节点数量</span>
   <span style="color:#f92672">observedGeneration</span>: <span style="color:#ae81ff">1</span>
-  <span style="color:#f92672">updatedNumberScheduled</span>: <span style="color:#ae81ff">1</span> <span style="color:#75715e"># 已经完成DaemonSet Pod更新的节点数量</span>
+  <span style="color:#f92672">updatedNumberScheduled</span>: <span style="color:#ae81ff">1</span> <span style="color:#75715e"># 已经完成 DaemonSet Pod 更新的节点数量</span>
 </code></pre></div><p>主要逻辑为：</p>
 <ol>
-<li>调用 <code>dsc.getNodesToDaemonPods()</code> 获取node 与已存在的 daemon pods 的映射关系；</li>
+<li>调用 <code>dsc.getNodesToDaemonPods()</code> 获取 node 与已存在的 daemon pods 的映射关系；</li>
 <li>遍历所有 node，调用 <code>dsc.nodeShouldRunDaemonPod()</code> 判断该 node 是否需要运行 daemon pod，然后计算 status 中的部分字段值；</li>
 <li>调用 <code>storeDaemonSetStatus()</code> 更新 ds.status；</li>
 <li>判断 ds 是否需要 resync；</li>
@@ -1289,14 +1289,14 @@ op1.1.2 --> op1.1.2.1(dsc.nodeShouldRunDaemonPod)
   3. 总结
   <a class="anchor" href="#3-%e6%80%bb%e7%bb%93">#</a>
 </h1>
-<p>在 daemonset controller 中可以看到许多功能都是 deployment 和 statefulset 已有的。在创建 pod 的流程与 replicaset controller 创建 pod 的流程是相似的，都使用了 <code>expectations</code> 机制并且限制了在一个 syncLoop 中最多创建或删除的 pod 数。更新方式与 statefulset 一样都有 <code>OnDelete</code> 和 <code>RollingUpdate</code> 两种， <code>OnDelete</code> 方式与 statefulset 相似，都需要手动删除对应的 pod，而  <code>RollingUpdate</code>  方式与 statefulset 和 deployment 都有点区别，<code>RollingUpdate</code> 方式更新时不支持暂停操作并且 pod 是先删除再创建的顺序进行。版本控制方式与 statefulset 的一样都是使用 <code>controllerRevision</code>。最后要说的一点是在 v1.12 及以后的版本中，使用 daemonset 创建的 pod 已不再使用直接指定 .spec.nodeName的方式绕过调度器进行调度，而是走默认调度器通过 <code>nodeAffinity</code> 的方式调度到每一个节点上。</p>
+<p>在 daemonset controller 中可以看到许多功能都是 deployment 和 statefulset 已有的。在创建 pod 的流程与 replicaset controller 创建 pod 的流程是相似的，都使用了 <code>expectations</code> 机制并且限制了在一个 syncLoop 中最多创建或删除的 pod 数。更新方式与 statefulset 一样都有 <code>OnDelete</code> 和 <code>RollingUpdate</code> 两种， <code>OnDelete</code> 方式与 statefulset 相似，都需要手动删除对应的 pod，而  <code>RollingUpdate</code>  方式与 statefulset 和 deployment 都有点区别，<code>RollingUpdate</code> 方式更新时不支持暂停操作并且 pod 是先删除再创建的顺序进行。版本控制方式与 statefulset 的一样都是使用 <code>controllerRevision</code>。最后要说的一点是在 v1.12 及以后的版本中，使用 daemonset 创建的 pod 已不再使用直接指定 .spec.nodeName 的方式绕过调度器进行调度，而是走默认调度器通过 <code>nodeAffinity</code> 的方式调度到每一个节点上。</p>
 <h1 id="4-参考资料">
   4. 参考资料
   <a class="anchor" href="#4-%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>
 </h1>
 <ul>
 <li>
-  <a href="https://kubernetes.io/zh/docs/concepts/workloads/controllers/daemonset/">DaemonSet概念</a></li>
+  <a href="https://kubernetes.io/zh/docs/concepts/workloads/controllers/daemonset/">DaemonSet 概念</a></li>
 <li>
   <a href="https://kubernetes.io/zh/docs/tasks/manage-daemon/update-daemon-set/">DaemonSet 滚动更新</a></li>
 <li>

@@ -42,13 +42,12 @@ apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 co
       <pubDate>Thu, 24 Sep 2020 00:00:00 +0000</pubDate>
       
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</guid>
-      <description>注：本文转自 图解kubernetes中基于etcd的watch关键设计
+      <description>注：本文转自 图解 kubernetes 中基于 etcd 的 watch 关键设计
  本文介绍了 kubernetes 针对 etcd 的 watch 场景，k8s 在性能优化上面的一些设计， 逐个介绍缓存、定时器、序列化缓存、bookmark 机制、forget 机制、 针对数据的索引与 ringbuffer 等组件的场景以及解决的问题， 希望能帮助到那些对 apiserver 中的 watch 机制实现感兴趣的朋友。
 1. 事件驱动与控制器 #   k8s 中并没有将业务的具体处理逻辑耦合在 rest 接口中，rest 接口只负责数据的存储， 通过控制器模式，分离数据存储与业务逻辑的耦合，保证 apiserver 业务逻辑的简洁。
  控制器通过 watch 接口来感知对应的资源的数据变更，从而根据资源对象中的期望状态与当前状态之间的差异， 来决策业务逻辑的控制，watch 本质上做的事情其实就是将感知到的事件发生给关注该事件的控制器。
 2. Watch 的核心机制 #  这里我们先介绍基于 etcd 实现的基础的 watch 模块。
-2.1 事件类型与 etcd #   一个数据变更本质上无非就是三种类型：新增、更新和删除， 其中新增和删除都比较容易因为都可以通过当前数据获取，而更新则可能需要获取之前的数据， 这里其实就是借助了 etcd 中 revision 和 mvcc 机制来实现，这样就可以获取到之前的状态和更新后的状态， 并且获取后续的通知。
-2.2 事件管道 #   事件管道则是负责事件的传递，在 watch 的实现中通过两级管道来实现消息的分发， 首先通过 watch etcd 中的 key 获取感兴趣的事件，并进行数据的解析， 完成从bytes到内部事件的转换并且发送到输入管道(incomingEventChan)中， 然后后台会有线程负责输入管道中获取数据，并进行解析发送到输出管道(resultChan)中， 后续会从该管道来进行事件的读取发送给对应的客户端。</description>
+2.1 事件类型与 etcd #   一个数据变更本质上无非就是三种类型：新增、更新和删除， 其中新增和删除都比较容易因为都可以通过当前数据获取，而更新则可能需要获取之前的数据， 这里其实就是借助了 etcd 中 revision 和 mvcc 机制来实现，这样就可以获取到之前的状态和更新后的状态， 并且获取后续的通知。</description>
     </item>
     
     <item>
@@ -61,8 +60,8 @@ apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 co
 1.1 自定义资源概述 #  资源就是 Kubernetes API 集合中的某个的对象。例如，内置 pods 资源包含 Pod 对象的集合。
 自定义资源是扩展了 Kubernetes API，但在默认的 API 集合中是不可用的，因为没有对应的 controller 处理业务逻辑。使用自定义资源，不仅可以解耦大多数的自研功能，还可用使得 Kubernetes 更加模块化。
 自定义资源可以通过动态注册的方法，于正在 running 的集群中创建、删除和更新，并且与集群本身的资源是相互独立的。当自定义资源被创建，就可以通过 kubectl 创建和访问对象，和对内置资源的操作完全一致。
-1.2 是否需要自定义资源 #  在创建新的API时，应该考虑与Kubernetes的API聚合，还是让API独立运行。
-   API聚合 API独立     声明式 非声明式   kubectl可读可写 不需要kubectl支持   接受k8s的REST限制 特定API路径   可限定为cluster或者namespace 不适用namespace   重用k8s API支持的功能 不需要这些功能    1.</description>
+1.2 是否需要自定义资源 #  在创建新的 API 时，应该考虑与 Kubernetes 的 API 聚合，还是让 API 独立运行。
+   API 聚合 API 独立     声明式 非声明式   kubectl 可读可写 不需要 kubectl 支持   接受 k8s 的 REST 限制 特定 API 路径   可限定为 cluster 或者 namespace 不适用 namespace   重用 k8s API 支持的功能 不需要这些功能    1.</description>
     </item>
     
   </channel>

@@ -9,12 +9,12 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://howieyuen.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" />
-<meta property="og:updated_time" content="2020-12-02T00:00:00+00:00" />
+<meta property="og:updated_time" content="2020-10-14T00:00:00+00:00" />
 <title>动态规划 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.d0c3e37ce62e781258e7b899488cb73e9bc716837f4fa0dbfa02423595e9cc23.js" integrity="sha256-0MPjfOYueBJY57iZSIy3PpvHFoN/T6Db&#43;gJCNZXpzCM="></script>
+<script defer src="/en.search.min.4bc3ee6a77818c2fe13d63b8149d415cf54d4052755645ac9c615023c8f98887.js" integrity="sha256-S8PuaneBjC/hPWO4FJ1BXPVNQFJ1VkWsnGFQI8j5iIc="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <link rel="alternate" type="application/rss+xml" href="https://howieyuen.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/index.xml" title="袁昊的学习笔记" />
@@ -619,12 +619,12 @@ https://github.com/alex-shpak/hugo-book
       <ul>
       
         <li class="flex justify-between">
-          <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">动态规划</a>
-          <span>2</span>
+          <a href="/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">贪心算法，动态规划</a>
+          <span>1</span>
         </li>
       
         <li class="flex justify-between">
-          <a href="/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/">贪心算法</a>
+          <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">动态规划</a>
           <span>1</span>
         </li>
       
@@ -643,43 +643,6 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  
-  <article class="markdown book-post">
-    <h2>
-      <a href="/docs/leetcode/0321/">321. 拼接最大数</a>
-    </h2>
-    
-  <h5>December 2, 2020</h5>
-
-
-
-  
-  <div>
-    
-      <a href="/categories/leetcode/">leetcode</a>
-  </div>
-  
-
-  
-  <div>
-    
-      <a href="/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/">贪心算法</a>, 
-      <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">动态规划</a>
-  </div>
-  
-
-
-    <p>321. 拼接最大数 #   leetcode 链接： https://leetcode-cn.com/problems/create-maximum-number/
-  给定长度分别为 m 和 n 的两个数组，其元素由 0-9 构成，表示两个自然数各位上的数字。现在从这两个数组中选出 k (k &lt;= m + n) 个数字拼接成一个新的数，要求从同一个数组中取出的数字保持其在原数组中的相对顺序。
-求满足该条件的最大数。结果返回一个表示该最大数的长度为 k 的数组。
-说明: 请尽可能地优化你算法的时间和空间复杂度。
-示例 1:
-输入: nums1 = [3, 4, 6, 5] nums2 = [9, 1, 2, 5, 8, 3] k = 5 输出: [9, 8, 6, 5, 3] 示例 2:
-输入: nums1 = [6, 7] nums2 = [6, 0, 4] k = 5 输出: [6, 7, 6, 0, 4] 示例 3:
-        <a href="/docs/leetcode/0321/">...</a>
-      
-    </p>
-  </article>
   
   <article class="markdown book-post">
     <h2>
@@ -707,11 +670,11 @@ https://github.com/alex-shpak/hugo-book
 
     <p>416. 分割等和子集 #   leetcode 链接： https://leetcode-cn.com/problems/partition-equal-subset-sum/
   给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
-注意:
+注意：
  每个数组中的元素不会超过 100 数组的大小不会超过 200  示例 1:
-输入: [1, 5, 11, 5] 输出: true 解释: 数组可以分割成 [1, 5, 5] 和 [11]. 示例 2:
-输入: [1, 2, 3, 5] 输出: false 解释: 数组不能分割成两个元素和相等的子集.  方法一：0-1背包问题
-// 0-1背包问题 // dp[i][target]表示nums[0, i]区间内是否能找到和为target的组合 // 对于每个nums[i]，如果nums[i] &lt;= target，可以选择or不选，但只要有一个为true，dp[i][target]=true // dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]] // 如果nums[i] &gt; target，只能不选，故： // dp[i][target] = dp[i-1][target] func canPartition(nums []int) bool { n := len(nums) if n &lt; 2 { return false } sum := 0 maxNum := 0 for _, num := range nums { sum += num if num &gt; maxNum { maxNum = num } } // 和为奇数 	if sum%2 !
+输入：[1, 5, 11, 5] 输出：true 解释：数组可以分割成 [1, 5, 5] 和 [11]. 示例 2:
+输入：[1, 2, 3, 5] 输出：false 解释：数组不能分割成两个元素和相等的子集。  方法一：0-1 背包问题
+// 0-1 背包问题 // dp[i][target] 表示 nums[0, i] 区间内是否能找到和为 target 的组合 // 对于每个 nums[i]，如果 nums[i] &lt;= target，可以选择 or 不选，但只要有一个为 true，dp[i][target]=true // dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]] // 如果 nums[i] &gt; target，只能不选，故： // dp[i][target] = dp[i-1][target] func canPartition(nums []int) bool { n := len(nums) if n &lt; 2 { return false } sum := 0 maxNum := 0 for _, num := range nums { sum += num if num &gt; maxNum { maxNum = num } } // 和为奇数 	if sum%2 !
         <a href="/docs/leetcode/0416/">...</a>
       
     </p>
@@ -771,12 +734,12 @@ https://github.com/alex-shpak/hugo-book
       <ul>
       
         <li class="flex justify-between">
-          <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">动态规划</a>
-          <span>2</span>
+          <a href="/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">贪心算法，动态规划</a>
+          <span>1</span>
         </li>
       
         <li class="flex justify-between">
-          <a href="/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/">贪心算法</a>
+          <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">动态规划</a>
           <span>1</span>
         </li>
       

@@ -9,7 +9,7 @@
 来自 go 语言官方文档的警告 #  unsafe 包的文档是这么说的：
 导入 unsafe 的软件包可能不可移植，并且不受 Go 1 兼容性指南的保护。  Go 1 兼容性指南这么说：
 导入 unsafe 软件包可能取决于 Go 实现的内部属性。我们保留对可能导致程序崩溃的实现进行更改的权利。  当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。
-Unsafe包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
+Unsafe 包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
  三个函数：  func Alignof(variable ArbitraryType) uintptr func Offsetof(selector ArbitraryType) uintptr func Sizeof(variable ArbitraryType) uintptr   和一种类型：  类型 Pointer *ArbitraryType    这里，ArbitraryType 不是一个真正的类型，它只是一个占位符。">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="unsafe" />
 <meta property="og:description" content="本文转自： Go 里面的 unsafe 包详解
@@ -17,7 +17,7 @@ Unsafe包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
 来自 go 语言官方文档的警告 #  unsafe 包的文档是这么说的：
 导入 unsafe 的软件包可能不可移植，并且不受 Go 1 兼容性指南的保护。  Go 1 兼容性指南这么说：
 导入 unsafe 软件包可能取决于 Go 实现的内部属性。我们保留对可能导致程序崩溃的实现进行更改的权利。  当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。
-Unsafe包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
+Unsafe 包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
  三个函数：  func Alignof(variable ArbitraryType) uintptr func Offsetof(selector ArbitraryType) uintptr func Sizeof(variable ArbitraryType) uintptr   和一种类型：  类型 Pointer *ArbitraryType    这里，ArbitraryType 不是一个真正的类型，它只是一个占位符。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/language-basics/unsafe/" />
@@ -27,7 +27,7 @@ Unsafe包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.d0c3e37ce62e781258e7b899488cb73e9bc716837f4fa0dbfa02423595e9cc23.js" integrity="sha256-0MPjfOYueBJY57iZSIy3PpvHFoN/T6Db&#43;gJCNZXpzCM="></script>
+<script defer src="/en.search.min.4bc3ee6a77818c2fe13d63b8149d415cf54d4052755645ac9c615023c8f98887.js" integrity="sha256-S8PuaneBjC/hPWO4FJ1BXPVNQFJ1VkWsnGFQI8j5iIc="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -612,7 +612,7 @@ https://github.com/alex-shpak/hugo-book
   <ul>
     <li><a href="#the-unsafe-package-in-golang">The unsafe Package in Golang</a></li>
     <li><a href="#来自-go-语言官方文档的警告">来自 go 语言官方文档的警告</a></li>
-    <li><a href="#unsafe包的作用">Unsafe包的作用</a></li>
+    <li><a href="#unsafe-包的作用">Unsafe 包的作用</a></li>
     <li><a href="#unsafepointer-和-uintptr">unsafe.Pointer 和 uintptr</a></li>
     <li><a href="#unsafe-包有多危险">unsafe 包有多危险</a></li>
     <li><a href="#转换-t1-为-t2">转换 T1 为 T2</a>
@@ -657,9 +657,9 @@ https://github.com/alex-shpak/hugo-book
 </blockquote>
 
 <p>当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。</p>
-<h1 id="unsafe包的作用">
-  Unsafe包的作用
-  <a class="anchor" href="#unsafe%e5%8c%85%e7%9a%84%e4%bd%9c%e7%94%a8">#</a>
+<h1 id="unsafe-包的作用">
+  Unsafe 包的作用
+  <a class="anchor" href="#unsafe-%e5%8c%85%e7%9a%84%e4%bd%9c%e7%94%a8">#</a>
 </h1>
 <p>直到现在（Go1.7），unsafe 包含以下资源：</p>
 <ul>
@@ -700,7 +700,7 @@ https://github.com/alex-shpak/hugo-book
 <li><code>uintptr</code> 可以转换为 <code>unsafe.Pointer</code>。</li>
 <li><code>unsafe.Pointer</code> 可以转换为 <code>uintptr</code>。</li>
 </ul>
-<p>这些规则与Go规范一致：</p>
+<p>这些规则与 Go 规范一致：</p>
 <blockquote class="book-hint info">
   底层类型 uintptr 的任何指针或值都可以转换为指针类型，反之亦然。
 </blockquote>
@@ -871,7 +871,7 @@ unsafe 包 docs 列出了一些使用 <code>unsafe.Pointer</code> 合法或非�
   转换 T1 为 T2
   <a class="anchor" href="#%e8%bd%ac%e6%8d%a2-t1-%e4%b8%ba-t2">#</a>
 </h1>
-<p>对于将 T1 转换为 <code>unsafe.Pointer</code>，然后转换为 T2，unsafe 包 docs说：</p>
+<p>对于将 T1 转换为 <code>unsafe.Pointer</code>，然后转换为 T2，unsafe 包 docs 说：</p>
 <blockquote class="book-hint info">
   如果 T2 比 T1 大，并且两者共享等效内存布局，则该转换允许将一种类型的数据重新解释为另一类型的数据。
 </blockquote>
@@ -1037,7 +1037,7 @@ unsafe 包用于有经验的程序员通过安全地绕过 Go 类型系统的安
   <ul>
     <li><a href="#the-unsafe-package-in-golang">The unsafe Package in Golang</a></li>
     <li><a href="#来自-go-语言官方文档的警告">来自 go 语言官方文档的警告</a></li>
-    <li><a href="#unsafe包的作用">Unsafe包的作用</a></li>
+    <li><a href="#unsafe-包的作用">Unsafe 包的作用</a></li>
     <li><a href="#unsafepointer-和-uintptr">unsafe.Pointer 和 uintptr</a></li>
     <li><a href="#unsafe-包有多危险">unsafe 包有多危险</a></li>
     <li><a href="#转换-t1-为-t2">转换 T1 为 T2</a>

@@ -29,7 +29,7 @@ API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.d0c3e37ce62e781258e7b899488cb73e9bc716837f4fa0dbfa02423595e9cc23.js" integrity="sha256-0MPjfOYueBJY57iZSIy3PpvHFoN/T6Db&#43;gJCNZXpzCM="></script>
+<script defer src="/en.search.min.4bc3ee6a77818c2fe13d63b8149d415cf54d4052755645ac9c615023c8f98887.js" integrity="sha256-S8PuaneBjC/hPWO4FJ1BXPVNQFJ1VkWsnGFQI8j5iIc="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -770,7 +770,7 @@ https://github.com/alex-shpak/hugo-book
  }
  <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">authenticator</span>.<span style="color:#a6e22e">Response</span>{<span style="color:#a6e22e">User</span>: <span style="color:#a6e22e">user</span>}, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
 }
-</code></pre></div><p>该认证方式相对简单，a.tokens 保存了服务端 Token 列表，通过map查询客户端提供的 Token 是否存在，存在即认证成功，反之则认证失败。</p>
+</code></pre></div><p>该认证方式相对简单，a.tokens 保存了服务端 Token 列表，通过 map 查询客户端提供的 Token 是否存在，存在即认证成功，反之则认证失败。</p>
 </li>
 </ol>
 <h3 id="213-bootstrap-tokens">
@@ -792,13 +792,13 @@ https://github.com/alex-shpak/hugo-book
 <p>认证实现</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// plugin/pkg/auth/authenticator/token/bootstrap/bootstrap.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">TokenAuthenticator</span>) <span style="color:#a6e22e">AuthenticateToken</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">token</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">authenticator</span>.<span style="color:#a6e22e">Response</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
- <span style="color:#75715e">// 1.校验token格式
+ <span style="color:#75715e">// 1. 校验 token 格式
 </span><span style="color:#75715e"></span> <span style="color:#a6e22e">tokenID</span>, <span style="color:#a6e22e">tokenSecret</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstraptokenutil</span>.<span style="color:#a6e22e">ParseToken</span>(<span style="color:#a6e22e">token</span>)
  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
  }
    
- <span style="color:#75715e">// 2.拼接secret name，获取secret对象
+ <span style="color:#75715e">// 2. 拼接 secret name，获取 secret 对象
 </span><span style="color:#75715e"></span> <span style="color:#a6e22e">secretName</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenSecretPrefix</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">tokenID</span>
  <span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">lister</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">secretName</span>)
  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
@@ -809,45 +809,45 @@ https://github.com/alex-shpak/hugo-book
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">err</span>
  }
    
- <span style="color:#75715e">// 3.校验secret有效，不在删除中
+ <span style="color:#75715e">// 3. 校验 secret 有效，不在删除中
 </span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">secret</span>.<span style="color:#a6e22e">DeletionTimestamp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
      <span style="color:#a6e22e">tokenErrorf</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#e6db74">&#34;is deleted and awaiting removal&#34;</span>)
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
  }
    
- <span style="color:#75715e">// 4.校验secret类型必须是 bootstrap.kubernetes.io/token
+ <span style="color:#75715e">// 4. 校验 secret 类型必须是 bootstrap.kubernetes.io/token
 </span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> string(<span style="color:#a6e22e">secret</span>.<span style="color:#a6e22e">Type</span>) <span style="color:#f92672">!=</span> string(<span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">SecretTypeBootstrapToken</span>) <span style="color:#f92672">||</span> <span style="color:#a6e22e">secret</span>.<span style="color:#a6e22e">Data</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
      <span style="color:#a6e22e">tokenErrorf</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#e6db74">&#34;has invalid type, expected %s.&#34;</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">SecretTypeBootstrapToken</span>)
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
  }
    
- <span style="color:#75715e">// 5.校验token secret有效
+ <span style="color:#75715e">// 5. 校验 token secret 有效
 </span><span style="color:#75715e"></span> <span style="color:#a6e22e">ts</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">GetData</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenSecretKey</span>)
  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">subtle</span>.<span style="color:#a6e22e">ConstantTimeCompare</span>([]byte(<span style="color:#a6e22e">ts</span>), []byte(<span style="color:#a6e22e">tokenSecret</span>)) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span> {
      <span style="color:#a6e22e">tokenErrorf</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#e6db74">&#34;has invalid value for key %s, expected %s.&#34;</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenSecretKey</span>, <span style="color:#a6e22e">tokenSecret</span>)
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
  }
    
- <span style="color:#75715e">// 6.校验token id有效
+ <span style="color:#75715e">// 6. 校验 token id 有效
 </span><span style="color:#75715e"></span> <span style="color:#a6e22e">id</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">GetData</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenIDKey</span>)
  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">id</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">tokenID</span> {
      <span style="color:#a6e22e">tokenErrorf</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#e6db74">&#34;has invalid value for key %s, expected %s.&#34;</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenIDKey</span>, <span style="color:#a6e22e">tokenID</span>)
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
  }
    
- <span style="color:#75715e">// 7.校验token是否过期
+ <span style="color:#75715e">// 7. 校验 token 是否过期
 </span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">HasExpired</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()) {
      <span style="color:#75715e">// logging done in isSecretExpired method.
 </span><span style="color:#75715e"></span>     <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
  }
    
- <span style="color:#75715e">// 8.校验secret对象的data字段中，key为usage-bootstrap-authentication，value为true
+ <span style="color:#75715e">// 8. 校验 secret 对象的 data 字段中，key 为 usage-bootstrap-authentication，value 为 true
 </span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">GetData</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenUsageAuthentication</span>) <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;true&#34;</span> {
      <span style="color:#a6e22e">tokenErrorf</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#e6db74">&#34;not marked %s=true.&#34;</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenUsageAuthentication</span>)
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
  }
    
- <span style="color:#75715e">// 9.获取secret.data[auth-extra-groups]，与default group组合
+ <span style="color:#75715e">// 9. 获取 secret.data[auth-extra-groups]，与 default group 组合
 </span><span style="color:#75715e"></span> <span style="color:#a6e22e">groups</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">GetGroups</span>(<span style="color:#a6e22e">secret</span>)
  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
      <span style="color:#a6e22e">tokenErrorf</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#e6db74">&#34;has invalid value for key %s: %v.&#34;</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenExtraGroupsKey</span>, <span style="color:#a6e22e">err</span>)
@@ -891,12 +891,12 @@ https://github.com/alex-shpak/hugo-book
 <p>认证实现</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// pkg/serviceaccount/jwt.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">j</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">jwtTokenAuthenticator</span>) <span style="color:#a6e22e">AuthenticateToken</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">tokenData</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">authenticator</span>.<span style="color:#a6e22e">Response</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
- <span style="color:#75715e">// 1.校验token格式正确
+ <span style="color:#75715e">// 1. 校验 token 格式正确
 </span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">j</span>.<span style="color:#a6e22e">hasCorrectIssuer</span>(<span style="color:#a6e22e">tokenData</span>) {
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
  }
    
- <span style="color:#75715e">// 2.解析JWT对象
+ <span style="color:#75715e">// 2. 解析 JWT 对象
 </span><span style="color:#75715e"></span> <span style="color:#a6e22e">tok</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">jwt</span>.<span style="color:#a6e22e">ParseSigned</span>(<span style="color:#a6e22e">tokenData</span>)
  <span style="color:#f92672">...</span>
    
@@ -908,7 +908,7 @@ https://github.com/alex-shpak/hugo-book
      <span style="color:#a6e22e">found</span>   <span style="color:#66d9ef">bool</span>
      <span style="color:#a6e22e">errlist</span> []<span style="color:#66d9ef">error</span>
  )
- <span style="color:#75715e">// 3.使用--service-account-key-file提供的密钥，反序列化JWT
+ <span style="color:#75715e">// 3. 使用--service-account-key-file 提供的密钥，反序列化 JWT
 </span><span style="color:#75715e"></span> <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">key</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">j</span>.<span style="color:#a6e22e">keys</span> {
      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tok</span>.<span style="color:#a6e22e">Claims</span>(<span style="color:#a6e22e">key</span>, <span style="color:#a6e22e">public</span>, <span style="color:#a6e22e">private</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
          <span style="color:#a6e22e">errlist</span> = append(<span style="color:#a6e22e">errlist</span>, <span style="color:#a6e22e">err</span>)
@@ -920,7 +920,7 @@ https://github.com/alex-shpak/hugo-book
    
  <span style="color:#f92672">...</span>
        
- <span style="color:#75715e">// 4.验证namespace是否正确、serviceAccountName、serviceAccountID是否存在，token是否失效
+ <span style="color:#75715e">// 4. 验证 namespace 是否正确、serviceAccountName、serviceAccountID 是否存在，token 是否失效
 </span><span style="color:#75715e"></span> <span style="color:#a6e22e">sa</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">j</span>.<span style="color:#a6e22e">validator</span>.<span style="color:#a6e22e">Validate</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">tokenData</span>, <span style="color:#a6e22e">public</span>, <span style="color:#a6e22e">private</span>)
  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">err</span>
@@ -940,7 +940,7 @@ https://github.com/alex-shpak/hugo-book
 </h3>
 <p>OpenID Connect Token(OIDC) 是一套基于 OAuth2.0 协议的轻量级认证规范，其提供了通过 API 进行身份交互的框架。OIDC 认证除了认证请求外，还会标明请求的用户身份（ID Token）。其中 Token 被称为 ID Token，此 ID Token 是 JWT，具有服务器签名的相关字段。认证流程如下：</p>
 <ol>
-<li>用户想要访问 kube-apiserver，先通过认证服务（Auth Service，例如 Google Accounts 服务）认证自己，得到access_token、id_token 和 refresh_token。</li>
+<li>用户想要访问 kube-apiserver，先通过认证服务（Auth Service，例如 Google Accounts 服务）认证自己，得到 access_token、id_token 和 refresh_token。</li>
 <li>用户把 access_token、id_token 和 refresh_token 配置到客户端应用程序，例如：kubectl 或者 dashboard 工具</li>
 <li>客户端使用 Token 以用户身份访问 kube-apiserver</li>
 </ol>
@@ -999,7 +999,7 @@ sequenceDiagram
 <li>鉴权成功之后，API 服务器向 kubectl 返回响应</li>
 <li>kubectl 向用户提供反馈信息</li>
 </ol>
-<p>kube-apiserver 不与 Auth Service 交互就可以认证 Token 的合法性，关键在于第 5 步，所有 JWT 都由颁发给它的 Auth Service进行了数字签名，只需要在 kube-apiserver 的启动参数中，配置信任的 Auth Server 证书，用它来验证 id_token 是否合法。</p>
+<p>kube-apiserver 不与 Auth Service 交互就可以认证 Token 的合法性，关键在于第 5 步，所有 JWT 都由颁发给它的 Auth Service 进行了数字签名，只需要在 kube-apiserver 的启动参数中，配置信任的 Auth Server 证书，用它来验证 id_token 是否合法。</p>
 <ol>
 <li>启用</li>
 </ol>
@@ -1157,7 +1157,7 @@ sequenceDiagram
 		},
 	}, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
 }
-</code></pre></div><p>在进行认证代理认证时，requestHeader就是实现方式，分别从 HTTP Header 读出用户、组和额外信息，返回给客户端。</p>
+</code></pre></div><p>在进行认证代理认证时，requestHeader 就是实现方式，分别从 HTTP Header 读出用户、组和额外信息，返回给客户端。</p>
 <h2 id="22-其他">
   2.2 其他
   <a class="anchor" href="#22-%e5%85%b6%e4%bb%96">#</a>
