@@ -7,16 +7,16 @@
 <meta name="description" content="1. StatefulSet 简介 #  Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
 这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
 是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
-适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb集群，Redis 集群等等。
+适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。
 1.1 特点 #    稳定、唯一的网络标识符
-如: Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则Redis集群将无法找到这段数据。">
+如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Statefulset Controller 源码分析" />
 <meta property="og:description" content="1. StatefulSet 简介 #  Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
 这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
 是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
-适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb集群，Redis 集群等等。
+适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。
 1.1 特点 #    稳定、唯一的网络标识符
-如: Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则Redis集群将无法找到这段数据。" />
+如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" />
 <meta property="article:published_time" content="2020-10-12T00:00:00+00:00" />
@@ -25,7 +25,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.4bc3ee6a77818c2fe13d63b8149d415cf54d4052755645ac9c615023c8f98887.js" integrity="sha256-S8PuaneBjC/hPWO4FJ1BXPVNQFJ1VkWsnGFQI8j5iIc="></script>
+<script defer src="/en.search.min.feaea783d61cdbf1c2ccffb83b395e40e1e7e15d2d0a52a7a8bc42f1b656b63f.js" integrity="sha256-/q6ng9Yc2/HCzP&#43;4OzleQOHn4V0tClKnqLxC8bZWtj8="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -643,7 +643,7 @@ https://github.com/alex-shpak/hugo-book
 <p>Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。</p>
 <p>这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。</p>
 <p>是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。</p>
-<p>适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb集群，Redis 集群等等。</p>
+<p>适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。</p>
 <h2 id="11-特点">
   1.1 特点
   <a class="anchor" href="#11-%e7%89%b9%e7%82%b9">#</a>
@@ -651,7 +651,7 @@ https://github.com/alex-shpak/hugo-book
 <ul>
 <li>
 <p>稳定、唯一的网络标识符</p>
-<p>如: Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则Redis集群将无法找到这段数据。</p>
+<p>如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。</p>
 </li>
 <li>
 <p>稳定、持久的存储</p>
@@ -675,7 +675,7 @@ https://github.com/alex-shpak/hugo-book
   <a class="anchor" href="#12-%e9%99%90%e5%88%b6">#</a>
 </h2>
 <ul>
-<li>Pod的存储必须使用 PersistVolume</li>
+<li>Pod 的存储必须使用 PersistVolume</li>
 <li>删除或者缩容时，不会删除关联的卷</li>
 <li>使用 headless service 关联 Pod，需要手动创建</li>
 <li>Pod 的管理策略为 <code>OrderedReady</code> 时使用滚动更新能力，可能需要人工干预</li>
@@ -702,7 +702,7 @@ https://github.com/alex-shpak/hugo-book
 <li>Pod 管理策略：对于某些分布式系统来说，StatefulSet 的顺序性保证是不必要的，所以引入了 <code>statefulset.spec.podManagementPolicy</code> 字段
 <ul>
 <li><code>OrderedReady</code></li>
-<li><code>Parallel</code>：允许StatefulSet Controller 并行终止所有 Pod，不必按顺序启动或删除 Pod</li>
+<li><code>Parallel</code>：允许 StatefulSet Controller 并行终止所有 Pod，不必按顺序启动或删除 Pod</li>
 </ul>
 </li>
 </ul>
@@ -768,7 +768,7 @@ https://github.com/alex-shpak/hugo-book
   2.1 startStatefulSetController()
   <a class="anchor" href="#21-startstatefulsetcontroller">#</a>
 </h2>
-<p><code>startStatefulSetController()</code> 是 StatefulSet Controller 的启动方法，其中调用 <code>statefulset.NewStatefulSetController()</code> 方法进行初始化，然后调用对象的 <code>Run()</code> 方法启动 Controller。其中 <code>ConcurrentStatefulSetSyncs</code> 默认是5，即默认启动 5 个协程处理StatefulSet 相关业务。</p>
+<p><code>startStatefulSetController()</code> 是 StatefulSet Controller 的启动方法，其中调用 <code>statefulset.NewStatefulSetController()</code> 方法进行初始化，然后调用对象的 <code>Run()</code> 方法启动 Controller。其中 <code>ConcurrentStatefulSetSyncs</code> 默认是 5，即默认启动 5 个协程处理 StatefulSet 相关业务。</p>
 <p>可以看到 StatefulSetController 初始化时直接相关的对象类型分别是 Pod、StatefulSet、PVC 和 ControllerRevision。印证了之前提到的 StatefulSet 的特殊之处：使用 PV 作为存储；ControllerRevision 表示升级/回滚记录。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">startStatefulSetController</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">ControllerContext</span>) (<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">AvailableResources</span>[<span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupVersionResource</span>{<span style="color:#a6e22e">Group</span>: <span style="color:#e6db74">&#34;apps&#34;</span>, <span style="color:#a6e22e">Version</span>: <span style="color:#e6db74">&#34;v1&#34;</span>, <span style="color:#a6e22e">Resource</span>: <span style="color:#e6db74">&#34;statefulsets&#34;</span>}] {
@@ -926,7 +926,7 @@ https://github.com/alex-shpak/hugo-book
 	<span style="color:#a6e22e">firstUnhealthyOrdinal</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">math</span>.<span style="color:#a6e22e">MaxInt32</span>
 	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">firstUnhealthyPod</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>
 
-    <span style="color:#75715e">// 4. 计算 status 字段中的值，将 pod 分配到 replicas 和 condemned两个数组中
+    <span style="color:#75715e">// 4. 计算 status 字段中的值，将 pod 分配到 replicas 和 condemned 两个数组中
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">pods</span> {
 		<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">Replicas</span><span style="color:#f92672">++</span>
 
@@ -956,7 +956,7 @@ https://github.com/alex-shpak/hugo-book
 		<span style="color:#75715e">// 其余的 Pod 忽略
 </span><span style="color:#75715e"></span>	}
 
-    <span style="color:#75715e">// 5. 检查 replicas数组中 [0,set.Spec.Replicas) 下标是否有缺失的 pod，若有缺失的则创建对应的 Pod 
+    <span style="color:#75715e">// 5. 检查 replicas 数组中 [0,set.Spec.Replicas) 下标是否有缺失的 pod，若有缺失的则创建对应的 Pod 
 </span><span style="color:#75715e"></span>	<span style="color:#75715e">// 在 newVersionedStatefulSetPod 中会判断是使用 currentSet 还是 updateSet 来创建
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">ord</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">ord</span> &lt; <span style="color:#a6e22e">replicaCount</span>; <span style="color:#a6e22e">ord</span><span style="color:#f92672">++</span> {
 		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">ord</span>] <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
@@ -1049,7 +1049,7 @@ https://github.com/alex-shpak/hugo-book
 				<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">UpdatedReplicas</span><span style="color:#f92672">++</span>
 			}
 
-			<span style="color:#75715e">// 13. 如果为 Parallel，直接 return status 结束；如果为 OrderedReady，循环处理下一个pod。
+			<span style="color:#75715e">// 13. 如果为 Parallel，直接 return status 结束；如果为 OrderedReady，循环处理下一个 pod。
 </span><span style="color:#75715e"></span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">monotonic</span> {
 				<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#66d9ef">nil</span>
 			}
@@ -1057,7 +1057,7 @@ https://github.com/alex-shpak/hugo-book
 </span><span style="color:#75715e"></span>			<span style="color:#66d9ef">continue</span>
 		}
         <span style="color:#75715e">// 14、如果 pod 正在删除中，且 Spec.PodManagementPolicy 不为 Parallel，
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 直接return status结束，结束后会在下一个 syncLoop 继续进行处理，pod 状态的改变会触发下一次 syncLoop
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 直接 return status 结束，结束后会在下一个 syncLoop 继续进行处理，pod 状态的改变会触发下一次 syncLoop
 </span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">isTerminating</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">monotonic</span> {
 			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(
 				<span style="color:#e6db74">&#34;StatefulSet %s/%s is waiting for Pod %s to Terminate&#34;</span>,
@@ -1067,7 +1067,7 @@ https://github.com/alex-shpak/hugo-book
 			<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#66d9ef">nil</span>
 		}
         <span style="color:#75715e">// 15. 如果 pod 状态不是 Running &amp; Ready，且 Spec.PodManagementPolicy 不为 Parallel
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 则直接return status结束
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 则直接 return status 结束
 </span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">isRunningAndReady</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">monotonic</span> {
 			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(
 				<span style="color:#e6db74">&#34;StatefulSet %s/%s is waiting for Pod %s to be Running and Ready&#34;</span>,
@@ -1090,7 +1090,7 @@ https://github.com/alex-shpak/hugo-book
     <span style="color:#75715e">// 17. 逆序处理 condemned 中的 pod
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">target</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">condemned</span>) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">target</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">target</span><span style="color:#f92672">--</span> {
         <span style="color:#75715e">// 18. 如果 pod 正在删除，检查 Spec.PodManagementPolicy 的值
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 如果为 Parallel，循环处理下一个pod 否则直接退出
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 如果为 Parallel，循环处理下一个 pod 否则直接退出
 </span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">isTerminating</span>(<span style="color:#a6e22e">condemned</span>[<span style="color:#a6e22e">target</span>]) {
 			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(
 				<span style="color:#e6db74">&#34;StatefulSet %s/%s is waiting for Pod %s to Terminate prior to scale down&#34;</span>,
