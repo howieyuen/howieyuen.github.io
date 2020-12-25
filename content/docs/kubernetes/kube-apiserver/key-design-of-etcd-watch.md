@@ -75,7 +75,7 @@ cacher 中通过该组件对 etcd 进行 watch 操作，避免为每个组件都
 
 ![image7](/kubernetes/kube-apiserver/watch/image7.png)
 
-wacthCache 负责存储 watch 到的事件，并且将 watch 的事件建立对应的本地索引缓存，
+watchCache 负责存储 watch 到的事件，并且将 watch 的事件建立对应的本地索引缓存，
 同时在构建 watchCache 还负责将事件的传递，
 其将 watch 到的事件通过 eventHandler 来传递给上层的 Cacher 组件。
 
@@ -102,7 +102,7 @@ Cacher 基于 etcd 的 store 结合上面的 watchCache 和 Reflector 共同构�
 
 ![image10](/kubernetes/kube-apiserver/watch/image10.png)
 
-如果我们有多个 watcher 都 wacth 同一个事件，在最终的时候我们都需要进行序列化，
+如果我们有多个 watcher 都 watch 同一个事件，在最终的时候我们都需要进行序列化，
 cacher 中在分发的时候，如果发现超过指定数量的 watcher， 则会在进行 dispatch 的时候，
 为其构建构建一个缓存函数，针对多个 watcher 只会进行一次的序列化。
 
