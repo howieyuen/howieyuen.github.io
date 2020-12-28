@@ -13,11 +13,6 @@
   </url>
   
   <url>
-    <loc>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/</loc>
-    <lastmod>2020-11-22T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://howieyuen.github.io/docs/golang/language-basics/</loc>
     <lastmod>2020-12-18T00:00:00+00:00</lastmod>
   </url>
@@ -28,32 +23,12 @@
   </url>
   
   <url>
-    <loc>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/</loc>
-    <lastmod>2020-10-25T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://howieyuen.github.io/docs/leetcode/</loc>
     <lastmod>2020-12-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://howieyuen.github.io/docs/kubernetes/kube-proxy/</loc>
-    <lastmod>2020-01-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://howieyuen.github.io/docs/golang/memory-manage/</loc>
-  </url>
-  
-  <url>
-    <loc>https://howieyuen.github.io/docs/kubernetes/kubelet/</loc>
-    <lastmod>2020-09-10T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://howieyuen.github.io/docs/kubernetes/kube-scheduler/</loc>
-    <lastmod>2020-03-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -102,12 +77,22 @@
   </url>
   
   <url>
+    <loc>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/</loc>
+    <lastmod>2020-11-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/</loc>
     <lastmod>2020-11-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</loc>
+    <lastmod>2020-10-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/</loc>
     <lastmod>2020-10-25T00:00:00+00:00</lastmod>
   </url>
   
@@ -147,8 +132,18 @@
   </url>
   
   <url>
+    <loc>https://howieyuen.github.io/docs/kubernetes/kubelet/</loc>
+    <lastmod>2020-09-10T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/</loc>
     <lastmod>2020-09-10T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://howieyuen.github.io/docs/kubernetes/kube-scheduler/</loc>
+    <lastmod>2020-03-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -162,7 +157,12 @@
   </url>
   
   <url>
-    <loc>https://howieyuen.github.io/docs/kubernetes/kube-proxy/learn-about-Service/</loc>
+    <loc>https://howieyuen.github.io/docs/kubernetes/sig-network/</loc>
+    <lastmod>2020-01-24T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/</loc>
     <lastmod>2020-01-24T00:00:00+00:00</lastmod>
   </url>
   
