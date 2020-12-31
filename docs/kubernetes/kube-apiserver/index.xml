@@ -5,7 +5,20 @@
     <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/</link>
     <description>Recent content in kube-apisever on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 22 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 29 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>鉴权机制</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</link>
+      <pubDate>Tue, 29 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</guid>
+      <description>1. 鉴权概述 #  在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。 如果开启多个鉴权模块，则按照顺序执行鉴权器，排在前面的鉴权器有较高的优先级来允许或者拒绝请求。 只要有一个鉴权器通过，则鉴权成功。
+kube-apiserver 目前提供了 6 种鉴权机制：
+ AlwaysAllow：总是允许 AlwaysDeny：总是拒绝 ABAC：基于属性的访问控制（Attribute-Based Access Control） Node：节点鉴权，专门鉴权给 kubelet 发出的 API 请求 RBAC：基于角色额的访问控制（Role-Based Access Control） Webhook：基于 webhook 的一种 HTTP 回调机制，可以进行远程鉴权管理  在学习鉴权之前，有三个概念需要补齐：
+ Decision：决策状态 Authorizer：鉴权器接口 RuleResolver：规则解析器  1.1 Decision：决策状态 #  Decision 决策状态类似于认证中的 true 和 false，用于决定是否鉴权成功。 鉴权支持三种 Decision 决策状态，例如鉴权成功，则返回 DecisionAllow，代码如下：
+// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go type Decision int const ( DecisionDeny Decision = iota DecisionAllow DecisionNoOpinion )  DecisionDeny：拒绝该操作 DecisionAllow：允许该操作 DecisionNoOpinion：表示无明显意见允许或拒绝，继续执行下一个鉴权器  1.</description>
+    </item>
+    
     <item>
       <title>认证机制</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/</link>
