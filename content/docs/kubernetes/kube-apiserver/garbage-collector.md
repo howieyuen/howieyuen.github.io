@@ -2,7 +2,7 @@
 author: Yuan Hao
 date: 2020-10-14
 title: 垃圾回收
-tag: [garbage collector]
+tag: [gc]
 ---
 
 # 1. 序言 

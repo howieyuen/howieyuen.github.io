@@ -2,7 +2,7 @@
 author: Yuan Hao
 date: 2020-11-22
 title: 认证机制
-tag: [kube-apiserver, authenticate]
+tag: [kube-apiserver, authentication]
 ---
 
 # 1. Kubernetes 中的用户
