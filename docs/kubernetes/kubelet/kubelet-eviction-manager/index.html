@@ -887,7 +887,7 @@ eviction 毕竟是耗时的动作，所以应该尽量避免这种情况的发�
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/4359738ab58885be0fcb4ff5f079eca7c70c9fee" title='Last modified by howieyuen | January 6, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/85e8d80302cbce2fd987eefbdec505bfcda1ad0f" title='Last modified by howieyuen | January 6, 2021' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
       <span>January 6, 2021</span>
     </a>
@@ -911,14 +911,13 @@ eviction 毕竟是耗时的动作，所以应该尽量避免这种情况的发�
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
   <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
   <script>
-    let splits = location.pathname.split("/")
     const gitalk = new Gitalk({
       clientID: '25d476132e0758875147',
       clientSecret: '9648a660ceabeb1a20a6354a3c131481724f62db',
       repo: 'howieyuen.github.io',
       owner: 'howieyuen',
       admin: ['howieyuen'],
-      id: splits[splits.length-1], 
+      id: md5(location.pathname), 
       distractionFreeMode: false 
     });
     (function() {
