@@ -1,24 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="1. StatefulSet 简介 #  Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
+这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
+是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
+适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。
+1.1 特点 #    稳定、唯一的网络标识符
+如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Statefulset Controller 源码分析" />
+<meta property="og:description" content="1. StatefulSet 简介 #  Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
+这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
+是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
+适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。
+1.1 特点 #    稳定、唯一的网络标识符
+如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" />
+<meta property="article:published_time" content="2020-10-12T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-01-06T18:22:21+08:00" />
+<title>Statefulset Controller 源码分析 | 袁昊的学习笔记</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
+<script defer src="/en.search.min.40838ce8e186d262502fed0ac4a6bd0ad9e57f1a34c03472be973246f5e384ef.js" integrity="sha256-QIOM6OGG0mJQL&#43;0KxKa9Ctnlfxo0wDRyvpcyRvXjhO8="></script>
+
+<script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
 
 
 
-    <div id="gitalk-container"></div>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
-    <script>
-        const gitalk = new Gitalk({
-            clientID: '25d476132e0758875147',
-            clientSecret: '9648a660ceabeb1a20a6354a3c131481724f62db',
-            repo: 'howieyuen.github.io',
-            owner: 'howieyuen',
-            admin: ['howieyuen'],
-            id: location.pathname, 
-            distractionFreeMode: false 
-        });
-        (function() {
-            if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-                document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
-                return;
-            }
-            gitalk.render('gitalk-container');
-        })();
-    </script>
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Golang</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>数据结构</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/chan/" class="">chan</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/map/" class="">map</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/slice/" class="">slice</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>语言基础</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/language-basics/unsafe/" class="">unsafe</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/language-basics/reflect/" class="">reflect</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>内存管理</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Kubernetes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-apisever</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-controller-manager</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class=" active">Statefulset Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-scheduler</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kubelet</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>sig-network</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a  class="">LeetCode</a>
+      <span>▾</span>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0321/" class="">321. 拼接最大数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="/posts/" >
+        Blog
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://github.com/howieyuen/" target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/" target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Statefulset Controller 源码分析</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-statefulset-简介">1. StatefulSet 简介</a>
+      <ul>
+        <li><a href="#11-特点">1.1 特点</a></li>
+        <li><a href="#12-限制">1.2 限制</a></li>
+        <li><a href="#13-基本功能">1.3 基本功能</a></li>
+        <li><a href="#14-示例">1.4 示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-源码解析">2. 源码解析</a>
+      <ul>
+        <li><a href="#21-startstatefulsetcontroller">2.1 startStatefulSetController()</a></li>
+        <li><a href="#22-sscsync">2.2 ssc.sync()</a></li>
+        <li><a href="#23-sscsyncstatefulset">2.3 ssc.syncStatefulSet()</a></li>
+        <li><a href="#24-sscupdatestatefulset">2.4 ssc.updateStatefulSet()</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-参考链接">3. 参考链接</a></li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="1-statefulset-简介">
+  1. StatefulSet 简介
+  <a class="anchor" href="#1-statefulset-%e7%ae%80%e4%bb%8b">#</a>
+</h1>
+<p>Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。</p>
+<p>这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。</p>
+<p>是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。</p>
+<p>适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。</p>
+<h2 id="11-特点">
+  1.1 特点
+  <a class="anchor" href="#11-%e7%89%b9%e7%82%b9">#</a>
+</h2>
+<ul>
+<li>
+<p>稳定、唯一的网络标识符</p>
+<p>如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。</p>
+</li>
+<li>
+<p>稳定、持久的存储</p>
+<p>可实现持久存储，新增或减少 Pod，存储不会随之发生变化。</p>
+</li>
+<li>
+<p>有序的、平滑的部署、扩容</p>
+<p>如 MySQL 集群，要先启动主节点， 若从节点没有要求，则可一起启动，若从节点有启动顺序要求，可先启动第一个从节点，接着第二从节点等；这个过程就是有顺序，平滑安全的启动。</p>
+</li>
+<li>
+<p>有序的、自动的缩容和删除</p>
+<p>我们先终止从节点，若从节点是有启动顺序的，那么关闭时，也要按照逆序终止，即启动时是从 S1~S4 以此启动，则关闭时，则是先关闭 S4，然后是 S3，依次关闭，最后在关闭主节点。</p>
+</li>
+<li>
+<p>有序的、自动的滚动更新</p>
+<p>MySQL 在更新时，应该先更新从节点，全部的从节点都更新完了，最后在更新主节点，因为新版本一般可兼容老版本，但是一定要注意，若新版本不兼容老版本就很很麻烦</p>
+</li>
+</ul>
+<h2 id="12-限制">
+  1.2 限制
+  <a class="anchor" href="#12-%e9%99%90%e5%88%b6">#</a>
+</h2>
+<ul>
+<li>Pod 的存储必须使用 PersistVolume</li>
+<li>删除或者缩容时，不会删除关联的卷</li>
+<li>使用 headless service 关联 Pod，需要手动创建</li>
+<li>Pod 的管理策略为 <code>OrderedReady</code> 时使用滚动更新能力，可能需要人工干预</li>
+</ul>
+<h2 id="13-基本功能">
+  1.3 基本功能
+  <a class="anchor" href="#13-%e5%9f%ba%e6%9c%ac%e5%8a%9f%e8%83%bd">#</a>
+</h2>
+<ul>
+<li>创建</li>
+<li>删除
+<ul>
+<li>级联删除</li>
+<li>非级连删除</li>
+</ul>
+</li>
+<li>扩容/缩容：扩容为顺序，缩容则为逆运算，即逆序</li>
+<li>更新：与无状态应用不同的是，StatefulSet 是基于 <code>ControllerRevision</code> 保存更新记录
+<ul>
+<li><code>RollingUpdate</code></li>
+<li><code>OnDelete</code></li>
+</ul>
+</li>
+<li>Pod 管理策略：对于某些分布式系统来说，StatefulSet 的顺序性保证是不必要的，所以引入了 <code>statefulset.spec.podManagementPolicy</code> 字段
+<ul>
+<li><code>OrderedReady</code></li>
+<li><code>Parallel</code>：允许 StatefulSet Controller 并行终止所有 Pod，不必按顺序启动或删除 Pod</li>
+</ul>
+</li>
+</ul>
+<h2 id="14-示例">
+  1.4 示例
+  <a class="anchor" href="#14-%e7%a4%ba%e4%be%8b">#</a>
+</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+  <span style="color:#f92672">labels</span>:
+    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">ports</span>:
+  - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">web</span>
+  <span style="color:#f92672">clusterIP</span>: <span style="color:#ae81ff">None</span> <span style="color:#75715e"># headless service</span>
+  <span style="color:#f92672">selector</span>:
+    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+---
+<span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">StatefulSet</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">web</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">serviceName</span>: <span style="color:#e6db74">&#34;nginx&#34;</span>
+  <span style="color:#f92672">podManagementPolicy</span>: <span style="color:#e6db74">&#34;OrderedReady&#34;</span> <span style="color:#75715e"># default is OrderedReady</span>
+  <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">2</span>
+  <span style="color:#f92672">selector</span>:
+    <span style="color:#f92672">matchLabels</span>:
+      <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+  <span style="color:#f92672">template</span>:
+    <span style="color:#f92672">metadata</span>:
+      <span style="color:#f92672">labels</span>:
+        <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+    <span style="color:#f92672">spec</span>:
+      <span style="color:#f92672">containers</span>:
+      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">k8s.gcr.io/nginx-slim:0.8</span>
+        <span style="color:#f92672">ports</span>:
+        - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
+          <span style="color:#f92672">name</span>: <span style="color:#ae81ff">web</span>
+        <span style="color:#f92672">volumeMounts</span>:
+        - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">www</span>
+          <span style="color:#f92672">mountPath</span>: <span style="color:#ae81ff">/usr/share/nginx/html</span>
+  <span style="color:#f92672">volumeClaimTemplates</span>:
+  - <span style="color:#f92672">metadata</span>:
+      <span style="color:#f92672">name</span>: <span style="color:#ae81ff">www</span>
+    <span style="color:#f92672">spec</span>:
+      <span style="color:#f92672">accessModes</span>: [ <span style="color:#e6db74">&#34;ReadWriteOnce&#34;</span> ]
+      <span style="color:#f92672">resources</span>:
+        <span style="color:#f92672">requests</span>:
+          <span style="color:#f92672">storage</span>: <span style="color:#ae81ff">1Gi</span>
+</code></pre></div><h1 id="2-源码解析">
+  2. 源码解析
+  <a class="anchor" href="#2-%e6%ba%90%e7%a0%81%e8%a7%a3%e6%9e%90">#</a>
+</h1>
+<blockquote>
+<p>kubernetes version: v1.19</p>
+</blockquote>
+<h2 id="21-startstatefulsetcontroller">
+  2.1 startStatefulSetController()
+  <a class="anchor" href="#21-startstatefulsetcontroller">#</a>
+</h2>
+<p><code>startStatefulSetController()</code> 是 StatefulSet Controller 的启动方法，其中调用 <code>statefulset.NewStatefulSetController()</code> 方法进行初始化，然后调用对象的 <code>Run()</code> 方法启动 Controller。其中 <code>ConcurrentStatefulSetSyncs</code> 默认是 5，即默认启动 5 个协程处理 StatefulSet 相关业务。</p>
+<p>可以看到 StatefulSetController 初始化时直接相关的对象类型分别是 Pod、StatefulSet、PVC 和 ControllerRevision。印证了之前提到的 StatefulSet 的特殊之处：使用 PV 作为存储；ControllerRevision 表示升级/回滚记录。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">startStatefulSetController</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">ControllerContext</span>) (<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">AvailableResources</span>[<span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupVersionResource</span>{<span style="color:#a6e22e">Group</span>: <span style="color:#e6db74">&#34;apps&#34;</span>, <span style="color:#a6e22e">Version</span>: <span style="color:#e6db74">&#34;v1&#34;</span>, <span style="color:#a6e22e">Resource</span>: <span style="color:#e6db74">&#34;statefulsets&#34;</span>}] {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
+	}
+	<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">statefulset</span>.<span style="color:#a6e22e">NewStatefulSetController</span>(
+		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">InformerFactory</span>.<span style="color:#a6e22e">Core</span>().<span style="color:#a6e22e">V1</span>().<span style="color:#a6e22e">Pods</span>(),
+		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">InformerFactory</span>.<span style="color:#a6e22e">Apps</span>().<span style="color:#a6e22e">V1</span>().<span style="color:#a6e22e">StatefulSets</span>(),
+		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">InformerFactory</span>.<span style="color:#a6e22e">Core</span>().<span style="color:#a6e22e">V1</span>().<span style="color:#a6e22e">PersistentVolumeClaims</span>(),
+		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">InformerFactory</span>.<span style="color:#a6e22e">Apps</span>().<span style="color:#a6e22e">V1</span>().<span style="color:#a6e22e">ControllerRevisions</span>(),
+		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ClientBuilder</span>.<span style="color:#a6e22e">ClientOrDie</span>(<span style="color:#e6db74">&#34;statefulset-controller&#34;</span>),
+	).<span style="color:#a6e22e">Run</span>(int(<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ComponentConfig</span>.<span style="color:#a6e22e">StatefulSetController</span>.<span style="color:#a6e22e">ConcurrentStatefulSetSyncs</span>), <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Stop</span>)
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
+}
+</code></pre></div><h2 id="22-sscsync">
+  2.2 ssc.sync()
+  <a class="anchor" href="#22-sscsync">#</a>
+</h2>
+<p><code>run()</code> 方法会通过 informer 同步 cache 并监听 pod、statefulset、pvc 和 controllerrevision 对象的变更事件，然后启动 5 个 worker 协程，每个 worker 调用 <code>sync()</code> 方法，正式进入业务逻辑处理。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">StatefulSetController</span>) <span style="color:#a6e22e">sync</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+	<span style="color:#f92672">...</span>
+    <span style="color:#75715e">// 1. 解析 namespace 和 name
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">namespace</span>, <span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cache</span>.<span style="color:#a6e22e">SplitMetaNamespaceKey</span>(<span style="color:#a6e22e">key</span>)
+	<span style="color:#f92672">...</span>
+    
+    <span style="color:#75715e">// 2. 根据 ns 和 name，获取 sts 对象
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">setLister</span>.<span style="color:#a6e22e">StatefulSets</span>(<span style="color:#a6e22e">namespace</span>).<span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">name</span>)
+	<span style="color:#f92672">...</span>
+
+    <span style="color:#75715e">// 3. 获取 selector 对象，用于筛选 Pod
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">selector</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">LabelSelectorAsSelector</span>(<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Selector</span>)
+	<span style="color:#f92672">...</span>
+
+    <span style="color:#75715e">// ssc.adoptOrphanRevisions() 
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// -&gt; ssc.control.AdoptOrphanRevisions() 
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// -&gt; ssc.controllerHistory.AdoptControllerRevision() 
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// -&gt; Patch()
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 4、筛选 sts 的孤儿 controllerrevisions，并尝试与 sts 重新关联（添加 ControllerRef）
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">adoptOrphanRevisions</span>(<span style="color:#a6e22e">set</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+	}
+
+    <span style="color:#75715e">// 5. 获取 sts 所有关联的 pod
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// ssc.getPodsForStatefulSet() 
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// -&gt; cm.ClaimPods() 
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// -&gt; m.ClaimObject() 
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// -&gt; release()/adopt()
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">pods</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">getPodsForStatefulSet</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">selector</span>)
+	<span style="color:#f92672">...</span>
+
+    <span style="color:#75715e">// 6. 真正执行 sync 操作
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">syncStatefulSet</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">pods</span>)
+}
+</code></pre></div><p>则，<code>sync()</code> 的主要逻辑为：</p>
+<ol>
+<li>根据 ns/name 获取 sts 对象；</li>
+<li>获取 sts 的 <code>selector</code>；</li>
+<li>调用 <code>ssc.adoptOrphanRevisions()</code> 检查是否有孤儿 controllerrevisions 对象，若有且能匹配 selector 的则添加 ownerReferences 进行关联；</li>
+<li>调用 <code>ssc.getPodsForStatefulSet</code> 通过 selector 获取 sts 关联的 pod，若有孤儿 pod 的 label 与 sts 的能匹配则进行关联，若已关联的 pod label 有变化则解除与 sts 的关联关系；</li>
+<li>最后调用 ssc.syncStatefulSet 执行真正的 sync 操作；</li>
+</ol>
+<h2 id="23-sscsyncstatefulset">
+  2.3 ssc.syncStatefulSet()
+  <a class="anchor" href="#23-sscsyncstatefulset">#</a>
+</h2>
+<p>在 <code>syncStatefulSet()</code> 中仅仅是调用了 <code>ssc.control.UpdateStatefulSet()</code> 方法进行处理。<code>ssc.control.UpdateStatefulSet()</code> 会调用 <code>ssc.performUpdate()</code> 方法，最终走到更新逻辑 <code>ssc.updateStatefulSet()</code> 和 <code>ssc.updateStatefulSetStatus()</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">StatefulSetController</span>) <span style="color:#a6e22e">syncStatefulSet</span>(<span style="color:#a6e22e">set</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">StatefulSet</span>, <span style="color:#a6e22e">pods</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>) <span style="color:#66d9ef">error</span> {
+	<span style="color:#f92672">...</span>
+    <span style="color:#75715e">// ssc.control.UpdateStatefulSet() 
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// -&gt; ssc.performUpdate()
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// -&gt; ssc.updateStatefulSet() + ssc.updateStatefulSetStatus()
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">control</span>.<span style="color:#a6e22e">UpdateStatefulSet</span>(<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">DeepCopy</span>(), <span style="color:#a6e22e">pods</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+	}
+	<span style="color:#f92672">...</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">defaultStatefulSetControl</span>) <span style="color:#a6e22e">UpdateStatefulSet</span>(<span style="color:#a6e22e">set</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">StatefulSet</span>, <span style="color:#a6e22e">pods</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>) <span style="color:#66d9ef">error</span> {
+
+	<span style="color:#75715e">// 1. 获取历史 revisions，并排序
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">revisions</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">ListRevisions</span>(<span style="color:#a6e22e">set</span>)
+	<span style="color:#f92672">...</span>
+	<span style="color:#a6e22e">history</span>.<span style="color:#a6e22e">SortControllerRevisions</span>(<span style="color:#a6e22e">revisions</span>)
+    
+    <span style="color:#75715e">// 2. 计算 currentRevision 和 updateRevision
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">currentRevision</span>, <span style="color:#a6e22e">updateRevision</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">performUpdate</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">pods</span>, <span style="color:#a6e22e">revisions</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">utilerrors</span>.<span style="color:#a6e22e">NewAggregate</span>([]<span style="color:#66d9ef">error</span>{<span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">truncateHistory</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">pods</span>, <span style="color:#a6e22e">revisions</span>, <span style="color:#a6e22e">currentRevision</span>, <span style="color:#a6e22e">updateRevision</span>)})
+	}
+
+	<span style="color:#75715e">// 3. 清理过期的历史版本
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">truncateHistory</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">pods</span>, <span style="color:#a6e22e">revisions</span>, <span style="color:#a6e22e">currentRevision</span>, <span style="color:#a6e22e">updateRevision</span>)
+}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">defaultStatefulSetControl</span>) <span style="color:#a6e22e">performUpdate</span>(
+	<span style="color:#a6e22e">set</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">StatefulSet</span>, <span style="color:#a6e22e">pods</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>, <span style="color:#a6e22e">revisions</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ControllerRevision</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ControllerRevision</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ControllerRevision</span>, <span style="color:#66d9ef">error</span>) {
+
+	<span style="color:#75715e">// 2.1. 计算 currentRevision 和 updateRevision
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">currentRevision</span>, <span style="color:#a6e22e">updateRevision</span>, <span style="color:#a6e22e">collisionCount</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">getStatefulSetRevisions</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">revisions</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">currentRevision</span>, <span style="color:#a6e22e">updateRevision</span>, <span style="color:#a6e22e">err</span>
+	}
+
+	<span style="color:#75715e">// 2.2. 执行实际的 sync 操作
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">status</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">updateStatefulSet</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">currentRevision</span>, <span style="color:#a6e22e">updateRevision</span>, <span style="color:#a6e22e">collisionCount</span>, <span style="color:#a6e22e">pods</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">currentRevision</span>, <span style="color:#a6e22e">updateRevision</span>, <span style="color:#a6e22e">err</span>
+	}
+
+	<span style="color:#75715e">// 2.3. 更新 sts 状态
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">updateStatefulSetStatus</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">status</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">currentRevision</span>, <span style="color:#a6e22e">updateRevision</span>, <span style="color:#a6e22e">err</span>
+	}
+
+	<span style="color:#f92672">...</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">currentRevision</span>, <span style="color:#a6e22e">updateRevision</span>, <span style="color:#66d9ef">nil</span>
+}
+</code></pre></div><p>整体来看，ssc.control.UpdateStatefulSet() 方法的主要逻辑为：</p>
+<ol>
+<li>获取历史 revisions；</li>
+<li>计算 currentRevision 和 updateRevision，若 sts 处于更新过程中则 currentRevision 和 updateRevision 值不同；</li>
+<li>调用 <code>ssc.updateStatefulSet()</code> 执行实际的 sync 操作；</li>
+<li>调用 <code>ssc.updateStatefulSetStatus()</code> 更新 status 子资源；</li>
+<li>根据 sts 的 spec.revisionHistoryLimit 字段清理过期的 controllerrevision；</li>
+</ol>
+<h2 id="24-sscupdatestatefulset">
+  2.4 ssc.updateStatefulSet()
+  <a class="anchor" href="#24-sscupdatestatefulset">#</a>
+</h2>
+<p>sts 通过 controllerrevision 保存历史版本，类似于 deployment 的 replicaset，与 replicaset 不同的是 controllerrevision 仅用于回滚阶段，在 sts 的滚动升级过程中是通过 currentRevision 和 updateRevision 进行控制并不会用到 controllerrevision。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">defaultStatefulSetControl</span>) <span style="color:#a6e22e">updateStatefulSet</span>(<span style="color:#f92672">...</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">StatefulSetStatus</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#75715e">// 1. 分别获取 currentRevision 和 updateRevision 对应的的 statefulset object
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">currentSet</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ApplyRevision</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">currentRevision</span>)
+	<span style="color:#f92672">...</span>
+	<span style="color:#a6e22e">updateSet</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ApplyRevision</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">updateRevision</span>)
+	<span style="color:#f92672">...</span>
+
+	<span style="color:#75715e">// 设置 status 的 generation 和 revisions
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">status</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">StatefulSetStatus</span>{}
+	<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">ObservedGeneration</span> = <span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Generation</span>
+	<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">CurrentRevision</span> = <span style="color:#a6e22e">currentRevision</span>.<span style="color:#a6e22e">Name</span>
+	<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">UpdateRevision</span> = <span style="color:#a6e22e">updateRevision</span>.<span style="color:#a6e22e">Name</span>
+	<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">CollisionCount</span> = new(<span style="color:#66d9ef">int32</span>)
+	<span style="color:#f92672">*</span><span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">CollisionCount</span> = <span style="color:#a6e22e">collisionCount</span>
+
+    <span style="color:#75715e">// 3. 将 statefulset 的 pods 按序分到 replicas 和 condemned 两个切片
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">replicaCount</span> <span style="color:#f92672">:=</span> int(<span style="color:#f92672">*</span><span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>)
+    <span style="color:#75715e">// 用于保存序号在 [0,replicas) 范围内的 pod
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">replicas</span> <span style="color:#f92672">:=</span> make([]<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>, <span style="color:#a6e22e">replicaCount</span>)
+	<span style="color:#75715e">// 用于序号大于 replicas 的 Pod
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">condemned</span> <span style="color:#f92672">:=</span> make([]<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>, <span style="color:#ae81ff">0</span>, len(<span style="color:#a6e22e">pods</span>))
+	<span style="color:#a6e22e">unhealthy</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+	<span style="color:#a6e22e">firstUnhealthyOrdinal</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">math</span>.<span style="color:#a6e22e">MaxInt32</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">firstUnhealthyPod</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>
+
+    <span style="color:#75715e">// 4. 计算 status 字段中的值，将 pod 分配到 replicas 和 condemned 两个数组中
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">pods</span> {
+		<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">Replicas</span><span style="color:#f92672">++</span>
+
+		<span style="color:#75715e">// 计算 Ready 的副本数
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">isRunningAndReady</span>(<span style="color:#a6e22e">pods</span>[<span style="color:#a6e22e">i</span>]) {
+			<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">ReadyReplicas</span><span style="color:#f92672">++</span>
+		}
+
+		<span style="color:#75715e">// 计算当前的副本数和已经更新的副本数
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">isCreated</span>(<span style="color:#a6e22e">pods</span>[<span style="color:#a6e22e">i</span>]) <span style="color:#f92672">&amp;&amp;</span> !<span style="color:#a6e22e">isTerminating</span>(<span style="color:#a6e22e">pods</span>[<span style="color:#a6e22e">i</span>]) {
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">getPodRevision</span>(<span style="color:#a6e22e">pods</span>[<span style="color:#a6e22e">i</span>]) <span style="color:#f92672">==</span> <span style="color:#a6e22e">currentRevision</span>.<span style="color:#a6e22e">Name</span> {
+				<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">CurrentReplicas</span><span style="color:#f92672">++</span>
+			}
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">getPodRevision</span>(<span style="color:#a6e22e">pods</span>[<span style="color:#a6e22e">i</span>]) <span style="color:#f92672">==</span> <span style="color:#a6e22e">updateRevision</span>.<span style="color:#a6e22e">Name</span> {
+				<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">UpdatedReplicas</span><span style="color:#f92672">++</span>
+			}
+		}
+
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ord</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getOrdinal</span>(<span style="color:#a6e22e">pods</span>[<span style="color:#a6e22e">i</span>]); <span style="color:#ae81ff">0</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">ord</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">ord</span> &lt; <span style="color:#a6e22e">replicaCount</span> {
+			<span style="color:#75715e">// 保存序号在 [0,replicas) 范围内的 Pod
+</span><span style="color:#75715e"></span>			<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">ord</span>] = <span style="color:#a6e22e">pods</span>[<span style="color:#a6e22e">i</span>]
+
+		} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ord</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">replicaCount</span> {
+			<span style="color:#75715e">// 序号大于 replicas 的 Pod，则保存在 condemned
+</span><span style="color:#75715e"></span>			<span style="color:#a6e22e">condemned</span> = append(<span style="color:#a6e22e">condemned</span>, <span style="color:#a6e22e">pods</span>[<span style="color:#a6e22e">i</span>])
+		}
+		<span style="color:#75715e">// 其余的 Pod 忽略
+</span><span style="color:#75715e"></span>	}
+
+    <span style="color:#75715e">// 5. 检查 replicas 数组中 [0,set.Spec.Replicas) 下标是否有缺失的 pod，若有缺失的则创建对应的 Pod 
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// 在 newVersionedStatefulSetPod 中会判断是使用 currentSet 还是 updateSet 来创建
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">ord</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">ord</span> &lt; <span style="color:#a6e22e">replicaCount</span>; <span style="color:#a6e22e">ord</span><span style="color:#f92672">++</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">ord</span>] <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">ord</span>] = <span style="color:#a6e22e">newVersionedStatefulSetPod</span>(
+				<span style="color:#a6e22e">currentSet</span>,
+				<span style="color:#a6e22e">updateSet</span>,
+				<span style="color:#a6e22e">currentRevision</span>.<span style="color:#a6e22e">Name</span>,
+				<span style="color:#a6e22e">updateRevision</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">ord</span>)
+		}
+	}
+
+	<span style="color:#75715e">// 6. 对 condemned 数组进行排序
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">ascendingOrdinal</span>(<span style="color:#a6e22e">condemned</span>))
+
+    <span style="color:#75715e">// 7、根据 ordinal 在 replicas 和 condemned 数组中找出第一个处于 NotReady 或 Terminating 的 Pod
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">replicas</span> {
+		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">isHealthy</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]) {
+			<span style="color:#a6e22e">unhealthy</span><span style="color:#f92672">++</span>
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ord</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getOrdinal</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]); <span style="color:#a6e22e">ord</span> &lt; <span style="color:#a6e22e">firstUnhealthyOrdinal</span> {
+				<span style="color:#a6e22e">firstUnhealthyOrdinal</span> = <span style="color:#a6e22e">ord</span>
+				<span style="color:#a6e22e">firstUnhealthyPod</span> = <span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]
+			}
+		}
+	}
+
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">condemned</span> {
+		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">isHealthy</span>(<span style="color:#a6e22e">condemned</span>[<span style="color:#a6e22e">i</span>]) {
+			<span style="color:#a6e22e">unhealthy</span><span style="color:#f92672">++</span>
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ord</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getOrdinal</span>(<span style="color:#a6e22e">condemned</span>[<span style="color:#a6e22e">i</span>]); <span style="color:#a6e22e">ord</span> &lt; <span style="color:#a6e22e">firstUnhealthyOrdinal</span> {
+				<span style="color:#a6e22e">firstUnhealthyOrdinal</span> = <span style="color:#a6e22e">ord</span>
+				<span style="color:#a6e22e">firstUnhealthyPod</span> = <span style="color:#a6e22e">condemned</span>[<span style="color:#a6e22e">i</span>]
+			}
+		}
+	}
+
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">unhealthy</span> &gt; <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;StatefulSet %s/%s has %d unhealthy Pods starting with %s&#34;</span>,
+			<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Namespace</span>,
+			<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Name</span>,
+			<span style="color:#a6e22e">unhealthy</span>,
+			<span style="color:#a6e22e">firstUnhealthyPod</span>.<span style="color:#a6e22e">Name</span>)
+	}
+
+	<span style="color:#75715e">// 8. 如果 sts 正在删除中，只要更新 status 即可
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">DeletionTimestamp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#66d9ef">nil</span>
+	}
+
+    <span style="color:#75715e">// 9. 默认设置为非 Parallel
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">monotonic</span> <span style="color:#f92672">:=</span> !<span style="color:#a6e22e">allowsBurst</span>(<span style="color:#a6e22e">set</span>)
+
+    <span style="color:#75715e">// 10. 确保 replicas 数组中所有的 pod 是 running 的
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">replicas</span> {
+		<span style="color:#75715e">// 11. 对于 failed 的 pod 删除并重建
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">isFailed</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]) {
+			<span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">recorder</span>.<span style="color:#a6e22e">Eventf</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">EventTypeWarning</span>, <span style="color:#e6db74">&#34;RecreatingFailedPod&#34;</span>,
+				<span style="color:#e6db74">&#34;StatefulSet %s/%s is recreating failed Pod %s&#34;</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Namespace</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Name</span>,
+				<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>].<span style="color:#a6e22e">Name</span>)
+           <span style="color:#75715e">// 删除
+</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">podControl</span>.<span style="color:#a6e22e">DeleteStatefulPod</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+				<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#a6e22e">err</span>
+			}
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">getPodRevision</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]) <span style="color:#f92672">==</span> <span style="color:#a6e22e">currentRevision</span>.<span style="color:#a6e22e">Name</span> {
+				<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">CurrentReplicas</span><span style="color:#f92672">--</span>
+			}
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">getPodRevision</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]) <span style="color:#f92672">==</span> <span style="color:#a6e22e">updateRevision</span>.<span style="color:#a6e22e">Name</span> {
+				<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">UpdatedReplicas</span><span style="color:#f92672">--</span>
+			}
+			<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">Replicas</span><span style="color:#f92672">--</span>
+           <span style="color:#75715e">// 新建
+</span><span style="color:#75715e"></span>			<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>] = <span style="color:#a6e22e">newVersionedStatefulSetPod</span>(
+				<span style="color:#a6e22e">currentSet</span>,
+				<span style="color:#a6e22e">updateSet</span>,
+				<span style="color:#a6e22e">currentRevision</span>.<span style="color:#a6e22e">Name</span>,
+				<span style="color:#a6e22e">updateRevision</span>.<span style="color:#a6e22e">Name</span>,
+				<span style="color:#a6e22e">i</span>)
+		}
+		<span style="color:#75715e">// 12、如果 pod.Status.Phase 不为空，说明该 pod 未创建，则直接重新创建该 pod
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">isCreated</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]) {
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">podControl</span>.<span style="color:#a6e22e">CreateStatefulPod</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+				<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#a6e22e">err</span>
+			}
+			<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">Replicas</span><span style="color:#f92672">++</span>
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">getPodRevision</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]) <span style="color:#f92672">==</span> <span style="color:#a6e22e">currentRevision</span>.<span style="color:#a6e22e">Name</span> {
+				<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">CurrentReplicas</span><span style="color:#f92672">++</span>
+			}
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">getPodRevision</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]) <span style="color:#f92672">==</span> <span style="color:#a6e22e">updateRevision</span>.<span style="color:#a6e22e">Name</span> {
+				<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">UpdatedReplicas</span><span style="color:#f92672">++</span>
+			}
+
+			<span style="color:#75715e">// 13. 如果为 Parallel，直接 return status 结束；如果为 OrderedReady，循环处理下一个 pod。
+</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">monotonic</span> {
+				<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#66d9ef">nil</span>
+			}
+			<span style="color:#75715e">// pod 创建完成，本轮循环结束
+</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">continue</span>
+		}
+        <span style="color:#75715e">// 14、如果 pod 正在删除中，且 Spec.PodManagementPolicy 不为 Parallel，
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 直接 return status 结束，结束后会在下一个 syncLoop 继续进行处理，pod 状态的改变会触发下一次 syncLoop
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">isTerminating</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">monotonic</span> {
+			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(
+				<span style="color:#e6db74">&#34;StatefulSet %s/%s is waiting for Pod %s to Terminate&#34;</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Namespace</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Name</span>,
+				<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>].<span style="color:#a6e22e">Name</span>)
+			<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#66d9ef">nil</span>
+		}
+        <span style="color:#75715e">// 15. 如果 pod 状态不是 Running &amp; Ready，且 Spec.PodManagementPolicy 不为 Parallel
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 则直接 return status 结束
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">isRunningAndReady</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">monotonic</span> {
+			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(
+				<span style="color:#e6db74">&#34;StatefulSet %s/%s is waiting for Pod %s to be Running and Ready&#34;</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Namespace</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Name</span>,
+				<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>].<span style="color:#a6e22e">Name</span>)
+			<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#66d9ef">nil</span>
+		}
+		<span style="color:#75715e">// 16. 检查 pod 的信息是否与 statefulset 的匹配，若不匹配则更新 pod 的状态
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">identityMatches</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">storageMatches</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>]) {
+			<span style="color:#66d9ef">continue</span>
+		}
+		<span style="color:#75715e">// 深拷贝对象，避免修改缓存
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">replica</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">i</span>].<span style="color:#a6e22e">DeepCopy</span>()
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">podControl</span>.<span style="color:#a6e22e">UpdateStatefulPod</span>(<span style="color:#a6e22e">updateSet</span>, <span style="color:#a6e22e">replica</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#a6e22e">err</span>
+		}
+	}
+
+    <span style="color:#75715e">// 17. 逆序处理 condemned 中的 pod
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">target</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">condemned</span>) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">target</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">target</span><span style="color:#f92672">--</span> {
+        <span style="color:#75715e">// 18. 如果 pod 正在删除，检查 Spec.PodManagementPolicy 的值
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 如果为 Parallel，循环处理下一个 pod 否则直接退出
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">isTerminating</span>(<span style="color:#a6e22e">condemned</span>[<span style="color:#a6e22e">target</span>]) {
+			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(
+				<span style="color:#e6db74">&#34;StatefulSet %s/%s is waiting for Pod %s to Terminate prior to scale down&#34;</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Namespace</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Name</span>,
+				<span style="color:#a6e22e">condemned</span>[<span style="color:#a6e22e">target</span>].<span style="color:#a6e22e">Name</span>)
+			<span style="color:#75715e">// 如果不为 Parallel，直接 return
+</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">monotonic</span> {
+				<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#66d9ef">nil</span>
+			}
+			<span style="color:#66d9ef">continue</span>
+		}
+		<span style="color:#75715e">// 19. 不满足以下条件说明该 pod 是更新前创建的，正处于创建中
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">isRunningAndReady</span>(<span style="color:#a6e22e">condemned</span>[<span style="color:#a6e22e">target</span>]) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">monotonic</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">condemned</span>[<span style="color:#a6e22e">target</span>] <span style="color:#f92672">!=</span> <span style="color:#a6e22e">firstUnhealthyPod</span> {
+			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(
+				<span style="color:#e6db74">&#34;StatefulSet %s/%s is waiting for Pod %s to be Running and Ready prior to scale down&#34;</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Namespace</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Name</span>,
+				<span style="color:#a6e22e">firstUnhealthyPod</span>.<span style="color:#a6e22e">Name</span>)
+			<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#66d9ef">nil</span>
+		}
+		<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">2</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;StatefulSet %s/%s terminating Pod %s for scale down&#34;</span>,
+			<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Namespace</span>,
+			<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Name</span>,
+			<span style="color:#a6e22e">condemned</span>[<span style="color:#a6e22e">target</span>].<span style="color:#a6e22e">Name</span>)
+        <span style="color:#75715e">// 20、否则直接删除该 pod
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">podControl</span>.<span style="color:#a6e22e">DeleteStatefulPod</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">condemned</span>[<span style="color:#a6e22e">target</span>]); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#a6e22e">err</span>
+		}
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">getPodRevision</span>(<span style="color:#a6e22e">condemned</span>[<span style="color:#a6e22e">target</span>]) <span style="color:#f92672">==</span> <span style="color:#a6e22e">currentRevision</span>.<span style="color:#a6e22e">Name</span> {
+			<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">CurrentReplicas</span><span style="color:#f92672">--</span>
+		}
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">getPodRevision</span>(<span style="color:#a6e22e">condemned</span>[<span style="color:#a6e22e">target</span>]) <span style="color:#f92672">==</span> <span style="color:#a6e22e">updateRevision</span>.<span style="color:#a6e22e">Name</span> {
+			<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">UpdatedReplicas</span><span style="color:#f92672">--</span>
+		}
+        <span style="color:#75715e">// 21. 如果为 OrderedReady 方式则返回否则继续处理下一个 pod
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">monotonic</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#66d9ef">nil</span>
+		}
+	}
+
+	<span style="color:#75715e">// 22. 对于 OnDelete 策略直接返回
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">UpdateStrategy</span>.<span style="color:#a6e22e">Type</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">OnDeleteStatefulSetStrategyType</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#66d9ef">nil</span>
+	}
+
+	<span style="color:#75715e">// 23. 若为 RollingUpdate 策略，则倒序处理 replicas 数组中下标大于等于
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 	   Spec.UpdateStrategy.RollingUpdate.Partition 的 pod
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">updateMin</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">UpdateStrategy</span>.<span style="color:#a6e22e">RollingUpdate</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">updateMin</span> = int(<span style="color:#f92672">*</span><span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">UpdateStrategy</span>.<span style="color:#a6e22e">RollingUpdate</span>.<span style="color:#a6e22e">Partition</span>)
+	}
+	<span style="color:#75715e">// 用与更新版本不匹配的最大序号终止 Pod
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">target</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">replicas</span>) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">target</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">updateMin</span>; <span style="color:#a6e22e">target</span><span style="color:#f92672">--</span> {
+
+		<span style="color:#75715e">// 24. 如果 Pod 的 Revision 不等于 updateRevision，且 pod 没有处于删除状态，则直接删除 pod
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">getPodRevision</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">target</span>]) <span style="color:#f92672">!=</span> <span style="color:#a6e22e">updateRevision</span>.<span style="color:#a6e22e">Name</span> <span style="color:#f92672">&amp;&amp;</span> !<span style="color:#a6e22e">isTerminating</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">target</span>]) {
+			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">2</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;StatefulSet %s/%s terminating Pod %s for update&#34;</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Namespace</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Name</span>,
+				<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">target</span>].<span style="color:#a6e22e">Name</span>)
+			<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ssc</span>.<span style="color:#a6e22e">podControl</span>.<span style="color:#a6e22e">DeleteStatefulPod</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">target</span>])
+			<span style="color:#a6e22e">status</span>.<span style="color:#a6e22e">CurrentReplicas</span><span style="color:#f92672">--</span>
+			<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#a6e22e">err</span>
+		}
+
+		<span style="color:#75715e">// 25. 如果 pod 非 healthy 状态直接返回
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">isHealthy</span>(<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">target</span>]) {
+			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(
+				<span style="color:#e6db74">&#34;StatefulSet %s/%s is waiting for Pod %s to update&#34;</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Namespace</span>,
+				<span style="color:#a6e22e">set</span>.<span style="color:#a6e22e">Name</span>,
+				<span style="color:#a6e22e">replicas</span>[<span style="color:#a6e22e">target</span>].<span style="color:#a6e22e">Name</span>)
+			<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#66d9ef">nil</span>
+		}
+
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">status</span>, <span style="color:#66d9ef">nil</span>
+}
+</code></pre></div><p>综上，<code>updateStatefulSet()</code> 把 statefulset 的创建、删除、更新、扩缩容的操作都包含在内。主要逻辑为：</p>
+<ol>
+<li>分别获取 <code>currentRevision</code> 和 <code>updateRevision</code> 所对应的 sts 对象</li>
+<li>取出 <code>sts.status</code> 并设置相关新值，用于更新</li>
+<li>将 sts 关联的 Pod，按照序号分到 <code>replicas</code> 和 <code>condemned</code> 两个切片中，replicas 保存的是序号在 [0, spec.replicas) 之间的 Pod，表示可用，condemned 保存序号大于 <code>spec.replicas</code> 的 Pod，表示待删除；</li>
+<li>找出 <code>replicas</code> 和 <code>condemned</code> 组中的 unhealthy pod，healthy pod 指 running &amp; ready 并且不处于删除状态；</li>
+<li>判断 sts 是否处于删除状态；</li>
+<li>遍历 <code>replicas</code>，确保其中的 Pod 处于 running &amp; ready 状态，其中处于 Failed 状态的 Pod 删除重建；未创建的容器则直接创建；处于删除中的，等待优雅删除结束，即下一轮循环再处理；最后检查 pod 的信息是否与 statefulset 的匹配，若不匹配则更新 pod。在此过程中每一步操作都会检查 <code>.Spec.podManagementPolicy</code> 是否为 <code>Parallel</code>，若设置了则循环处理 replicas 中的所有 pod，否则每次处理一个 pod，剩余 pod 则在下一个 syncLoop 继续进行处理；</li>
+<li>按 pod 名称逆序删除 condemned 数组中的 pod，删除前也要确保 pod 处于 running &amp; ready 状态，在此过程中也会检查 <code>.Spec.podManagementPolicy</code> 是否为 <code>Parallel</code>，以此来判断是顺序删除还是在下一个 syncLoop 中继续进行处理；</li>
+<li>判断 sts 的更新策略 <code>.Spec.UpdateStrategy.Type</code>，若为 OnDelete 则直接返回；</li>
+<li>此时更新策略为 <code>RollingUpdate</code>，更新序号大于等于 <code>.Spec.UpdateStrategy.RollingUpdate.Partition</code> 的 pod；更新策略为 <code>RollingUpdate</code>，并不会关注 <code>.Spec.podManagementPolicy</code>，都是顺序进行处理，且等待当前 pod 删除成功后才继续逆序删除一下 pod，所以 Parallel 的策略在滚动更新时无法使用。</li>
+</ol>
+<p><code>updateStatefulSet()</code> 这个方法中包含了 statefulset 的创建、删除、扩缩容、更新等操作，在源码层面对于各个功能无法看出明显的界定，没有 deployment sync 方法中写的那么清晰，下面按 statefulset 的功能再分析一下具体的操作：</p>
+<ul>
+<li>创建：在创建 sts 后，sts 对象已被保存至 etcd 中，此时 sync 操作仅仅是创建出需要的 pod，即执行到第 6 步就会结束；</li>
+<li>扩缩容：对于扩若容操作仅仅是创建或者删除对应的 pod，在操作前也会判断所有 pod 是否处于 running &amp; ready 状态，然后进行对应的创建/删除操作，在上面的步骤中也会执行到第 6 步就结束；</li>
+<li>更新：可以看出在第 6 步之后的所有操作就是与更新相关，所以更新操作会执行完整个方法，在更新过程中通过 pod 的 currentRevision 和 updateRevision 来计算 currentReplicas、updatedReplicas 的值，最终完成所有 pod 的更新；</li>
+<li>删除：删除操作就比较明显，会止于第 5 步，但是在此之前检查 pod 状态以及分组的操作确实是多余的；</li>
+</ul>
+<h1 id="3-参考链接">
+  3. 参考链接
+  <a class="anchor" href="#3-%e5%8f%82%e8%80%83%e9%93%be%e6%8e%a5">#</a>
+</h1>
+<ul>
+<li>
+  <a href="https://kubernetes.io/zh/docs/concepts/workloads/controllers/statefulset/">StatefulSet 概念</a></li>
+<li>
+  <a href="https://kubernetes.io/zh/docs/tutorials/stateful-application/basic-stateful-set/">StatefulSet 基础</a></li>
+<li>
+  <a href="https://cloud.tencent.com/developer/article/1554676">StatefulSet 源码解析</a></li>
+</ul>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/7d9a45224345c397b0584771fba684d84dbb5290" title='Last modified by howieyuen | January 6, 2021' target="_blank" rel="noopener">
+      <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
+      <span>January 6, 2021</span>
+    </a>
+  </div>
+
+
+
+</div>
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+
+
+  <div id="gitalk-container"></div>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+  <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  <script>
+    const gitalk = new Gitalk({
+      clientID: '25d476132e0758875147',
+      clientSecret: '9648a660ceabeb1a20a6354a3c131481724f62db',
+      repo: 'howieyuen.github.io',
+      owner: 'howieyuen',
+      admin: ['howieyuen'],
+      id: location.pathname, 
+      distractionFreeMode: false 
+    });
+    (function() {
+      if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+        document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
+        return;
+      }
+      gitalk.render('gitalk-container');
+    })();
+  </script>
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-statefulset-简介">1. StatefulSet 简介</a>
+      <ul>
+        <li><a href="#11-特点">1.1 特点</a></li>
+        <li><a href="#12-限制">1.2 限制</a></li>
+        <li><a href="#13-基本功能">1.3 基本功能</a></li>
+        <li><a href="#14-示例">1.4 示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-源码解析">2. 源码解析</a>
+      <ul>
+        <li><a href="#21-startstatefulsetcontroller">2.1 startStatefulSetController()</a></li>
+        <li><a href="#22-sscsync">2.2 ssc.sync()</a></li>
+        <li><a href="#23-sscsyncstatefulset">2.3 ssc.syncStatefulSet()</a></li>
+        <li><a href="#24-sscupdatestatefulset">2.4 ssc.updateStatefulSet()</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-参考链接">3. 参考链接</a></li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

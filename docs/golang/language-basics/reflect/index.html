@@ -1,24 +1,824 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="1. 引言 #  计算机中提到的反射一般是指，程序借助某种手段检查自己结构的一种能力，通常就是借助编程语言中定义的类型（types）。因此，反射是建立在类型系统上的。
+go 是静态类型化，每个变量都有一个静态类型，也就是说，在编译时，变量的类型就已经确定。不显示地去做强制类型转换，不同类型之间是无法相互赋值的。
+有一种特殊的类型叫做接口（interface），一个接口表示的是一组方法集合。一个接口变量能存储任何具体的值，只要这个值实现了这个接口的方法集合。比如 io 包中的 Reader 和 Writer，io.Reader 接口变量能够保存任意实现了 Read() 方法的类型所定义的值。
+一个特殊接口就是空接口 interface{}，任何值都可以说实现了空接口，因为空接口中没有定义方法，所以空接口可以保存任何值。
+一个接口类型变量存储了一对值：赋值给这个接口变量的具体值 &#43; 这个值的类型描述符。更进一步的讲，这个“值”是实现了这个接口的底层具体数据项（underlying concrete data item)，而这个“类型”是描述了具体数据项（item）的全类型（full type）。
+所以反射是干嘛的呢？反射是一种检查存储在接口变量中的（类型/值）对的机制。reflect 包中提供的 2 个类型 Type 和 Value，提供了访问接口值的 reflect.Type 和 reflect.Value 部分。
+2. 三大法则 #  2.1. Reflection goes from interface value to reflecton object #  从 interface{} 变量可以反射出反射对象
+type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := reflect.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="reflect" />
+<meta property="og:description" content="1. 引言 #  计算机中提到的反射一般是指，程序借助某种手段检查自己结构的一种能力，通常就是借助编程语言中定义的类型（types）。因此，反射是建立在类型系统上的。
+go 是静态类型化，每个变量都有一个静态类型，也就是说，在编译时，变量的类型就已经确定。不显示地去做强制类型转换，不同类型之间是无法相互赋值的。
+有一种特殊的类型叫做接口（interface），一个接口表示的是一组方法集合。一个接口变量能存储任何具体的值，只要这个值实现了这个接口的方法集合。比如 io 包中的 Reader 和 Writer，io.Reader 接口变量能够保存任意实现了 Read() 方法的类型所定义的值。
+一个特殊接口就是空接口 interface{}，任何值都可以说实现了空接口，因为空接口中没有定义方法，所以空接口可以保存任何值。
+一个接口类型变量存储了一对值：赋值给这个接口变量的具体值 &#43; 这个值的类型描述符。更进一步的讲，这个“值”是实现了这个接口的底层具体数据项（underlying concrete data item)，而这个“类型”是描述了具体数据项（item）的全类型（full type）。
+所以反射是干嘛的呢？反射是一种检查存储在接口变量中的（类型/值）对的机制。reflect 包中提供的 2 个类型 Type 和 Value，提供了访问接口值的 reflect.Type 和 reflect.Value 部分。
+2. 三大法则 #  2.1. Reflection goes from interface value to reflecton object #  从 interface{} 变量可以反射出反射对象
+type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := reflect." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/golang/language-basics/reflect/" />
+<meta property="article:modified_time" content="2021-01-06T18:22:21+08:00" />
+<title>reflect | 袁昊的学习笔记</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
+<script defer src="/en.search.min.40838ce8e186d262502fed0ac4a6bd0ad9e57f1a34c03472be973246f5e384ef.js" integrity="sha256-QIOM6OGG0mJQL&#43;0KxKa9Ctnlfxo0wDRyvpcyRvXjhO8="></script>
+
+<script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
 
 
 
-    <div id="gitalk-container"></div>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
-    <script>
-        const gitalk = new Gitalk({
-            clientID: '25d476132e0758875147',
-            clientSecret: '9648a660ceabeb1a20a6354a3c131481724f62db',
-            repo: 'howieyuen.github.io',
-            owner: 'howieyuen',
-            admin: ['howieyuen'],
-            id: location.pathname, 
-            distractionFreeMode: false 
-        });
-        (function() {
-            if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-                document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
-                return;
-            }
-            gitalk.render('gitalk-container');
-        })();
-    </script>
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Golang</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>数据结构</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/chan/" class="">chan</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/map/" class="">map</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/slice/" class="">slice</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>语言基础</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/language-basics/unsafe/" class="">unsafe</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/language-basics/reflect/" class=" active">reflect</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>内存管理</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Kubernetes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-apisever</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-controller-manager</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-scheduler</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kubelet</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>sig-network</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a  class="">LeetCode</a>
+      <span>▾</span>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0321/" class="">321. 拼接最大数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="/posts/" >
+        Blog
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://github.com/howieyuen/" target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/" target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>reflect</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-引言">1. 引言</a></li>
+    <li><a href="#2-三大法则">2. 三大法则</a>
+      <ul>
+        <li><a href="#21-reflection-goes-from-interface-value-to-reflecton-object">2.1. Reflection goes from interface value to reflecton object</a></li>
+        <li><a href="#22-reflection-goes-from-reflection-object-to-interface-value">2.2 Reflection goes from reflection object to interface value</a></li>
+        <li><a href="#23-to-modify-a-reflection-object-the-value-must-be-settable">2.3 To modify a reflection object, the value must be settable</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-相关资料">3. 相关资料</a></li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="1-引言">
+  1. 引言
+  <a class="anchor" href="#1-%e5%bc%95%e8%a8%80">#</a>
+</h1>
+<p>计算机中提到的反射一般是指，<strong>程序借助某种手段检查自己结构的一种能力</strong>，通常就是借助编程语言中定义的类型（<code>types</code>）。因此，反射是建立在类型系统上的。</p>
+<p><strong>go 是静态类型化</strong>，每个变量都有一个静态类型，也就是说，在编译时，变量的类型就已经确定。不显示地去做强制类型转换，不同类型之间是无法相互赋值的。</p>
+<p>有一种特殊的类型叫做接口（<code>interface</code>），一个接口表示的是一组方法集合。<strong>一个接口变量能存储任何具体的值，只要这个值实现了这个接口的方法集合</strong>。比如 io 包中的 <code>Reader</code> 和 <code>Writer</code>，<code>io.Reader</code> 接口变量能够保存任意实现了 <code>Read()</code> 方法的类型所定义的值。</p>
+<p>一个特殊接口就是空接口 <code>interface{}</code>，任何值都可以说实现了空接口，因为空接口中没有定义方法，所以<strong>空接口可以保存任何值</strong>。</p>
+<p><strong>一个接口类型变量存储了一对值：赋值给这个接口变量的具体值 + 这个值的类型描述符</strong>。更进一步的讲，这个“值”是实现了这个接口的底层具体数据项（underlying concrete data item)，而这个“类型”是描述了具体数据项（item）的全类型（full type）。</p>
+<p>所以反射是干嘛的呢？<strong>反射是一种检查存储在接口变量中的（类型/值）对的机制</strong>。reflect 包中提供的 2 个类型 <code>Type</code> 和 <code>Value</code>，提供了访问接口值的 <code>reflect.Type</code> 和 <code>reflect.Value</code> 部分。</p>
+<h1 id="2-三大法则">
+  2. 三大法则
+  <a class="anchor" href="#2-%e4%b8%89%e5%a4%a7%e6%b3%95%e5%88%99">#</a>
+</h1>
+<h2 id="21-reflection-goes-from-interface-value-to-reflecton-object">
+  2.1. Reflection goes from interface value to reflecton object
+  <a class="anchor" href="#21-reflection-goes-from-interface-value-to-reflecton-object">#</a>
+</h2>
+<p>从 <code>interface{}</code> 变量可以反射出反射对象</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">MyInt</span> <span style="color:#66d9ef">int32</span>
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">x</span> <span style="color:#a6e22e">MyInt</span> = <span style="color:#ae81ff">7</span>
+    <span style="color:#a6e22e">v</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">ValueOf</span>(<span style="color:#a6e22e">x</span>)
+    <span style="color:#a6e22e">t</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">x</span>)
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;type:&#34;</span>, <span style="color:#a6e22e">t</span>)        <span style="color:#75715e">// type: main.MyInt
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;value:&#34;</span>, <span style="color:#a6e22e">v</span>)       <span style="color:#75715e">// value: 7
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;kind:&#34;</span>, <span style="color:#a6e22e">v</span>.<span style="color:#a6e22e">Kind</span>()) <span style="color:#75715e">// kind: int32
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;type:&#34;</span>, <span style="color:#a6e22e">v</span>.<span style="color:#a6e22e">Type</span>()) <span style="color:#75715e">// type: main.MyInt
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">x</span> = <span style="color:#a6e22e">MyInt</span>(int32(<span style="color:#a6e22e">v</span>.<span style="color:#a6e22e">Int</span>))        <span style="color:#75715e">// v.Int returns a int64
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p><code>reflect.Value 的 Type</code> 返回的是静态类型 <code>MyInt</code>，而 <code>kind()</code> 方法返回的是底层类型 <code>int32</code>；为了保持 API 简单，value 的 <code>Setter</code> 和 <code>Getter</code> 类型方法操作，是包含某个值的最大类型，<code>v.Int()</code> 返回的是 <code>int64</code>，必要时转化成实际类型。</p>
+<h2 id="22-reflection-goes-from-reflection-object-to-interface-value">
+  2.2 Reflection goes from reflection object to interface value
+  <a class="anchor" href="#22-reflection-goes-from-reflection-object-to-interface-value">#</a>
+</h2>
+<p>从反射对象可以获取 <code>interface{}</code> 变量；</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">MyInt</span> <span style="color:#66d9ef">int32</span>
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">x</span> <span style="color:#a6e22e">MyInt</span> = <span style="color:#ae81ff">7</span>
+    <span style="color:#a6e22e">v</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">ValueOf</span>(<span style="color:#a6e22e">x</span>)
+    <span style="color:#a6e22e">y</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">v</span>.<span style="color:#a6e22e">Interface</span>().(<span style="color:#66d9ef">int32</span>)
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">y</span>) <span style="color:#75715e">// 7
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>对于一个 <code>reflect.Value</code>，可以用 <code>Interface()</code> 方法恢复成一个接口值，效果就是包类型和值打包成接口，并返回结果。</p>
+<h2 id="23-to-modify-a-reflection-object-the-value-must-be-settable">
+  2.3 To modify a reflection object, the value must be settable
+  <a class="anchor" href="#23-to-modify-a-reflection-object-the-value-must-be-settable">#</a>
+</h2>
+<p>要修改反射对象，其值必须可设置；</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">x</span> <span style="color:#66d9ef">float64</span> = <span style="color:#ae81ff">3.4</span>
+    <span style="color:#a6e22e">v</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">ValueOf</span>(<span style="color:#a6e22e">x</span>)
+    <span style="color:#75715e">// panic: reflect: reflect.flag.mustBeAssignable using addressable value
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">v</span>.<span style="color:#a6e22e">SetFloat</span>(<span style="color:#ae81ff">7.1</span>) 
+    
+    <span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">ValueOf</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">X</span>)
+    <span style="color:#75715e">// panic: reflect: reflect.flag.mustBeAssignable using addressable value
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">SetFloat</span>(<span style="color:#ae81ff">7.1</span>) 
+    
+    <span style="color:#a6e22e">e</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">ValueOf</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">X</span>).<span style="color:#a6e22e">Elem</span>()
+    <span style="color:#75715e">// OK
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">SetFloat</span>(<span style="color:#ae81ff">7.1</span>) 
+}
+</code></pre></div><p>如果我们想通过反射来修改变量 <code>x</code>，我们必须把我们想要修改的值的指针传给一个反射库。Go 语言的函数调用都是值传递的，所以我们只能先获取指针对应的 <code>reflect.Value</code>，再通过 <code>reflect.Value.Elem</code> 方法迂回的方式得到可以被设置的变量。我们通过如下所示的代码理解这个过程：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">1</span>
+    <span style="color:#a6e22e">v</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">i</span>
+    <span style="color:#f92672">*</span><span style="color:#a6e22e">v</span> = <span style="color:#ae81ff">10</span>
+}
+</code></pre></div><p>如果不能直接操作 <code>i</code> 变量修改其持有的值，我们就只能获取 <code>i</code> 变量所在地址并使用 <code>*v</code> 修改所在地址中存储的整数。</p>
+<h1 id="3-相关资料">
+  3. 相关资料
+  <a class="anchor" href="#3-%e7%9b%b8%e5%85%b3%e8%b5%84%e6%96%99">#</a>
+</h1>
+<ul>
+<li>
+  <a href="https://studygolang.com/articles/2157">Go 语言中反射包的实现原理</a></li>
+<li>
+  <a href="https://draveness.me/golang/docs/part2-foundation/ch04-basic/golang-reflect/">4.3 反射</a></li>
+</ul>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/7d9a45224345c397b0584771fba684d84dbb5290" title='Last modified by howieyuen | January 6, 2021' target="_blank" rel="noopener">
+      <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
+      <span>January 6, 2021</span>
+    </a>
+  </div>
+
+
+
+</div>
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+
+
+  <div id="gitalk-container"></div>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+  <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  <script>
+    const gitalk = new Gitalk({
+      clientID: '25d476132e0758875147',
+      clientSecret: '9648a660ceabeb1a20a6354a3c131481724f62db',
+      repo: 'howieyuen.github.io',
+      owner: 'howieyuen',
+      admin: ['howieyuen'],
+      id: location.pathname, 
+      distractionFreeMode: false 
+    });
+    (function() {
+      if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+        document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
+        return;
+      }
+      gitalk.render('gitalk-container');
+    })();
+  </script>
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-引言">1. 引言</a></li>
+    <li><a href="#2-三大法则">2. 三大法则</a>
+      <ul>
+        <li><a href="#21-reflection-goes-from-interface-value-to-reflecton-object">2.1. Reflection goes from interface value to reflecton object</a></li>
+        <li><a href="#22-reflection-goes-from-reflection-object-to-interface-value">2.2 Reflection goes from reflection object to interface value</a></li>
+        <li><a href="#23-to-modify-a-reflection-object-the-value-must-be-settable">2.3 To modify a reflection object, the value must be settable</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-相关资料">3. 相关资料</a></li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

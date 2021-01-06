@@ -1,24 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="1. 基本概念 #  1.1 Service 定义详解 #  Service 是对一组提供相同功能的 Pods 的抽象，并为它们提供一个统一的入口。借助 Service， 应用可以方便的实现服务发现与负载均衡，并实现应用的零宕机升级。Service 通过标签来选取服务后端， 一般配合 Replication Controller 或者 Deployment 来保证后端容器的正常运行。 这些匹配标签的 Pod IP 和端口列表组成 endpoints， 由 kube-proxy 负责将服务 IP 负载均衡到这些 endpoints 上。
+apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - name: string annotations: - name: string spec: selector: [] # ClusterIP、NodePort、LoadBalancer type: string # type=ClusterIP, 有自动分配的能力；type=LoadBalancer，需指定  clusterIP: string  # 是否支持 session，默认为空，可选值 ClutserIP，同一个 client 的 request，都发送到同一个后端 Pod  sessionAffinity: string  ports: - name: string # tcp、udp，默认 tcp protocol: string  port: int targetPort: int nodePort: int # spec.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="深入了解 Service" />
+<meta property="og:description" content="1. 基本概念 #  1.1 Service 定义详解 #  Service 是对一组提供相同功能的 Pods 的抽象，并为它们提供一个统一的入口。借助 Service， 应用可以方便的实现服务发现与负载均衡，并实现应用的零宕机升级。Service 通过标签来选取服务后端， 一般配合 Replication Controller 或者 Deployment 来保证后端容器的正常运行。 这些匹配标签的 Pod IP 和端口列表组成 endpoints， 由 kube-proxy 负责将服务 IP 负载均衡到这些 endpoints 上。
+apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - name: string annotations: - name: string spec: selector: [] # ClusterIP、NodePort、LoadBalancer type: string # type=ClusterIP, 有自动分配的能力；type=LoadBalancer，需指定  clusterIP: string  # 是否支持 session，默认为空，可选值 ClutserIP，同一个 client 的 request，都发送到同一个后端 Pod  sessionAffinity: string  ports: - name: string # tcp、udp，默认 tcp protocol: string  port: int targetPort: int nodePort: int # spec." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/" />
+<meta property="article:published_time" content="2020-01-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-01-06T18:22:21+08:00" />
+<title>深入了解 Service | 袁昊的学习笔记</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
+<script defer src="/en.search.min.40838ce8e186d262502fed0ac4a6bd0ad9e57f1a34c03472be973246f5e384ef.js" integrity="sha256-QIOM6OGG0mJQL&#43;0KxKa9Ctnlfxo0wDRyvpcyRvXjhO8="></script>
+
+<script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
 
 
 
-    <div id="gitalk-container"></div>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
-    <script>
-        const gitalk = new Gitalk({
-            clientID: '25d476132e0758875147',
-            clientSecret: '9648a660ceabeb1a20a6354a3c131481724f62db',
-            repo: 'howieyuen.github.io',
-            owner: 'howieyuen',
-            admin: ['howieyuen'],
-            id: location.pathname, 
-            distractionFreeMode: false 
-        });
-        (function() {
-            if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-                document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
-                return;
-            }
-            gitalk.render('gitalk-container');
-        })();
-    </script>
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Golang</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>数据结构</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/chan/" class="">chan</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/map/" class="">map</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/slice/" class="">slice</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>语言基础</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/language-basics/unsafe/" class="">unsafe</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/language-basics/reflect/" class="">reflect</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>内存管理</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Kubernetes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-apisever</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-controller-manager</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-scheduler</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kubelet</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>sig-network</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/" class=" active">深入了解 Service</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a  class="">LeetCode</a>
+      <span>▾</span>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0321/" class="">321. 拼接最大数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="https://howieyuen.github.io/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="/posts/" >
+        Blog
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://github.com/howieyuen/" target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/" target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>深入了解 Service</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-基本概念">1. 基本概念</a>
+      <ul>
+        <li><a href="#11-service-定义详解">1.1 Service 定义详解</a></li>
+        <li><a href="#12-service-分类">1.2 Service 分类</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-service-基本用法">2. Service 基本用法</a>
+      <ul>
+        <li><a href="#21-集群内访问集群外服务">2.1 集群内访问集群外服务</a>
+          <ul>
+            <li><a href="#211-创建没有-selector-的-service">2.1.1 创建没有 selector 的 Service</a></li>
+            <li><a href="#212-创建-externalname-的-service">2.1.2 创建 ExternalName 的 service</a></li>
+          </ul>
+        </li>
+        <li><a href="#22-集群外访问集群内服务">2.2 集群外访问集群内服务</a>
+          <ul>
+            <li><a href="#221-nodeport-服务">2.2.1 NodePort 服务</a></li>
+            <li><a href="#222-loadbalancer-服务">2.2.2 LoadBalancer 服务</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#3-通过-ingress-暴露服务">3. 通过 Ingress 暴露服务</a>
+      <ul>
+        <li><a href="#31-创建-ingress-controller-和默认的-backend-服务">3.1 创建 Ingress Controller 和默认的 backend 服务</a></li>
+        <li><a href="#32-创建-ingress-资源">3.2 创建 Ingress 资源</a>
+          <ul>
+            <li><a href="#321-转发到单个后端服务上">3.2.1 转发到单个后端服务上</a></li>
+            <li><a href="#322-将不同的服务映射到相同主机的不同路径">3.2.2 将不同的服务映射到相同主机的不同路径</a></li>
+            <li><a href="#323-不同的域名虚拟主机名被转发到不同的服务上">3.2.3 不同的域名（虚拟主机名）被转发到不同的服务上</a></li>
+            <li><a href="#324-不使用域名的转发规则">3.2.4 不使用域名的转发规则</a></li>
+          </ul>
+        </li>
+        <li><a href="#33-ingress-的-tls-安全设置">3.3 Ingress 的 TLS 安全设置</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="1-基本概念">
+  1. 基本概念
+  <a class="anchor" href="#1-%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#</a>
+</h1>
+<h2 id="11-service-定义详解">
+  1.1 Service 定义详解
+  <a class="anchor" href="#11-service-%e5%ae%9a%e4%b9%89%e8%af%a6%e8%a7%a3">#</a>
+</h2>
+<p>Service 是对一组提供相同功能的 Pods 的抽象，并为它们提供一个统一的入口。借助 Service，
+应用可以方便的实现服务发现与负载均衡，并实现应用的零宕机升级。Service 通过标签来选取服务后端，
+一般配合 Replication Controller 或者 Deployment 来保证后端容器的正常运行。
+这些匹配标签的 Pod IP 和端口列表组成 endpoints，
+由 kube-proxy 负责将服务 IP 负载均衡到这些 endpoints 上。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">string</span>
+  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">string</span>
+  <span style="color:#f92672">labels</span>:
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">string</span>
+  <span style="color:#f92672">annotations</span>:
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">string</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">selector</span>: []
+  <span style="color:#75715e"># ClusterIP、NodePort、LoadBalancer</span>
+  <span style="color:#f92672">type</span>: <span style="color:#ae81ff">string</span>
+  <span style="color:#75715e"># type=ClusterIP, 有自动分配的能力；type=LoadBalancer，需指定            </span>
+  <span style="color:#f92672">clusterIP</span>: <span style="color:#ae81ff">string    </span>
+  <span style="color:#75715e"># 是否支持 session，默认为空，可选值 ClutserIP，同一个 client 的 request，都发送到同一个后端 Pod   </span>
+  <span style="color:#f92672">sessionAffinity</span>: <span style="color:#ae81ff">string </span>
+  <span style="color:#f92672">ports</span>:
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">string</span>
+    <span style="color:#75715e"># tcp、udp，默认 tcp</span>
+    <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">string      </span>
+    <span style="color:#f92672">port</span>: <span style="color:#ae81ff">int</span>
+    <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">int</span>
+    <span style="color:#f92672">nodePort</span>: <span style="color:#ae81ff">int</span>
+<span style="color:#75715e"># spec.type=LoadBalancer, 设置外部负载均衡器地址，用于公有云环境</span>
+<span style="color:#f92672">status</span>:                   
+  <span style="color:#f92672">loadBalancer</span>:
+    <span style="color:#f92672">ingress</span>:
+      <span style="color:#f92672">ip</span>: <span style="color:#ae81ff">string</span>
+        <span style="color:#f92672">hostname</span>: <span style="color:#ae81ff">string</span>
+</code></pre></div><h2 id="12-service-分类">
+  1.2 Service 分类
+  <a class="anchor" href="#12-service-%e5%88%86%e7%b1%bb">#</a>
+</h2>
+<ul>
+<li>ClusterIP：默认类型，自动分配一个仅 cluster 内部可以访问的虚拟 IP</li>
+<li>NodePort：在 ClusterIP 基础上为 Service 在每台机器上绑定一个端口，
+这样就可以通过 <code>http://&lt;NodeIP&gt;:NodePort</code> 来访问该服务。
+如果 kube-proxy 设置了 <code>--nodeport-addresses=10.240.0.0/16</code>（v1.10 支持），
+那么仅该 NodePort 仅对设置在范围内的 IP 有效。</li>
+<li>LoadBalancer：在 NodePort 的基础上，借助 cloud provider 创建一个外部的负载均衡器，
+并将请求转发到 <code>&lt;NodeIP&gt;:NodePort</code></li>
+<li>ExternalName：将服务通过 DNS CNAME 记录方式转发到指定的域名（通过 <code>spec.externlName</code> 设定）。
+需要 kube-dns 版本在 1.7 以上。</li>
+</ul>
+<h1 id="2-service-基本用法">
+  2. Service 基本用法
+  <a class="anchor" href="#2-service-%e5%9f%ba%e6%9c%ac%e7%94%a8%e6%b3%95">#</a>
+</h1>
+<p>一般来说，对外提供服务的应用程序需要通过某种机制来实现，
+对于容器应用最简便的方式就是通过 TCP/IP 机制及监听 IP 和端口号来实现。</p>
+<p>直接通过 Pod 的 IP 地址和端口号可以访问到容器应用内的服务，但是 Pod 的 IP 地址是不可靠的，
+例如当 Pod 所在的 Node 发生故障时，Pod 将被 Kubernetes 重新调度到另一个 Node，
+Pod 的 IP 地址将发生变化。
+更重要的是，如果容器应用本身是分布式的部署方式，通过多个实例共同提供服务，
+就需要在这些实例的前端设置一个负载均衡器来实现请求的分发。
+Kubernetes 中的 Service 就是用于解决这些问题的核心组件。</p>
+<p>Service 定义中的关键字段是 ports 和 selector。通过 selector 与 Pod 关联，
+port 描述 service 本身的端口，targetPort 表示流量转发的端口，也就是 Pod 的端口，
+从而完成访问 service 负载均衡到后端任意一个 Pod。Kubernetes 提供了两种负载分发策略：
+RoundRobin 和 SessionAffinity，具体说明如下：</p>
+<ul>
+<li>RoundRobin：轮询模式，即轮询将请求转发到后端的各个 Pod 上。</li>
+<li>SessionAffinity：基于客户端 IP 地址进行会话保持的模式，
+即第 1 次将某个客户端发起的请求转发到后端的某个 Pod 上，
+之后从相同的客户端发起的请求都将被转发到后端相同的 Pod 上。</li>
+</ul>
+<p>在默认情况下，Kubernetes 采用 RoundRobin 模式对客户端请求进行负载分发，
+但我们也可以通过设置 <code>service.spec.sessionAffinity=ClientIP</code> 来启用 SessionAffinity 策略。
+这样，同一个客户端 IP 发来的请求就会被转发到后端固定的某个 Pod 上了。</p>
+<h2 id="21-集群内访问集群外服务">
+  2.1 集群内访问集群外服务
+  <a class="anchor" href="#21-%e9%9b%86%e7%be%a4%e5%86%85%e8%ae%bf%e9%97%ae%e9%9b%86%e7%be%a4%e5%a4%96%e6%9c%8d%e5%8a%a1">#</a>
+</h2>
+<p>到现在为止，我们己经讨论了后端是集群中运行的一个或多个 Pod 的服务。
+但也存在希望通过 Kubernetes 服务特性暴露外部服务的情况。
+不要让服务将连接重定向到集群中的 Pod，而是让它重定向到外部 IP 和端口。
+这样做可以让你充分利用服务负载平衡和服务发现。
+在集群中运行的客户端 Pod 可以像连接到内部服务一样连接到外部服务。</p>
+<p>首先要知道，service 和 Pod 并不是直接相连的，此二者之间还有一个对象叫 endpoint。
+service 根据 selector 找到后端 Pod，用 Pod IP 和端口创建与 service 同名的 endpoint，
+记录 Pod IP。当 Pod 异常被删除重建后，获得的新地址，只需要更新 endpoint 中记录的 Pod I P 即可。
+因此，想要访问集群外部的服务，可手动配置 service 的 endpoint。</p>
+<h3 id="211-创建没有-selector-的-service">
+  2.1.1 创建没有 selector 的 Service
+  <a class="anchor" href="#211-%e5%88%9b%e5%bb%ba%e6%b2%a1%e6%9c%89-selector-%e7%9a%84-service">#</a>
+</h3>
+<ol>
+<li>创建没有 selector 的 Service</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">external-service</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">ports</span>:
+  - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
+</code></pre></div><ol start="2">
+<li>为没有选择器的服务创建 Endpoint 资源</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Endpoint</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#75715e"># endpoint 的名称必须和服务的名称相匹配</span>
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">external-service  </span>
+<span style="color:#f92672">subsets</span>:
+  - <span style="color:#f92672">addresses</span>:
+    <span style="color:#75715e"># 将 service 重定向到 endpoint 的地址</span>
+    - <span style="color:#f92672">ip</span>: <span style="color:#ae81ff">11.11.11.11</span>      
+    - <span style="color:#f92672">ip</span>: <span style="color:#ae81ff">22.22.22.22</span>
+    <span style="color:#f92672">ports</span>:
+    <span style="color:#75715e"># endpoint 目标端口</span>
+    - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>             
+</code></pre></div><p>Endpoint 对象需要与服务具有相同的名称，并包含该服务的目标 IP 地址和端口列表。
+服务和 Endpoint 资源都发布到服务器后，这样服务就可以像具有 Pod 选择器那样的服务正常使用。
+在服务创建后创建的容器将包含服务的环境变量，并且与其 IP:Port 对的所有连接都将在服务端点之间进行负载均衡。</p>
+<h3 id="212-创建-externalname-的-service">
+  2.1.2 创建 ExternalName 的 service
+  <a class="anchor" href="#212-%e5%88%9b%e5%bb%ba-externalname-%e7%9a%84-service">#</a>
+</h3>
+<p>除了手动配置服务的 Endpoint 来代替公开外部服务方法，有一种更简单的方法，
+就是通过其完全限定域名 (FQDN) 访问外部服务。</p>
+<p>要创建一个具有别名的外部服务的服务时，要将创建服务资源的一个 type 字段设置为 ExternalName。
+例如，设想一下在 api.somecompany.com 上有公共可用的 API 可以定义一个指向它的服务，
+如下面的代码清单所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">external-service</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">type</span>: <span style="color:#ae81ff">ExternalName</span>
+  <span style="color:#f92672">externalName</span>: <span style="color:#ae81ff">someapi.somecompany.com</span>
+  <span style="color:#f92672">ports</span>:
+  - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
+</code></pre></div><p>服务创建完成后，Pod 可以通过 external-service.default.svc.cluster.local 域名
+（甚至是 external-service) 连接到外部服务，而不是使用服务的实际 FQDN。
+这隐藏了实际的服务名称及其使用该服务的 Pod 的位置，允许修改服务定义，
+并且在以后如果将其指向不同的服务，只需简单地修改 externalName 属性，
+或者将类型重新变回 Cluster IP 并为服务创建 Endpoint ——无论是手动创建，
+还是对服务上指定标签选择器使其自动创建。</p>
+<p>ExternalName 服务仅在 DNS 级别实施——为服务创建了简单的 CNAME DNS 记录。
+因此，连接到服务的客户端将直接连接到外部服务，完全绕过服务代理。
+出于这个原因，这些类型的服务甚至不会获得集群 IP。</p>
+<h2 id="22-集群外访问集群内服务">
+  2.2 集群外访问集群内服务
+  <a class="anchor" href="#22-%e9%9b%86%e7%be%a4%e5%a4%96%e8%ae%bf%e9%97%ae%e9%9b%86%e7%be%a4%e5%86%85%e6%9c%8d%e5%8a%a1">#</a>
+</h2>
+<h3 id="221-nodeport-服务">
+  2.2.1 NodePort 服务
+  <a class="anchor" href="#221-nodeport-%e6%9c%8d%e5%8a%a1">#</a>
+</h3>
+<p>将服务的类型设置成 <code>NodePort</code>：每个集群节点都会在节点上打开一个端口，对于 NodePort 服务，
+每个集群节点在节点本身（因此得名叫 NodePort) 上打开一个端口，
+并将在该端口上接收到的流量重定向到基础服务。该服务仅在内部集群 IP 和端口上才可访间，
+但也可通过所有节点上的专用端口访问。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">kubia-nodeport</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">type</span>: <span style="color:#ae81ff">NodePort</span>
+  <span style="color:#f92672">ports</span>:
+  - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
+    <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">8080</span>
+    <span style="color:#f92672">nodePort</span>: <span style="color:#ae81ff">30123</span>
+  <span style="color:#f92672">selector</span>:
+    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">kubia</span>
+</code></pre></div><h3 id="222-loadbalancer-服务">
+  2.2.2 LoadBalancer 服务
+  <a class="anchor" href="#222-loadbalancer-%e6%9c%8d%e5%8a%a1">#</a>
+</h3>
+<p>在云提供商上运行的 Kubernetes 集群通常支持从云基础架构自动提供负载平衡器。
+所有需要做的就是设置服务的类型为 LoadBadancer 而不是 NodePort。
+负载均衡器拥有自己独一无二的可公开访问的 IP 地址，并将所有连接重定向到服务。
+可以通过负载均衡器的 IP 地址访问服务。</p>
+<p>如果 Kubemetes 在不支持 LoadBadancer 服务的环境中运行，则不会调配负载平衡器，
+但该服务仍将表现得像一个 NodePort 服务。这是因为 LoadBadancer 服务是 NodePort 服务的扩展。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">kubia-loadbalancer</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">type</span>: <span style="color:#ae81ff">LoadBalancer</span>
+  <span style="color:#f92672">ports</span>:
+  - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
+    <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">8080</span>
+  <span style="color:#f92672">selector</span>:
+    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">kubia</span>
+  <span style="color:#f92672">clusterIP</span>: <span style="color:#ae81ff">10.0.171.239</span>
+  <span style="color:#f92672">loadBalancerIP</span>: <span style="color:#ae81ff">78.11.24.19</span>
+<span style="color:#f92672">status</span>:
+  <span style="color:#f92672">loadBalancer</span>:
+    <span style="color:#f92672">ingress</span>:
+    - <span style="color:#f92672">ip</span>: <span style="color:#ae81ff">146.148.47.155</span>
+</code></pre></div><h1 id="3-通过-ingress-暴露服务">
+  3. 通过 Ingress 暴露服务
+  <a class="anchor" href="#3-%e9%80%9a%e8%bf%87-ingress-%e6%9a%b4%e9%9c%b2%e6%9c%8d%e5%8a%a1">#</a>
+</h1>
+<ul>
+<li>为什么需要 Ingress？</li>
+</ul>
+<p>一个重要的原因是每个 LoadBalancer 服务都需要自己的负载均衡器，以及独有的公有 IP 地址，
+而 Ingress 只需要一个公网 IP 就能为许多服务提供访问。当客户端向 Ingress 发送 HTTP 请求时，
+Ingress 会根据请求的主机名和路径决定请求转发到的服务。</p>
+<h2 id="31-创建-ingress-controller-和默认的-backend-服务">
+  3.1 创建 Ingress Controller 和默认的 backend 服务
+  <a class="anchor" href="#31-%e5%88%9b%e5%bb%ba-ingress-controller-%e5%92%8c%e9%bb%98%e8%ae%a4%e7%9a%84-backend-%e6%9c%8d%e5%8a%a1">#</a>
+</h2>
+<p>在定义 Ingress 策略之前，需要先部署 Ingress Controller，
+以实现为所有后端 Service 都提供一个统一的入口。
+Ingress Controller 需要实现基于不同 HTTP URL 向后转发的负载分发规则，
+并可以灵活设置 7 层负载分发策略。如果公有云服务商能够提供该类型的 HTTP 路由 LoadBalancer，
+则也可设置其为 Ingress Controller。</p>
+<p>在 Kubernetes 中，Ingress Controller 将以 Pod 的形式运行，
+监控 API Server 的 ingress 接口后端的 backend services，
+如果 Service 发生变化，则 Ingress Controller 应自动更新其转发规则。</p>
+<p>下面的例子使用 Nginx 来实现一个 Ingress Controller，需要实现的基本逻辑如下：</p>
+<ol>
+<li>监听 API Server，获取全部 Ingress 的定义。</li>
+<li>基于 Ingress 的定义，生成 Nginx 所需的配置文件 /etc/nginx/nginx.conf。</li>
+<li>执行 nginx -s reload 命令，重新加载 nginx.conf 配置文件的内容。</li>
+</ol>
+<p>为了让 Ingress Controller 正常启动，还需要为它配置一个默认的 backend，
+用于在客户端访问的 URL 地址不存在时，返回一个正确的 404 应答。
+这个 backend 服务用任何应用实现都可以，只要满足对根路径“/”的访问返回 404 应答，
+并且提供 /healthz 路径以使 kubelet 完成对它的健康检查。
+另外，由于 Nginx 通过 default-backend-service 的服务名称（Service Name）去访问它，
+所以需要 DNS 服务正确运行。</p>
+<h2 id="32-创建-ingress-资源">
+  3.2 创建 Ingress 资源
+  <a class="anchor" href="#32-%e5%88%9b%e5%bb%ba-ingress-%e8%b5%84%e6%ba%90">#</a>
+</h2>
+<h3 id="321-转发到单个后端服务上">
+  3.2.1 转发到单个后端服务上
+  <a class="anchor" href="#321-%e8%bd%ac%e5%8f%91%e5%88%b0%e5%8d%95%e4%b8%aa%e5%90%8e%e7%ab%af%e6%9c%8d%e5%8a%a1%e4%b8%8a">#</a>
+</h3>
+<p>基于这种设置，客户端到 Ingress Controller 的访问请求都将被转发到后端的唯一 Service 上，
+在这种情况下 Ingress 无须定义任何 rule。</p>
+<p>通过如下所示的设置，对 Ingress Controller 的访问请求都将被转发到“myweb:8080”这个服务上。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">networking.k8s.io/v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Ingress</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">test-ingress</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">backend</span>:
+    <span style="color:#f92672">serviceName</span>: <span style="color:#ae81ff">webapp</span>
+    <span style="color:#f92672">servicePort</span>: <span style="color:#ae81ff">8080</span>
+</code></pre></div><h3 id="322-将不同的服务映射到相同主机的不同路径">
+  3.2.2 将不同的服务映射到相同主机的不同路径
+  <a class="anchor" href="#322-%e5%b0%86%e4%b8%8d%e5%90%8c%e7%9a%84%e6%9c%8d%e5%8a%a1%e6%98%a0%e5%b0%84%e5%88%b0%e7%9b%b8%e5%90%8c%e4%b8%bb%e6%9c%ba%e7%9a%84%e4%b8%8d%e5%90%8c%e8%b7%af%e5%be%84">#</a>
+</h3>
+<p>这种配置常用于一个网站通过不同的路径提供不同的服务的场景，
+例如 /web 表示访问 Web 页面，/api 表示访问 API 接口，对应到后端的两个服务，
+通过 Ingress 的设置很容易就能将基于 URL 路径的转发规则定义出来。</p>
+<p>通过如下所示的设置，对 mywebsite.com/web 的访问请求将被转发到 web-service:80 服务上；
+对 mywebsite.com/api 的访问请求将被转发到 api-service:80 服务上：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">networking.k8s.io/v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Ingress</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">test-ingress</span>
+<span style="color:#ae81ff">spec</span>
+  <span style="color:#f92672">rules</span>:
+  - <span style="color:#ae81ff">host mywebsite.com</span>
+    <span style="color:#f92672">http</span>:
+      <span style="color:#f92672">paths</span>:
+      - <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/web</span>
+        <span style="color:#f92672">backend</span>:
+          <span style="color:#f92672">serviceName</span>: <span style="color:#ae81ff">web-service</span>
+          <span style="color:#f92672">servicePort</span>: <span style="color:#ae81ff">80</span>
+      - <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/api</span>
+        <span style="color:#f92672">backend</span>:
+          <span style="color:#f92672">serviceName</span>: <span style="color:#ae81ff">api-service</span>
+          <span style="color:#f92672">servicePort</span>: <span style="color:#ae81ff">80</span>
+</code></pre></div><h3 id="323-不同的域名虚拟主机名被转发到不同的服务上">
+  3.2.3 不同的域名（虚拟主机名）被转发到不同的服务上
+  <a class="anchor" href="#323-%e4%b8%8d%e5%90%8c%e7%9a%84%e5%9f%9f%e5%90%8d%e8%99%9a%e6%8b%9f%e4%b8%bb%e6%9c%ba%e5%90%8d%e8%a2%ab%e8%bd%ac%e5%8f%91%e5%88%b0%e4%b8%8d%e5%90%8c%e7%9a%84%e6%9c%8d%e5%8a%a1%e4%b8%8a">#</a>
+</h3>
+<p>这种配置常用于一个网站通过不同的域名或虚拟主机名提供不同服务的场景，
+例如 foo.example.com 域名由 foo 提供服务，bar.example.com 域名由 bar 提供服务。</p>
+<p>通过如下所示的设置，对“foo.example.com”的访问请求将被转发到“foo:80”服务上，
+对“bar.example.com”的访问请求将被转发到“bar:80”服务上：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">networking.k8s.io/v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Ingress</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">test-ingress</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">rules</span>:
+  - <span style="color:#f92672">host</span>: <span style="color:#ae81ff">foo.example.com</span>
+    <span style="color:#f92672">http</span>:
+      <span style="color:#f92672">paths</span>:
+      - <span style="color:#f92672">path</span>: <span style="color:#ae81ff">I</span>
+        <span style="color:#f92672">backend</span>:
+          <span style="color:#f92672">serviceName</span>: <span style="color:#ae81ff">foo</span>
+          <span style="color:#f92672">servicePort</span>: <span style="color:#ae81ff">80</span>
+  - <span style="color:#f92672">host</span>: <span style="color:#ae81ff">bar.example.com</span>
+    <span style="color:#f92672">http</span>:
+      <span style="color:#f92672">paths</span>:
+        - <span style="color:#f92672">path</span>: <span style="color:#ae81ff">I</span>
+          <span style="color:#f92672">backend</span>:
+            <span style="color:#f92672">serviceName</span>: <span style="color:#ae81ff">bar</span>
+            <span style="color:#f92672">servicePort</span>: <span style="color:#ae81ff">80</span>
+</code></pre></div><h3 id="324-不使用域名的转发规则">
+  3.2.4 不使用域名的转发规则
+  <a class="anchor" href="#324-%e4%b8%8d%e4%bd%bf%e7%94%a8%e5%9f%9f%e5%90%8d%e7%9a%84%e8%bd%ac%e5%8f%91%e8%a7%84%e5%88%99">#</a>
+</h3>
+<p>这种配置用于一个网站不使用域名直接提供服务的场景，
+此时通过任意一台运行 ingress-controller 的 Node 都能访问到后端的服务。</p>
+<p>下面的配置为将“<ingresscontroller-ip>/demo”的访问请求转发到“webapp:8080/demo”服务上：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">networking.k8s.io/v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Ingress</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">test-ingress</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">rules</span>:
+  - <span style="color:#f92672">http</span>:
+      <span style="color:#f92672">paths</span>:
+      - <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/demo</span>
+        <span style="color:#f92672">backend</span>:
+          <span style="color:#f92672">serviceName</span>: <span style="color:#ae81ff">webapp</span>
+          <span style="color:#f92672">servicePort</span>: <span style="color:#ae81ff">8080</span>
+</code></pre></div><p>注意，使用无域名的 Ingress 转发规则时，将默认禁用非安全 HTTP，强制启用 HTTPS。
+可以在 Ingress 的定义中设置一个 annotation[ingress.kubernetes.io/ssl-redirect: &ldquo;false&rdquo;]
+来关闭强制启用 HTTPS 的设置：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">networking.k8s.io/v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Ingress</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">test-ingress</span>
+  <span style="color:#f92672">annotations</span>:
+    <span style="color:#f92672">ingress.kubernetes.io/ssl-redirect</span>: <span style="color:#e6db74">&#34;false&#34;</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">rules</span>:
+  - <span style="color:#f92672">http</span>:
+      <span style="color:#f92672">paths</span>:
+      - <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/demo</span>
+        <span style="color:#f92672">backend</span>:
+          <span style="color:#f92672">serviceName</span>: <span style="color:#ae81ff">webapp</span>
+          <span style="color:#f92672">servicePort</span>: <span style="color:#ae81ff">8080</span>
+</code></pre></div><h2 id="33-ingress-的-tls-安全设置">
+  3.3 Ingress 的 TLS 安全设置
+  <a class="anchor" href="#33-ingress-%e7%9a%84-tls-%e5%ae%89%e5%85%a8%e8%ae%be%e7%bd%ae">#</a>
+</h2>
+<p>当客户端创建到 Ingress 控制器的 TLS 连接时，控制器将终止 TLS 连接。
+客户端和控制器之间的通信是加密的，而控制器和后端 Pod 之间的通信则不是运行在 Pod 上的应用程序不需要支持 TLS。
+例如，如果 Pod 运行 web 服务器，则它只能接收 HTTP 通信，并让 Ingress 控制器负责处理与 TLS 相关的所有内容。
+要使控制器能够这样做，需要将证书和私钥附加到 Ingress。
+这两个必需资源存储在称为 Secret 的 Kubernetes 资源中，然后在 Ingress manifest 中引用它。</p>
+<p>为了 Ingress 提供 HTTPS 的安全访问，可以为 Ingress 中的域名进行 TLS 安全证书的设置。设置的步骤如下。</p>
+<ol>
+<li>创建自签名的密钥和 SSL 证书文件</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl genrsa -out tls.key <span style="color:#ae81ff">2048</span>
+openssl req -new - x509 -key tls.key -out tls.cert -days <span style="color:#ae81ff">360</span> -subject/CN<span style="color:#f92672">=</span>kubia.example.com
+</code></pre></div><ol start="2">
+<li>将证书保存到 Kubernetes 中的一个 Secret 资源对象上</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl create secret tls mywebsite-tls-secret --cert<span style="color:#f92672">=</span>tls.cert --key<span style="color:#f92672">=</span>tls.key
+</code></pre></div><ol start="3">
+<li>将该 Secret 对象设置到 Ingress 中</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">networking.k8s.io/v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Ingress</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mywebsite-ingress-tls</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">tls</span>:
+  - <span style="color:#f92672">hosts</span>:
+    - <span style="color:#ae81ff">mywebsite.com</span>
+    <span style="color:#f92672">secretName</span>: <span style="color:#ae81ff">mywebsite-tls-secret</span>
+  <span style="color:#f92672">rules</span>:
+  - <span style="color:#f92672">http</span>:
+      <span style="color:#f92672">paths</span>:
+      - <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/demo</span>
+        <span style="color:#f92672">backend</span>:
+          <span style="color:#f92672">serviceName</span>: <span style="color:#ae81ff">webapp</span>
+          <span style="color:#f92672">servicePort</span>: <span style="color:#ae81ff">8080</span>
+</code></pre></div><p>根据提供服务的网站域名是一个还是多个，可以使用不同的操作完成前两步 SSL 证书和 Secret 对象的创建，
+在只有一个域名的情况下设置相对简单。第 3 步对于这两种场景来说是相同的。</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/7d9a45224345c397b0584771fba684d84dbb5290" title='Last modified by howieyuen | January 6, 2021' target="_blank" rel="noopener">
+      <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
+      <span>January 6, 2021</span>
+    </a>
+  </div>
+
+
+
+</div>
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+
+
+  <div id="gitalk-container"></div>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+  <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  <script>
+    const gitalk = new Gitalk({
+      clientID: '25d476132e0758875147',
+      clientSecret: '9648a660ceabeb1a20a6354a3c131481724f62db',
+      repo: 'howieyuen.github.io',
+      owner: 'howieyuen',
+      admin: ['howieyuen'],
+      id: location.pathname, 
+      distractionFreeMode: false 
+    });
+    (function() {
+      if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+        document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
+        return;
+      }
+      gitalk.render('gitalk-container');
+    })();
+  </script>
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-基本概念">1. 基本概念</a>
+      <ul>
+        <li><a href="#11-service-定义详解">1.1 Service 定义详解</a></li>
+        <li><a href="#12-service-分类">1.2 Service 分类</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-service-基本用法">2. Service 基本用法</a>
+      <ul>
+        <li><a href="#21-集群内访问集群外服务">2.1 集群内访问集群外服务</a>
+          <ul>
+            <li><a href="#211-创建没有-selector-的-service">2.1.1 创建没有 selector 的 Service</a></li>
+            <li><a href="#212-创建-externalname-的-service">2.1.2 创建 ExternalName 的 service</a></li>
+          </ul>
+        </li>
+        <li><a href="#22-集群外访问集群内服务">2.2 集群外访问集群内服务</a>
+          <ul>
+            <li><a href="#221-nodeport-服务">2.2.1 NodePort 服务</a></li>
+            <li><a href="#222-loadbalancer-服务">2.2.2 LoadBalancer 服务</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#3-通过-ingress-暴露服务">3. 通过 Ingress 暴露服务</a>
+      <ul>
+        <li><a href="#31-创建-ingress-controller-和默认的-backend-服务">3.1 创建 Ingress Controller 和默认的 backend 服务</a></li>
+        <li><a href="#32-创建-ingress-资源">3.2 创建 Ingress 资源</a>
+          <ul>
+            <li><a href="#321-转发到单个后端服务上">3.2.1 转发到单个后端服务上</a></li>
+            <li><a href="#322-将不同的服务映射到相同主机的不同路径">3.2.2 将不同的服务映射到相同主机的不同路径</a></li>
+            <li><a href="#323-不同的域名虚拟主机名被转发到不同的服务上">3.2.3 不同的域名（虚拟主机名）被转发到不同的服务上</a></li>
+            <li><a href="#324-不使用域名的转发规则">3.2.4 不使用域名的转发规则</a></li>
+          </ul>
+        </li>
+        <li><a href="#33-ingress-的-tls-安全设置">3.3 Ingress 的 TLS 安全设置</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
