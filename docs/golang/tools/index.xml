@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>golang 工具 on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/docs/golang/tools/</link>
+    <description>Recent content in golang 工具 on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/docs/golang/tools/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>pprof</title>
+      <link>https://howieyuen.github.io/docs/golang/tools/pprof/</link>
+      <pubDate>Thu, 21 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/docs/golang/tools/pprof/</guid>
+      <description>1. 什么是 pprof #  Profiling 是指在程序执行过程中，收集能够反映程序执行状态的数据。 在软件工程中，性能分析（performance analysis，也称为 profiling）， 是以收集程序运行时信息为手段研究程序行为的分析方法，是一种动态程序分析的方法。
+Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供可视化的功能。它包含两个相关的库：
+ runtime/pprof 对于只跑一次的程序，例如每天只跑一次的离线预处理程序，调用 pprof 包提供的函数，手动开启性能数据采集。 net/http/pprof 对于在线服务，对于一个 HTTP Server，访问 pprof 提供的 HTTP 接口，获得性能数据。 当然，实际上这里底层也是调用的 runtime/pprof 提供的函数，封装成接口对外提供网络访问。  2. pprof 的作用 #   下表来自 golang pprof 实战
+    类型 描述 备注     allocs 内存分配情况的采样信息 可以用浏览器打开，但可读性不高   blocks 阻塞操作情况的采样信息 可以用浏览器打开，但可读性不高   cmdline 当前程序的命令行调用 可以用浏览器打开，显示编译文件的临时目录   goroutine 当前所有协程的堆栈信息 可以用浏览器打开，但可读性不高   heap 堆上内存使用情况的采样信息 可以用浏览器打开，但可读性不高   mutex 锁争用情况的采样信息 可以用浏览器打开，但可读性不高   profile CPU 占用情况的采样信息 浏览器打开会下载文件   threadcreate 系统线程创建情况的采样信息 可以用浏览器打开，但可读性不高   trace 程序运行跟踪信息 浏览器打开会下载文件，本文不涉及，可另行参阅 深入浅出 Go trace    allocs 和 heap 采样的信息一致，不过前者是所有对象的内存分配，而 heap 则是活跃对象的内存分配。</description>
+    </item>
+    
+  </channel>
+</rss>
