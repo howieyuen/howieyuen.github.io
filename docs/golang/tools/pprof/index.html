@@ -16,12 +16,12 @@ Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供�
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/tools/pprof/" />
 <meta property="article:published_time" content="2021-01-21T00:00:00+00:00" />
-<meta property="article:modified_time" content="2021-01-21T15:28:11+08:00" />
+<meta property="article:modified_time" content="2021-01-26T22:03:39+08:00" />
 <title>pprof | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.196a1e340d19d17e85f4b28e8e4b7b6d516f6d582dce3590be623d00f1eeb442.js" integrity="sha256-GWoeNA0Z0X6F9LKOjkt7bVFvbVgtzjWQvmI9APHutEI="></script>
+<script defer src="/en.search.min.f1d95a05fd5a0b07780254647bc40c9eed3b5b36ab71880a06d3c3dc5766e5a8.js" integrity="sha256-8dlaBf1aCwd4AlRke8QMnu07WzarcYgKBtPD3Fdm5ag="></script>
 
 <script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
 <!--
@@ -766,7 +766,9 @@ https://github.com/alex-shpak/hugo-book
 </h2>
 <p>拿 CPU profiling 举例，增加两行代码，调用 <code>pprof.StartCPUProfile</code> 启动 cpu profiling，
 调用 <code>pprof.StopCPUProfile()</code> 将数据刷到文件里：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;runtime/pprof&#34;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;runtime/pprof&#34;</span>
 
 <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">cpuprofile</span> = <span style="color:#a6e22e">flag</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;cpuprofile&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#e6db74">&#34;write cpu profile to file&#34;</span>)
 
@@ -783,7 +785,9 @@ https://github.com/alex-shpak/hugo-book
   <a class="anchor" href="#32-nethttppprof">#</a>
 </h2>
 <p>启动一个端口（和正常提供业务服务的端口不同）监听 pprof 请求：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> (
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
     <span style="color:#e6db74">&#34;log&#34;</span>
     <span style="color:#e6db74">&#34;net/http&#34;</span>
     <span style="color:#a6e22e">_</span> <span style="color:#e6db74">&#34;net/http/pprof&#34;</span>
@@ -833,7 +837,11 @@ frameborder="1">
   4. 采样分析
   <a class="anchor" href="#4-%e9%87%87%e6%a0%b7%e5%88%86%e6%9e%90">#</a>
 </h1>
-<h2 id="41-报告生成">
+<p>开始采样之前，需要模拟服务访问，这里用到的是压力测试管径 
+  <a href="https://github.com/wg/wrk">wrk</a>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 启动 500 个 HTTP 连接，30 个线程，持续访问 1 分钟</span>
+wrk -c500 -t30 -d1m http://localhost:8888/zzz@foo.bar
+</code></pre></div><h2 id="41-报告生成">
   4.1 报告生成
   <a class="anchor" href="#41-%e6%8a%a5%e5%91%8a%e7%94%9f%e6%88%90">#</a>
 </h2>
@@ -847,14 +855,20 @@ frameborder="1">
 然后使用以下命令：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go tool pprof -http<span style="color:#f92672">=</span>:8080 profile
 </code></pre></div><p>会在本地 8080 端口启动 http 服务，提供可视化界面：</p>
-<!-- graph -->
+<iframe 
+src="/golang/tools/pprof/cpu.html"
+height="680"
+width="100%"
+frameborder="1">
+</iframe>
 <p>图中的连线代表对方法的调用，连线上的标签代表指定的方法调用的采样值（例如时间、内存分配大小等），
 方框的大小与方法运行的采样值的大小有关。
 每个方框由两个标签组成：在 cpu profile 中，一个是方法运行的时间占比，
-一个是它在采样的堆栈中出现的时间占比（前者是 flat 时间，后者则是 cumulate 时间占比)；
+一个是它在采样的堆栈中出现的时间占比（前者是 flat 时间，后者则是 cumulate 时间占比）；
 框越大，代表耗时越多或是内存分配越多</p>
 <p>点击左上角 VIEW 可以选择不同图形化展示，最常见的火焰图如下：</p>
-<!-- flameGraph -->
+<p>
+  <img src="/golang/tools/pprof/flame_graph.png" alt="flame-graph" /></p>
 <p>它和一般的火焰图相比刚好倒过来了，调用关系的展现是从上到下。形状越长，表示执行时间越长。</p>
 <h2 id="42-交互式命令">
   4.2 交互式命令
@@ -882,20 +896,20 @@ go tool pprof http://localhost:8888/debug/pprof/block
 go tool pprof http://localhost:8888/debug/pprof/mutex
 </code></pre></div><p>下面开始进入命令行交互式模式，使用 <code>top</code>、<code>list</code>、<code>web</code> 等命令：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>pprof<span style="color:#f92672">)</span> top
-Showing nodes accounting <span style="color:#66d9ef">for</span> 32830ms, 46.48% of 70640ms total
-Dropped <span style="color:#ae81ff">489</span> nodes <span style="color:#f92672">(</span>cum &lt;<span style="color:#f92672">=</span> 353.20ms<span style="color:#f92672">)</span>
-Showing top <span style="color:#ae81ff">10</span> nodes out of <span style="color:#ae81ff">159</span>
+Showing nodes accounting <span style="color:#66d9ef">for</span> 86.85s, 91.15% of 95.28s total
+Dropped <span style="color:#ae81ff">397</span> nodes <span style="color:#f92672">(</span>cum &lt;<span style="color:#f92672">=</span> 0.48s<span style="color:#f92672">)</span>
+Showing top <span style="color:#ae81ff">10</span> nodes out of <span style="color:#ae81ff">93</span>
       flat  flat%   sum%        cum   cum%
-   18950ms 26.83% 26.83%    19700ms 27.89%  syscall.Syscall
-    2910ms  4.12% 30.95%     2920ms  4.13%  runtime.nanotime <span style="color:#f92672">(</span>inline<span style="color:#f92672">)</span>
-    2780ms  3.94% 34.88%     2830ms  4.01%  runtime.walltime
-    1960ms  2.77% 37.66%    12060ms 17.07%  runtime.mallocgc
-    1280ms  1.81% 39.47%     1680ms  2.38%  runtime.heapBitsSetType
-    1200ms  1.70% 41.17%     2360ms  3.34%  runtime.scanobject
-    1170ms  1.66% 42.82%     1170ms  1.66%  runtime.nextFreeFast
-     960ms  1.36% 44.18%      960ms  1.36%  runtime.memclrNoHeapPointers
-     880ms  1.25% 45.43%     3090ms  4.37%  regexp.makeOnePass.func1
-     740ms  1.05% 46.48%      900ms  1.27%  runtime.findObject
+    75.37s 79.10% 79.10%     75.60s 79.35%  syscall.syscall
+     3.79s  3.98% 83.08%      3.81s  4.00%  runtime.kevent
+     1.52s  1.60% 84.68%      1.53s  1.61%  runtime.usleep
+     1.21s  1.27% 85.95%      1.21s  1.27%  runtime.pthread_cond_wait
+     1.20s  1.26% 87.21%      1.20s  1.26%  runtime.pthread_kill
+     0.94s  0.99% 88.19%      0.94s  0.99%  runtime.nanotime1
+     0.89s  0.93% 89.13%      0.89s  0.93%  runtime.procyield
+     0.84s  0.88% 90.01%      0.84s  0.88%  indexbytebody
+     0.59s  0.62% 90.63%      0.59s  0.62%  runtime.pthread_cond_signal
+     0.50s  0.52% 91.15%      0.85s  0.89%  runtime.scanobject
 </code></pre></div><p>得到 5 列数据：</p>
 <table>
 <thead>
@@ -911,7 +925,7 @@ Showing top <span style="color:#ae81ff">10</span> nodes out of <span style="colo
 </tr>
 <tr>
 <td>flat%</td>
-<td>flat 占 CPU 总时间的比例。程序总耗时 70640ms，syscall.Syscall 的 18950ms 占了 26.83%</td>
+<td>flat 占 CPU 总时间的比例。程序总耗时 95.28s，syscall.syscall 的 75.60s 占了 79.35%</td>
 </tr>
 <tr>
 <td>sum%</td>
@@ -927,53 +941,59 @@ Showing top <span style="color:#ae81ff">10</span> nodes out of <span style="colo
 </tr>
 </tbody>
 </table>
-<p>上面的结果没啥有价值的信息，都是 go 的底层调用。使用 <code>list</code> 正则匹配最耗时的代码：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>pprof<span style="color:#f92672">)</span> list syscall.Syscall
-Total: 1.18mins
-ROUTINE <span style="color:#f92672">========================</span> syscall.Syscall in /usr/local/go/src/syscall/asm_linux_amd64.s
-    18.95s     19.70s <span style="color:#f92672">(</span>flat, cum<span style="color:#f92672">)</span> 27.89% of Total
-         .          .     13:// Trap <span style="color:#75715e"># in AX, args in DI SI DX R10 R8 R9, return in AX DX</span>
-         .          .     14:// Note that this differs from <span style="color:#e6db74">&#34;standard&#34;</span> ABI convention, which
-         .          .     15:// would pass 4th arg in CX, not R10.
-         .          .     16:
-         .          .     17:TEXT ·Syscall<span style="color:#f92672">(</span>SB<span style="color:#f92672">)</span>,NOSPLIT,$0-56
-      10ms      420ms     18:	CALL	runtime·entersyscall<span style="color:#f92672">(</span>SB<span style="color:#f92672">)</span>
-         .          .     19:	MOVQ	a1+8<span style="color:#f92672">(</span>FP<span style="color:#f92672">)</span>, DI
-         .          .     20:	MOVQ	a2+16<span style="color:#f92672">(</span>FP<span style="color:#f92672">)</span>, SI
-         .          .     21:	MOVQ	a3+24<span style="color:#f92672">(</span>FP<span style="color:#f92672">)</span>, DX
-         .          .     22:	MOVQ	trap+0<span style="color:#f92672">(</span>FP<span style="color:#f92672">)</span>, AX	// syscall entry
-         .          .     23:	SYSCALL
-    18.92s     18.92s     24:	CMPQ	AX, $0xfffffffffffff001
-      10ms       10ms     25:	JLS	ok
-         .          .     26:	MOVQ	$-1, r1+32<span style="color:#f92672">(</span>FP<span style="color:#f92672">)</span>
-         .          .     27:	MOVQ	$0, r2+40<span style="color:#f92672">(</span>FP<span style="color:#f92672">)</span>
-         .          .     28:	NEGQ	AX
-         .          .     29:	MOVQ	AX, err+48<span style="color:#f92672">(</span>FP<span style="color:#f92672">)</span>
-         .       20ms     30:	CALL	runtime·exitsyscall<span style="color:#f92672">(</span>SB<span style="color:#f92672">)</span>
-         .          .     31:	RET
-         .          .     32:ok:
-         .          .     33:	MOVQ	AX, r1+32<span style="color:#f92672">(</span>FP<span style="color:#f92672">)</span>
-      10ms       10ms     34:	MOVQ	DX, r2+40<span style="color:#f92672">(</span>FP<span style="color:#f92672">)</span>
-         .          .     35:	MOVQ	$0, err+48<span style="color:#f92672">(</span>FP<span style="color:#f92672">)</span>
-         .      320ms     36:	CALL	runtime·exitsyscall<span style="color:#f92672">(</span>SB<span style="color:#f92672">)</span>
-         .          .     37:	RET
-         .          .     38:
-         .          .     39:// func Syscall6<span style="color:#f92672">(</span>trap, a1, a2, a3, a4, a5, a6 uintptr<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>r1, r2, err uintptr<span style="color:#f92672">)</span>
-         .          .     40:TEXT ·Syscall6<span style="color:#f92672">(</span>SB<span style="color:#f92672">)</span>,NOSPLIT,$0-80
-         .          .     41:	CALL	runtime·entersyscall<span style="color:#f92672">(</span>SB<span style="color:#f92672">)</span>
-</code></pre></div><p>最耗时的 18.92s 都在比较寄存器。</p>
+<p>上面的结果没啥有价值的信息，都是 go 的底层调用。使用 <code>list</code> 正则匹配业务代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>pprof<span style="color:#f92672">)</span> list handler
+Total: 1.65mins
+ROUTINE <span style="color:#f92672">========================</span> main.handler in /Users/yuanhao/Study/GoProjects/testProject/pprof/main.go
+      30ms      2.63s <span style="color:#f92672">(</span>flat, cum<span style="color:#f92672">)</span>  2.65% of Total
+         .          .      6:	_ <span style="color:#e6db74">&#34;net/http/pprof&#34;</span>
+         .          .      7:	<span style="color:#e6db74">&#34;regexp&#34;</span>
+         .          .      8:<span style="color:#f92672">)</span>
+         .          .      9:
+         .          .     10:func handler<span style="color:#f92672">(</span>wr http.ResponseWriter, r *http.Request<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+         .      2.38s     11:	var pattern <span style="color:#f92672">=</span> regexp.MustCompile<span style="color:#f92672">(</span><span style="color:#e6db74">`</span>^<span style="color:#f92672">(</span><span style="color:#ae81ff">\w</span>+<span style="color:#f92672">)</span>@foo.bar$<span style="color:#e6db74">`</span><span style="color:#f92672">)</span>
+      20ms       20ms     12:	account :<span style="color:#f92672">=</span> r.URL.Path<span style="color:#f92672">[</span>1:<span style="color:#f92672">]</span>
+         .      160ms     13:	res :<span style="color:#f92672">=</span> pattern.FindSubmatch<span style="color:#f92672">([]</span>byte<span style="color:#f92672">(</span>account<span style="color:#f92672">))</span>
+         .          .     14:	<span style="color:#66d9ef">if</span> len<span style="color:#f92672">(</span>res<span style="color:#f92672">)</span> &gt; <span style="color:#ae81ff">1</span> <span style="color:#f92672">{</span>
+      10ms       70ms     15:		wr.Write<span style="color:#f92672">(</span>res<span style="color:#f92672">[</span>1<span style="color:#f92672">])</span>
+         .          .     16:	<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+         .          .     17:		wr.Write<span style="color:#f92672">([]</span>byte<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;None&#34;</span><span style="color:#f92672">))</span>
+         .          .     18:	<span style="color:#f92672">}</span>
+         .          .     19:<span style="color:#f92672">}</span>
+         .          .     20:
+ROUTINE <span style="color:#f92672">========================</span> net/http.<span style="color:#f92672">(</span>*ServeMux<span style="color:#f92672">)</span>.handler in /usr/local/Cellar/go/1.15.1/libexec/src/net/http/server.go
+      10ms       10ms <span style="color:#f92672">(</span>flat, cum<span style="color:#f92672">)</span>  0.01% of Total
+         .          .   2384:	<span style="color:#66d9ef">return</span> mux.handler<span style="color:#f92672">(</span>host, r.URL.Path<span style="color:#f92672">)</span>
+         .          .   2385:<span style="color:#f92672">}</span>
+         .          .   2386:
+         .          .   2387:// handler is the main implementation of Handler.
+         .          .   2388:// The path is known to be in canonical form, except <span style="color:#66d9ef">for</span> CONNECT methods.
+      10ms       10ms   2389:func <span style="color:#f92672">(</span>mux *ServeMux<span style="color:#f92672">)</span> handler<span style="color:#f92672">(</span>host, path string<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>h Handler, pattern string<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+         .          .   2390:	mux.mu.RLock<span style="color:#f92672">()</span>
+         .          .   2391:	defer mux.mu.RUnlock<span style="color:#f92672">()</span>
+         .          .   2392:
+         .          .   2393:	// Host-specific pattern takes precedence over generic ones
+         .          .   2394:	<span style="color:#66d9ef">if</span> mux.hosts <span style="color:#f92672">{</span>
+</code></pre></div><p>可以看出，<code>main.handler</code> 总共用时 2.63s，其中 <code>regexp.MustComplie</code> 耗时 2.38ms。
+罪魁祸首在这里：服务器每次收到请求，都要重新解析正则表达式。</p>
 <p>进入下一步，使用 <code>web</code> 命令查看调用链，需要提前安装 graphviz 工具，自动调用浏览器展示下图：</p>
-<!-- web 图示 -->
-<p>图中可明显看出，<code>regexp.Compile</code> 耗时明显，因为每次请求过来，都要重新编译正则表达式。</p>
+<center>
+<img 
+src="/golang/tools/pprof/calling.png" 
+width=35%
+/>
+</center>
+<p>图示与之前看到的调用链图基本一致，聚焦业务代码 <code>main.handler</code>，
+可以发现<code>regexp.Compile</code> 耗时明显，因为每次请求过来，都要重新编译正则表达式。</p>
 <h1 id="5-参考资料">
   5. 参考资料
   <a class="anchor" href="#5-%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>
 </h1>
 <ul>
 <li>
-  <a href="https://qcrao.com/2019/11/10/dive-into-go-pprof/">深度解密Go语言之 pprof</a></li>
+  <a href="https://qcrao.com/2019/11/10/dive-into-go-pprof/">深度解密 Go 语言之 pprof</a></li>
 <li>
-  <a href="https://xargin.com/pprof-and-flaegraph/">曹大 pprof</a></li>
+  <a href="https://xargin.com/pprof-and-flamegraph/">曹大 pprof</a></li>
 <li>
   <a href="https://blog.golang.org/profiling-go-programs">Russ Cox 优化过程，并附上代码</a></li>
 <li>
@@ -1015,9 +1035,9 @@ ROUTINE <span style="color:#f92672">========================</span> syscall.Sysc
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/a98e59675854d36a1eda7bc53b3877071861ce0a" title='Last modified by howieyuen | January 21, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/65c2dd214834bc5825656d5e5cbbe93d4ba1f8bc" title='Last modified by howieyuen | January 26, 2021' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>January 21, 2021</span>
+      <span>January 26, 2021</span>
     </a>
   </div>
 
