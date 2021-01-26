@@ -26,13 +26,13 @@ Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供�
 ------------ | ------------------------ | ---------------------------
 allocs	     | 内存分配情况的采样信息	  | 可以用浏览器打开，但可读性不高
 blocks	     | 阻塞操作情况的采样信息	  | 可以用浏览器打开，但可读性不高
-cmdline	     | 当前程序的命令行调用   	  | 可以用浏览器打开，显示编译文件的临时目录
+cmdline	     | 当前程序的命令行调用      | 可以用浏览器打开，显示编译文件的临时目录
 goroutine    | 当前所有协程的堆栈信息	  | 可以用浏览器打开，但可读性不高
 heap	     | 堆上内存使用情况的采样信息 |	可以用浏览器打开，但可读性不高
-mutex	     | 锁争用情况的采样信息	     | 可以用浏览器打开，但可读性不高
-profile	     | CPU 占用情况的采样信息	 | 浏览器打开会下载文件
+mutex	     | 锁争用情况的采样信息	   | 可以用浏览器打开，但可读性不高
+profile	     | CPU 占用情况的采样信息	   | 浏览器打开会下载文件
 threadcreate | 系统线程创建情况的采样信息 | 可以用浏览器打开，但可读性不高
-trace	     | 程序运行跟踪信息	         | 浏览器打开会下载文件，本文不涉及，可另行参阅 [深入浅出 Go trace](https://mp.weixin.qq.com/s/I9xSMxy32cALSNQAN8wlnQ)
+trace	     | 程序运行跟踪信息	       | 浏览器打开会下载文件，本文不涉及，可另行参阅 [深入浅出 Go trace](https://mp.weixin.qq.com/s/I9xSMxy32cALSNQAN8wlnQ)
 
 allocs 和 heap 采样的信息一致，不过前者是所有对象的内存分配，而 heap 则是活跃对象的内存分配。
 
@@ -46,6 +46,8 @@ allocs 和 heap 采样的信息一致，不过前者是所有对象的内存分�
 调用 `pprof.StopCPUProfile()` 将数据刷到文件里：
 
 ```go
+package main
+
 import "runtime/pprof"
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
@@ -65,6 +67,8 @@ func main() {
 启动一个端口（和正常提供业务服务的端口不同）监听 pprof 请求：
 
 ```go
+package main
+
 import (
     "log"
     "net/http"
@@ -109,7 +113,7 @@ func init() {
 
 <iframe 
 src="/golang/tools/pprof/_debug_pprof_.html"
-height="680"
+height="600px"
 width="100%"
 frameborder="1">
 </iframe>
@@ -120,6 +124,13 @@ frameborder="1">
 页面具体内容的解读可以参考大彬的文章 [实战 Go 内存泄露](https://segmentfault.com/a/1190000019222661)。
 
 # 4. 采样分析
+
+开始采样之前，需要模拟服务访问，这里用到的是压力测试管径 [wrk](https://github.com/wg/wrk)。
+
+```bash
+# 启动 500 个 HTTP 连接，30 个线程，持续访问 1 分钟
+wrk -c500 -t30 -d1m http://localhost:8888/zzz@foo.bar
+```
 
 ## 4.1 报告生成
 
@@ -137,17 +148,22 @@ go tool pprof -http=:8080 profile
 
 会在本地 8080 端口启动 http 服务，提供可视化界面：
 
-<!-- graph -->
+<iframe 
+src="/golang/tools/pprof/cpu.html"
+height="600px"
+width="100%"
+frameborder="1">
+</iframe>
 
 图中的连线代表对方法的调用，连线上的标签代表指定的方法调用的采样值（例如时间、内存分配大小等），
 方框的大小与方法运行的采样值的大小有关。
 每个方框由两个标签组成：在 cpu profile 中，一个是方法运行的时间占比，
-一个是它在采样的堆栈中出现的时间占比（前者是 flat 时间，后者则是 cumulate 时间占比)；
+一个是它在采样的堆栈中出现的时间占比（前者是 flat 时间，后者则是 cumulate 时间占比）；
 框越大，代表耗时越多或是内存分配越多
 
 点击左上角 VIEW 可以选择不同图形化展示，最常见的火焰图如下：
 
-<!-- flameGraph -->
+![flame-graph](/golang/tools/pprof/flame_graph.png)
 
 它和一般的火焰图相比刚好倒过来了，调用关系的展现是从上到下。形状越长，表示执行时间越长。
 
@@ -184,20 +200,20 @@ go tool pprof http://localhost:8888/debug/pprof/mutex
 
 ```bash
 (pprof) top
-Showing nodes accounting for 32830ms, 46.48% of 70640ms total
-Dropped 489 nodes (cum <= 353.20ms)
-Showing top 10 nodes out of 159
+Showing nodes accounting for 86.85s, 91.15% of 95.28s total
+Dropped 397 nodes (cum <= 0.48s)
+Showing top 10 nodes out of 93
       flat  flat%   sum%        cum   cum%
-   18950ms 26.83% 26.83%    19700ms 27.89%  syscall.Syscall
-    2910ms  4.12% 30.95%     2920ms  4.13%  runtime.nanotime (inline)
-    2780ms  3.94% 34.88%     2830ms  4.01%  runtime.walltime
-    1960ms  2.77% 37.66%    12060ms 17.07%  runtime.mallocgc
-    1280ms  1.81% 39.47%     1680ms  2.38%  runtime.heapBitsSetType
-    1200ms  1.70% 41.17%     2360ms  3.34%  runtime.scanobject
-    1170ms  1.66% 42.82%     1170ms  1.66%  runtime.nextFreeFast
-     960ms  1.36% 44.18%      960ms  1.36%  runtime.memclrNoHeapPointers
-     880ms  1.25% 45.43%     3090ms  4.37%  regexp.makeOnePass.func1
-     740ms  1.05% 46.48%      900ms  1.27%  runtime.findObject
+    75.37s 79.10% 79.10%     75.60s 79.35%  syscall.syscall
+     3.79s  3.98% 83.08%      3.81s  4.00%  runtime.kevent
+     1.52s  1.60% 84.68%      1.53s  1.61%  runtime.usleep
+     1.21s  1.27% 85.95%      1.21s  1.27%  runtime.pthread_cond_wait
+     1.20s  1.26% 87.21%      1.20s  1.26%  runtime.pthread_kill
+     0.94s  0.99% 88.19%      0.94s  0.99%  runtime.nanotime1
+     0.89s  0.93% 89.13%      0.89s  0.93%  runtime.procyield
+     0.84s  0.88% 90.01%      0.84s  0.88%  indexbytebody
+     0.59s  0.62% 90.63%      0.59s  0.62%  runtime.pthread_cond_signal
+     0.50s  0.52% 91.15%      0.85s  0.89%  runtime.scanobject
 ```
 
 得到 5 列数据：
@@ -205,60 +221,67 @@ Showing top 10 nodes out of 159
 字段  | 描述
 ----- | ---
 flat  |	本函数的执行耗时
-flat% |	flat 占 CPU 总时间的比例。程序总耗时 70640ms，syscall.Syscall 的 18950ms 占了 26.83%
+flat% |	flat 占 CPU 总时间的比例。程序总耗时 95.28s，syscall.syscall 的 75.60s 占了 79.35%
 sum%  |	前面每一行的 flat 占比总和
 cum   |	累计量。指该函数加上该函数调用的函数总耗时
 cum%  |	cum 占 CPU 总时间的比例
 
-上面的结果没啥有价值的信息，都是 go 的底层调用。使用 `list` 正则匹配最耗时的代码：
+上面的结果没啥有价值的信息，都是 go 的底层调用。使用 `list` 正则匹配业务代码：
 
 ```bash
-(pprof) list syscall.Syscall
-Total: 1.18mins
-ROUTINE ======================== syscall.Syscall in /usr/local/go/src/syscall/asm_linux_amd64.s
-    18.95s     19.70s (flat, cum) 27.89% of Total
-         .          .     13:// Trap # in AX, args in DI SI DX R10 R8 R9, return in AX DX
-         .          .     14:// Note that this differs from "standard" ABI convention, which
-         .          .     15:// would pass 4th arg in CX, not R10.
-         .          .     16:
-         .          .     17:TEXT ·Syscall(SB),NOSPLIT,$0-56
-      10ms      420ms     18:	CALL	runtime·entersyscall(SB)
-         .          .     19:	MOVQ	a1+8(FP), DI
-         .          .     20:	MOVQ	a2+16(FP), SI
-         .          .     21:	MOVQ	a3+24(FP), DX
-         .          .     22:	MOVQ	trap+0(FP), AX	// syscall entry
-         .          .     23:	SYSCALL
-    18.92s     18.92s     24:	CMPQ	AX, $0xfffffffffffff001
-      10ms       10ms     25:	JLS	ok
-         .          .     26:	MOVQ	$-1, r1+32(FP)
-         .          .     27:	MOVQ	$0, r2+40(FP)
-         .          .     28:	NEGQ	AX
-         .          .     29:	MOVQ	AX, err+48(FP)
-         .       20ms     30:	CALL	runtime·exitsyscall(SB)
-         .          .     31:	RET
-         .          .     32:ok:
-         .          .     33:	MOVQ	AX, r1+32(FP)
-      10ms       10ms     34:	MOVQ	DX, r2+40(FP)
-         .          .     35:	MOVQ	$0, err+48(FP)
-         .      320ms     36:	CALL	runtime·exitsyscall(SB)
-         .          .     37:	RET
-         .          .     38:
-         .          .     39:// func Syscall6(trap, a1, a2, a3, a4, a5, a6 uintptr) (r1, r2, err uintptr)
-         .          .     40:TEXT ·Syscall6(SB),NOSPLIT,$0-80
-         .          .     41:	CALL	runtime·entersyscall(SB)
+(pprof) list handler
+Total: 1.65mins
+ROUTINE ======================== main.handler in /Users/yuanhao/Study/GoProjects/testProject/pprof/main.go
+      30ms      2.63s (flat, cum)  2.65% of Total
+         .          .      6:	_ "net/http/pprof"
+         .          .      7:	"regexp"
+         .          .      8:)
+         .          .      9:
+         .          .     10:func handler(wr http.ResponseWriter, r *http.Request) {
+         .      2.38s     11:	var pattern = regexp.MustCompile(`^(\w+)@foo.bar$`)
+      20ms       20ms     12:	account := r.URL.Path[1:]
+         .      160ms     13:	res := pattern.FindSubmatch([]byte(account))
+         .          .     14:	if len(res) > 1 {
+      10ms       70ms     15:		wr.Write(res[1])
+         .          .     16:	} else {
+         .          .     17:		wr.Write([]byte("None"))
+         .          .     18:	}
+         .          .     19:}
+         .          .     20:
+ROUTINE ======================== net/http.(*ServeMux).handler in /usr/local/Cellar/go/1.15.1/libexec/src/net/http/server.go
+      10ms       10ms (flat, cum)  0.01% of Total
+         .          .   2384:	return mux.handler(host, r.URL.Path)
+         .          .   2385:}
+         .          .   2386:
+         .          .   2387:// handler is the main implementation of Handler.
+         .          .   2388:// The path is known to be in canonical form, except for CONNECT methods.
+      10ms       10ms   2389:func (mux *ServeMux) handler(host, path string) (h Handler, pattern string) {
+         .          .   2390:	mux.mu.RLock()
+         .          .   2391:	defer mux.mu.RUnlock()
+         .          .   2392:
+         .          .   2393:	// Host-specific pattern takes precedence over generic ones
+         .          .   2394:	if mux.hosts {
 ```
-最耗时的 18.92s 都在比较寄存器。
+
+可以看出，`main.handler` 总共用时 2.63s，其中 `regexp.MustComplie` 耗时 2.38ms。
+罪魁祸首在这里：服务器每次收到请求，都要重新解析正则表达式。
 
 进入下一步，使用 `web` 命令查看调用链，需要提前安装 graphviz 工具，自动调用浏览器展示下图：
 
-<!-- web 图示 -->
+<center>
+<img 
+src="/golang/tools/pprof/calling.png" 
+width="35%"
+/>
+</center>
 
-图中可明显看出，`regexp.Compile` 耗时明显，因为每次请求过来，都要重新编译正则表达式。
+图示与之前看到的调用链图基本一致，聚焦业务代码 `main.handler`，
+可以发现`regexp.Compile` 耗时明显，因为每次请求过来，都要重新编译正则表达式。
 
 # 5. 参考资料
 
-- [深度解密Go语言之 pprof](https://qcrao.com/2019/11/10/dive-into-go-pprof/)
-- [曹大 pprof](https://xargin.com/pprof-and-flaegraph/)
+- [深度解密 Go 语言之 pprof](https://qcrao.com/2019/11/10/dive-into-go-pprof/)
+- [曹大 pprof](https://xargin.com/pprof-and-flamegraph/)
 - [Russ Cox 优化过程，并附上代码](https://blog.golang.org/profiling-go-programs)
 - [google pprof](https://github.com/google/pprof)
 - [使用 pprof 和火焰图调试 golang 应用](https://cizixs.com/2017/09/11/profiling-golang-program/)
