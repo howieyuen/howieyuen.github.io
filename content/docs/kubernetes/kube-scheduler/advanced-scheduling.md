@@ -320,7 +320,7 @@ spec:
         app: frontend
     spec:
       affinity:
-        podAffinity:
+        podAntiAffinity:
          requiredDuringSchdulingIgnoredDuringExecution:
             topologyKey: kubernetes.io/hostname
             labelSelector: 
