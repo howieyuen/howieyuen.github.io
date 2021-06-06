@@ -22,16 +22,17 @@ API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他
 2. 认证机制 #  目前 kubernetes 提供的认证机制丰富多样，尤其是身份验证，更是五花八门：
  身份验证  X509 Client Cert Static Token File Bootstrap Tokens Static Password File（deprecated in v1." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/" />
-<meta property="article:published_time" content="2020-11-22T00:00:00+00:00" />
-<meta property="article:modified_time" content="2021-01-26T22:03:39+08:00" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/" /><meta property="article:section" content="docs" />
+<meta property="article:published_time" content="2020-11-22T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2021-06-06T16:45:06&#43;08:00" />
+
 <title>认证机制 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
-<link rel="stylesheet" href="/book.min.b77585324406fdba98b0d6281e32068303e5690a92ea506b5d2c6032cc22f6d5.css" integrity="sha256-t3WFMkQG/bqYsNYoHjIGgwPlaQqS6lBrXSxgMswi9tU=">
-<script defer src="/en.search.min.f1d95a05fd5a0b07780254647bc40c9eed3b5b36ab71880a06d3c3dc5766e5a8.js" integrity="sha256-8dlaBf1aCwd4AlRke8QMnu07WzarcYgKBtPD3Fdm5ag="></script>
+<link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
+<script defer src="/en.search.min.0efbbe0ecfafaca7f48832c10fc0863cac9b2983c8cd2f9d1deff3be8540dbb0.js" integrity="sha256-Dvu&#43;Ds&#43;vrKf0iDLBD8CGPKybKYPIzS&#43;dHe/zvoVA27A="></script>
 
-<script defer src="/sw.min.74a8bb07f0bee86d6bb9a2750f073f14d93c7e4512f28860370cfd879e9719b4.js" integrity="sha256-dKi7B/C&#43;6G1ruaJ1Dwc/FNk8fkUS8ohgNwz9h56XGbQ="></script>
+<script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -627,7 +628,7 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+  <script>(function(){var a=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(b){localStorage.setItem("menu.scrollTop",a.scrollTop)}),a.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
 
 
  
@@ -739,7 +740,7 @@ https://github.com/alex-shpak/hugo-book
 <p>认证接口</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authentication/authenticator/interfaces.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Request</span> <span style="color:#66d9ef">interface</span> {
- <span style="color:#a6e22e">AuthenticateRequest</span>(<span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">Response</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>)
+	<span style="color:#a6e22e">AuthenticateRequest</span>(<span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">Response</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>)
 }
 </code></pre></div><p>该方法接收客户端请求。若验证失败，bool 返回 false，验证成功，bool 返回 true，Response 中携带身份验证用户的信息，例如 Name、UID、Groups、Extra。</p>
 </li>
@@ -747,44 +748,44 @@ https://github.com/alex-shpak/hugo-book
 <p>认证实现</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authentication/request/x509/x509.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">a</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Authenticator</span>) <span style="color:#a6e22e">AuthenticateRequest</span>(<span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">authenticator</span>.<span style="color:#a6e22e">Response</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
- <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">TLS</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> <span style="color:#f92672">||</span> len(<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">TLS</span>.<span style="color:#a6e22e">PeerCertificates</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">TLS</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> <span style="color:#f92672">||</span> len(<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">TLS</span>.<span style="color:#a6e22e">PeerCertificates</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
- }
-   
- <span style="color:#75715e">// Use intermediates, if provided
-</span><span style="color:#75715e"></span> <span style="color:#a6e22e">optsCopy</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">verifyOptionsFn</span>()
- <span style="color:#75715e">// if there are intentionally no verify options, then we cannot authenticate this request
-</span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+	}
+
+	<span style="color:#75715e">// Use intermediates, if provided
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">optsCopy</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">verifyOptionsFn</span>()
+	<span style="color:#75715e">// if there are intentionally no verify options, then we cannot authenticate this request
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
- }
- <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">optsCopy</span>.<span style="color:#a6e22e">Intermediates</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> <span style="color:#f92672">&amp;&amp;</span> len(<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">TLS</span>.<span style="color:#a6e22e">PeerCertificates</span>) &gt; <span style="color:#ae81ff">1</span> {
+	}
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">optsCopy</span>.<span style="color:#a6e22e">Intermediates</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> <span style="color:#f92672">&amp;&amp;</span> len(<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">TLS</span>.<span style="color:#a6e22e">PeerCertificates</span>) &gt; <span style="color:#ae81ff">1</span> {
      <span style="color:#a6e22e">optsCopy</span>.<span style="color:#a6e22e">Intermediates</span> = <span style="color:#a6e22e">x509</span>.<span style="color:#a6e22e">NewCertPool</span>()
      <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">intermediate</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">TLS</span>.<span style="color:#a6e22e">PeerCertificates</span>[<span style="color:#ae81ff">1</span>:] {
          <span style="color:#a6e22e">optsCopy</span>.<span style="color:#a6e22e">Intermediates</span>.<span style="color:#a6e22e">AddCert</span>(<span style="color:#a6e22e">intermediate</span>)
      }
- }
-   
- <span style="color:#a6e22e">remaining</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">TLS</span>.<span style="color:#a6e22e">PeerCertificates</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">NotAfter</span>.<span style="color:#a6e22e">Sub</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>())
- <span style="color:#a6e22e">clientCertificateExpirationHistogram</span>.<span style="color:#a6e22e">Observe</span>(<span style="color:#a6e22e">remaining</span>.<span style="color:#a6e22e">Seconds</span>())
+	}
+
+	<span style="color:#a6e22e">remaining</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">TLS</span>.<span style="color:#a6e22e">PeerCertificates</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">NotAfter</span>.<span style="color:#a6e22e">Sub</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>())
+	<span style="color:#a6e22e">clientCertificateExpirationHistogram</span>.<span style="color:#a6e22e">Observe</span>(<span style="color:#a6e22e">remaining</span>.<span style="color:#a6e22e">Seconds</span>())
     <span style="color:#75715e">// 校验证书，如果通过，可解析 user 信息
-</span><span style="color:#75715e"></span> <span style="color:#a6e22e">chains</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">TLS</span>.<span style="color:#a6e22e">PeerCertificates</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">Verify</span>(<span style="color:#a6e22e">optsCopy</span>)
- <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">chains</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">TLS</span>.<span style="color:#a6e22e">PeerCertificates</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">Verify</span>(<span style="color:#a6e22e">optsCopy</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">err</span>
- }
-   
- <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">errlist</span> []<span style="color:#66d9ef">error</span>
- <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">chain</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">chains</span> {
+	}
+
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">errlist</span> []<span style="color:#66d9ef">error</span>
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">chain</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">chains</span> {
      <span style="color:#a6e22e">user</span>, <span style="color:#a6e22e">ok</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">User</span>(<span style="color:#a6e22e">chain</span>)
      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
          <span style="color:#a6e22e">errlist</span> = append(<span style="color:#a6e22e">errlist</span>, <span style="color:#a6e22e">err</span>)
          <span style="color:#66d9ef">continue</span>
      }
-   
+
      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ok</span> {
          <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">user</span>, <span style="color:#a6e22e">ok</span>, <span style="color:#a6e22e">err</span>
      }
- }
- <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">utilerrors</span>.<span style="color:#a6e22e">NewAggregate</span>(<span style="color:#a6e22e">errlist</span>)
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">utilerrors</span>.<span style="color:#a6e22e">NewAggregate</span>(<span style="color:#a6e22e">errlist</span>)
 }
 </code></pre></div></li>
 </ol>
@@ -808,11 +809,11 @@ https://github.com/alex-shpak/hugo-book
 <p>认证实现</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authentication/token/tokenfile/tokenfile.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">a</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">TokenAuthenticator</span>) <span style="color:#a6e22e">AuthenticateToken</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">value</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">authenticator</span>.<span style="color:#a6e22e">Response</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
- <span style="color:#a6e22e">user</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">tokens</span>[<span style="color:#a6e22e">value</span>]
- <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+	<span style="color:#a6e22e">user</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">tokens</span>[<span style="color:#a6e22e">value</span>]
+	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
- }
- <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">authenticator</span>.<span style="color:#a6e22e">Response</span>{<span style="color:#a6e22e">User</span>: <span style="color:#a6e22e">user</span>}, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">authenticator</span>.<span style="color:#a6e22e">Response</span>{<span style="color:#a6e22e">User</span>: <span style="color:#a6e22e">user</span>}, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
 }
 </code></pre></div><p>该认证方式相对简单，a.tokens 保存了服务端 Token 列表，通过 map 查询客户端提供的 Token 是否存在，存在即认证成功，反之则认证失败。</p>
 </li>
@@ -836,74 +837,74 @@ https://github.com/alex-shpak/hugo-book
 <p>认证实现</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// plugin/pkg/auth/authenticator/token/bootstrap/bootstrap.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">TokenAuthenticator</span>) <span style="color:#a6e22e">AuthenticateToken</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">token</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">authenticator</span>.<span style="color:#a6e22e">Response</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
- <span style="color:#75715e">// 1. 校验 token 格式
-</span><span style="color:#75715e"></span> <span style="color:#a6e22e">tokenID</span>, <span style="color:#a6e22e">tokenSecret</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstraptokenutil</span>.<span style="color:#a6e22e">ParseToken</span>(<span style="color:#a6e22e">token</span>)
- <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+	<span style="color:#75715e">// 1. 校验 token 格式
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">tokenID</span>, <span style="color:#a6e22e">tokenSecret</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstraptokenutil</span>.<span style="color:#a6e22e">ParseToken</span>(<span style="color:#a6e22e">token</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
- }
-   
- <span style="color:#75715e">// 2. 拼接 secret name，获取 secret 对象
-</span><span style="color:#75715e"></span> <span style="color:#a6e22e">secretName</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenSecretPrefix</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">tokenID</span>
- <span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">lister</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">secretName</span>)
- <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+	}
+
+	<span style="color:#75715e">// 2. 拼接 secret name，获取 secret 对象
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">secretName</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenSecretPrefix</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">tokenID</span>
+	<span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">lister</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">secretName</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">IsNotFound</span>(<span style="color:#a6e22e">err</span>) {
          <span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">3</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;No secret of name %s to match bootstrap bearer token&#34;</span>, <span style="color:#a6e22e">secretName</span>)
          <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
      }
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">err</span>
- }
-   
- <span style="color:#75715e">// 3. 校验 secret 有效，不在删除中
-</span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">secret</span>.<span style="color:#a6e22e">DeletionTimestamp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+	}
+
+	<span style="color:#75715e">// 3. 校验 secret 有效，不在删除中
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">secret</span>.<span style="color:#a6e22e">DeletionTimestamp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
      <span style="color:#a6e22e">tokenErrorf</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#e6db74">&#34;is deleted and awaiting removal&#34;</span>)
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
- }
-   
- <span style="color:#75715e">// 4. 校验 secret 类型必须是 bootstrap.kubernetes.io/token
-</span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> string(<span style="color:#a6e22e">secret</span>.<span style="color:#a6e22e">Type</span>) <span style="color:#f92672">!=</span> string(<span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">SecretTypeBootstrapToken</span>) <span style="color:#f92672">||</span> <span style="color:#a6e22e">secret</span>.<span style="color:#a6e22e">Data</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+	}
+
+	<span style="color:#75715e">// 4. 校验 secret 类型必须是 bootstrap.kubernetes.io/token
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> string(<span style="color:#a6e22e">secret</span>.<span style="color:#a6e22e">Type</span>) <span style="color:#f92672">!=</span> string(<span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">SecretTypeBootstrapToken</span>) <span style="color:#f92672">||</span> <span style="color:#a6e22e">secret</span>.<span style="color:#a6e22e">Data</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
      <span style="color:#a6e22e">tokenErrorf</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#e6db74">&#34;has invalid type, expected %s.&#34;</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">SecretTypeBootstrapToken</span>)
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
- }
-   
- <span style="color:#75715e">// 5. 校验 token secret 有效
-</span><span style="color:#75715e"></span> <span style="color:#a6e22e">ts</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">GetData</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenSecretKey</span>)
- <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">subtle</span>.<span style="color:#a6e22e">ConstantTimeCompare</span>([]byte(<span style="color:#a6e22e">ts</span>), []byte(<span style="color:#a6e22e">tokenSecret</span>)) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span> {
+	}
+
+	<span style="color:#75715e">// 5. 校验 token secret 有效
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">ts</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">GetData</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenSecretKey</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">subtle</span>.<span style="color:#a6e22e">ConstantTimeCompare</span>([]byte(<span style="color:#a6e22e">ts</span>), []byte(<span style="color:#a6e22e">tokenSecret</span>)) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span> {
      <span style="color:#a6e22e">tokenErrorf</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#e6db74">&#34;has invalid value for key %s, expected %s.&#34;</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenSecretKey</span>, <span style="color:#a6e22e">tokenSecret</span>)
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
- }
-   
- <span style="color:#75715e">// 6. 校验 token id 有效
-</span><span style="color:#75715e"></span> <span style="color:#a6e22e">id</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">GetData</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenIDKey</span>)
- <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">id</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">tokenID</span> {
+	}
+
+	<span style="color:#75715e">// 6. 校验 token id 有效
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">id</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">GetData</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenIDKey</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">id</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">tokenID</span> {
      <span style="color:#a6e22e">tokenErrorf</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#e6db74">&#34;has invalid value for key %s, expected %s.&#34;</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenIDKey</span>, <span style="color:#a6e22e">tokenID</span>)
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
- }
-   
- <span style="color:#75715e">// 7. 校验 token 是否过期
-</span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">HasExpired</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()) {
+	}
+
+	<span style="color:#75715e">// 7. 校验 token 是否过期
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">HasExpired</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()) {
      <span style="color:#75715e">// logging done in isSecretExpired method.
 </span><span style="color:#75715e"></span>     <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
- }
-   
- <span style="color:#75715e">// 8. 校验 secret 对象的 data 字段中，key 为 usage-bootstrap-authentication，value 为 true
-</span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">GetData</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenUsageAuthentication</span>) <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;true&#34;</span> {
+	}
+
+	<span style="color:#75715e">// 8. 校验 secret 对象的 data 字段中，key 为 usage-bootstrap-authentication，value 为 true
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">GetData</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenUsageAuthentication</span>) <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;true&#34;</span> {
      <span style="color:#a6e22e">tokenErrorf</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#e6db74">&#34;not marked %s=true.&#34;</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenUsageAuthentication</span>)
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
- }
-   
- <span style="color:#75715e">// 9. 获取 secret.data[auth-extra-groups]，与 default group 组合
-</span><span style="color:#75715e"></span> <span style="color:#a6e22e">groups</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">GetGroups</span>(<span style="color:#a6e22e">secret</span>)
- <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+	}
+
+	<span style="color:#75715e">// 9. 获取 secret.data[auth-extra-groups]，与 default group 组合
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">groups</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bootstrapsecretutil</span>.<span style="color:#a6e22e">GetGroups</span>(<span style="color:#a6e22e">secret</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
      <span style="color:#a6e22e">tokenErrorf</span>(<span style="color:#a6e22e">secret</span>, <span style="color:#e6db74">&#34;has invalid value for key %s: %v.&#34;</span>, <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapTokenExtraGroupsKey</span>, <span style="color:#a6e22e">err</span>)
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
- }
-   
- <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">authenticator</span>.<span style="color:#a6e22e">Response</span>{
+	}
+
+	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">authenticator</span>.<span style="color:#a6e22e">Response</span>{
      <span style="color:#a6e22e">User</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">DefaultInfo</span>{
          <span style="color:#a6e22e">Name</span>:   <span style="color:#a6e22e">bootstrapapi</span>.<span style="color:#a6e22e">BootstrapUserPrefix</span> <span style="color:#f92672">+</span> string(<span style="color:#a6e22e">id</span>),
          <span style="color:#a6e22e">Groups</span>: <span style="color:#a6e22e">groups</span>,
      },
- }, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
+	}, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
 }
 </code></pre></div></li>
 </ol>
@@ -935,45 +936,45 @@ https://github.com/alex-shpak/hugo-book
 <p>认证实现</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// pkg/serviceaccount/jwt.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">j</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">jwtTokenAuthenticator</span>) <span style="color:#a6e22e">AuthenticateToken</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">tokenData</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">authenticator</span>.<span style="color:#a6e22e">Response</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
- <span style="color:#75715e">// 1. 校验 token 格式正确
-</span><span style="color:#75715e"></span> <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">j</span>.<span style="color:#a6e22e">hasCorrectIssuer</span>(<span style="color:#a6e22e">tokenData</span>) {
+	<span style="color:#75715e">// 1. 校验 token 格式正确
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">j</span>.<span style="color:#a6e22e">hasCorrectIssuer</span>(<span style="color:#a6e22e">tokenData</span>) {
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
- }
-   
- <span style="color:#75715e">// 2. 解析 JWT 对象
-</span><span style="color:#75715e"></span> <span style="color:#a6e22e">tok</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">jwt</span>.<span style="color:#a6e22e">ParseSigned</span>(<span style="color:#a6e22e">tokenData</span>)
- <span style="color:#f92672">...</span>
-   
- <span style="color:#a6e22e">public</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">jwt</span>.<span style="color:#a6e22e">Claims</span>{}
- <span style="color:#a6e22e">private</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">j</span>.<span style="color:#a6e22e">validator</span>.<span style="color:#a6e22e">NewPrivateClaims</span>()
-   
- <span style="color:#75715e">// TODO: Pick the key that has the same key ID as `tok`, if one exists.
-</span><span style="color:#75715e"></span> <span style="color:#66d9ef">var</span> (
+	}
+
+	<span style="color:#75715e">// 2. 解析 JWT 对象
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">tok</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">jwt</span>.<span style="color:#a6e22e">ParseSigned</span>(<span style="color:#a6e22e">tokenData</span>)
+	<span style="color:#f92672">...</span>
+
+	<span style="color:#a6e22e">public</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">jwt</span>.<span style="color:#a6e22e">Claims</span>{}
+	<span style="color:#a6e22e">private</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">j</span>.<span style="color:#a6e22e">validator</span>.<span style="color:#a6e22e">NewPrivateClaims</span>()
+
+	<span style="color:#75715e">// TODO: Pick the key that has the same key ID as `tok`, if one exists.
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> (
      <span style="color:#a6e22e">found</span>   <span style="color:#66d9ef">bool</span>
      <span style="color:#a6e22e">errlist</span> []<span style="color:#66d9ef">error</span>
- )
- <span style="color:#75715e">// 3. 使用--service-account-key-file 提供的密钥，反序列化 JWT
-</span><span style="color:#75715e"></span> <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">key</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">j</span>.<span style="color:#a6e22e">keys</span> {
+	)
+	<span style="color:#75715e">// 3. 使用--service-account-key-file 提供的密钥，反序列化 JWT
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">key</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">j</span>.<span style="color:#a6e22e">keys</span> {
      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tok</span>.<span style="color:#a6e22e">Claims</span>(<span style="color:#a6e22e">key</span>, <span style="color:#a6e22e">public</span>, <span style="color:#a6e22e">private</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
          <span style="color:#a6e22e">errlist</span> = append(<span style="color:#a6e22e">errlist</span>, <span style="color:#a6e22e">err</span>)
          <span style="color:#66d9ef">continue</span>
      }
      <span style="color:#a6e22e">found</span> = <span style="color:#66d9ef">true</span>
      <span style="color:#66d9ef">break</span>
- }
-   
- <span style="color:#f92672">...</span>
-       
- <span style="color:#75715e">// 4. 验证 namespace 是否正确、serviceAccountName、serviceAccountID 是否存在，token 是否失效
-</span><span style="color:#75715e"></span> <span style="color:#a6e22e">sa</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">j</span>.<span style="color:#a6e22e">validator</span>.<span style="color:#a6e22e">Validate</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">tokenData</span>, <span style="color:#a6e22e">public</span>, <span style="color:#a6e22e">private</span>)
- <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+	}
+
+	<span style="color:#f92672">...</span>
+
+	<span style="color:#75715e">// 4. 验证 namespace 是否正确、serviceAccountName、serviceAccountID 是否存在，token 是否失效
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">sa</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">j</span>.<span style="color:#a6e22e">validator</span>.<span style="color:#a6e22e">Validate</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">tokenData</span>, <span style="color:#a6e22e">public</span>, <span style="color:#a6e22e">private</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">err</span>
- }
-   
- <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">authenticator</span>.<span style="color:#a6e22e">Response</span>{
+	}
+
+	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">authenticator</span>.<span style="color:#a6e22e">Response</span>{
      <span style="color:#a6e22e">User</span>:      <span style="color:#a6e22e">sa</span>.<span style="color:#a6e22e">UserInfo</span>(),
      <span style="color:#a6e22e">Audiences</span>: <span style="color:#a6e22e">auds</span>,
- }, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
+	}, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
 }
 </code></pre></div><p>服务账号被身份认证后，所确定的用户名为 <code>system:serviceaccount:&lt;NAMESPACE&gt;:&lt;SERVICEACCOUNT&gt;</code>， 并被分配到用户组 <code>system:serviceaccounts</code> 和 <code>system:serviceaccounts:&lt;NAMESPACE&gt;</code>。</p>
 </li>
@@ -1220,9 +1221,9 @@ sequenceDiagram
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/31273576d6b34353b8c159207765c9be12bc3500" title='Last modified by howieyuen | January 26, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/e20d276ff9e2341d882766c6a564cffb9b0a9bd8" title='Last modified by howieyuen | June 6, 2021' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>January 26, 2021</span>
+      <span>June 6, 2021</span>
     </a>
   </div>
 
