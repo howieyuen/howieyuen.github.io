@@ -16,13 +16,13 @@ type hmap struct { // map 中的元素个数，必须放在 struct 的第一个�
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/data-structure/map/" /><meta property="article:section" content="docs" />
 
-<meta property="article:modified_time" content="2021-06-06T16:45:06&#43;08:00" />
+<meta property="article:modified_time" content="2021-09-01T01:12:37+08:00" />
 
 <title>map | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.0efbbe0ecfafaca7f48832c10fc0863cac9b2983c8cd2f9d1deff3be8540dbb0.js" integrity="sha256-Dvu&#43;Ds&#43;vrKf0iDLBD8CGPKybKYPIzS&#43;dHe/zvoVA27A="></script>
+<script defer src="/en.search.min.844537ff789ce1edbdd5c6f78ed9599164d9ffe8724f384e27e436b5de87a485.js" integrity="sha256-hEU3/3ic4e291cb3jtlZkWTZ/&#43;hyTzhOJ&#43;Q2td6HpIU="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -696,7 +696,7 @@ golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使�
   <a class="anchor" href="#12-%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84">#</a>
 </h2>
 <p><strong>hmap</strong> 可以理解为 header of map 的缩写，即 map 数据结构的入口。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">hmap</span> <span style="color:#66d9ef">struct</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">hmap</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#75715e">// map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">count</span>     <span style="color:#66d9ef">int</span> 
 	<span style="color:#75715e">// map 状态标识，比如是否在被写或者迁移等，因为 map 不是线程安全的所以操作时需要判断 flags
@@ -717,7 +717,7 @@ golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使�
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">extra</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mapextra</span> <span style="color:#75715e">// optional fields
 </span><span style="color:#75715e"></span>}
 </code></pre></div><p>用 <strong>mapextra</strong> 来存储 key 和 value 都不是指针类型的 map，并且大小都小于 128 字节，这样可以避免 GC 扫描整个 map。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">mapextra</span> <span style="color:#66d9ef">struct</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">mapextra</span> <span style="color:#66d9ef">struct</span> {
     <span style="color:#75715e">// 如果 key 和 value 都不包含指针，并且可以被 inline(&lt;=128 字节）
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// 使用 extra 来存储 overflow bucket，这样可以避免 GC 扫描整个 map
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// 然而 bmap.overflow 也是个指针。这时候我们只能把这些 overflow 的指针
@@ -731,7 +731,7 @@ golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使�
 </span><span style="color:#75715e"></span>    <span style="color:#a6e22e">nextOverflow</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">bmap</span>
 }
 </code></pre></div><p><strong>bmap</strong> 可以理解为 buckets of map 的缩写，它就是 map 中 bucket 的本体，即存 key 和 value 数据的“桶”。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">bmap</span> <span style="color:#66d9ef">struct</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">bmap</span> <span style="color:#66d9ef">struct</span> {
     <span style="color:#75715e">// tophash 是 hash 值的高 8 位
 </span><span style="color:#75715e"></span>    <span style="color:#a6e22e">tophash</span> [<span style="color:#a6e22e">bucketCnt</span>]<span style="color:#66d9ef">uint8</span>
     <span style="color:#75715e">// 以下字段没有显示定义在 bmap，但是编译时编译器会自动添加
@@ -826,9 +826,9 @@ Go 设计者为了让大家不依赖遍历的顺序，<strong>故意在实现 ma
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/e20d276ff9e2341d882766c6a564cffb9b0a9bd8" title='Last modified by howieyuen | June 6, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/82fb21107fd5f199f4956ff4f922c8b4a1acd525" title='Last modified by howieyuen | August 31, 2021' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>June 6, 2021</span>
+      <span>August 31, 2021</span>
     </a>
   </div>
 

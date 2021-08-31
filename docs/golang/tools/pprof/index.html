@@ -15,14 +15,14 @@ Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供�
     类型 描述 备注     allocs 内存分配情况的采样信息 可以用浏览器打开，但可读性不高   blocks 阻塞操作情况的采样信息 可以用浏览器打开，但可读性不高   cmdline 当前程序的命令行调用 可以用浏览器打开，显示编译文件的临时目录   goroutine 当前所有协程的堆栈信息 可以用浏览器打开，但可读性不高   heap 堆上内存使用情况的采样信息 可以用浏览器打开，但可读性不高   mutex 锁争用情况的采样信息 可以用浏览器打开，但可读性不高   profile CPU 占用情况的采样信息 浏览器打开会下载文件   threadcreate 系统线程创建情况的采样信息 可以用浏览器打开，但可读性不高   trace 程序运行跟踪信息 浏览器打开会下载文件，本文不涉及，可另行参阅 深入浅出 Go trace    allocs 和 heap 采样的信息一致，不过前者是所有对象的内存分配，而 heap 则是活跃对象的内存分配。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/tools/pprof/" /><meta property="article:section" content="docs" />
-<meta property="article:published_time" content="2021-01-21T00:00:00&#43;00:00" />
-<meta property="article:modified_time" content="2021-06-06T16:45:06&#43;08:00" />
+<meta property="article:published_time" content="2021-01-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-09-01T01:12:37+08:00" />
 
 <title>pprof | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.0efbbe0ecfafaca7f48832c10fc0863cac9b2983c8cd2f9d1deff3be8540dbb0.js" integrity="sha256-Dvu&#43;Ds&#43;vrKf0iDLBD8CGPKybKYPIzS&#43;dHe/zvoVA27A="></script>
+<script defer src="/en.search.min.844537ff789ce1edbdd5c6f78ed9599164d9ffe8724f384e27e436b5de87a485.js" integrity="sha256-hEU3/3ic4e291cb3jtlZkWTZ/&#43;hyTzhOJ&#43;Q2td6HpIU="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -767,7 +767,7 @@ https://github.com/alex-shpak/hugo-book
 </h2>
 <p>拿 CPU profiling 举例，增加两行代码，调用 <code>pprof.StartCPUProfile</code> 启动 cpu profiling，
 调用 <code>pprof.StopCPUProfile()</code> 将数据刷到文件里：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;runtime/pprof&#34;</span>
 
@@ -786,7 +786,7 @@ https://github.com/alex-shpak/hugo-book
   <a class="anchor" href="#32-nethttppprof">#</a>
 </h2>
 <p>启动一个端口（和正常提供业务服务的端口不同）监听 pprof 请求：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> (
     <span style="color:#e6db74">&#34;log&#34;</span>
@@ -814,7 +814,7 @@ https://github.com/alex-shpak/hugo-book
     }
 }
 </code></pre></div><p>pprof 包会自动注册 handler， 处理相关的请求：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// src/net/http/pprof/pprof.go:71
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// src/net/http/pprof/pprof.go:71
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">init</span>() {
     <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/debug/pprof/&#34;</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>(<span style="color:#a6e22e">Index</span>))
     <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/debug/pprof/cmdline&#34;</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>(<span style="color:#a6e22e">Cmdline</span>))
@@ -840,7 +840,7 @@ frameborder="1">
 </h1>
 <p>开始采样之前，需要模拟服务访问，这里用到的是压力测试管径 
   <a href="https://github.com/wg/wrk">wrk</a>。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 启动 500 个 HTTP 连接，30 个线程，持续访问 1 分钟</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 启动 500 个 HTTP 连接，30 个线程，持续访问 1 分钟</span>
 wrk -c500 -t30 -d1m http://localhost:8888/zzz@foo.bar
 </code></pre></div><h2 id="41-报告生成">
   4.1 报告生成
@@ -854,7 +854,7 @@ wrk -c500 -t30 -d1m http://localhost:8888/zzz@foo.bar
 <p>下面以内置页面为例：
 在 debug/pprof 页面点击 profile，会在后台进行默认 30s 的数据采样，采样完成后，返回给浏览器一个采样文件，其他命令类似。
 然后使用以下命令：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go tool pprof -http<span style="color:#f92672">=</span>:8080 profile
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go tool pprof -http<span style="color:#f92672">=</span>:8080 profile
 </code></pre></div><p>会在本地 8080 端口启动 http 服务，提供可视化界面：</p>
 <iframe 
 src="/golang/tools/pprof/cpu.html"
@@ -876,12 +876,12 @@ frameborder="1">
   <a class="anchor" href="#42-%e4%ba%a4%e4%ba%92%e5%bc%8f%e5%91%bd%e4%bb%a4">#</a>
 </h2>
 <p>除了使用内置的页面采样分析，也直接使用如下命令，不需要通过浏览器直接进入~</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># step1：压测工具访问服务</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># step1：压测工具访问服务</span>
 wrk -c500 -t30 -d1m http://localhost:8888/zzz@foo.bar
 <span style="color:#75715e"># step2：采集数据，默认 30s</span>
 go tool pprof http://localhost:8888/debug/pprof/profile
 </code></pre></div><p>其他类似的采集数据命令还有：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 自定义等待时间 120s</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 自定义等待时间 120s</span>
 go tool pprof http://localhost:8888/debug/pprof/profile?second<span style="color:#f92672">=</span><span style="color:#ae81ff">120</span>
     
 <span style="color:#75715e"># 下载 heap profile</span>
@@ -896,7 +896,7 @@ go tool pprof http://localhost:8888/debug/pprof/block
 <span style="color:#75715e"># 下载 mutex profile</span>
 go tool pprof http://localhost:8888/debug/pprof/mutex
 </code></pre></div><p>下面开始进入命令行交互式模式，使用 <code>top</code>、<code>list</code>、<code>web</code> 等命令：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>pprof<span style="color:#f92672">)</span> top
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>pprof<span style="color:#f92672">)</span> top
 Showing nodes accounting <span style="color:#66d9ef">for</span> 86.85s, 91.15% of 95.28s total
 Dropped <span style="color:#ae81ff">397</span> nodes <span style="color:#f92672">(</span>cum &lt;<span style="color:#f92672">=</span> 0.48s<span style="color:#f92672">)</span>
 Showing top <span style="color:#ae81ff">10</span> nodes out of <span style="color:#ae81ff">93</span>
@@ -943,7 +943,7 @@ Showing top <span style="color:#ae81ff">10</span> nodes out of <span style="colo
 </tbody>
 </table>
 <p>上面的结果没啥有价值的信息，都是 go 的底层调用。使用 <code>list</code> 正则匹配业务代码：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>pprof<span style="color:#f92672">)</span> list handler
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>pprof<span style="color:#f92672">)</span> list handler
 Total: 1.65mins
 ROUTINE <span style="color:#f92672">========================</span> main.handler in /Users/yuanhao/Study/GoProjects/testProject/pprof/main.go
       30ms      2.63s <span style="color:#f92672">(</span>flat, cum<span style="color:#f92672">)</span>  2.65% of Total
@@ -1036,9 +1036,9 @@ width="35%"
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/e20d276ff9e2341d882766c6a564cffb9b0a9bd8" title='Last modified by howieyuen | June 6, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/82fb21107fd5f199f4956ff4f922c8b4a1acd525" title='Last modified by howieyuen | August 31, 2021' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>June 6, 2021</span>
+      <span>August 31, 2021</span>
     </a>
   </div>
 

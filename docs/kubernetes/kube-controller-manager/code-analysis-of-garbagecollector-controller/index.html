@@ -17,14 +17,14 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
 func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool, error) { // 1." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" /><meta property="article:section" content="docs" />
-<meta property="article:published_time" content="2020-10-25T00:00:00&#43;00:00" />
-<meta property="article:modified_time" content="2021-06-06T16:45:06&#43;08:00" />
+<meta property="article:published_time" content="2020-10-25T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-09-01T01:12:37+08:00" />
 
 <title>GC Controller 源码分析 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.0efbbe0ecfafaca7f48832c10fc0863cac9b2983c8cd2f9d1deff3be8540dbb0.js" integrity="sha256-Dvu&#43;Ds&#43;vrKf0iDLBD8CGPKybKYPIzS&#43;dHe/zvoVA27A="></script>
+<script defer src="/en.search.min.844537ff789ce1edbdd5c6f78ed9599164d9ffe8724f384e27e436b5de87a485.js" integrity="sha256-hEU3/3ic4e291cb3jtlZkWTZ/&#43;hyTzhOJ&#43;Q2td6HpIU="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -710,7 +710,7 @@ https://github.com/alex-shpak/hugo-book
 <li>调用 <code>garbagecollector.NewDebugHandler()</code> 注册 debug 接口，用来提供集群内所有对象的关联关系；</li>
 </ol>
 <p><code>cmd/kube-controller-manager/app/core.go:538</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">startGarbageCollectorController</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">ControllerContext</span>) (<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">startGarbageCollectorController</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">ControllerContext</span>) (<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#75715e">// 1. 判断是否启用 gc controller，默认是 true
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ComponentConfig</span>.<span style="color:#a6e22e">GarbageCollectorController</span>.<span style="color:#a6e22e">EnableGarbageCollector</span> {
 		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
@@ -766,7 +766,7 @@ https://github.com/alex-shpak/hugo-book
 </h3>
 <p><code>garbageCollector.Run()</code> 方法主要作用是启动生产者和消费者。生产者就是 monitors，监听集群中的资源对象，将产生的新事件分别放入 <code>attemptToDelete</code> 和 <code>attemptToOrphan</code> 两个队列中。消费者就是处理这 2 个队列中的事件，要么删除对象，要么更新对象依赖关系。该方法的核心在于 <code>gc.dependencyGraphBuilder.Run()</code> 启动生产者和 for 循环启动消费者。</p>
 <p><code>pkg/controller/garbagecollector/garbagecollector.go:122</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">Run</span>(<span style="color:#a6e22e">workers</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">Run</span>(<span style="color:#a6e22e">workers</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) {
 	<span style="color:#f92672">...</span>
 
 	<span style="color:#75715e">// 1. 启动所有 monitors 即 informers，监听集群资源
@@ -794,7 +794,7 @@ https://github.com/alex-shpak/hugo-book
 </code></pre></div><p><strong>GraphBuilder</strong>
 GraphBuilder 在整个垃圾收集的过程中，起到了承上启下的作用。首先看下它的结构：</p>
 <p><code>pkg/controller/garbagecollector/graph_builder.go:73</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">GraphBuilder</span> <span style="color:#66d9ef">struct</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">GraphBuilder</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">restMapper</span> <span style="color:#a6e22e">meta</span>.<span style="color:#a6e22e">RESTMapper</span>
 
 	<span style="color:#75715e">// monitor 就是 informer，一个 monitor list/watch 一种资源
@@ -830,7 +830,7 @@ GraphBuilder 在整个垃圾收集的过程中，起到了承上启下的作用�
 }
 </code></pre></div><p>其中 <code>uidToNode</code> 字段作为维护对象之间依赖关系，比如创建一个 Deployment 时，会创建 ReplicaSet，ReplicaSet 才会创建 Pod。那么 Pod 的 owner 是 ReplicaSet，ReplicaSet 的 owner 是 Deployment。<code>uidToNode</code> 字段的结构定义如下：</p>
 <p><code>pkg/controller/garbagecollector/graph.go:162</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">concurrentUIDToNode</span> <span style="color:#66d9ef">struct</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">concurrentUIDToNode</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">uidToNodeLock</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">RWMutex</span>
 	<span style="color:#a6e22e">uidToNode</span>     <span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">types</span>.<span style="color:#a6e22e">UID</span>]<span style="color:#f92672">*</span><span style="color:#a6e22e">node</span>
 }
@@ -866,7 +866,7 @@ GraphBuilder 在整个垃圾收集的过程中，起到了承上启下的作用�
 <p><strong>gc.dependencyGraphBuilder.Run()</strong>
 继续回到 <code>gc.dependencyGraphBuilder.Run()</code> 方法，它的功能上文已经提到，就是启动生产者。代码如下：</p>
 <p><code>pkg/controller/garbagecollector/graph_builder.go:290</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gb</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GraphBuilder</span>) <span style="color:#a6e22e">Run</span>(<span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gb</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GraphBuilder</span>) <span style="color:#a6e22e">Run</span>(<span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) {
 	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;GraphBuilder running&#34;</span>)
 	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;GraphBuilder stopping&#34;</span>)
 
@@ -925,7 +925,7 @@ GraphBuilder 在整个垃圾收集的过程中，起到了承上启下的作用�
 首先从 <code>uidToNode</code> 中删除该对象，然后从该 node 所有 owners 的 dependents 中删除该对象，将该 node 所有的 dependents 加入到 <code>attemptToDelete</code> 队列中，最后检查该 node 的所有 owners，若有处于删除状态的 owner，此时该 owner 可能处于删除阻塞状态正在等待该 node 的删除，将该 owner 加入到 <code>attemptToDelete</code> 中；</li>
 </ul>
 <p><code>pkg/controller/garbagecollector/graph_builder.go:530</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gb</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GraphBuilder</span>) <span style="color:#a6e22e">runProcessGraphChanges</span>() {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gb</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GraphBuilder</span>) <span style="color:#a6e22e">runProcessGraphChanges</span>() {
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">gb</span>.<span style="color:#a6e22e">processGraphChanges</span>() {
 	}
 }
@@ -1031,7 +1031,7 @@ GraphBuilder 在整个垃圾收集的过程中，起到了承上启下的作用�
 </h3>
 <p><code>gc.runAttemptToDeleteWorker()</code> 方法就是将 <code>attemptToDelete</code> 队列中的对象取出，并删除，如果删除失败则重进队列重试。</p>
 <p><code>pkg/controller/garbagecollector/garbagecollector.go:285</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">runAttemptToDeleteWorker</span>() {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">runAttemptToDeleteWorker</span>() {
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">gc</span>.<span style="color:#a6e22e">attemptToDeleteWorker</span>() {
 	}
 }
@@ -1082,7 +1082,7 @@ GraphBuilder 在整个垃圾收集的过程中，起到了承上启下的作用�
 </li>
 </ol>
 <p><code>pkg/controller/garbagecollector/garbagecollector.go:409</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">attemptToDeleteItem</span>(<span style="color:#a6e22e">item</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">node</span>) <span style="color:#66d9ef">error</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">attemptToDeleteItem</span>(<span style="color:#a6e22e">item</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">node</span>) <span style="color:#66d9ef">error</span> {
 	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">2</span>).<span style="color:#a6e22e">InfoS</span>(<span style="color:#e6db74">&#34;Processing object&#34;</span>, <span style="color:#e6db74">&#34;object&#34;</span>, <span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">KRef</span>(<span style="color:#a6e22e">item</span>.<span style="color:#a6e22e">identity</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">item</span>.<span style="color:#a6e22e">identity</span>.<span style="color:#a6e22e">Name</span>),
 		<span style="color:#e6db74">&#34;objectUID&#34;</span>, <span style="color:#a6e22e">item</span>.<span style="color:#a6e22e">identity</span>.<span style="color:#a6e22e">UID</span>, <span style="color:#e6db74">&#34;kind&#34;</span>, <span style="color:#a6e22e">item</span>.<span style="color:#a6e22e">identity</span>.<span style="color:#a6e22e">Kind</span>)
 
@@ -1193,7 +1193,7 @@ GraphBuilder 在整个垃圾收集的过程中，起到了承上启下的作用�
 <li>以上两步中若有失败的会进行重试；</li>
 </ol>
 <p><code>pkg/controller/garbagecollector/garbagecollector.go:602</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">attemptToOrphanWorker</span>() <span style="color:#66d9ef">bool</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">attemptToOrphanWorker</span>() <span style="color:#66d9ef">bool</span> {
 	<span style="color:#a6e22e">item</span>, <span style="color:#a6e22e">quit</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">gc</span>.<span style="color:#a6e22e">attemptToOrphan</span>.<span style="color:#a6e22e">Get</span>()
 	<span style="color:#a6e22e">gc</span>.<span style="color:#a6e22e">workerLock</span>.<span style="color:#a6e22e">RLock</span>()
 	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">gc</span>.<span style="color:#a6e22e">workerLock</span>.<span style="color:#a6e22e">RUnlock</span>()
@@ -1287,7 +1287,7 @@ p13 --> p132(gc.removeFinalizer)
 <li>将 newResources 作为 oldResources，继续进行下一轮的同步；</li>
 </ol>
 <p><code>pkg/controller/garbagecollector/garbagecollector.go:168</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">Sync</span>(<span style="color:#a6e22e">discoveryClient</span> <span style="color:#a6e22e">discovery</span>.<span style="color:#a6e22e">ServerResourcesInterface</span>, <span style="color:#a6e22e">period</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>, <span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">Sync</span>(<span style="color:#a6e22e">discoveryClient</span> <span style="color:#a6e22e">discovery</span>.<span style="color:#a6e22e">ServerResourcesInterface</span>, <span style="color:#a6e22e">period</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>, <span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) {
 	<span style="color:#a6e22e">oldResources</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupVersionResource</span>]<span style="color:#66d9ef">struct</span>{})
 	<span style="color:#a6e22e">wait</span>.<span style="color:#a6e22e">Until</span>(<span style="color:#66d9ef">func</span>() {
 		<span style="color:#75715e">// 1. 获取集群内所有的 deletableResources 作为 newResources
@@ -1356,7 +1356,7 @@ p13 --> p132(gc.removeFinalizer)
 </h3>
 <p><code>GetDeletableResources()</code> 中首先通过调用 <code>discoveryClient.ServerPreferredResources()</code> 方法获取集群内所有的 resource 信息，然后通过调用 <code>discovery.FilteredBy()</code> 过滤出支持 “delete”, “list”, “watch” 三种方法的 resource 作为 deletableResources。</p>
 <p><code>pkg/controller/garbagecollector/garbagecollector.go:658</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">GetDeletableResources</span>(<span style="color:#a6e22e">discoveryClient</span> <span style="color:#a6e22e">discovery</span>.<span style="color:#a6e22e">ServerResourcesInterface</span>) <span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupVersionResource</span>]<span style="color:#66d9ef">struct</span>{} {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">GetDeletableResources</span>(<span style="color:#a6e22e">discoveryClient</span> <span style="color:#a6e22e">discovery</span>.<span style="color:#a6e22e">ServerResourcesInterface</span>) <span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupVersionResource</span>]<span style="color:#66d9ef">struct</span>{} {
 	<span style="color:#75715e">// 获取集群内所有的 resource 信息
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">preferredResources</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">discoveryClient</span>.<span style="color:#a6e22e">ServerPreferredResources</span>()
 	<span style="color:#f92672">...</span>
@@ -1386,7 +1386,7 @@ p13 --> p132(gc.removeFinalizer)
 </h3>
 <p><code>gc.resyncMonitors()</code> 的功能主要是更新 GraphBuilder 的 monitors 并重新启动 monitors 监控所有的 deletableResources，GraphBuilder 的 <code>startMonitors()</code> 方法在前面的流程中已经分析过，此处不再详细说明。<code>syncMonitors()</code> 只不过是拿最新的 deletableResources，把老的 monitors 字段值更新，该删的删，该加的加而已。</p>
 <p><code>pkg/controller/garbagecollector/garbagecollector.go:113</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">resyncMonitors</span>(<span style="color:#a6e22e">deletableResources</span> <span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupVersionResource</span>]<span style="color:#66d9ef">struct</span>{}) <span style="color:#66d9ef">error</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">gc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">resyncMonitors</span>(<span style="color:#a6e22e">deletableResources</span> <span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupVersionResource</span>]<span style="color:#66d9ef">struct</span>{}) <span style="color:#66d9ef">error</span> {
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">gc</span>.<span style="color:#a6e22e">dependencyGraphBuilder</span>.<span style="color:#a6e22e">syncMonitors</span>(<span style="color:#a6e22e">deletableResources</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
 	}
@@ -1398,7 +1398,7 @@ p13 --> p132(gc.removeFinalizer)
   <a class="anchor" href="#23-garbagecollectornewdebughandler">#</a>
 </h2>
 <p><code>garbagecollector.NewDebugHandler()</code> 主要功能是对外提供一个接口供用户查询当前集群中所有资源的依赖关系，依赖关系可以以图表的形式展示。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewDebugHandler</span>(<span style="color:#a6e22e">controller</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewDebugHandler</span>(<span style="color:#a6e22e">controller</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">GarbageCollector</span>) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span> {
 	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">debugHTTPHandler</span>{<span style="color:#a6e22e">controller</span>: <span style="color:#a6e22e">controller</span>}
 }
 
@@ -1431,7 +1431,7 @@ p13 --> p132(gc.removeFinalizer)
 	<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusOK</span>)
 }
 </code></pre></div><p>使用该服务的方法如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">curl http<span style="color:#f92672">://</span><span style="color:#ae81ff">192.168.199.100</span><span style="color:#f92672">:</span><span style="color:#ae81ff">10252</span><span style="color:#f92672">/</span>debug<span style="color:#f92672">/</span>controllers<span style="color:#f92672">/</span>garbagecollector<span style="color:#f92672">/</span>graph  <span style="color:#f92672">&gt;</span> tmp.dot
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">curl http<span style="color:#f92672">://</span><span style="color:#ae81ff">192.168.199.100</span><span style="color:#f92672">:</span><span style="color:#ae81ff">10252</span><span style="color:#f92672">/</span>debug<span style="color:#f92672">/</span>controllers<span style="color:#f92672">/</span>garbagecollector<span style="color:#f92672">/</span>graph  <span style="color:#f92672">&gt;</span> tmp.dot
 
 curl http<span style="color:#f92672">://</span><span style="color:#ae81ff">192.168.199.100</span><span style="color:#f92672">:</span><span style="color:#ae81ff">10252</span><span style="color:#f92672">/</span>debug<span style="color:#f92672">/</span>controllers<span style="color:#f92672">/</span>garbagecollector<span style="color:#f92672">/</span>graph<span style="color:#f92672">?</span>uid<span style="color:#f92672">=</span>f9555d53<span style="color:#ae81ff">-2</span>b5f<span style="color:#ae81ff">-4702-9717-54</span>a313ed4fe8 <span style="color:#f92672">&gt;</span> tmp.dot
 
@@ -1482,9 +1482,9 @@ e -->|consume| g[AttemptToOrphanWorker]
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/e20d276ff9e2341d882766c6a564cffb9b0a9bd8" title='Last modified by howieyuen | June 6, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/82fb21107fd5f199f4956ff4f922c8b4a1acd525" title='Last modified by howieyuen | August 31, 2021' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>June 6, 2021</span>
+      <span>August 31, 2021</span>
     </a>
   </div>
 

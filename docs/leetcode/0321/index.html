@@ -21,14 +21,14 @@
 输入： nums1 = [6, 7] nums2 = [6, 0, 4] k = 5 输出： [6, 7, 6, 0, 4] 示例 3:" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/leetcode/0321/" /><meta property="article:section" content="docs" />
-<meta property="article:published_time" content="2020-12-02T00:00:00&#43;00:00" />
-<meta property="article:modified_time" content="2021-06-06T16:45:06&#43;08:00" />
+<meta property="article:published_time" content="2020-12-02T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-09-01T01:12:37+08:00" />
 
 <title>321. 拼接最大数 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.0efbbe0ecfafaca7f48832c10fc0863cac9b2983c8cd2f9d1deff3be8540dbb0.js" integrity="sha256-Dvu&#43;Ds&#43;vrKf0iDLBD8CGPKybKYPIzS&#43;dHe/zvoVA27A="></script>
+<script defer src="/en.search.min.844537ff789ce1edbdd5c6f78ed9599164d9ffe8724f384e27e436b5de87a485.js" integrity="sha256-hEU3/3ic4e291cb3jtlZkWTZ/&#43;hyTzhOJ&#43;Q2td6HpIU="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -708,7 +708,7 @@ k = 3
 <li>按照字典序降序合并子序列</li>
 <li>保存对应的整数较大的子序列</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">maxNumber</span>(<span style="color:#a6e22e">nums1</span> []<span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">nums2</span> []<span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">k</span> <span style="color:#66d9ef">int</span>) []<span style="color:#66d9ef">int</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">maxNumber</span>(<span style="color:#a6e22e">nums1</span> []<span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">nums2</span> []<span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">k</span> <span style="color:#66d9ef">int</span>) []<span style="color:#66d9ef">int</span> {
 	<span style="color:#a6e22e">initialSize</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
 	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">nums2</span>) &lt; <span style="color:#a6e22e">k</span> {
 		<span style="color:#a6e22e">initialSize</span> = <span style="color:#a6e22e">k</span> <span style="color:#f92672">-</span> len(<span style="color:#a6e22e">nums2</span>)
@@ -771,9 +771,9 @@ k = 3
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/e20d276ff9e2341d882766c6a564cffb9b0a9bd8" title='Last modified by howieyuen | June 6, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/82fb21107fd5f199f4956ff4f922c8b4a1acd525" title='Last modified by howieyuen | August 31, 2021' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>June 6, 2021</span>
+      <span>August 31, 2021</span>
     </a>
   </div>
 

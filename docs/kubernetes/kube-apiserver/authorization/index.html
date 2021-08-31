@@ -17,14 +17,14 @@ kube-apiserver 目前提供了 6 种鉴权机制：
 // staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go type Decision int const ( DecisionDeny Decision = iota DecisionAllow DecisionNoOpinion )  DecisionDeny：拒绝该操作 DecisionAllow：允许该操作 DecisionNoOpinion：表示无明显意见允许或拒绝，继续执行下一个鉴权模块  1." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/" /><meta property="article:section" content="docs" />
-<meta property="article:published_time" content="2020-12-29T00:00:00&#43;00:00" />
-<meta property="article:modified_time" content="2021-06-06T16:45:06&#43;08:00" />
+<meta property="article:published_time" content="2020-12-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-09-01T01:12:37+08:00" />
 
 <title>鉴权机制 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.0efbbe0ecfafaca7f48832c10fc0863cac9b2983c8cd2f9d1deff3be8540dbb0.js" integrity="sha256-Dvu&#43;Ds&#43;vrKf0iDLBD8CGPKybKYPIzS&#43;dHe/zvoVA27A="></script>
+<script defer src="/en.search.min.844537ff789ce1edbdd5c6f78ed9599164d9ffe8724f384e27e436b5de87a485.js" integrity="sha256-hEU3/3ic4e291cb3jtlZkWTZ/&#43;hyTzhOJ&#43;Q2td6HpIU="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -731,7 +731,7 @@ https://github.com/alex-shpak/hugo-book
 </h2>
 <p>Decision 决策状态类似于认证中的 true 和 false，用于决定是否鉴权成功。
 鉴权支持三种 Decision 决策状态，例如鉴权成功，则返回 DecisionAllow，代码如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Decision</span> <span style="color:#66d9ef">int</span>
 
 <span style="color:#66d9ef">const</span> (
@@ -749,7 +749,7 @@ https://github.com/alex-shpak/hugo-book
   <a class="anchor" href="#12-authorizer%e9%89%b4%e6%9d%83%e6%8e%a5%e5%8f%a3">#</a>
 </h2>
 <p>每个鉴权模块都要实现该接口的方法，代码如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Authorizer</span> <span style="color:#66d9ef">interface</span> {
 	<span style="color:#a6e22e">Authorize</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">Attributes</span>) (<span style="color:#a6e22e">authorized</span> <span style="color:#a6e22e">Decision</span>, <span style="color:#a6e22e">reason</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>)
 }
@@ -759,7 +759,7 @@ Attributes 是决定鉴权模块从 HTTP 请求中获取鉴权信息方法的参
 如果鉴权成功，Decision 状态变成 DecisionAllow，
 如果鉴权失败，Decision 状态变成 DecisionDeny，并返回失败的原因。</p>
 <p>Attributes 定义如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Attributes</span> <span style="color:#66d9ef">interface</span> {
 	<span style="color:#a6e22e">GetUser</span>() <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Info</span>
 
@@ -788,7 +788,7 @@ Attributes 是决定鉴权模块从 HTTP 请求中获取鉴权信息方法的参
   <a class="anchor" href="#13-ruleresolver%e8%a7%84%e5%88%99%e8%a7%a3%e6%9e%90%e5%99%a8">#</a>
 </h2>
 <p>鉴权模块通过 RuleResolver 解析规则，定义如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">RuleResolver</span> <span style="color:#66d9ef">interface</span> {
 	<span style="color:#a6e22e">RulesFor</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Info</span>, <span style="color:#a6e22e">namespace</span> <span style="color:#66d9ef">string</span>) ([]<span style="color:#a6e22e">ResourceRuleInfo</span>, []<span style="color:#a6e22e">NonResourceRuleInfo</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>)
 }
@@ -800,7 +800,7 @@ RulesFor 方法接受 user 用户信息和 namespace 命名空间参数，解析
 <li>NonResourceRuleInfo：非资源类型的规则列表，例如 /healthz 的非资源接口</li>
 </ul>
 <p>以 ResourceRuleInfo 资源类型为例，定义如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">DefaultResourceRuleInfo</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">Verbs</span>         []<span style="color:#66d9ef">string</span>
 	<span style="color:#a6e22e">APIGroups</span>     []<span style="color:#66d9ef">string</span>
@@ -809,7 +809,7 @@ RulesFor 方法接受 user 用户信息和 namespace 命名空间参数，解析
 }
 </code></pre></div><p>Pod 资源规则列表示例如下，其中通配符（*）表示匹配所有，该规则表示用户对所有资源版本的 Pod 拥有所有操作权限，
 即：get、list、watch、create、update、patch、delete、deletecollection。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">resourcesRules</span>: []<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">ResourceRuleInfo</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">resourcesRules</span>: []<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">ResourceRuleInfo</span> {
     <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">DefaultResourceRuleInfo</span> {
         <span style="color:#a6e22e">Verbs</span>:     []<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;*&#34;</span>}
         <span style="color:#a6e22e">APIGroups</span>: []<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;*&#34;</span>}
@@ -820,7 +820,7 @@ RulesFor 方法接受 user 用户信息和 namespace 命名空间参数，解析
 假设 kube-apiserver 启用了 Node 鉴权模块 和 RBAC 鉴权模块。
 请求会进入 Authorization Handler 函数，该函数会遍历已经启用的鉴权模块列表，按照顺序执行每个鉴权模块，
 例如在 Node 鉴权模块返回 DecisionNoOpinion 时，会继续执行 RBAC 鉴权模块。代码如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/union/union.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/union/union.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">authzHandler</span> <span style="color:#a6e22e">unionAuthzHandler</span>) <span style="color:#a6e22e">Authorize</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Attributes</span>) (<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Decision</span>, <span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#66d9ef">var</span> (
 		<span style="color:#a6e22e">errlist</span>    []<span style="color:#66d9ef">error</span>
@@ -867,13 +867,13 @@ RulesFor 方法接受 user 用户信息和 namespace 命名空间参数，解析
   <a href="https://jsonlines.org/">JSON Lines</a> 格式描述，每行都是一个策略对象。</li>
 </ul>
 <p>ABAC 模式策略文件定义：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{<span style="color:#f92672">&#34;apiVersion&#34;</span>: <span style="color:#e6db74">&#34;abac.authorization.kubernetes.io/v1beta1&#34;</span>, <span style="color:#f92672">&#34;kind&#34;</span>: <span style="color:#e6db74">&#34;Policy&#34;</span>, <span style="color:#f92672">&#34;spec&#34;</span>: {<span style="color:#f92672">&#34;user&#34;</span>: <span style="color:#e6db74">&#34;Deck&#34;</span>, <span style="color:#f92672">&#34;namespace&#34;</span>: <span style="color:#e6db74">&#34;*&#34;</span>, <span style="color:#f92672">&#34;resource&#34;</span>: <span style="color:#e6db74">&#34;*&#34;</span>, <span style="color:#f92672">&#34;apiGroup&#34;</span>: <span style="color:#e6db74">&#34;*&#34;</span>}}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{<span style="color:#f92672">&#34;apiVersion&#34;</span>: <span style="color:#e6db74">&#34;abac.authorization.kubernetes.io/v1beta1&#34;</span>, <span style="color:#f92672">&#34;kind&#34;</span>: <span style="color:#e6db74">&#34;Policy&#34;</span>, <span style="color:#f92672">&#34;spec&#34;</span>: {<span style="color:#f92672">&#34;user&#34;</span>: <span style="color:#e6db74">&#34;Deck&#34;</span>, <span style="color:#f92672">&#34;namespace&#34;</span>: <span style="color:#e6db74">&#34;*&#34;</span>, <span style="color:#f92672">&#34;resource&#34;</span>: <span style="color:#e6db74">&#34;*&#34;</span>, <span style="color:#f92672">&#34;apiGroup&#34;</span>: <span style="color:#e6db74">&#34;*&#34;</span>}}
 </code></pre></div><p>上面的策略，Deck 用户可以对所有资源做任何操作。</p>
 <h2 id="23-实现">
   2.3 实现
   <a class="anchor" href="#23-%e5%ae%9e%e7%8e%b0">#</a>
 </h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// pkg/auth/authorizer/abac/abac.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// pkg/auth/authorizer/abac/abac.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">pl</span> <span style="color:#a6e22e">PolicyList</span>) <span style="color:#a6e22e">Authorize</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Attributes</span>) (<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Decision</span>, <span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">pl</span> {
 		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">matches</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">p</span>, <span style="color:#a6e22e">a</span>) {
@@ -886,7 +886,7 @@ RulesFor 方法接受 user 用户信息和 namespace 命名空间参数，解析
 <p>此外，ABAC 的规则解析器会根据每个策略，将资源类型的规则列表（ResoureceRuleInfo）和非资源类型的规则列表（NonResourceInfo）
 都设置为该用户有权限操作的资源版本、资源和资源操作方法。
 代码如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// pkg/auth/authorizer/abac/abac.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// pkg/auth/authorizer/abac/abac.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">pl</span> <span style="color:#a6e22e">PolicyList</span>) <span style="color:#a6e22e">RulesFor</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Info</span>, <span style="color:#a6e22e">namespace</span> <span style="color:#66d9ef">string</span>) ([]<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">ResourceRuleInfo</span>, []<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">NonResourceRuleInfo</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#66d9ef">var</span> (
 		<span style="color:#a6e22e">resourceRules</span>    []<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">ResourceRuleInfo</span>
@@ -1062,7 +1062,7 @@ ClusterRoleBinding "1"-->"1" RoleRef
 +--------+        +-------------+         +--------+         +-------------+
 </code></pre><p>Role-A 角色拥有 Operation-A 和 Operation-B 的权限，Binding-A 将用户 User-A 与角色 Role-A 绑定，
 因此 User-A 就有了 Operation-A 和 Operation-B 的权限，但没有 Operation-C 和 Operation-D 的权限。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// plugin/pkg/auth/authorizer/rbac/rbac.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// plugin/pkg/auth/authorizer/rbac/rbac.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RBACAuthorizer</span>) <span style="color:#a6e22e">Authorize</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">requestAttributes</span> <span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Attributes</span>) (<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Decision</span>, <span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
     <span style="color:#a6e22e">ruleCheckingVisitor</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">authorizingVisitor</span>{<span style="color:#a6e22e">requestAttributes</span>: <span style="color:#a6e22e">requestAttributes</span>}
     <span style="color:#75715e">// ruleCheckingVisitor.visit -&gt; RulesAllow -&gt; 各种 match 函数验证
@@ -1093,7 +1093,7 @@ F --> G[NonResourceMacthes]
   <a class="anchor" href="#34-%e5%86%85%e7%bd%ae-clusterrole">#</a>
 </h2>
 <p>介绍内置角色之前，先了解下 kube-apiserver 的内置权限，内置的角色会引用内置权限，代码示例如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// plugin/pkg/auth/authorizer/rbac/bootstrappolicy/policy.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// plugin/pkg/auth/authorizer/rbac/bootstrappolicy/policy.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> (
 	<span style="color:#a6e22e">Write</span>      = []<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;create&#34;</span>, <span style="color:#e6db74">&#34;update&#34;</span>, <span style="color:#e6db74">&#34;patch&#34;</span>, <span style="color:#e6db74">&#34;delete&#34;</span>, <span style="color:#e6db74">&#34;deletecollection&#34;</span>}
 	<span style="color:#a6e22e">ReadWrite</span>  = []<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;get&#34;</span>, <span style="color:#e6db74">&#34;list&#34;</span>, <span style="color:#e6db74">&#34;watch&#34;</span>, <span style="color:#e6db74">&#34;create&#34;</span>, <span style="color:#e6db74">&#34;update&#34;</span>, <span style="color:#e6db74">&#34;patch&#34;</span>, <span style="color:#e6db74">&#34;delete&#34;</span>, <span style="color:#e6db74">&#34;deletecollection&#34;</span>}
@@ -1107,7 +1107,7 @@ F --> G[NonResourceMacthes]
 <li>ReadUpdate：只读和更新</li>
 </ul>
 <p>kube-apiserver 在启动时，会默认创建内置角色，例如：cluster-admin，它拥有最高权限；定义如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// plugin/pkg/auth/authorizer/rbac/bootstrappolicy/policy.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// plugin/pkg/auth/authorizer/rbac/bootstrappolicy/policy.go
 </span><span style="color:#75715e"></span>{
     <span style="color:#75715e">// a &#34;root&#34; role which can do absolutely anything
 </span><span style="color:#75715e"></span>    <span style="color:#a6e22e">ObjectMeta</span>: <span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">ObjectMeta</span>{<span style="color:#a6e22e">Name</span>: <span style="color:#e6db74">&#34;cluster-admin&#34;</span>},
@@ -1324,7 +1324,7 @@ kube-controller-manager 使用单独的服务账号来启动每个控制器。
 <p>Node 鉴权，也成为节点鉴权，是一种专门针对 kubelet 发出的请求进行鉴权。
 Node 鉴权机制基于 RBAC 授权机制实现，对 kubelet 组件进行基于 <code>system:node</code> 内置角色的权限控制。
 <code>system:node</code> 内置角色的权限定义在 NodeRules 函数中，具体可以移步：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// plugin/pkg/auth/authorizer/rbac/bootstrappolicy/policy.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// plugin/pkg/auth/authorizer/rbac/bootstrappolicy/policy.go
 </span><span style="color:#75715e">// NodeRules returns node policy rules, it is slice of rbacv1.PolicyRule.
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NodeRules</span>() []<span style="color:#a6e22e">rbacv1</span>.<span style="color:#a6e22e">PolicyRule</span> {
 	<span style="color:#a6e22e">nodePolicyRules</span> <span style="color:#f92672">:=</span> []<span style="color:#a6e22e">rbacv1</span>.<span style="color:#a6e22e">PolicyRule</span>{
@@ -1366,7 +1366,7 @@ Node 鉴权机制基于 RBAC 授权机制实现，对 kubelet 组件进行基于
   4.3 实现
   <a class="anchor" href="#43-%e5%ae%9e%e7%8e%b0">#</a>
 </h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// plugin/pkg/auth/authorizer/node/node_authorizer.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// plugin/pkg/auth/authorizer/node/node_authorizer.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">NodeAuthorizer</span>) <span style="color:#a6e22e">Authorize</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">attrs</span> <span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Attributes</span>) (<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Decision</span>, <span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#75715e">// 获取 node 角色信息
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">nodeName</span>, <span style="color:#a6e22e">isNode</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">identifier</span>.<span style="color:#a6e22e">NodeIdentity</span>(<span style="color:#a6e22e">attrs</span>.<span style="color:#a6e22e">GetUser</span>())
@@ -1442,7 +1442,7 @@ nodeName 的格式为 <code>system:node&lt;nodeName&gt;</code> 。
 <li><code>--authorization-webhook-config-file</code>：使用 kubeconfig 格式的 webhook 配置文件。</li>
 </ul>
 <p>webhook 的配置文件如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># Kubernetes API 版本</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># Kubernetes API 版本</span>
 <span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
 <span style="color:#75715e"># API 对象种类</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Config</span>
@@ -1472,7 +1472,7 @@ nodeName 的格式为 <code>system:node&lt;nodeName&gt;</code> 。
   5.3 实现
   <a class="anchor" href="#53-%e5%ae%9e%e7%8e%b0">#</a>
 </h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/plugin/pkg/authorizer/webhook/webhook.go
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// staging/src/k8s.io/apiserver/plugin/pkg/authorizer/webhook/webhook.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">w</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">WebhookAuthorizer</span>) <span style="color:#a6e22e">Authorize</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">attr</span> <span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Attributes</span>) (<span style="color:#a6e22e">decision</span> <span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Decision</span>, <span style="color:#a6e22e">reason</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
 	<span style="color:#f92672">...</span>
 	<span style="color:#75715e">// 尝试从缓存中查找该请求
@@ -1516,7 +1516,7 @@ nodeName 的格式为 <code>system:node&lt;nodeName&gt;</code> 。
 body 体中携带鉴权信息，r.Status.Allowed 为 true，表示鉴权成功。</p>
 <p>此外，webhook 不支持规则列表解析，因为规则是由 webhook 服务器授权的。
 所以，webhook 的规则解析器的资源类型列表（ResourceRulesInfo）和非资源类型规则列表（NonResourceRulesInfo）都设置为空。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">w</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">WebhookAuthorizer</span>) <span style="color:#a6e22e">RulesFor</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Info</span>, <span style="color:#a6e22e">namespace</span> <span style="color:#66d9ef">string</span>) ([]<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">ResourceRuleInfo</span>, []<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">NonResourceRuleInfo</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">w</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">WebhookAuthorizer</span>) <span style="color:#a6e22e">RulesFor</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Info</span>, <span style="color:#a6e22e">namespace</span> <span style="color:#66d9ef">string</span>) ([]<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">ResourceRuleInfo</span>, []<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">NonResourceRuleInfo</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#66d9ef">var</span> (
 		<span style="color:#a6e22e">resourceRules</span>    []<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">ResourceRuleInfo</span>
 		<span style="color:#a6e22e">nonResourceRules</span> []<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">NonResourceRuleInfo</span>
@@ -1550,9 +1550,9 @@ body 体中携带鉴权信息，r.Status.Allowed 为 true，表示鉴权成功�
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/e20d276ff9e2341d882766c6a564cffb9b0a9bd8" title='Last modified by howieyuen | June 6, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/82fb21107fd5f199f4956ff4f922c8b4a1acd525" title='Last modified by howieyuen | August 31, 2021' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>June 6, 2021</span>
+      <span>August 31, 2021</span>
     </a>
   </div>
 

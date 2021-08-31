@@ -19,14 +19,14 @@
 如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" /><meta property="article:section" content="docs" />
-<meta property="article:published_time" content="2020-10-12T00:00:00&#43;00:00" />
-<meta property="article:modified_time" content="2021-06-06T16:45:06&#43;08:00" />
+<meta property="article:published_time" content="2020-10-12T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-09-01T01:12:37+08:00" />
 
 <title>Statefulset Controller 源码分析 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.0efbbe0ecfafaca7f48832c10fc0863cac9b2983c8cd2f9d1deff3be8540dbb0.js" integrity="sha256-Dvu&#43;Ds&#43;vrKf0iDLBD8CGPKybKYPIzS&#43;dHe/zvoVA27A="></script>
+<script defer src="/en.search.min.844537ff789ce1edbdd5c6f78ed9599164d9ffe8724f384e27e436b5de87a485.js" integrity="sha256-hEU3/3ic4e291cb3jtlZkWTZ/&#43;hyTzhOJ&#43;Q2td6HpIU="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -755,7 +755,7 @@ https://github.com/alex-shpak/hugo-book
   1.4 示例
   <a class="anchor" href="#14-%e7%a4%ba%e4%be%8b">#</a>
 </h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
 <span style="color:#f92672">metadata</span>:
   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
@@ -815,7 +815,7 @@ https://github.com/alex-shpak/hugo-book
 </h2>
 <p><code>startStatefulSetController()</code> 是 StatefulSet Controller 的启动方法，其中调用 <code>statefulset.NewStatefulSetController()</code> 方法进行初始化，然后调用对象的 <code>Run()</code> 方法启动 Controller。其中 <code>ConcurrentStatefulSetSyncs</code> 默认是 5，即默认启动 5 个协程处理 StatefulSet 相关业务。</p>
 <p>可以看到 StatefulSetController 初始化时直接相关的对象类型分别是 Pod、StatefulSet、PVC 和 ControllerRevision。印证了之前提到的 StatefulSet 的特殊之处：使用 PV 作为存储；ControllerRevision 表示升级/回滚记录。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">startStatefulSetController</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">ControllerContext</span>) (<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">startStatefulSetController</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">ControllerContext</span>) (<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">AvailableResources</span>[<span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupVersionResource</span>{<span style="color:#a6e22e">Group</span>: <span style="color:#e6db74">&#34;apps&#34;</span>, <span style="color:#a6e22e">Version</span>: <span style="color:#e6db74">&#34;v1&#34;</span>, <span style="color:#a6e22e">Resource</span>: <span style="color:#e6db74">&#34;statefulsets&#34;</span>}] {
 		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
 	}
@@ -833,7 +833,7 @@ https://github.com/alex-shpak/hugo-book
   <a class="anchor" href="#22-sscsync">#</a>
 </h2>
 <p><code>run()</code> 方法会通过 informer 同步 cache 并监听 pod、statefulset、pvc 和 controllerrevision 对象的变更事件，然后启动 5 个 worker 协程，每个 worker 调用 <code>sync()</code> 方法，正式进入业务逻辑处理。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">StatefulSetController</span>) <span style="color:#a6e22e">sync</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">StatefulSetController</span>) <span style="color:#a6e22e">sync</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
 	<span style="color:#f92672">...</span>
     <span style="color:#75715e">// 1. 解析 namespace 和 name
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">namespace</span>, <span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cache</span>.<span style="color:#a6e22e">SplitMetaNamespaceKey</span>(<span style="color:#a6e22e">key</span>)
@@ -880,7 +880,7 @@ https://github.com/alex-shpak/hugo-book
   <a class="anchor" href="#23-sscsyncstatefulset">#</a>
 </h2>
 <p>在 <code>syncStatefulSet()</code> 中仅仅是调用了 <code>ssc.control.UpdateStatefulSet()</code> 方法进行处理。<code>ssc.control.UpdateStatefulSet()</code> 会调用 <code>ssc.performUpdate()</code> 方法，最终走到更新逻辑 <code>ssc.updateStatefulSet()</code> 和 <code>ssc.updateStatefulSetStatus()</code>。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">StatefulSetController</span>) <span style="color:#a6e22e">syncStatefulSet</span>(<span style="color:#a6e22e">set</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">StatefulSet</span>, <span style="color:#a6e22e">pods</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>) <span style="color:#66d9ef">error</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">StatefulSetController</span>) <span style="color:#a6e22e">syncStatefulSet</span>(<span style="color:#a6e22e">set</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">StatefulSet</span>, <span style="color:#a6e22e">pods</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>) <span style="color:#66d9ef">error</span> {
 	<span style="color:#f92672">...</span>
     <span style="color:#75715e">// ssc.control.UpdateStatefulSet() 
 </span><span style="color:#75715e"></span>    <span style="color:#75715e">// -&gt; ssc.performUpdate()
@@ -946,7 +946,7 @@ https://github.com/alex-shpak/hugo-book
   <a class="anchor" href="#24-sscupdatestatefulset">#</a>
 </h2>
 <p>sts 通过 controllerrevision 保存历史版本，类似于 deployment 的 replicaset，与 replicaset 不同的是 controllerrevision 仅用于回滚阶段，在 sts 的滚动升级过程中是通过 currentRevision 和 updateRevision 进行控制并不会用到 controllerrevision。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">defaultStatefulSetControl</span>) <span style="color:#a6e22e">updateStatefulSet</span>(<span style="color:#f92672">...</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">StatefulSetStatus</span>, <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ssc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">defaultStatefulSetControl</span>) <span style="color:#a6e22e">updateStatefulSet</span>(<span style="color:#f92672">...</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">StatefulSetStatus</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#75715e">// 1. 分别获取 currentRevision 和 updateRevision 对应的的 statefulset object
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">currentSet</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ApplyRevision</span>(<span style="color:#a6e22e">set</span>, <span style="color:#a6e22e">currentRevision</span>)
 	<span style="color:#f92672">...</span>
@@ -1256,9 +1256,9 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/e20d276ff9e2341d882766c6a564cffb9b0a9bd8" title='Last modified by howieyuen | June 6, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/82fb21107fd5f199f4956ff4f922c8b4a1acd525" title='Last modified by howieyuen | August 31, 2021' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>June 6, 2021</span>
+      <span>August 31, 2021</span>
     </a>
   </div>
 

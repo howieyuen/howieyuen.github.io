@@ -17,14 +17,14 @@ func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.
 func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 	newRS, oldRSs, err := dc." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" /><meta property="article:section" content="docs" />
-<meta property="article:published_time" content="2020-10-12T00:00:00&#43;00:00" />
-<meta property="article:modified_time" content="2021-06-06T16:45:06&#43;08:00" />
+<meta property="article:published_time" content="2020-10-12T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-09-01T01:12:37+08:00" />
 
 <title>无状态应用滚动更新 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.0efbbe0ecfafaca7f48832c10fc0863cac9b2983c8cd2f9d1deff3be8540dbb0.js" integrity="sha256-Dvu&#43;Ds&#43;vrKf0iDLBD8CGPKybKYPIzS&#43;dHe/zvoVA27A="></script>
+<script defer src="/en.search.min.844537ff789ce1edbdd5c6f78ed9599164d9ffe8724f384e27e436b5de87a485.js" integrity="sha256-hEU3/3ic4e291cb3jtlZkWTZ/&#43;hyTzhOJ&#43;Q2td6HpIU="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -693,7 +693,7 @@ https://github.com/alex-shpak/hugo-book
 </ul>
 <p>其中，滚动更新是最常见的，阅读代码 <code>pkg/controller/deployment/deployment_controller.go:648</code>，
 可以看到 2 种方式分别对应的业务逻辑：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">syncDeployment</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">syncDeployment</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
     <span style="color:#f92672">...</span>
 	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Strategy</span>.<span style="color:#a6e22e">Type</span> {
 	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">RecreateDeploymentStrategyType</span>:
@@ -705,7 +705,7 @@ https://github.com/alex-shpak/hugo-book
 }
 </code></pre></div><p>根据 <code>d.Spec.Strategy.Type</code>，若更新策略为 <code>RollingUpdate</code>，
 则执行 <code>dc.rolloutRecreate()</code> 方法，具体逻辑如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">rolloutRolling</span>(<span style="color:#a6e22e">d</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>, <span style="color:#a6e22e">rsList</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>) <span style="color:#66d9ef">error</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">rolloutRolling</span>(<span style="color:#a6e22e">d</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>, <span style="color:#a6e22e">rsList</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>) <span style="color:#66d9ef">error</span> {
     <span style="color:#75715e">// 1、获取所有的 rs，若没有 newRS 则创建
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">getAllReplicaSetsAndSyncRevision</span>(<span style="color:#a6e22e">d</span>, <span style="color:#a6e22e">rsList</span>, <span style="color:#66d9ef">true</span>)
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
@@ -777,11 +777,11 @@ https://github.com/alex-shpak/hugo-book
 
 <p class="mermaid">
 graph LR
-    start(（开始）) --> condtion1{newRS need scale up ?}
+    start(start) --> condtion1{newRS need scale up ?}
     condtion1 -- No --> condtion2{oldRS need scale down ?}
     condtion2 -- NO --> x3(3. sync deploment status)
     condtion1 -- YES --> x1(1. newRS scale up)
-    x1 --> stop(（结束）)
+    x1 --> stop(end)
     condtion2 -- YES --> x2(2. oldRS scale down)
     x2 --> stop
     x3 --> stop
@@ -792,7 +792,7 @@ graph LR
   <a class="anchor" href="#211-newrs-scale-up">#</a>
 </h3>
 <p>阅读代码 <code>pkg/controller/deployment/rolling.go:68</code>，详细如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">reconcileNewReplicaSet</span>(<span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>) (<span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">reconcileNewReplicaSet</span>(<span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>) (<span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
     <span style="color:#75715e">// 1、判断副本数是否已达到了期望值
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">==</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) {
 		<span style="color:#75715e">// Scaling not required.
@@ -831,7 +831,7 @@ graph LR
 </ol>
 <p>其中，计算 newRS 的副本数，是滚动更新核心过程的第一步，
 阅读源码 <code>pkg/controller/deployment/util/deployment_util.go:816</code>：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewRSNewReplicas</span>(<span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>, <span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>) (<span style="color:#66d9ef">int32</span>, <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewRSNewReplicas</span>(<span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>, <span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>) (<span style="color:#66d9ef">int32</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Strategy</span>.<span style="color:#a6e22e">Type</span> {
 	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">RollingUpdateDeploymentStrategyType</span>:
 		<span style="color:#75715e">// 1、计算 maxSurge 值，向上取整
@@ -871,7 +871,7 @@ graph LR
   <a class="anchor" href="#212-oldrs-scale-down">#</a>
 </h3>
 <p>同理，oldRS 规模缩小，阅读源码 <code>pkg/controller/deployment/rolling.go:68</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">reconcileOldReplicaSets</span>(<span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">oldRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>) (<span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">reconcileOldReplicaSets</span>(<span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">oldRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>) (<span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
     <span style="color:#75715e">// 1、计算 oldPodsCount
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">oldPodsCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">GetReplicaCountForReplicaSets</span>(<span style="color:#a6e22e">oldRSs</span>)
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">oldPodsCount</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
@@ -948,7 +948,7 @@ graph LR
 <ol>
 <li>创建一个 deployment，replica = 10</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
 <span style="color:#f92672">metadata</span>:
   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx-deployment</span>
@@ -970,15 +970,15 @@ graph LR
         <span style="color:#f92672">ports</span>:
         - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
 </code></pre></div><p>10 个 Pod 创建成功后如下所示：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get rs
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get rs
 NAME                          DESIRED   CURRENT   READY   AGE
 nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>      70s
 </code></pre></div><ol start="2">
 <li>更新 nginx-deployment 的镜像，默认使用滚动更新的方式</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl set image deploy/nginx-deployment nginx-deployment<span style="color:#f92672">=</span>nginx:1.19.1
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl set image deploy/nginx-deployment nginx-deployment<span style="color:#f92672">=</span>nginx:1.19.1
 </code></pre></div><p>此时通过源码可知会计算该 deployment 的 maxSurge=3，maxUnavailable=2，maxAvailable=13，计算方法如下所示：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 向上取整 maxSurge = 10 * 0.25 = 3
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 向上取整 maxSurge = 10 * 0.25 = 3
 </span><span style="color:#75715e"></span><span style="color:#a6e22e">maxSurge</span> = <span style="color:#a6e22e">replicas</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">spec</span>.<span style="color:#a6e22e">strategy</span>.<span style="color:#a6e22e">rollingUpdate</span>.<span style="color:#a6e22e">maxSurge</span>
 <span style="color:#75715e">// 向下取整 maxUnavailable = 10 * 0.25 = 2
 </span><span style="color:#75715e"></span><span style="color:#a6e22e">maxUnavailable</span> = <span style="color:#a6e22e">replicas</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">spec</span>.<span style="color:#a6e22e">strategy</span>.<span style="color:#a6e22e">rollingUpdate</span>.<span style="color:#a6e22e">maxUnavailable</span>
@@ -988,7 +988,7 @@ nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">10</span>        <span
 此时计算出 replicas 结果为 3，然后更新 deployment 的 annotation，创建 events，本次 syncLoop 完成。
 等到下一个 syncLoop 时，所有 rs 的 replicas 已经达到最大值 10 + 3 = 13，此时需要 oldRS 缩容。
 scale down 的数量是通过以下公式得到的：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 13 = 10 + 3
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 13 = 10 + 3
 </span><span style="color:#75715e"></span><span style="color:#a6e22e">allPodsCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">GetReplicaCountForReplicaSets</span>(<span style="color:#a6e22e">allRSs</span>)
 <span style="color:#75715e">// 8 = 10 - 2
 </span><span style="color:#75715e"></span><span style="color:#a6e22e">minAvailable</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">-</span> <span style="color:#a6e22e">maxUnavailable</span>
@@ -1002,7 +1002,7 @@ scale down 的数量是通过以下公式得到的：</p>
 下一个 syncLoop 时在 scaleUp 处计算得知 scaleUpCount = 13 - 8 - 3 = 2， 
 此时 newRS 需要更新 replicase 增加 2。以此轮询直到 newRS 扩容到 10，oldRS 缩容至 0。</p>
 <p>对于上面的示例，可以使用 kubectl get rs -w 进行观察，以下为输出：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get rs -w
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get rs -w
 NAME                          DESIRED   CURRENT   READY   AGE
 nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">5</span>       3s
 nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>       4m47s
@@ -1027,9 +1027,9 @@ nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/e20d276ff9e2341d882766c6a564cffb9b0a9bd8" title='Last modified by howieyuen | June 6, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/82fb21107fd5f199f4956ff4f922c8b4a1acd525" title='Last modified by howieyuen | August 31, 2021' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>June 6, 2021</span>
+      <span>August 31, 2021</span>
     </a>
   </div>
 

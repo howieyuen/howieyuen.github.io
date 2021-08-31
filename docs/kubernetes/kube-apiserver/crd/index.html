@@ -19,14 +19,14 @@
    API 聚合 API 独立     声明式 非声明式   kubectl 可读可写 不需要 kubectl 支持   接受 k8s 的 REST 限制 特定 API 路径   可限定为 cluster 或者 namespace 不适用 namespace   重用 k8s API 支持的功能 不需要这些功能    1." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/" /><meta property="article:section" content="docs" />
-<meta property="article:published_time" content="2019-10-14T00:00:00&#43;00:00" />
-<meta property="article:modified_time" content="2021-06-06T16:45:06&#43;08:00" />
+<meta property="article:published_time" content="2019-10-14T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-09-01T01:12:37+08:00" />
 
 <title>CRD 入门和使用 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.0efbbe0ecfafaca7f48832c10fc0863cac9b2983c8cd2f9d1deff3be8540dbb0.js" integrity="sha256-Dvu&#43;Ds&#43;vrKf0iDLBD8CGPKybKYPIzS&#43;dHe/zvoVA27A="></script>
+<script defer src="/en.search.min.844537ff789ce1edbdd5c6f78ed9599164d9ffe8724f384e27e436b5de87a485.js" integrity="sha256-hEU3/3ic4e291cb3jtlZkWTZ/&#43;hyTzhOJ&#43;Q2td6HpIU="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -788,14 +788,14 @@ https://github.com/alex-shpak/hugo-book
 </blockquote>
 <p>通过 CRD 创建自定义资源，只要符合 CRD 结构体定义，均可以被 Kubernetes 所接收，CRD 的定义和 k8s 原生资源的定义非常类似，都是由 4 个子资源组成：TypeMeta、ObjectMeta、Spec、Status，具体代码如下：</p>
 <p><code>staging/src/k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/types.go:354</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">CustomResourceDefinition</span> <span style="color:#66d9ef">struct</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">CustomResourceDefinition</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">TypeMeta</span>
 	<span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">ObjectMeta</span>
 	<span style="color:#a6e22e">Spec</span> <span style="color:#a6e22e">CustomResourceDefinitionSpec</span> 
 	<span style="color:#a6e22e">Status</span> <span style="color:#a6e22e">CustomResourceDefinitionStatus</span>
 }
 </code></pre></div><p>下面主要来看下 Spec 和 Status 字段：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">CustomResourceDefinitionSpec</span> <span style="color:#66d9ef">struct</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">CustomResourceDefinitionSpec</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">Group</span> <span style="color:#66d9ef">string</span>
 	<span style="color:#75715e">// 定义复数、单数，简称，Kind，ListKind，Categories
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">Names</span> <span style="color:#a6e22e">CustomResourceDefinitionNames</span>
@@ -822,7 +822,7 @@ https://github.com/alex-shpak/hugo-book
   2.2 CRD 定义示例
   <a class="anchor" href="#22-crd-%e5%ae%9a%e4%b9%89%e7%a4%ba%e4%be%8b">#</a>
 </h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apiextensions.k8s.io/v1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apiextensions.k8s.io/v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">CustomResourceDefinition</span>
 <span style="color:#f92672">metadata</span>:
   <span style="color:#75715e"># 名称必须符合下面的格式：&lt;plural&gt;.&lt;group&gt;</span>
@@ -912,7 +912,7 @@ https://github.com/alex-shpak/hugo-book
   <a class="anchor" href="#312-examplefooyaml">#</a>
 </h3>
 <p>创建 foo 资源类型的对象：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">samplecontroller.io/v1alpha1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">samplecontroller.io/v1alpha1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Foo</span>
 <span style="color:#f92672">metadata</span>:
   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">example-foo</span>
@@ -928,22 +928,22 @@ https://github.com/alex-shpak/hugo-book
   <a class="anchor" href="#321-%e4%bb%a3%e7%a0%81">#</a>
 </h3>
 <p>获取示例代码：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">git clone https<span style="color:#f92672">://</span>github.com<span style="color:#f92672">/</span>kubernetes<span style="color:#f92672">/</span>sample<span style="color:#f92672">-</span>controller.git
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">git clone https<span style="color:#f92672">://</span>github.com<span style="color:#f92672">/</span>kubernetes<span style="color:#f92672">/</span>sample<span style="color:#f92672">-</span>controller.git
 cd sample<span style="color:#f92672">-</span>controller
 </code></pre></div><h3 id="322-编译">
   3.2.2 编译
   <a class="anchor" href="#322-%e7%bc%96%e8%af%91">#</a>
 </h3>
 <p>在编译二进制之前，要修改 <code>pkg/apis/samplecontroller/register.go:21</code> GroupName 的定义，k8s.io 和 kubernetes.io 后缀都是官方保留字段，不建议 CRD 使用。所以将其修改为 <code>samplecontroller.io</code>。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">go build <span style="color:#f92672">-</span>o sample<span style="color:#f92672">-</span>controller .
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">go build <span style="color:#f92672">-</span>o sample<span style="color:#f92672">-</span>controller .
 </code></pre></div><h3 id="323-启动">
   3.2.3 启动
   <a class="anchor" href="#323-%e5%90%af%e5%8a%a8">#</a>
 </h3>
 <p>使用节点上的 kubeconfig 文件启动 controller：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">./sample<span style="color:#f92672">-</span>controller <span style="color:#f92672">-</span>kubeconfig<span style="color:#f92672">=$</span>HOME<span style="color:#f92672">/</span>.kube<span style="color:#f92672">/</span>config
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">./sample<span style="color:#f92672">-</span>controller <span style="color:#f92672">-</span>kubeconfig<span style="color:#f92672">=$</span>HOME<span style="color:#f92672">/</span>.kube<span style="color:#f92672">/</span>config
 </code></pre></div><p>启动时，会提示 watch 不到资源，因为还没创建定义：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">I1026 <span style="color:#ae81ff">23</span><span style="color:#f92672">:</span><span style="color:#ae81ff">40</span><span style="color:#f92672">:</span><span style="color:#ae81ff">56.529233</span>   <span style="color:#ae81ff">57978</span> controller.go<span style="color:#f92672">:</span><span style="color:#ae81ff">115</span>] Setting up event handlers
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">I1026 <span style="color:#ae81ff">23</span><span style="color:#f92672">:</span><span style="color:#ae81ff">40</span><span style="color:#f92672">:</span><span style="color:#ae81ff">56.529233</span>   <span style="color:#ae81ff">57978</span> controller.go<span style="color:#f92672">:</span><span style="color:#ae81ff">115</span>] Setting up event handlers
 I1026 <span style="color:#ae81ff">23</span><span style="color:#f92672">:</span><span style="color:#ae81ff">40</span><span style="color:#f92672">:</span><span style="color:#ae81ff">56.529444</span>   <span style="color:#ae81ff">57978</span> controller.go<span style="color:#f92672">:</span><span style="color:#ae81ff">156</span>] Starting Foo controller
 I1026 <span style="color:#ae81ff">23</span><span style="color:#f92672">:</span><span style="color:#ae81ff">40</span><span style="color:#f92672">:</span><span style="color:#ae81ff">56.529450</span>   <span style="color:#ae81ff">57978</span> controller.go<span style="color:#f92672">:</span><span style="color:#ae81ff">159</span>] Waiting for informer caches to sync
 E1026 <span style="color:#ae81ff">23</span><span style="color:#f92672">:</span><span style="color:#ae81ff">40</span><span style="color:#f92672">:</span><span style="color:#ae81ff">56.554564</span>   <span style="color:#ae81ff">57978</span> reflector.go<span style="color:#f92672">:</span><span style="color:#ae81ff">138</span>] k8s.io<span style="color:#f92672">/</span>sample<span style="color:#f92672">-</span>controller<span style="color:#f92672">/</span>pkg<span style="color:#f92672">/</span>generated<span style="color:#f92672">/</span>informers<span style="color:#f92672">/</span>externalversions<span style="color:#f92672">/</span>factory.go<span style="color:#f92672">:</span><span style="color:#ae81ff">117</span><span style="color:#f92672">:</span> Failed to watch <span style="color:#f92672">*</span>v1alpha1.Foo<span style="color:#f92672">:</span> failed to list <span style="color:#f92672">*</span>v1alpha1.Foo<span style="color:#f92672">:</span> the server could not find the requested <span style="color:#a6e22e">resource </span>(get foos.samplecontroller.io)
@@ -952,13 +952,13 @@ E1026 <span style="color:#ae81ff">23</span><span style="color:#f92672">:</span><
   3.2.4 创建资源
   <a class="anchor" href="#324-%e5%88%9b%e5%bb%ba%e8%b5%84%e6%ba%90">#</a>
 </h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s"><span style="color:#f92672">$</span> kubectl create  <span style="color:#f92672">-</span>f foos.crd.yaml
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s"><span style="color:#f92672">$</span> kubectl create  <span style="color:#f92672">-</span>f foos.crd.yaml
 customresourcedefinition.apiextensions.k8s.io<span style="color:#f92672">/</span>foos.samplecontroller.io created
 
 <span style="color:#f92672">$</span> kubectl create  <span style="color:#f92672">-</span>f example.foos.yaml
 foo.samplecontroller.io<span style="color:#f92672">/</span>example<span style="color:#f92672">-</span>foo created
 </code></pre></div><p>创建完成，可以使用 <code>kubectl get crd</code> 查看资源定义和对象：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s"><span style="color:#f92672">$</span> kubectl get crd
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s"><span style="color:#f92672">$</span> kubectl get crd
 NAME                       CREATED AT
 clusterversions.cfe.io     <span style="color:#ae81ff">2020-10-26</span>T14<span style="color:#f92672">:</span><span style="color:#ae81ff">43</span><span style="color:#f92672">:</span><span style="color:#ae81ff">27</span>Z
 foos.samplecontroller.io   <span style="color:#ae81ff">2020-10-26</span>T15<span style="color:#f92672">:</span><span style="color:#ae81ff">41</span><span style="color:#f92672">:</span><span style="color:#ae81ff">52</span>Z
@@ -967,7 +967,7 @@ foos.samplecontroller.io   <span style="color:#ae81ff">2020-10-26</span>T15<span
 NAME          AGE
 example<span style="color:#f92672">-</span>foo   <span style="color:#ae81ff">19</span>m
 </code></pre></div><p>sample-controller 会 watch 到新对象 default/example-foo：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">I1026 <span style="color:#ae81ff">23</span><span style="color:#f92672">:</span><span style="color:#ae81ff">42</span><span style="color:#f92672">:</span><span style="color:#ae81ff">03.232577</span>   <span style="color:#ae81ff">57978</span> controller.go<span style="color:#f92672">:</span><span style="color:#ae81ff">164</span>] Starting workers
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">I1026 <span style="color:#ae81ff">23</span><span style="color:#f92672">:</span><span style="color:#ae81ff">42</span><span style="color:#f92672">:</span><span style="color:#ae81ff">03.232577</span>   <span style="color:#ae81ff">57978</span> controller.go<span style="color:#f92672">:</span><span style="color:#ae81ff">164</span>] Starting workers
 I1026 <span style="color:#ae81ff">23</span><span style="color:#f92672">:</span><span style="color:#ae81ff">42</span><span style="color:#f92672">:</span><span style="color:#ae81ff">03.232607</span>   <span style="color:#ae81ff">57978</span> controller.go<span style="color:#f92672">:</span><span style="color:#ae81ff">170</span>] Started workers
 I1026 <span style="color:#ae81ff">23</span><span style="color:#f92672">:</span><span style="color:#ae81ff">42</span><span style="color:#f92672">:</span><span style="color:#ae81ff">03.515970</span>   <span style="color:#ae81ff">57978</span> controller.go<span style="color:#f92672">:</span><span style="color:#ae81ff">228</span>] Successfully synced <span style="color:#e6db74">&#39;default/example-foo&#39;</span>
 I1026 <span style="color:#ae81ff">23</span><span style="color:#f92672">:</span><span style="color:#ae81ff">42</span><span style="color:#f92672">:</span><span style="color:#ae81ff">03.516099</span>   <span style="color:#ae81ff">57978</span> event.go<span style="color:#f92672">:</span><span style="color:#ae81ff">291</span>] <span style="color:#e6db74">&#34;Event occurred&#34;</span> object<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;default/example-foo&#34;</span> kind<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Foo&#34;</span> apiVersion<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;samplecontroller.io/v1alpha1&#34;</span> type<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Normal&#34;</span> reason<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Synced&#34;</span> message<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Foo synced successfully&#34;</span>
@@ -976,7 +976,7 @@ I1026 <span style="color:#ae81ff">23</span><span style="color:#f92672">:</span><
   <a class="anchor" href="#325-%e6%a0%a1%e9%aa%8c">#</a>
 </h3>
 <p>检查 controller 创建 Deployment 对象：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s"><span style="color:#f92672">$</span> kubectl get deploy                       
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s"><span style="color:#f92672">$</span> kubectl get deploy                       
 NAME          READY   UP<span style="color:#f92672">-</span>TO<span style="color:#f92672">-</span>DATE   AVAILABLE   AGE
 example<span style="color:#f92672">-</span>foo   <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1</span>     <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           <span style="color:#ae81ff">3</span>m1s
 
@@ -1008,9 +1008,9 @@ web<span style="color:#ae81ff">-1</span>                          <span style="c
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/e20d276ff9e2341d882766c6a564cffb9b0a9bd8" title='Last modified by howieyuen | June 6, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/82fb21107fd5f199f4956ff4f922c8b4a1acd525" title='Last modified by howieyuen | August 31, 2021' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>June 6, 2021</span>
+      <span>August 31, 2021</span>
     </a>
   </div>
 

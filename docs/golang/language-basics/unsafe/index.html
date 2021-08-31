@@ -21,14 +21,14 @@ Unsafe 包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
  三个函数：  func Alignof(variable ArbitraryType) uintptr func Offsetof(selector ArbitraryType) uintptr func Sizeof(variable ArbitraryType) uintptr   和一种类型：  类型 Pointer *ArbitraryType    这里，ArbitraryType 不是一个真正的类型，它只是一个占位符。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/language-basics/unsafe/" /><meta property="article:section" content="docs" />
-<meta property="article:published_time" content="2020-12-18T00:00:00&#43;00:00" />
-<meta property="article:modified_time" content="2021-06-06T16:45:06&#43;08:00" />
+<meta property="article:published_time" content="2020-12-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-09-01T01:12:37+08:00" />
 
 <title>unsafe | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.0efbbe0ecfafaca7f48832c10fc0863cac9b2983c8cd2f9d1deff3be8540dbb0.js" integrity="sha256-Dvu&#43;Ds&#43;vrKf0iDLBD8CGPKybKYPIzS&#43;dHe/zvoVA27A="></script>
+<script defer src="/en.search.min.844537ff789ce1edbdd5c6f78ed9599164d9ffe8724f384e27e436b5de87a485.js" integrity="sha256-hEU3/3ic4e291cb3jtlZkWTZ/&#43;hyTzhOJ&#43;Q2td6HpIU="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -755,7 +755,7 @@ https://github.com/alex-shpak/hugo-book
 然后将 <code>unsafe.Pointer</code> 值转换为 T2 值（或 uintptr 值）。
 通过这种方式可以绕过 Go 类型系统和内存安全性。当然，滥用这种方式是很危险的。</p>
 <p>举个例子：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> (
     <span style="color:#e6db74">&#34;fmt&#34;</span>
@@ -793,7 +793,7 @@ https://github.com/alex-shpak/hugo-book
 </ul>
 <p>由于 <code>uintptr</code> 是一个整数类型，<code>uintptr</code> 值可以进行算术运算。
 所以通过使用 <code>uintptr</code> 和 <code>unsafe.Pointer</code>，我们可以绕过限制，<code>*T</code> 值不能在 Golang 中计算偏移量：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> (
     <span style="color:#e6db74">&#34;fmt&#34;</span>
@@ -841,7 +841,7 @@ unsafe 包中这几个函数唯一不安全的是它们调用结果可能在后�
 <p>看起来所有的 unsafe 包的危险都与使用 <code>unsafe.Pointer</code> 有关。
 unsafe 包 docs 列出了一些使用 <code>unsafe.Pointer</code> 合法或非法的情况。
 这里只列出部分非法使用案例：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> (
     <span style="color:#e6db74">&#34;fmt&#34;</span>
@@ -928,10 +928,10 @@ unsafe 包 docs 列出了一些使用 <code>unsafe.Pointer</code> 合法或非�
   <a class="anchor" href="#%e5%90%88%e6%b3%95%e7%94%a8%e4%be%8b-1%e5%9c%a8-t-%e5%92%8c-myt-%e4%b9%8b%e9%97%b4%e8%bd%ac%e6%8d%a2">#</a>
 </h2>
 <p>在这个例子里，我们用 int 作为 T：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">MyInt</span> <span style="color:#66d9ef">int</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">MyInt</span> <span style="color:#66d9ef">int</span>
 </code></pre></div><p>在 Golang 中，<code>[]int</code> 和 <code>[]MyInt</code> 是两种不同的类型，它们的底层类型是自身。
 因此，<code>[]int</code> 的值不能转换为 <code>[]MyInt</code>，反之亦然。 但是在 <code>unsafe.Pointer</code> 的帮助下，转换是可能的：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> (
     <span style="color:#e6db74">&#34;fmt&#34;</span>
@@ -970,7 +970,7 @@ unsafe 包 docs 列出了一些使用 <code>unsafe.Pointer</code> 合法或非�
 <blockquote>
 <p>注意： <code>unsafe.Pointer</code> 是一般类型，因此 <code>unsafe.Pointer</code> 的值可以转换为 <code>unsafe.Pointer</code>，反之亦然。</p>
 </blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> (
     <span style="color:#e6db74">&#34;fmt&#34;</span>
@@ -1056,9 +1056,9 @@ unsafe 包用于有经验的程序员通过安全地绕过 Go 类型系统的安
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/e20d276ff9e2341d882766c6a564cffb9b0a9bd8" title='Last modified by howieyuen | June 6, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/82fb21107fd5f199f4956ff4f922c8b4a1acd525" title='Last modified by howieyuen | August 31, 2021' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>June 6, 2021</span>
+      <span>August 31, 2021</span>
     </a>
   </div>
 

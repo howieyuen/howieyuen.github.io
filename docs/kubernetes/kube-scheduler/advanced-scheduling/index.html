@@ -17,14 +17,14 @@ kubectl describe node master.k8s ... Name: master.k8s Role: Labels: beta.kuberne
 kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.kubernetes.io/master:=NoSchedule node.alpha.kubernetes.io/notReady=:Exists:NoExecute node.alpha.kubernetes.io/unreachable=:Exists:NoExecute ... 第一个 toleration 匹配了主节点的 taint，表示允许这个 Pod 调度到主节点上。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/" /><meta property="article:section" content="docs" />
-<meta property="article:published_time" content="2020-03-22T00:00:00&#43;00:00" />
-<meta property="article:modified_time" content="2021-06-06T16:45:06&#43;08:00" />
+<meta property="article:published_time" content="2020-03-22T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-09-01T01:12:37+08:00" />
 
 <title>高级调度 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.0efbbe0ecfafaca7f48832c10fc0863cac9b2983c8cd2f9d1deff3be8540dbb0.js" integrity="sha256-Dvu&#43;Ds&#43;vrKf0iDLBD8CGPKybKYPIzS&#43;dHe/zvoVA27A="></script>
+<script defer src="/en.search.min.844537ff789ce1edbdd5c6f78ed9599164d9ffe8724f384e27e436b5de87a485.js" integrity="sha256-hEU3/3ic4e291cb3jtlZkWTZ/&#43;hyTzhOJ&#43;Q2td6HpIU="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -695,7 +695,7 @@ https://github.com/alex-shpak/hugo-book
 <p>taint，是在不修改已有 Pod 的前提下，通过在节点上添加污点信息，拒绝 Pod 的部署。
 只有当一个 Pod 容忍某个节点的 taint 时，才能被调度到此节点上。</p>
 <p><strong>显示节点 taint 信息</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ae81ff">kubectl describe node master.k8s</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ae81ff">kubectl describe node master.k8s</span>
 
 ...
 <span style="color:#f92672">Name</span>: <span style="color:#ae81ff">master.k8s</span>
@@ -712,7 +712,7 @@ https://github.com/alex-shpak/hugo-book
 </code></pre></div><p>主节点上包含一个污点，污点包含一个 key 和 value，以及一个 effect，格式为<key>=<value>:<effect>。
 上面的污点信息表示，key 为 node-role.kubernetes.io/master，value 是空，effect 是 NoSchedule。</p>
 <p><strong>显示 Pod tolerations</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ae81ff">kubectl describe Pod kube-proxy-as92 -n kube-system</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ae81ff">kubectl describe Pod kube-proxy-as92 -n kube-system</span>
 
 ...
 <span style="color:#f92672">Tolerations</span>: 
@@ -734,14 +734,14 @@ https://github.com/alex-shpak/hugo-book
   1.2 在节点上定义污点
   <a class="anchor" href="#12-%e5%9c%a8%e8%8a%82%e7%82%b9%e4%b8%8a%e5%ae%9a%e4%b9%89%e6%b1%a1%e7%82%b9">#</a>
 </h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">kubectl taint node node1.k8s node<span style="color:#f92672">-</span>type<span style="color:#f92672">=</span>production<span style="color:#f92672">:</span>NoSchedule
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">kubectl taint node node1.k8s node<span style="color:#f92672">-</span>type<span style="color:#f92672">=</span>production<span style="color:#f92672">:</span>NoSchedule
 </code></pre></div><p>此命令给节点添加污点，key 为 node-type，value 为 production，effect 为 NoSchedule。
 如果现在部署一个常规 Pod 多个副本，没有一个 Pod 会调度到此节点上。</p>
 <h2 id="13-在-pod-上添加容忍">
   1.3 在 Pod 上添加容忍
   <a class="anchor" href="#13-%e5%9c%a8-pod-%e4%b8%8a%e6%b7%bb%e5%8a%a0%e5%ae%b9%e5%bf%8d">#</a>
 </h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
 <span style="color:#f92672">metadata</span>:
   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">prod</span>
@@ -766,7 +766,7 @@ https://github.com/alex-shpak/hugo-book
 <p><strong>配置节点失效后的 pod 重新调度最长等待时间</strong></p>
 <p>容忍程度也可以配置，当某个 Pod 所在节点 NotReady 或者 Unreachable 是，
 k8s 可以等待该 Pod 重新调度之前的最长等待时间。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">...
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">...
 <span style="color:#f92672">tolerations</span>:
 - <span style="color:#f92672">effect</span>: <span style="color:#ae81ff">NoExecute</span>
   <span style="color:#f92672">key</span>: <span style="color:#ae81ff">node.alpha.kubernetes.io/notReady</span>
@@ -785,7 +785,7 @@ k8s 可以等待该 Pod 重新调度之前的最长等待时间。</p>
 <p>污点可以拒绝调度，亲和允许调度。早期的 k8s 版本，节点亲和，就是 Pod 中的 nodeSelector 字段。
 与节点选择器类似，每个节点都可以配置亲和性规则，可以是硬性标注，也可以是偏好。</p>
 <p><strong>检查节点默认标签</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ae81ff">kubectl describe node gke-kubia-default-adj12knzf-2dascjb</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ae81ff">kubectl describe node gke-kubia-default-adj12knzf-2dascjb</span>
 
 <span style="color:#f92672">Name</span>: <span style="color:#ae81ff">gke-kubia-default-adj12knzf-2dascjb</span>
 <span style="color:#f92672">Role</span>:
@@ -800,7 +800,7 @@ k8s 可以等待该 Pod 重新调度之前的最长等待时间。</p>
   <a class="anchor" href="#21-%e6%8c%87%e5%ae%9a%e5%bc%ba%e5%88%b6%e8%8a%82%e7%82%b9%e4%ba%b2%e5%92%8c%e6%80%a7%e8%a7%84%e5%88%99">#</a>
 </h2>
 <p>下面展示了只能被部署到含有 gpu=true 标签的节点上的 Pod：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
 <span style="color:#f92672">metadata</span>:
   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">kubia-gpu</span>
@@ -829,12 +829,12 @@ k8s 可以等待该 Pod 重新调度之前的最长等待时间。</p>
 当调度某一个 Pod，指定可以优先考某些节点，如果节点均无法满足，调度结果也是可以接受的。
 这是由 preferdDuringSchdulingIgnoredDuringExecution 字段实现的。</p>
 <p><strong>添加标签</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">kubectl label node node1.k8s availability<span style="color:#f92672">-</span>zone<span style="color:#f92672">=</span>zone1
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">kubectl label node node1.k8s availability<span style="color:#f92672">-</span>zone<span style="color:#f92672">=</span>zone1
 kubectl label node node1.k8s share<span style="color:#f92672">-</span>type<span style="color:#f92672">=</span>dedicated
 kubectl label node node2.k8s availability<span style="color:#f92672">-</span>zone<span style="color:#f92672">=</span>zone2
 kubectl label node node2.k8s share<span style="color:#f92672">-</span>type<span style="color:#f92672">=</span>shared
 </code></pre></div><p><strong>指定优先级节点亲和性</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
 <span style="color:#f92672">metadata</span>:
   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">pref</span>
@@ -881,10 +881,10 @@ kubectl label node node2.k8s share<span style="color:#f92672">-</span>type<span 
   <a class="anchor" href="#31-%e4%bd%bf%e7%94%a8-pod-%e4%ba%b2%e5%92%8c%e5%b0%86%e5%a4%9a%e4%b8%aa-pod-%e9%83%a8%e7%bd%b2%e5%88%b0%e5%90%8c%e4%b8%80%e4%b8%aa%e8%8a%82%e7%82%b9%e4%b8%8a">#</a>
 </h2>
 <p>部署 1 个后端 Pod 和 5 个前端 Pod。先部署后端：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">kubectl run backend <span style="color:#f92672">-</span>l app<span style="color:#f92672">=</span>backend <span style="color:#f92672">--</span>image busybox <span style="color:#f92672">--</span>sleep <span style="color:#ae81ff">9999</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-s" data-lang="s">kubectl run backend <span style="color:#f92672">-</span>l app<span style="color:#f92672">=</span>backend <span style="color:#f92672">--</span>image busybox <span style="color:#f92672">--</span>sleep <span style="color:#ae81ff">9999</span>
 </code></pre></div><p>这里没什么区别，只是给 Pod 加了个标签，app=backend。</p>
 <p><strong>在 Pod 中指定亲和性</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
 <span style="color:#f92672">metadata</span>:
   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">frontend</span>
@@ -926,7 +926,7 @@ topologyKey 的工作方式很简单，上面提到的三个属性并没有什�
   <a class="anchor" href="#33-pod-%e4%bc%98%e5%85%88%e7%ba%a7%e4%ba%b2%e5%92%8c%e6%80%a7">#</a>
 </h2>
 <p>与节点亲和一样，pod 之间也可以用 prefereddDuringSchdulingIgnoredDuringExecution。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
 <span style="color:#f92672">metadata</span>:
   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">frontend</span>
@@ -952,7 +952,7 @@ topologyKey 的工作方式很简单，上面提到的三个属性并没有什�
 <p>同理，有 nodeAntiAffinity，也有 podAntiAffinity。
 这将导致调度器永远不会选择包含 podAntiAffinity 的 Pod 所在的节点。</p>
 <p><strong>使用反亲和分散 Pod</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
 <span style="color:#f92672">metadata</span>:
   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">frontend</span>
@@ -986,9 +986,9 @@ topologyKey 的工作方式很简单，上面提到的三个属性并没有什�
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/e20d276ff9e2341d882766c6a564cffb9b0a9bd8" title='Last modified by howieyuen | June 6, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/82fb21107fd5f199f4956ff4f922c8b4a1acd525" title='Last modified by howieyuen | August 31, 2021' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>June 6, 2021</span>
+      <span>August 31, 2021</span>
     </a>
   </div>
 
