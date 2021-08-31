@@ -92,11 +92,11 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
 
 {{< mermaid >}}
 graph LR
-    start(（开始）) --> condtion1{newRS need scale up ?}
+    start(start) --> condtion1{newRS need scale up ?}
     condtion1 -- No --> condtion2{oldRS need scale down ?}
     condtion2 -- NO --> x3(3. sync deploment status)
     condtion1 -- YES --> x1(1. newRS scale up)
-    x1 --> stop(（结束）)
+    x1 --> stop(end)
     condtion2 -- YES --> x2(2. oldRS scale down)
     x2 --> stop
     x3 --> stop
