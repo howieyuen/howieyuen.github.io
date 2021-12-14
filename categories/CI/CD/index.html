@@ -14,7 +14,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.575580ebad52c3a144f557ee6d2e96fbdcb54746e3afc378e420ef1e2662fab9.js" integrity="sha256-V1WA661Sw6FE9VfubS6W&#43;9y1R0bjr8N45CDvHiZi&#43;rk="></script>
+<script defer src="/en.search.min.d2411f9dc01bae540c5158d300f7882e67d59efa45c71cfe08fc07fef9b85b6b.js" integrity="sha256-0kEfncAbrlQMUVjTAPeILmfVnvpFxxz&#43;CPwH/vm4W2s="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <link rel="alternate" type="application/rss+xml" href="https://howieyuen.github.io/categories/CI/CD/index.xml" title="袁昊的学习笔记" />
@@ -724,10 +724,9 @@ https://github.com/alex-shpak/hugo-book
 
 
     <p>1. 基本概念 #  首先介绍下 Circle CI 的 基本概念，帮助大家理解 Circle CI 是如何管理 CI/CD 流程。
-1.1 管控层 #    Project：Circle CI 项目在你的 VCS（GitHub 或者 Bitbucket）中 ，共享代码库的名称。在 Circle CI 的主页中点击 Projects 可以自由添加项目进入仪表盘，以追踪代码变更。
-  Configuration：Circle CI 遵循配置即代码（Configuration as Code）原则，整个 CI/CD 的流程都是通过 config.yml 文件，该文件位于项目根目录下的 .circleci 文件夹中。以下按照术语和依赖性顺序，列举了 Circle CI 最常见的组件：
- Pipeline：代码表整个配置，仅用于 Circle CI 云 Workflow：负责编排多个 Job Job：负责运行执行命令的一系列 Step Step：运行命令（例如安装依赖项或运行测试）和 shell 脚本    User Type：大多数都是从 VCS 帐号中继承的权限，主要包括以下四种：
- 组织管理员（Organization Administrator）：从 VCS 继承的权限级别。  GitHub：Owner 权限，并且至少关注了一个在 Circle CI 上的构建的项目。 Bitbucket：Admin 权限，并且至少关注了一个在 Circle CI 上的构建的项目。      项目管理员（Project Administrator）：是将 GitHub 或 Bitbucket 的 Repo 作为项目添加到 Circle CI 的用户。
+1.1 管控层 #  1.1.1 Project #  Circle CI 项目在你的 VCS（GitHub 或者 Bitbucket）中 ，共享代码库的名称。在 Circle CI 的主页中点击 Projects 可以自由添加项目进入仪表盘，以追踪代码变更。
+1.1.2 Configuration #  Circle CI 遵循配置即代码（Configuration as Code）原则，整个 CI/CD 的流程都是通过 config.yml 文件，该文件位于项目根目录下的 .circleci 文件夹中。以下按照术语和依赖性顺序，列举了 Circle CI 最常见的组件：
+ Pipeline：代码表整个配置，仅用于 Circle CI 云 Workflow：负责编排多个 Job Job：负责运行执行命令的一系列 Step Step：运行命令（例如安装依赖项或运行测试）和 shell 脚本  1.1.3 User Type #  大多数都是从 VCS 帐号中继承的权限，主要包括以下四种：
         <a href="/posts/notes-of-circle-ci/">...</a>
       
     </p>
