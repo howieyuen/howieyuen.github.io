@@ -11,19 +11,25 @@ categories: [CI/CD]
 
 ## 1.1 管控层
 
-- Project：Circle CI 项目在你的 VCS（GitHub 或者 Bitbucket）中 ，共享代码库的名称。在 Circle CI 的主页中点击 _Projects_ 可以自由添加项目进入仪表盘，以追踪代码变更。
+### 1.1.1 Project
 
-- Configuration：Circle CI 遵循配置即代码（Configuration as Code）原则，整个 CI/CD 的流程都是通过 _config.yml_ 文件，该文件位于项目根目录下的 _.circleci_ 文件夹中。以下按照术语和依赖性顺序，列举了 Circle CI 最常见的组件：
+Circle CI 项目在你的 VCS（GitHub 或者 Bitbucket）中 ，共享代码库的名称。在 Circle CI 的主页中点击 _Projects_ 可以自由添加项目进入仪表盘，以追踪代码变更。
+
+### 1.1.2 Configuration
+
+Circle CI 遵循配置即代码（Configuration as Code）原则，整个 CI/CD 的流程都是通过 _config.yml_ 文件，该文件位于项目根目录下的 _.circleci_ 文件夹中。以下按照术语和依赖性顺序，列举了 Circle CI 最常见的组件：
   - Pipeline：代码表整个配置，仅用于 Circle CI 云
   - Workflow：负责编排多个 Job
   - Job：负责运行执行命令的一系列 Step
   - Step：运行命令（例如安装依赖项或运行测试）和 shell 脚本
   
-- User Type：大多数都是从 VCS 帐号中继承的权限，主要包括以下四种：
+### 1.1.3 User Type
 
-  - 组织管理员（Organization Administrator）：从 VCS 继承的权限级别。
-    - GitHub：Owner 权限，并且至少关注了一个在 Circle CI 上的构建的项目。
-    - Bitbucket：Admin 权限，并且至少关注了一个在 Circle CI 上的构建的项目。
+大多数都是从 VCS 帐号中继承的权限，主要包括以下四种：
+
+- 组织管理员（Organization Administrator）：从 VCS 继承的权限级别。
+  - GitHub：Owner 权限，并且至少关注了一个在 Circle CI 上的构建的项目。
+  - Bitbucket：Admin 权限，并且至少关注了一个在 Circle CI 上的构建的项目。
 - 项目管理员（Project Administrator）：是将 GitHub 或 Bitbucket 的 Repo 作为项目添加到 Circle CI 的用户。
   - 用户（User）：是组织内的个人用户，从 VCS 继承。
 - Circle CI 用户（Circle CI User）：可以使用用户名和密码登录 Circle CI 平台的任何人。
@@ -299,7 +305,7 @@ Please note that any orbs you publish in this namespace are open orbs and are wo
 
 1. 设置 [Context](https://circleci.com/docs/2.0/contexts/#restricting-a-context)：Organization Settings > Contexts
 1. [启用 Uncertified Orbs](https://circleci.com/docs/2.0/orbs-faq/#using-uncertified-orbs)：Organization Settings > Security
-1. 新建 GitHub Repo：https://github.com/howieyuen/hello-circleci-orb
+1. 新建 GitHub Repo：[https://github.com/howieyuen/hello-circleci-orb](https://github.com/howieyuen/hello-circleci-orb)
 
 到此，就可以执行初始化命令 `circleci orb init <path> [flags]`，详细如下：
 
@@ -335,7 +341,7 @@ View orb publishing doc: https://circleci.com/docs/2.0/orb-author
 
 在发布之前，可以将 alpha 分支，推送到远端，触发 _test-pack workflow_，执行基本验证、lint 和单元测试。
 
-目前为止，Orb 只是在 dev 阶段，其他用户无法从 [Orb 市场](https://circleci.com/developer/orbs)检索到。正式发布的流程也很简单，是根据 Orb 仓库的 Commit Message 的前缀字段 `[semver:<increment>]`，来确定是否需要发布，以及发布的版本号。Orb 发布也遵循[语义化版本](https://circleci.com/docs/2.0/orb-concepts/#semantic-versioning)控制：
+目前为止，Orb 只是在 dev 阶段，其他用户无法从 [Orb 市场](https://circleci.com/developer/orbs)检索到。正式发布的流程也很简单，是根据 Orb 仓库的 Commit Message 的前缀字段 `[semver:<increment>]`，来确定是否需要发布，以及发布的版本号。Orb 发布也遵循[语义化版本](https://circleci.com/docs/2.0/orb-concepts/#semantic-versioning) 控制：
 
 | Increment | 描述                |
 | --------- | ------------------- |
@@ -344,7 +350,7 @@ View orb publishing doc: https://circleci.com/docs/2.0/orb-author
 | patch     | 发布 xx1 增量版本   |
 | skip      | 不要发布版本        |
 
-因此，发布版本，只需要修改 alpha 分支的 commit message，将 “skip” 改成 *increment* 任何一个值即可，Circle CI 就会触发 _integration_test_deploy_ 工作流，待完成后，即可在  [Orb 市场](https://circleci.com/developer/orbs)检索到刚才发布的 Orb：[howieyuen-orb/hello-circleci-orb@1.0.0](https://circleci.com/developer/orbs/orb/howieyuen-orb/hello-circleci-orb)。
+因此，发布版本，只需要修改 alpha 分支的 commit message，将 “skip” 改成 *increment* 任何一个值即可，Circle CI 就会触发 _integration_test_deploy_ 工作流，待完成后，即可在 [Orb 市场](https://circleci.com/developer/orbs)检索到刚才发布的 Orb：[howieyuen-orb/hello-circleci-orb@1.0.0](https://circleci.com/developer/orbs/orb/howieyuen-orb/hello-circleci-orb)。
 
 # 4. 参考资料
 
