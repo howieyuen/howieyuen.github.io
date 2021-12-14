@@ -1,6 +1,6 @@
 # hugo server --minify --themesDir ... --baseURL=http://0.0.0.0:1313/theme/hugo-book/
 
-baseURL: https://howieyuen.github.io/posts/
+baseURL: https://howieyuen.github.io/
 title: 袁昊的学习笔记
 theme: book
 
