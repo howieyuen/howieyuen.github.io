@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Orb on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/posts/tags/Orb/</link>
+    <description>Recent content in Orb on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Tue, 14 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/posts/tags/Orb/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Circle CI 学习笔记</title>
+      <link>https://howieyuen.github.io/posts/posts/notes-of-circle-ci/</link>
+      <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/posts/posts/notes-of-circle-ci/</guid>
+      <description>1. 基本概念 #  首先介绍下 Circle CI 的 基本概念，帮助大家理解 Circle CI 是如何管理 CI/CD 流程。
+1.1 管控层 #    Project：Circle CI 项目在你的 VCS（GitHub 或者 Bitbucket）中 ，共享代码库的名称。在 Circle CI 的主页中点击 Projects 可以自由添加项目进入仪表盘，以追踪代码变更。
+  Configuration：Circle CI 遵循配置即代码（Configuration as Code）原则，整个 CI/CD 的流程都是通过 config.yml 文件，该文件位于项目根目录下的 .circleci 文件夹中。以下按照术语和依赖性顺序，列举了 Circle CI 最常见的组件：
+ Pipeline：代码表整个配置，仅用于 Circle CI 云 Workflow：负责编排多个 Job Job：负责运行执行命令的一系列 Step Step：运行命令（例如安装依赖项或运行测试）和 shell 脚本    User Type：大多数都是从 VCS 帐号中继承的权限，主要包括以下四种：
+ 组织管理员（Organization Administrator）：从 VCS 继承的权限级别。  GitHub：Owner 权限，并且至少关注了一个在 Circle CI 上的构建的项目。 Bitbucket：Admin 权限，并且至少关注了一个在 Circle CI 上的构建的项目。      项目管理员（Project Administrator）：是将 GitHub 或 Bitbucket 的 Repo 作为项目添加到 Circle CI 的用户。</description>
+    </item>
+    
+  </channel>
+</rss>

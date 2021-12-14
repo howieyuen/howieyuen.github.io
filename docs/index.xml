@@ -2,9 +2,9 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Docs on 袁昊的学习笔记</title>
-    <link>https://howieyuen.github.io/docs/</link>
+    <link>https://howieyuen.github.io/posts/docs/</link>
     <description>Recent content in Docs on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 21 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/docs/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 21 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/posts/docs/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

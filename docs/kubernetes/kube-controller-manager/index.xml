@@ -2,15 +2,15 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>kube-controller-manager on 袁昊的学习笔记</title>
-    <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/</link>
+    <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/</link>
     <description>Recent content in kube-controller-manager on 袁昊的学习笔记</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>GC Controller 源码分析</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</link>
       <pubDate>Sun, 25 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</guid>
       <description>1. 序言 #  垃圾回收相关，可参考 这里
 2. 源码解析 #  GarbageCollectorController 负责回收集群中的资源对象，要做到这一点，首先得监控所有资源。gc controller 会监听集群中所有可删除资源的事件，这些事件会放到一个队列中，然后启动多个 worker 协程处理。对于删除事件，则根据删除策略删除对象；其他事件，更新对象之间的依赖关系。
 2.1 startGarbageCollectorController() #  首先来看 gc controller 的入口方法，也就是 kube-controller-manager 是如何启动它的。它的主要逻辑：
@@ -20,10 +20,10 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
     
     <item>
       <title>DaemonSet Controller 源码分析</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</link>
       <pubDate>Wed, 21 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</guid>
       <description>1. DaemonSet 简介 #  我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
 这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。
 如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。
@@ -33,10 +33,10 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
     
     <item>
       <title>Statefulset Controller 源码分析</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</link>
       <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</guid>
       <description>1. StatefulSet 简介 #  Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
 这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
 是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
@@ -47,10 +47,10 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
     
     <item>
       <title>无状态应用滚动更新</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</link>
       <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</guid>
       <description>1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
 2. Deployment 滚动更新 #  Deployment 更新方式有 2 种：
  RollingUpdate Recreate  其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：

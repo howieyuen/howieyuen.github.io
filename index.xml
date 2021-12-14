@@ -2,15 +2,28 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>介绍 on 袁昊的学习笔记</title>
-    <link>https://howieyuen.github.io/</link>
+    <link>https://howieyuen.github.io/posts/</link>
     <description>Recent content in 介绍 on 袁昊的学习笔记</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Circle CI 学习笔记</title>
+      <link>https://howieyuen.github.io/posts/posts/notes-of-circle-ci/</link>
+      <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/posts/posts/notes-of-circle-ci/</guid>
+      <description>1. 基本概念 #  首先介绍下 Circle CI 的 基本概念，帮助大家理解 Circle CI 是如何管理 CI/CD 流程。
+1.1 管控层 #    Project：Circle CI 项目在你的 VCS（GitHub 或者 Bitbucket）中 ，共享代码库的名称。在 Circle CI 的主页中点击 Projects 可以自由添加项目进入仪表盘，以追踪代码变更。
+  Configuration：Circle CI 遵循配置即代码（Configuration as Code）原则，整个 CI/CD 的流程都是通过 config.yml 文件，该文件位于项目根目录下的 .circleci 文件夹中。以下按照术语和依赖性顺序，列举了 Circle CI 最常见的组件：
+ Pipeline：代码表整个配置，仅用于 Circle CI 云 Workflow：负责编排多个 Job Job：负责运行执行命令的一系列 Step Step：运行命令（例如安装依赖项或运行测试）和 shell 脚本    User Type：大多数都是从 VCS 帐号中继承的权限，主要包括以下四种：
+ 组织管理员（Organization Administrator）：从 VCS 继承的权限级别。  GitHub：Owner 权限，并且至少关注了一个在 Circle CI 上的构建的项目。 Bitbucket：Admin 权限，并且至少关注了一个在 Circle CI 上的构建的项目。      项目管理员（Project Administrator）：是将 GitHub 或 Bitbucket 的 Repo 作为项目添加到 Circle CI 的用户。</description>
+    </item>
+    
     <item>
       <title>pprof</title>
-      <link>https://howieyuen.github.io/docs/golang/tools/pprof/</link>
+      <link>https://howieyuen.github.io/posts/docs/golang/tools/pprof/</link>
       <pubDate>Thu, 21 Jan 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/golang/tools/pprof/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/golang/tools/pprof/</guid>
       <description>1. 什么是 pprof #  Profiling 是指在程序执行过程中，收集能够反映程序执行状态的数据。 在软件工程中，性能分析（performance analysis，也称为 profiling）， 是以收集程序运行时信息为手段研究程序行为的分析方法，是一种动态程序分析的方法。
 Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供可视化的功能。它包含两个相关的库：
  runtime/pprof 对于只跑一次的程序，例如每天只跑一次的离线预处理程序，调用 pprof 包提供的函数，手动开启性能数据采集。 net/http/pprof 对于在线服务，对于一个 HTTP Server，访问 pprof 提供的 HTTP 接口，获得性能数据。 当然，实际上这里底层也是调用的 runtime/pprof 提供的函数，封装成接口对外提供网络访问。  2. pprof 的作用 #   下表来自 golang pprof 实战
@@ -19,10 +32,10 @@ Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供�
     
     <item>
       <title>鉴权机制</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/authorization/</link>
       <pubDate>Tue, 29 Dec 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/authorization/</guid>
       <description>1. 鉴权概述 #  在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。 如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。 只要有一个鉴权模块通过，则鉴权成功。
 kube-apiserver 目前提供了 6 种鉴权机制：
  AlwaysAllow：总是允许 AlwaysDeny：总是拒绝 ABAC：基于属性的访问控制（Attribute-Based Access Control） Node：节点鉴权，专门鉴权给 kubelet 发出的 API 请求 RBAC：基于角色额的访问控制（Role-Based Access Control） Webhook：基于 webhook 的一种 HTTP 回调机制，可以进行远程鉴权管理  在学习鉴权之前，有三个概念需要补齐：
@@ -32,10 +45,10 @@ kube-apiserver 目前提供了 6 种鉴权机制：
     
     <item>
       <title>unsafe</title>
-      <link>https://howieyuen.github.io/docs/golang/language-basics/unsafe/</link>
+      <link>https://howieyuen.github.io/posts/docs/golang/language-basics/unsafe/</link>
       <pubDate>Fri, 18 Dec 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/golang/language-basics/unsafe/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/golang/language-basics/unsafe/</guid>
       <description>本文转自： Go 里面的 unsafe 包详解
  The unsafe Package in Golang #  Golang 的 unsafe 包是一个很特殊的包。为什么这样说呢？本文将详细解释。
 来自 go 语言官方文档的警告 #  unsafe 包的文档是这么说的：
@@ -47,10 +60,10 @@ Unsafe 包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
     
     <item>
       <title>chan</title>
-      <link>https://howieyuen.github.io/docs/golang/data-structure/chan/</link>
+      <link>https://howieyuen.github.io/posts/docs/golang/data-structure/chan/</link>
       <pubDate>Mon, 14 Dec 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/golang/data-structure/chan/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/golang/data-structure/chan/</guid>
       <description>1. 引言 #  Go 语言中最常见的、也是经常被人提及的设计模式就是 —— 不要通过共享内存的方式进行通信，而是应该通过通信的方式共享内存。
 先入先出
 目前的 Channel 收发操作均遵循了先入先出（FIFO）的设计，具体规则如下：
@@ -59,10 +72,10 @@ Unsafe 包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
     
     <item>
       <title>321. 拼接最大数</title>
-      <link>https://howieyuen.github.io/docs/leetcode/0321/</link>
+      <link>https://howieyuen.github.io/posts/docs/leetcode/0321/</link>
       <pubDate>Wed, 02 Dec 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/leetcode/0321/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/leetcode/0321/</guid>
       <description>321. 拼接最大数 #   leetcode 链接： https://leetcode-cn.com/problems/create-maximum-number/
   给定长度分别为 m 和 n 的两个数组，其元素由 0-9 构成，表示两个自然数各位上的数字。现在从这两个数组中选出 k (k &amp;lt;= m + n) 个数字拼接成一个新的数，要求从同一个数组中取出的数字保持其在原数组中的相对顺序。
 求满足该条件的最大数。结果返回一个表示该最大数的长度为 k 的数组。
@@ -74,10 +87,10 @@ Unsafe 包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
     
     <item>
       <title>认证机制</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/authentication/</link>
       <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/authentication/</guid>
       <description>1. Kubernetes 中的用户 #  所有 Kubernetes 集群都有两类用户：由 Kubernetes 管理的 ServiceAccount 和普通用户。
 对于与普通用户，Kuernetes 使用以下方式管理：
  负责分发私钥的管理员 类似 Keystone 或者 Google Accounts 这类用户数据库 包含用户名和密码列表的文件  因此，kubernetes 并不提供普通用户的定义，普通用户是无法通过 API 调用写入到集群中的。
@@ -90,10 +103,10 @@ API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他
     
     <item>
       <title>GC Controller 源码分析</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</link>
       <pubDate>Sun, 25 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</guid>
       <description>1. 序言 #  垃圾回收相关，可参考 这里
 2. 源码解析 #  GarbageCollectorController 负责回收集群中的资源对象，要做到这一点，首先得监控所有资源。gc controller 会监听集群中所有可删除资源的事件，这些事件会放到一个队列中，然后启动多个 worker 协程处理。对于删除事件，则根据删除策略删除对象；其他事件，更新对象之间的依赖关系。
 2.1 startGarbageCollectorController() #  首先来看 gc controller 的入口方法，也就是 kube-controller-manager 是如何启动它的。它的主要逻辑：
@@ -103,10 +116,10 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
     
     <item>
       <title>DaemonSet Controller 源码分析</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</link>
       <pubDate>Wed, 21 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</guid>
       <description>1. DaemonSet 简介 #  我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
 这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。
 如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。
@@ -116,10 +129,10 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
     
     <item>
       <title>416. 分割等和子集</title>
-      <link>https://howieyuen.github.io/docs/leetcode/0416/</link>
+      <link>https://howieyuen.github.io/posts/docs/leetcode/0416/</link>
       <pubDate>Wed, 14 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/leetcode/0416/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/leetcode/0416/</guid>
       <description>416. 分割等和子集 #   leetcode 链接： https://leetcode-cn.com/problems/partition-equal-subset-sum/
   给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
 注意：
@@ -131,10 +144,10 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
     
     <item>
       <title>垃圾回收</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/garbage-collector/</link>
       <pubDate>Wed, 14 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/garbage-collector/</guid>
       <description>1. 序言 #  1.1 什么是垃圾回收 #  参考 Java 中的概念，垃圾回收（Garbage Collection）是 JVM 垃圾回收器提供的一种用于在空闲时间不定时回收无任何对象引用的对象占据的内存空间的一种机制。 垃圾回收回收的是无任何引用的对象占据的内存空间而不是对象本身。换言之，垃圾回收只会负责释放那些对象占有的内存。 对象是个抽象的词，包括引用和其占据的内存空间。当对象没有任何引用时其占据的内存空间随即被收回备用，此时对象也就被销毁。
 因此，垃圾回收关注的是无任何引用的对象。在 kubernetes 中，对象的引用关系又是怎样的呢？
 1.2 k8s 中的对象引用 #  某些 kubernetes 对象是其他一些对象的属主。例如一个 ReplicaSet 是一组 Pod 的属主；反之这组 Pod 就是此 ReplicaSet 的附属。 每个附属对象具有一个指向属主对象的 metadata.ownerReference 字段。
@@ -145,10 +158,10 @@ apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 co
     
     <item>
       <title>Statefulset Controller 源码分析</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</link>
       <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</guid>
       <description>1. StatefulSet 简介 #  Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
 这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
 是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
@@ -159,10 +172,10 @@ apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 co
     
     <item>
       <title>无状态应用滚动更新</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</link>
       <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</guid>
       <description>1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
 2. Deployment 滚动更新 #  Deployment 更新方式有 2 种：
  RollingUpdate Recreate  其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：
@@ -172,10 +185,10 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
     
     <item>
       <title>watch 关键设计</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</link>
       <pubDate>Thu, 24 Sep 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</guid>
       <description>注：本文转自 图解 kubernetes 中基于 etcd 的 watch 关键设计
  本文介绍了 kubernetes 针对 etcd 的 watch 场景，k8s 在性能优化上面的一些设计， 逐个介绍缓存、定时器、序列化缓存、bookmark 机制、forget 机制、 针对数据的索引与 ringbuffer 等组件的场景以及解决的问题， 希望能帮助到那些对 apiserver 中的 watch 机制实现感兴趣的朋友。
 1. 事件驱动与控制器 #   k8s 中并没有将业务的具体处理逻辑耦合在 rest 接口中，rest 接口只负责数据的存储， 通过控制器模式，分离数据存储与业务逻辑的耦合，保证 apiserver 业务逻辑的简洁。
@@ -186,10 +199,10 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
     
     <item>
       <title>Topology Manager 设计方案</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kubelet/kubelet-topology-manager/</link>
       <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kubelet/kubelet-topology-manager/</guid>
       <description>注：本文翻译自 Node Topology Manager
  1. 概要 #  越来越多的系统将 CPU 和硬件加速器组合使用，以支撑高延迟和搞吞吐量的并行计算。 包括电信、科学计算、机器学习、金融服务和数据分析等领域的工作。这种的混血儿构成了一个高性能环境。
 为了达到最优性能，需要对 CPU 隔离、内存和设备的物理位置进行优化。 然而，在 kubernetes 中，这些优化没有一个统一的组件管理。
@@ -201,10 +214,10 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
     
     <item>
       <title>高级调度</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-scheduler/advanced-scheduling/</link>
       <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-scheduler/advanced-scheduling/</guid>
       <description>1. 使用 taint 和 toleration 阻止节点调度到特定节点 #  1.1 taint 和 toleration #  taint，是在不修改已有 Pod 的前提下，通过在节点上添加污点信息，拒绝 Pod 的部署。 只有当一个 Pod 容忍某个节点的 taint 时，才能被调度到此节点上。
 显示节点 taint 信息
 kubectl describe node master.k8s ... Name: master.k8s Role: Labels: beta.kubernetes.io/arch=amd64 beta.kubernetes.io/os=linux kubernetes.io/hostname=master.k8s Annotations: node.alpha.kubernetes.io/ttl=0 Taints: node-role.kubernetes.io/master:NoSchedule ... 主节点上包含一个污点，污点包含一个 key 和 value，以及一个 effect，格式为=:。 上面的污点信息表示，key 为 node-role.kubernetes.io/master，value 是空，effect 是 NoSchedule。
@@ -214,10 +227,10 @@ kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.k
     
     <item>
       <title>Eviction Manager 工作机制</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kubelet/kubelet-eviction-manager/</link>
       <pubDate>Wed, 26 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kubelet/kubelet-eviction-manager/</guid>
       <description>1. 概述 #  在可用计算资源较少时，kubelet 为保证节点稳定性，会主动地结束一个或多个 pod 以回收短缺地资源， 这在处理内存和磁盘这种不可压缩资源时，驱逐 pod 回收资源的策略，显得尤为重要。 下面来具体研究下 Kubelet Eviction Policy 的工作机制。
  kubelet 预先监控本节点的资源使用，防止资源被耗尽，保证节点稳定性。 kubelet 会预先 Fail N(&amp;gt;=1) 个 Pod，以回收出现紧缺的资源。 kubelet 在 Fail 一个 pod 时，kill 掉 pod 内所有 container，并设置 pod.status.phase = Failed。 kubelet 按照事先设定好的 Eviction Threshold 来触发驱逐动作，实现资源回收。  1.1 驱逐信号 #  在源码 pkg/kubelet/eviction/api/types.go 中定义了以下及几种 Eviction Signals：
    Eviction Signal Description     memory.available := node.status.capacity[memory] - node.stats.memory.workingSet   nodefs.</description>
@@ -225,20 +238,20 @@ kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.k
     
     <item>
       <title>深入了解 Service</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/sig-network/learn-about-Service/</link>
       <pubDate>Fri, 24 Jan 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/sig-network/learn-about-Service/</guid>
       <description>1. 基本概念 #  1.1 Service 定义详解 #  Service 是对一组提供相同功能的 Pods 的抽象，并为它们提供一个统一的入口。借助 Service， 应用可以方便的实现服务发现与负载均衡，并实现应用的零宕机升级。Service 通过标签来选取服务后端， 一般配合 Replication Controller 或者 Deployment 来保证后端容器的正常运行。 这些匹配标签的 Pod IP 和端口列表组成 endpoints， 由 kube-proxy 负责将服务 IP 负载均衡到这些 endpoints 上。
 apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - name: string annotations: - name: string spec: selector: [] # ClusterIP、NodePort、LoadBalancer type: string # type=ClusterIP, 有自动分配的能力；type=LoadBalancer，需指定  clusterIP: string  # 是否支持 session，默认为空，可选值 ClutserIP，同一个 client 的 request，都发送到同一个后端 Pod  sessionAffinity: string  ports: - name: string # tcp、udp，默认 tcp protocol: string  port: int targetPort: int nodePort: int # spec.</description>
     </item>
     
     <item>
       <title>CRD 入门和使用</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/</link>
+      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/crd/</link>
       <pubDate>Mon, 14 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/crd/</guid>
       <description>1. Customer Resource #  自定义资源是 Kubernetes API 的扩展，本文将讨什么时候应该向 Kubernetes 集群添加自定义资源以及何时使用独立服务。它描述了添加自定义资源的两种方法以及如何在它们之间进行选择。
 1.1 自定义资源概述 #  资源就是 Kubernetes API 集合中的某个的对象。例如，内置 pods 资源包含 Pod 对象的集合。
 自定义资源是扩展了 Kubernetes API，但在默认的 API 集合中是不可用的，因为没有对应的 controller 处理业务逻辑。使用自定义资源，不仅可以解耦大多数的自研功能，还可用使得 Kubernetes 更加模块化。
@@ -249,10 +262,10 @@ apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - 
     
     <item>
       <title>map</title>
-      <link>https://howieyuen.github.io/docs/golang/data-structure/map/</link>
+      <link>https://howieyuen.github.io/posts/docs/golang/data-structure/map/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/golang/data-structure/map/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/golang/data-structure/map/</guid>
       <description>1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表， 由一个 key 通过哈希函数得到哈希值， 64 位系统中就生成一个 64 bit 的哈希值， 由这个哈希值将 key 对应到不同的桶（bucket）中， 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
 1.1 hash 函数 #  首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找， 就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个 bucket 的哪个 cell。 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
 1.2 数据结构 #  hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。
@@ -261,10 +274,10 @@ type hmap struct { // map 中的元素个数，必须放在 struct 的第一个�
     
     <item>
       <title>reflect</title>
-      <link>https://howieyuen.github.io/docs/golang/language-basics/reflect/</link>
+      <link>https://howieyuen.github.io/posts/docs/golang/language-basics/reflect/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/golang/language-basics/reflect/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/golang/language-basics/reflect/</guid>
       <description>1. 引言 #  计算机中提到的反射一般是指，程序借助某种手段检查自己结构的一种能力，通常就是借助编程语言中定义的类型（types）。因此，反射是建立在类型系统上的。
 go 是静态类型化，每个变量都有一个静态类型，也就是说，在编译时，变量的类型就已经确定。不显示地去做强制类型转换，不同类型之间是无法相互赋值的。
 有一种特殊的类型叫做接口（interface），一个接口表示的是一组方法集合。一个接口变量能存储任何具体的值，只要这个值实现了这个接口的方法集合。比如 io 包中的 Reader 和 Writer，io.Reader 接口变量能够保存任意实现了 Read() 方法的类型所定义的值。
@@ -277,20 +290,20 @@ type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := refl
     
     <item>
       <title>slice</title>
-      <link>https://howieyuen.github.io/docs/golang/data-structure/slice/</link>
+      <link>https://howieyuen.github.io/posts/docs/golang/data-structure/slice/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/golang/data-structure/slice/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/golang/data-structure/slice/</guid>
       <description>1. 数据结构 #  type slice struct { array unsafe.Pointer len int cap int }  slice 的底层数据结构中的 array 是一个指针，指向的是一个 Array len 代表这个 slice 的元素个数 cap 表示 slice 指向的底层数组容量  对 slice 的赋值，以值作为函数参数时，只拷贝 1 个指针和 2 个 int 值。
 2. 操作 #  2.1 创建 #   var []T 或 []T{} func make([]T,len,cap) []T  2.2 nil 切片和空切片 #   nil 切片被用在很多标准库和内置函数中，描述一个不存在的切片的时候，就需要用到 nil 切片。比如函数在发生异常的时候，返回的切片就是 nil 切片。nil 切片的指针指向 nil. 空切片一般会用来表示一个空集合。比如数据库查询，一条结果也没有查到，那么就可以返回一个空切片。  2.</description>
     </item>
     
     <item>
       <title>内存模型</title>
-      <link>https://howieyuen.github.io/docs/golang/memory-manage/memory-model/</link>
+      <link>https://howieyuen.github.io/posts/docs/golang/memory-manage/memory-model/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/docs/golang/memory-manage/memory-model/</guid>
+      <guid>https://howieyuen.github.io/posts/docs/golang/memory-manage/memory-model/</guid>
       <description>1. 引言 #  Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。
 2. 设计原则 #  2.1 happens-before #  假设 A 和 B 表示一个多线程的程序执行的两个操作。如果 A happens-before B，那么 A 操作对内存的影响将对执行 B 的线程（且执行 B 之前）可见。
 单一 goroutine 中当满足下面条件时候，对一个变量的写操作 w1 对读操作 r1 可见：
