@@ -2,15 +2,15 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>内存管理 on 袁昊的学习笔记</title>
-    <link>https://howieyuen.github.io/posts/docs/golang/memory-manage/</link>
+    <link>https://howieyuen.github.io/docs/golang/memory-manage/</link>
     <description>Recent content in 内存管理 on 袁昊的学习笔记</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/posts/docs/golang/memory-manage/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/docs/golang/memory-manage/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>内存模型</title>
-      <link>https://howieyuen.github.io/posts/docs/golang/memory-manage/memory-model/</link>
+      <link>https://howieyuen.github.io/docs/golang/memory-manage/memory-model/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/docs/golang/memory-manage/memory-model/</guid>
+      <guid>https://howieyuen.github.io/docs/golang/memory-manage/memory-model/</guid>
       <description>1. 引言 #  Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。
 2. 设计原则 #  2.1 happens-before #  假设 A 和 B 表示一个多线程的程序执行的两个操作。如果 A happens-before B，那么 A 操作对内存的影响将对执行 B 的线程（且执行 B 之前）可见。
 单一 goroutine 中当满足下面条件时候，对一个变量的写操作 w1 对读操作 r1 可见：

@@ -1,14 +1,14 @@
 {
   "name": "袁昊的学习笔记",
   "short_name": "袁昊的学习笔记",
-  "start_url": "/posts/",
-  "scope": "/posts/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/posts/favicon.svg",
+      "src": "/favicon.svg",
       "sizes": "512x512"
     }
   ]

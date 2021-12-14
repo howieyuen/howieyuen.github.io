@@ -2,15 +2,15 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>语言基础 on 袁昊的学习笔记</title>
-    <link>https://howieyuen.github.io/posts/docs/golang/language-basics/</link>
+    <link>https://howieyuen.github.io/docs/golang/language-basics/</link>
     <description>Recent content in 语言基础 on 袁昊的学习笔记</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/posts/docs/golang/language-basics/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/docs/golang/language-basics/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>unsafe</title>
-      <link>https://howieyuen.github.io/posts/docs/golang/language-basics/unsafe/</link>
+      <link>https://howieyuen.github.io/docs/golang/language-basics/unsafe/</link>
       <pubDate>Fri, 18 Dec 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/docs/golang/language-basics/unsafe/</guid>
+      <guid>https://howieyuen.github.io/docs/golang/language-basics/unsafe/</guid>
       <description>本文转自： Go 里面的 unsafe 包详解
  The unsafe Package in Golang #  Golang 的 unsafe 包是一个很特殊的包。为什么这样说呢？本文将详细解释。
 来自 go 语言官方文档的警告 #  unsafe 包的文档是这么说的：
@@ -22,10 +22,10 @@ Unsafe 包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
     
     <item>
       <title>reflect</title>
-      <link>https://howieyuen.github.io/posts/docs/golang/language-basics/reflect/</link>
+      <link>https://howieyuen.github.io/docs/golang/language-basics/reflect/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/docs/golang/language-basics/reflect/</guid>
+      <guid>https://howieyuen.github.io/docs/golang/language-basics/reflect/</guid>
       <description>1. 引言 #  计算机中提到的反射一般是指，程序借助某种手段检查自己结构的一种能力，通常就是借助编程语言中定义的类型（types）。因此，反射是建立在类型系统上的。
 go 是静态类型化，每个变量都有一个静态类型，也就是说，在编译时，变量的类型就已经确定。不显示地去做强制类型转换，不同类型之间是无法相互赋值的。
 有一种特殊的类型叫做接口（interface），一个接口表示的是一组方法集合。一个接口变量能存储任何具体的值，只要这个值实现了这个接口的方法集合。比如 io 包中的 Reader 和 Writer，io.Reader 接口变量能够保存任意实现了 Read() 方法的类型所定义的值。

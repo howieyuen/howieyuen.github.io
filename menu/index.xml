@@ -2,8 +2,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>袁昊的学习笔记</title>
-    <link>https://howieyuen.github.io/posts/menu/</link>
+    <link>https://howieyuen.github.io/menu/</link>
     <description>Recent content on 袁昊的学习笔记</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/posts/menu/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/menu/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

@@ -2,15 +2,15 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>LeetCode on 袁昊的学习笔记</title>
-    <link>https://howieyuen.github.io/posts/docs/leetcode/</link>
+    <link>https://howieyuen.github.io/docs/leetcode/</link>
     <description>Recent content in LeetCode on 袁昊的学习笔记</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/posts/docs/leetcode/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/docs/leetcode/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>321. 拼接最大数</title>
-      <link>https://howieyuen.github.io/posts/docs/leetcode/0321/</link>
+      <link>https://howieyuen.github.io/docs/leetcode/0321/</link>
       <pubDate>Wed, 02 Dec 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/docs/leetcode/0321/</guid>
+      <guid>https://howieyuen.github.io/docs/leetcode/0321/</guid>
       <description>321. 拼接最大数 #   leetcode 链接： https://leetcode-cn.com/problems/create-maximum-number/
   给定长度分别为 m 和 n 的两个数组，其元素由 0-9 构成，表示两个自然数各位上的数字。现在从这两个数组中选出 k (k &amp;lt;= m + n) 个数字拼接成一个新的数，要求从同一个数组中取出的数字保持其在原数组中的相对顺序。
 求满足该条件的最大数。结果返回一个表示该最大数的长度为 k 的数组。
@@ -22,10 +22,10 @@
     
     <item>
       <title>416. 分割等和子集</title>
-      <link>https://howieyuen.github.io/posts/docs/leetcode/0416/</link>
+      <link>https://howieyuen.github.io/docs/leetcode/0416/</link>
       <pubDate>Wed, 14 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/docs/leetcode/0416/</guid>
+      <guid>https://howieyuen.github.io/docs/leetcode/0416/</guid>
       <description>416. 分割等和子集 #   leetcode 链接： https://leetcode-cn.com/problems/partition-equal-subset-sum/
   给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
 注意：

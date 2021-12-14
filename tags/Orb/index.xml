@@ -2,16 +2,16 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Orb on 袁昊的学习笔记</title>
-    <link>https://howieyuen.github.io/posts/tags/Orb/</link>
+    <link>https://howieyuen.github.io/tags/Orb/</link>
     <description>Recent content in Orb on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 14 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/posts/tags/Orb/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 14 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/tags/Orb/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Circle CI 学习笔记</title>
-      <link>https://howieyuen.github.io/posts/posts/notes-of-circle-ci/</link>
+      <link>https://howieyuen.github.io/posts/notes-of-circle-ci/</link>
       <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/posts/notes-of-circle-ci/</guid>
+      <guid>https://howieyuen.github.io/posts/notes-of-circle-ci/</guid>
       <description>1. 基本概念 #  首先介绍下 Circle CI 的 基本概念，帮助大家理解 Circle CI 是如何管理 CI/CD 流程。
 1.1 管控层 #    Project：Circle CI 项目在你的 VCS（GitHub 或者 Bitbucket）中 ，共享代码库的名称。在 Circle CI 的主页中点击 Projects 可以自由添加项目进入仪表盘，以追踪代码变更。
   Configuration：Circle CI 遵循配置即代码（Configuration as Code）原则，整个 CI/CD 的流程都是通过 config.yml 文件，该文件位于项目根目录下的 .circleci 文件夹中。以下按照术语和依赖性顺序，列举了 Circle CI 最常见的组件：

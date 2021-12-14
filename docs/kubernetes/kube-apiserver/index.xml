@@ -2,15 +2,15 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>kube-apisever on 袁昊的学习笔记</title>
-    <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/</link>
+    <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/</link>
     <description>Recent content in kube-apisever on 袁昊的学习笔记</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>鉴权机制</title>
-      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/authorization/</link>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</link>
       <pubDate>Tue, 29 Dec 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/authorization/</guid>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</guid>
       <description>1. 鉴权概述 #  在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。 如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。 只要有一个鉴权模块通过，则鉴权成功。
 kube-apiserver 目前提供了 6 种鉴权机制：
  AlwaysAllow：总是允许 AlwaysDeny：总是拒绝 ABAC：基于属性的访问控制（Attribute-Based Access Control） Node：节点鉴权，专门鉴权给 kubelet 发出的 API 请求 RBAC：基于角色额的访问控制（Role-Based Access Control） Webhook：基于 webhook 的一种 HTTP 回调机制，可以进行远程鉴权管理  在学习鉴权之前，有三个概念需要补齐：
@@ -20,10 +20,10 @@ kube-apiserver 目前提供了 6 种鉴权机制：
     
     <item>
       <title>认证机制</title>
-      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/authentication/</link>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/</link>
       <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/authentication/</guid>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/</guid>
       <description>1. Kubernetes 中的用户 #  所有 Kubernetes 集群都有两类用户：由 Kubernetes 管理的 ServiceAccount 和普通用户。
 对于与普通用户，Kuernetes 使用以下方式管理：
  负责分发私钥的管理员 类似 Keystone 或者 Google Accounts 这类用户数据库 包含用户名和密码列表的文件  因此，kubernetes 并不提供普通用户的定义，普通用户是无法通过 API 调用写入到集群中的。
@@ -36,10 +36,10 @@ API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他
     
     <item>
       <title>垃圾回收</title>
-      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/garbage-collector/</link>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/</link>
       <pubDate>Wed, 14 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/garbage-collector/</guid>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/</guid>
       <description>1. 序言 #  1.1 什么是垃圾回收 #  参考 Java 中的概念，垃圾回收（Garbage Collection）是 JVM 垃圾回收器提供的一种用于在空闲时间不定时回收无任何对象引用的对象占据的内存空间的一种机制。 垃圾回收回收的是无任何引用的对象占据的内存空间而不是对象本身。换言之，垃圾回收只会负责释放那些对象占有的内存。 对象是个抽象的词，包括引用和其占据的内存空间。当对象没有任何引用时其占据的内存空间随即被收回备用，此时对象也就被销毁。
 因此，垃圾回收关注的是无任何引用的对象。在 kubernetes 中，对象的引用关系又是怎样的呢？
 1.2 k8s 中的对象引用 #  某些 kubernetes 对象是其他一些对象的属主。例如一个 ReplicaSet 是一组 Pod 的属主；反之这组 Pod 就是此 ReplicaSet 的附属。 每个附属对象具有一个指向属主对象的 metadata.ownerReference 字段。
@@ -50,10 +50,10 @@ apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 co
     
     <item>
       <title>watch 关键设计</title>
-      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</link>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</link>
       <pubDate>Thu, 24 Sep 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</guid>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</guid>
       <description>注：本文转自 图解 kubernetes 中基于 etcd 的 watch 关键设计
  本文介绍了 kubernetes 针对 etcd 的 watch 场景，k8s 在性能优化上面的一些设计， 逐个介绍缓存、定时器、序列化缓存、bookmark 机制、forget 机制、 针对数据的索引与 ringbuffer 等组件的场景以及解决的问题， 希望能帮助到那些对 apiserver 中的 watch 机制实现感兴趣的朋友。
 1. 事件驱动与控制器 #   k8s 中并没有将业务的具体处理逻辑耦合在 rest 接口中，rest 接口只负责数据的存储， 通过控制器模式，分离数据存储与业务逻辑的耦合，保证 apiserver 业务逻辑的简洁。
@@ -64,10 +64,10 @@ apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 co
     
     <item>
       <title>CRD 入门和使用</title>
-      <link>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/crd/</link>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/</link>
       <pubDate>Mon, 14 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/crd/</guid>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/</guid>
       <description>1. Customer Resource #  自定义资源是 Kubernetes API 的扩展，本文将讨什么时候应该向 Kubernetes 集群添加自定义资源以及何时使用独立服务。它描述了添加自定义资源的两种方法以及如何在它们之间进行选择。
 1.1 自定义资源概述 #  资源就是 Kubernetes API 集合中的某个的对象。例如，内置 pods 资源包含 Pod 对象的集合。
 自定义资源是扩展了 Kubernetes API，但在默认的 API 集合中是不可用的，因为没有对应的 controller 处理业务逻辑。使用自定义资源，不仅可以解耦大多数的自研功能，还可用使得 Kubernetes 更加模块化。

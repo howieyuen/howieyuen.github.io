@@ -16,17 +16,17 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
  判断是否启用 gc controller，默认是 true 初始化 clientset，使用 discoveryClient 获取集群中所有资源 注册不考虑 gc 的资源，默认为空 调用 garbagecollector.NewGarbageCollector() 方法 初始化 gc controller 对象 调用 garbageCollector.Run() 启动 gc controller，workers 默认是 20 调用 garbageCollector.Sync() 监听集群中的资源，当出现新的资源时，同步到 minitors 中 调用 garbagecollector.NewDebugHandler() 注册 debug 接口，用来提供集群内所有对象的关联关系；  cmd/kube-controller-manager/app/core.go:538
 func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool, error) { // 1." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" /><meta property="article:section" content="docs" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2020-10-25T00:00:00+00:00" />
-<meta property="article:modified_time" content="2021-12-14T15:53:02+08:00" />
+<meta property="article:modified_time" content="2021-12-14T15:57:36+08:00" />
 
 <title>GC Controller 源码分析 | 袁昊的学习笔记</title>
-<link rel="manifest" href="/posts/manifest.json">
-<link rel="icon" href="/posts/favicon.png" type="image/x-icon">
-<link rel="stylesheet" href="/posts/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/posts/en.search.min.ead890f8af2fd0b01aef17d98ce32cdfa40eed1380f3c5674249474bdece718f.js" integrity="sha256-6tiQ&#43;K8v0LAa7xfZjOMs36QO7ROA88VnQklHS97OcY8="></script>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
+<script defer src="/en.search.min.575580ebad52c3a144f557ee6d2e96fbdcb54746e3afc378e420ef1e2662fab9.js" integrity="sha256-V1WA661Sw6FE9VfubS6W&#43;9y1R0bjr8N45CDvHiZi&#43;rk="></script>
 
-<script defer src="/posts/sw.min.fc6adb5db7743a1942827fbeb59112c8bd77812892ff88055e939016f077293d.js" integrity="sha256-/GrbXbd0OhlCgn&#43;&#43;tZESyL13gSiS/4gFXpOQFvB3KT0="></script>
+<script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -43,7 +43,7 @@ https://github.com/alex-shpak/hugo-book
       
   <nav>
 <h2 class="book-brand">
-  <a href="/posts"><img src="/posts/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  <a href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
   </a>
 </h2>
 
@@ -104,7 +104,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/golang/data-structure/chan/" class="">chan</a>
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/chan/" class="">chan</a>
   
 
         </li>
@@ -117,7 +117,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/golang/data-structure/map/" class="">map</a>
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/map/" class="">map</a>
   
 
         </li>
@@ -130,7 +130,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/golang/data-structure/slice/" class="">slice</a>
+    <a href="https://howieyuen.github.io/docs/golang/data-structure/slice/" class="">slice</a>
   
 
         </li>
@@ -161,7 +161,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/golang/language-basics/unsafe/" class="">unsafe</a>
+    <a href="https://howieyuen.github.io/docs/golang/language-basics/unsafe/" class="">unsafe</a>
   
 
         </li>
@@ -174,7 +174,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/golang/language-basics/reflect/" class="">reflect</a>
+    <a href="https://howieyuen.github.io/docs/golang/language-basics/reflect/" class="">reflect</a>
   
 
         </li>
@@ -205,7 +205,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+    <a href="https://howieyuen.github.io/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
   
 
         </li>
@@ -236,7 +236,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/golang/tools/pprof/" class="">pprof</a>
+    <a href="https://howieyuen.github.io/docs/golang/tools/pprof/" class="">pprof</a>
   
 
         </li>
@@ -285,7 +285,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
   
 
         </li>
@@ -298,7 +298,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
   
 
         </li>
@@ -311,7 +311,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
   
 
         </li>
@@ -324,7 +324,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
   
 
         </li>
@@ -337,7 +337,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
   
 
         </li>
@@ -368,7 +368,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class=" active">GC Controller 源码分析</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class=" active">GC Controller 源码分析</a>
   
 
         </li>
@@ -381,7 +381,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
   
 
         </li>
@@ -394,7 +394,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
   
 
         </li>
@@ -407,7 +407,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
   
 
         </li>
@@ -438,7 +438,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
   
 
         </li>
@@ -469,7 +469,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
   
 
         </li>
@@ -482,7 +482,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
   
 
         </li>
@@ -513,7 +513,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
+    <a href="https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
   
 
         </li>
@@ -553,7 +553,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/leetcode/0321/" class="">321. 拼接最大数</a>
+    <a href="https://howieyuen.github.io/docs/leetcode/0321/" class="">321. 拼接最大数</a>
   
 
         </li>
@@ -566,7 +566,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/posts/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+    <a href="https://howieyuen.github.io/docs/leetcode/0416/" class="">416. 分割等和子集</a>
   
 
         </li>
@@ -593,7 +593,7 @@ https://github.com/alex-shpak/hugo-book
 <ul>
   
   <li>
-    <a href="/posts/posts/" >
+    <a href="/posts/" >
         Blog
       </a>
   </li>
@@ -633,14 +633,14 @@ https://github.com/alex-shpak/hugo-book
         
   <div class="flex align-center justify-between">
   <label for="menu-control">
-    <img src="/posts/svg/menu.svg" class="book-icon" alt="Menu" />
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
   <strong>GC Controller 源码分析</strong>
 
   <label for="toc-control">
     
-    <img src="/posts/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
     
   </label>
 </div>
@@ -689,7 +689,7 @@ https://github.com/alex-shpak/hugo-book
   <a class="anchor" href="#1-%e5%ba%8f%e8%a8%80">#</a>
 </h1>
 <p>垃圾回收相关，可参考 
-  <a href="/posts/docs/kubernetes/kube-apiserver/garbage-collector/">这里</a></p>
+  <a href="/docs/kubernetes/kube-apiserver/garbage-collector/">这里</a></p>
 <h1 id="2-源码解析">
   2. 源码解析
   <a class="anchor" href="#2-%e6%ba%90%e7%a0%81%e8%a7%a3%e6%9e%90">#</a>
@@ -1235,7 +1235,7 @@ GraphBuilder 在整个垃圾收集的过程中，起到了承上启下的作用�
 <p>上面的业务逻辑不算复杂，但是方法嵌套有点多，整理一下方法的调用链：</p>
 
 
-<script src="/posts/mermaid.min.js"></script>
+<script src="/mermaid.min.js"></script>
 
   <script>mermaid.initialize({
   "flowchart": {
@@ -1482,8 +1482,8 @@ e -->|consume| g[AttemptToOrphanWorker]
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/94f9dab1352b24898e4b0c6ce8802db29e6028c6" title='Last modified by howieyuen | December 14, 2021' target="_blank" rel="noopener">
-      <img src="/posts/svg/calendar.svg" class="book-icon" alt="Calendar" />
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/1c28238b7747112ebe90a46e4cb097d1c2431d80" title='Last modified by howieyuen | December 14, 2021' target="_blank" rel="noopener">
+      <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
       <span>December 14, 2021</span>
     </a>
   </div>

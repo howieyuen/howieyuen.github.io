@@ -2,43 +2,43 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on 袁昊的学习笔记</title>
-    <link>https://howieyuen.github.io/posts/tags/</link>
+    <link>https://howieyuen.github.io/tags/</link>
     <description>Recent content in Tags on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 14 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/posts/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 14 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>CircleCI</title>
-      <link>https://howieyuen.github.io/posts/tags/CircleCI/</link>
+      <link>https://howieyuen.github.io/tags/CircleCI/</link>
       <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/tags/CircleCI/</guid>
+      <guid>https://howieyuen.github.io/tags/CircleCI/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Orb</title>
-      <link>https://howieyuen.github.io/posts/tags/Orb/</link>
+      <link>https://howieyuen.github.io/tags/Orb/</link>
       <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/tags/Orb/</guid>
+      <guid>https://howieyuen.github.io/tags/Orb/</guid>
       <description></description>
     </item>
     
     <item>
       <title>贪心算法，动态规划</title>
-      <link>https://howieyuen.github.io/posts/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</link>
+      <link>https://howieyuen.github.io/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</link>
       <pubDate>Wed, 02 Dec 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</guid>
+      <guid>https://howieyuen.github.io/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</guid>
       <description></description>
     </item>
     
     <item>
       <title>动态规划</title>
-      <link>https://howieyuen.github.io/posts/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</link>
+      <link>https://howieyuen.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</link>
       <pubDate>Wed, 14 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://howieyuen.github.io/posts/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</guid>
+      <guid>https://howieyuen.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</guid>
       <description></description>
     </item>
     
