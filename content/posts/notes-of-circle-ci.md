@@ -5,6 +5,12 @@ tags: [CircleCI, Orb]
 categories: [CI/CD]
 ---
 
+CircleCI 是基于云的 CI/CD 工具，可自动执行软件构建和交付过程。它提供快速的配置和维护，没有任何复杂性。
+由于它是基于云的 CI/CD 工具，因此消除了专用服务器的困扰，并降低了维护本地服务器的成本。
+此外，基于云的服务器是可扩展的，健壮的，并有助于更快地部署应用程序。
+
+<!--more-->
+
 # 1. 基本概念
 
 首先介绍下 Circle CI 的[基本概念](https://circleci.com/docs/2.0/concepts/)，帮助大家理解 Circle CI 是如何管理 CI/CD 流程。
