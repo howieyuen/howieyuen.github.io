@@ -7,24 +7,24 @@
 <meta name="description" content="1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
 2. Deployment 滚动更新 #  Deployment 更新方式有 2 种：
  RollingUpdate Recreate  其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：
-func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
-func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 	newRS, oldRSs, err := dc.">
+func (dc *DeploymentController) syncDeployment(key string) error {  ... 	switch d.Spec.Strategy.Type { 	case apps.RecreateDeploymentStrategyType: 	return dc.rolloutRecreate(d, rsList, podMap) 	case apps.RollingUpdateDeploymentStrategyType: 	return dc.rolloutRolling(d, rsList) 	} 	... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
+func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="无状态应用滚动更新" />
 <meta property="og:description" content="1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
 2. Deployment 滚动更新 #  Deployment 更新方式有 2 种：
  RollingUpdate Recreate  其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：
-func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
-func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 	newRS, oldRSs, err := dc." />
+func (dc *DeploymentController) syncDeployment(key string) error {  ... 	switch d.Spec.Strategy.Type { 	case apps.RecreateDeploymentStrategyType: 	return dc.rolloutRecreate(d, rsList, podMap) 	case apps.RollingUpdateDeploymentStrategyType: 	return dc.rolloutRolling(d, rsList) 	} 	... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
+func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2020-10-12T00:00:00+00:00" />
-<meta property="article:modified_time" content="2021-12-14T16:10:37+08:00" />
+<meta property="article:modified_time" content="2022-05-05T17:06:14+08:00" />
 
 <title>无状态应用滚动更新 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.d2411f9dc01bae540c5158d300f7882e67d59efa45c71cfe08fc07fef9b85b6b.js" integrity="sha256-0kEfncAbrlQMUVjTAPeILmfVnvpFxxz&#43;CPwH/vm4W2s="></script>
+<script defer src="/en.search.min.306f3039b68c95e12639226149ab899af825bbaf2c2b9228bc3adf4e030996ee.js" integrity="sha256-MG8wObaMleEmOSJhSauJmvglu68sK5IovDrfTgMJlu4="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -622,7 +622,7 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <script>(function(){var a=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(b){localStorage.setItem("menu.scrollTop",a.scrollTop)}),a.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+  <script>(function(){var e=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
 
 
  
@@ -693,57 +693,57 @@ https://github.com/alex-shpak/hugo-book
 </ul>
 <p>其中，滚动更新是最常见的，阅读代码 <code>pkg/controller/deployment/deployment_controller.go:648</code>，
 可以看到 2 种方式分别对应的业务逻辑：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">syncDeployment</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
-    <span style="color:#f92672">...</span>
-	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Strategy</span>.<span style="color:#a6e22e">Type</span> {
-	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">RecreateDeploymentStrategyType</span>:
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">rolloutRecreate</span>(<span style="color:#a6e22e">d</span>, <span style="color:#a6e22e">rsList</span>, <span style="color:#a6e22e">podMap</span>)
-	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">RollingUpdateDeploymentStrategyType</span>:
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">rolloutRolling</span>(<span style="color:#a6e22e">d</span>, <span style="color:#a6e22e">rsList</span>)
-	}
-	<span style="color:#f92672">...</span>
-}
-</code></pre></div><p>根据 <code>d.Spec.Strategy.Type</code>，若更新策略为 <code>RollingUpdate</code>，
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">syncDeployment</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Strategy</span>.<span style="color:#a6e22e">Type</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">RecreateDeploymentStrategyType</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">rolloutRecreate</span>(<span style="color:#a6e22e">d</span>, <span style="color:#a6e22e">rsList</span>, <span style="color:#a6e22e">podMap</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">RollingUpdateDeploymentStrategyType</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">rolloutRolling</span>(<span style="color:#a6e22e">d</span>, <span style="color:#a6e22e">rsList</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>根据 <code>d.Spec.Strategy.Type</code>，若更新策略为 <code>RollingUpdate</code>，
 则执行 <code>dc.rolloutRecreate()</code> 方法，具体逻辑如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">rolloutRolling</span>(<span style="color:#a6e22e">d</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>, <span style="color:#a6e22e">rsList</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>) <span style="color:#66d9ef">error</span> {
-    <span style="color:#75715e">// 1、获取所有的 rs，若没有 newRS 则创建
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">getAllReplicaSetsAndSyncRevision</span>(<span style="color:#a6e22e">d</span>, <span style="color:#a6e22e">rsList</span>, <span style="color:#66d9ef">true</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-	}
-	<span style="color:#a6e22e">allRSs</span> <span style="color:#f92672">:=</span> append(<span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">newRS</span>)
-
-	<span style="color:#75715e">// 2、newRS 执行 scale up 操作
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">scaledUp</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">reconcileNewReplicaSet</span>(<span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">d</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-	}
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">scaledUp</span> {
-		<span style="color:#75715e">// Update DeploymentStatus
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">syncRolloutStatus</span>(<span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">d</span>)
-	}
-
-	<span style="color:#75715e">// 3、oldRS 执行 scale down 操作
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">scaledDown</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">reconcileOldReplicaSets</span>(<span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">controller</span>.<span style="color:#a6e22e">FilterActiveReplicaSets</span>(<span style="color:#a6e22e">oldRSs</span>), <span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">d</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-	}
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">scaledDown</span> {
-		<span style="color:#75715e">// Update DeploymentStatus
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">syncRolloutStatus</span>(<span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">d</span>)
-	}
-
-    <span style="color:#75715e">// 4、清理过期的 rs
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">DeploymentComplete</span>(<span style="color:#a6e22e">d</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">Status</span>) {
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">cleanupDeployment</span>(<span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">d</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-		}
-	}
-
-	<span style="color:#75715e">// 5、同步 deployment 状态
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">syncRolloutStatus</span>(<span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">d</span>)
-}
-</code></pre></div><h2 id="21-滚动更新概述">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">rolloutRolling</span>(<span style="color:#a6e22e">d</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>, <span style="color:#a6e22e">rsList</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 1、获取所有的 rs，若没有 newRS 则创建
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">getAllReplicaSetsAndSyncRevision</span>(<span style="color:#a6e22e">d</span>, <span style="color:#a6e22e">rsList</span>, <span style="color:#66d9ef">true</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">allRSs</span> <span style="color:#f92672">:=</span> append(<span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">newRS</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 2、newRS 执行 scale up 操作
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">scaledUp</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">reconcileNewReplicaSet</span>(<span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">d</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">scaledUp</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Update DeploymentStatus
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">syncRolloutStatus</span>(<span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">d</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 3、oldRS 执行 scale down 操作
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">scaledDown</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">reconcileOldReplicaSets</span>(<span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">controller</span>.<span style="color:#a6e22e">FilterActiveReplicaSets</span>(<span style="color:#a6e22e">oldRSs</span>), <span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">d</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">scaledDown</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Update DeploymentStatus
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">syncRolloutStatus</span>(<span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">d</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 4、清理过期的 rs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">DeploymentComplete</span>(<span style="color:#a6e22e">d</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">Status</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">cleanupDeployment</span>(<span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">d</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 5、同步 deployment 状态
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">syncRolloutStatus</span>(<span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">d</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="21-滚动更新概述">
   2.1 滚动更新概述
   <a class="anchor" href="#21-%e6%bb%9a%e5%8a%a8%e6%9b%b4%e6%96%b0%e6%a6%82%e8%bf%b0">#</a>
 </h2>
@@ -792,31 +792,31 @@ graph LR
   <a class="anchor" href="#211-newrs-scale-up">#</a>
 </h3>
 <p>阅读代码 <code>pkg/controller/deployment/rolling.go:68</code>，详细如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">reconcileNewReplicaSet</span>(<span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>) (<span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
-    <span style="color:#75715e">// 1、判断副本数是否已达到了期望值
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">==</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) {
-		<span style="color:#75715e">// Scaling not required.
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
-	}
-	
-	<span style="color:#75715e">// 2、判断是否需要 scale down 操作
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) &gt; <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) {
-		<span style="color:#75715e">// Scale down.
-</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">scaled</span>, <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">scaleReplicaSetAndRecordEvent</span>(<span style="color:#a6e22e">newRS</span>, <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>), <span style="color:#a6e22e">deployment</span>)
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">scaled</span>, <span style="color:#a6e22e">err</span>
-	}
-	
-	<span style="color:#75715e">// 3、计算 newRS 所需要的副本数
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">newReplicasCount</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">NewRSNewReplicas</span>(<span style="color:#a6e22e">deployment</span>, <span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">newRS</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">err</span>
-	}
-	
-	<span style="color:#75715e">// 4、如果需要 scale ，则更新 rs 的 annotation 以及 rs.Spec.Replicas
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">scaled</span>, <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">scaleReplicaSetAndRecordEvent</span>(<span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">newReplicasCount</span>, <span style="color:#a6e22e">deployment</span>)
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">scaled</span>, <span style="color:#a6e22e">err</span>
-}
-</code></pre></div><p>从上面的源码可以得出，<code>reconcileNewReplicaSet()</code> 的主要逻辑如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">reconcileNewReplicaSet</span>(<span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>) (<span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 1、判断副本数是否已达到了期望值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">==</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Scaling not required.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 2、判断是否需要 scale down 操作
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) &gt; <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Scale down.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">scaled</span>, <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">scaleReplicaSetAndRecordEvent</span>(<span style="color:#a6e22e">newRS</span>, <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>), <span style="color:#a6e22e">deployment</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">scaled</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 3、计算 newRS 所需要的副本数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">newReplicasCount</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">NewRSNewReplicas</span>(<span style="color:#a6e22e">deployment</span>, <span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">newRS</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 4、如果需要 scale ，则更新 rs 的 annotation 以及 rs.Spec.Replicas
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">scaled</span>, <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">scaleReplicaSetAndRecordEvent</span>(<span style="color:#a6e22e">newRS</span>, <span style="color:#a6e22e">newReplicasCount</span>, <span style="color:#a6e22e">deployment</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">scaled</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>从上面的源码可以得出，<code>reconcileNewReplicaSet()</code> 的主要逻辑如下：</p>
 <ol>
 <li>判断 <code>newRS.Spec.Replicas</code> 和 <code>deployment.Spec.Replicas</code> 是否相等，
 如果相等则直接返回，说明已经达到期望状态；</li>
@@ -831,35 +831,35 @@ graph LR
 </ol>
 <p>其中，计算 newRS 的副本数，是滚动更新核心过程的第一步，
 阅读源码 <code>pkg/controller/deployment/util/deployment_util.go:816</code>：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewRSNewReplicas</span>(<span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>, <span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>) (<span style="color:#66d9ef">int32</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Strategy</span>.<span style="color:#a6e22e">Type</span> {
-	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">RollingUpdateDeploymentStrategyType</span>:
-		<span style="color:#75715e">// 1、计算 maxSurge 值，向上取整
-</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">maxSurge</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">intstrutil</span>.<span style="color:#a6e22e">GetValueFromIntOrPercent</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Strategy</span>.<span style="color:#a6e22e">RollingUpdate</span>.<span style="color:#a6e22e">MaxSurge</span>, int(<span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>)), <span style="color:#66d9ef">true</span>)
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-			<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">err</span>
-		}
-		
-		<span style="color:#75715e">// 2、累加 rs.Spec.Replicas 获取 currentPodCount
-</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">currentPodCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">GetReplicaCountForReplicaSets</span>(<span style="color:#a6e22e">allRSs</span>)
-		<span style="color:#a6e22e">maxTotalPods</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">+</span> int32(<span style="color:#a6e22e">maxSurge</span>)
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">currentPodCount</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">maxTotalPods</span> {
-			<span style="color:#75715e">// Cannot scale up.
-</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>), <span style="color:#66d9ef">nil</span>
-		}
-		
-		<span style="color:#75715e">// 3、计算 scaleUpCount，结果不超过期望值
-</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">scaleUpCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">maxTotalPods</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">currentPodCount</span>
-		<span style="color:#a6e22e">scaleUpCount</span> = int32(<span style="color:#a6e22e">integer</span>.<span style="color:#a6e22e">IntMin</span>(int(<span style="color:#a6e22e">scaleUpCount</span>), int(<span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>)<span style="color:#f92672">-*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>))))
-		
-		<span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">scaleUpCount</span>, <span style="color:#66d9ef">nil</span>
-	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">RecreateDeploymentStrategyType</span>:
-		<span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>), <span style="color:#66d9ef">nil</span>
-	<span style="color:#66d9ef">default</span>:
-		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;deployment type %v isn&#39;t supported&#34;</span>, <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Strategy</span>.<span style="color:#a6e22e">Type</span>)
-	}
-}
-</code></pre></div><p>可知 <code>NewRSNewReplicas()</code> 的主要逻辑如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewRSNewReplicas</span>(<span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>, <span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>) (<span style="color:#66d9ef">int32</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Strategy</span>.<span style="color:#a6e22e">Type</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">RollingUpdateDeploymentStrategyType</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 1、计算 maxSurge 值，向上取整
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">maxSurge</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">intstrutil</span>.<span style="color:#a6e22e">GetValueFromIntOrPercent</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Strategy</span>.<span style="color:#a6e22e">RollingUpdate</span>.<span style="color:#a6e22e">MaxSurge</span>, int(<span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>)), <span style="color:#66d9ef">true</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 2、累加 rs.Spec.Replicas 获取 currentPodCount
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">currentPodCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">GetReplicaCountForReplicaSets</span>(<span style="color:#a6e22e">allRSs</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">maxTotalPods</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">+</span> int32(<span style="color:#a6e22e">maxSurge</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">currentPodCount</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">maxTotalPods</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// Cannot scale up.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			<span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>), <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 3、计算 scaleUpCount，结果不超过期望值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">scaleUpCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">maxTotalPods</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">currentPodCount</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">scaleUpCount</span> = int32(<span style="color:#a6e22e">integer</span>.<span style="color:#a6e22e">IntMin</span>(int(<span style="color:#a6e22e">scaleUpCount</span>), int(<span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>)<span style="color:#f92672">-*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>))))
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">scaleUpCount</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">RecreateDeploymentStrategyType</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>), <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">default</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;deployment type %v isn&#39;t supported&#34;</span>, <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Strategy</span>.<span style="color:#a6e22e">Type</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>可知 <code>NewRSNewReplicas()</code> 的主要逻辑如下：</p>
 <ol>
 <li>判断更新策略；</li>
 <li>计算 maxSurge 值；</li>
@@ -871,47 +871,47 @@ graph LR
   <a class="anchor" href="#212-oldrs-scale-down">#</a>
 </h3>
 <p>同理，oldRS 规模缩小，阅读源码 <code>pkg/controller/deployment/rolling.go:68</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">reconcileOldReplicaSets</span>(<span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">oldRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>) (<span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
-    <span style="color:#75715e">// 1、计算 oldPodsCount
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">oldPodsCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">GetReplicaCountForReplicaSets</span>(<span style="color:#a6e22e">oldRSs</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">oldPodsCount</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
-		<span style="color:#75715e">// Can&#39;t scale down further
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
-	}
-
-    <span style="color:#75715e">// 2、计算 maxUnavailable
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">allPodsCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">GetReplicaCountForReplicaSets</span>(<span style="color:#a6e22e">allRSs</span>)
-	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;New replica set %s/%s has %d available pods.&#34;</span>, <span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Status</span>.<span style="color:#a6e22e">AvailableReplicas</span>)
-	<span style="color:#a6e22e">maxUnavailable</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">MaxUnavailable</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">deployment</span>)
-
-	
-	<span style="color:#75715e">// 3、计算 maxScaledDown
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">minAvailable</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">-</span> <span style="color:#a6e22e">maxUnavailable</span>
-	<span style="color:#a6e22e">newRSUnavailablePodCount</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">-</span> <span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Status</span>.<span style="color:#a6e22e">AvailableReplicas</span>
-	<span style="color:#a6e22e">maxScaledDown</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">allPodsCount</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">minAvailable</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">newRSUnavailablePodCount</span>
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">maxScaledDown</span> <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
-	}
-
-	<span style="color:#75715e">// 4、清理异常的 rs
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">cleanupCount</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">cleanupUnhealthyReplicas</span>(<span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">deployment</span>, <span style="color:#a6e22e">maxScaledDown</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
-	}
-	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Cleaned up unhealthy replicas from old RSes by %d&#34;</span>, <span style="color:#a6e22e">cleanupCount</span>)
-
-	<span style="color:#75715e">// 5、缩容 old rs
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">allRSs</span> = append(<span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">newRS</span>)
-	<span style="color:#a6e22e">scaledDownCount</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">scaleDownOldReplicaSetsForRollingUpdate</span>(<span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">deployment</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
-	}
-	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Scaled down old RSes of deployment %s by %d&#34;</span>, <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">scaledDownCount</span>)
-
-	<span style="color:#a6e22e">totalScaledDown</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cleanupCount</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">scaledDownCount</span>
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">totalScaledDown</span> &gt; <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><p>通过上面的代码可知，<code>reconcileOldReplicaSets()</code>  的主要逻辑如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DeploymentController</span>) <span style="color:#a6e22e">reconcileOldReplicaSets</span>(<span style="color:#a6e22e">allRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">oldRSs</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">newRS</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">ReplicaSet</span>, <span style="color:#a6e22e">deployment</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">Deployment</span>) (<span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 1、计算 oldPodsCount
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">oldPodsCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">GetReplicaCountForReplicaSets</span>(<span style="color:#a6e22e">oldRSs</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">oldPodsCount</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Can&#39;t scale down further
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 2、计算 maxUnavailable
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">allPodsCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">GetReplicaCountForReplicaSets</span>(<span style="color:#a6e22e">allRSs</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;New replica set %s/%s has %d available pods.&#34;</span>, <span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Status</span>.<span style="color:#a6e22e">AvailableReplicas</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">maxUnavailable</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">MaxUnavailable</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">deployment</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 3、计算 maxScaledDown
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">minAvailable</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">-</span> <span style="color:#a6e22e">maxUnavailable</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">newRSUnavailablePodCount</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">-</span> <span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Status</span>.<span style="color:#a6e22e">AvailableReplicas</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">maxScaledDown</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">allPodsCount</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">minAvailable</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">newRSUnavailablePodCount</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">maxScaledDown</span> <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 4、清理异常的 rs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">cleanupCount</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">cleanupUnhealthyReplicas</span>(<span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">deployment</span>, <span style="color:#a6e22e">maxScaledDown</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Cleaned up unhealthy replicas from old RSes by %d&#34;</span>, <span style="color:#a6e22e">cleanupCount</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 5、缩容 old rs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">allRSs</span> = append(<span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">newRS</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">scaledDownCount</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dc</span>.<span style="color:#a6e22e">scaleDownOldReplicaSetsForRollingUpdate</span>(<span style="color:#a6e22e">allRSs</span>, <span style="color:#a6e22e">oldRSs</span>, <span style="color:#a6e22e">deployment</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Scaled down old RSes of deployment %s by %d&#34;</span>, <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">scaledDownCount</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">totalScaledDown</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cleanupCount</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">scaledDownCount</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">totalScaledDown</span> &gt; <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>通过上面的代码可知，<code>reconcileOldReplicaSets()</code>  的主要逻辑如下：</p>
 <ol>
 <li>通过 oldRSs 和 allRSs 获取 oldPodsCount 和 allPodsCount；</li>
 <li>计算 deployment 的 maxUnavailable、minAvailable、newRSUnavailablePodCount、maxScaledDown 值，
@@ -948,76 +948,76 @@ graph LR
 <ol>
 <li>创建一个 deployment，replica = 10</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
-<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
-<span style="color:#f92672">metadata</span>:
-  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx-deployment</span>
-  <span style="color:#f92672">labels</span>:
-    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
-<span style="color:#f92672">spec</span>:
-  <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">10</span>
-  <span style="color:#f92672">selector</span>:
-    <span style="color:#f92672">matchLabels</span>:
-      <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
-  <span style="color:#f92672">template</span>:
-    <span style="color:#f92672">metadata</span>:
-      <span style="color:#f92672">labels</span>:
-        <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
-    <span style="color:#f92672">spec</span>:
-      <span style="color:#f92672">containers</span>:
-      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
-        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx:1.18.0</span>
-        <span style="color:#f92672">ports</span>:
-        - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
-</code></pre></div><p>10 个 Pod 创建成功后如下所示：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get rs
-NAME                          DESIRED   CURRENT   READY   AGE
-nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>      70s
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx-deployment</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx:1.18.0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
+</span></span></code></pre></div><p>10 个 Pod 创建成功后如下所示：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get rs
+</span></span><span style="display:flex;"><span>NAME                          DESIRED   CURRENT   READY   AGE
+</span></span><span style="display:flex;"><span>nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>      70s
+</span></span></code></pre></div><ol start="2">
 <li>更新 nginx-deployment 的镜像，默认使用滚动更新的方式</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl set image deploy/nginx-deployment nginx-deployment<span style="color:#f92672">=</span>nginx:1.19.1
-</code></pre></div><p>此时通过源码可知会计算该 deployment 的 maxSurge=3，maxUnavailable=2，maxAvailable=13，计算方法如下所示：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 向上取整 maxSurge = 10 * 0.25 = 3
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">maxSurge</span> = <span style="color:#a6e22e">replicas</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">spec</span>.<span style="color:#a6e22e">strategy</span>.<span style="color:#a6e22e">rollingUpdate</span>.<span style="color:#a6e22e">maxSurge</span>
-<span style="color:#75715e">// 向下取整 maxUnavailable = 10 * 0.25 = 2
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">maxUnavailable</span> = <span style="color:#a6e22e">replicas</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">spec</span>.<span style="color:#a6e22e">strategy</span>.<span style="color:#a6e22e">rollingUpdate</span>.<span style="color:#a6e22e">maxUnavailable</span>
-<span style="color:#75715e">// maxAvailable = 10 + 3 = 13
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">maxAvailable</span> = <span style="color:#a6e22e">replicas</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">MaxSurge</span>
-</code></pre></div><p>如上面代码所说，更新时首先创建 newRS，然后为其设定 replicas，计算 newRS 的 replicas 值的方法在 <code>NewRSNewReplicas()</code> 中，
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl set image deploy/nginx-deployment nginx-deployment<span style="color:#f92672">=</span>nginx:1.19.1
+</span></span></code></pre></div><p>此时通过源码可知会计算该 deployment 的 maxSurge=3，maxUnavailable=2，maxAvailable=13，计算方法如下所示：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 向上取整 maxSurge = 10 * 0.25 = 3
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">maxSurge</span> = <span style="color:#a6e22e">replicas</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">spec</span>.<span style="color:#a6e22e">strategy</span>.<span style="color:#a6e22e">rollingUpdate</span>.<span style="color:#a6e22e">maxSurge</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 向下取整 maxUnavailable = 10 * 0.25 = 2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">maxUnavailable</span> = <span style="color:#a6e22e">replicas</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">spec</span>.<span style="color:#a6e22e">strategy</span>.<span style="color:#a6e22e">rollingUpdate</span>.<span style="color:#a6e22e">maxUnavailable</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// maxAvailable = 10 + 3 = 13
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">maxAvailable</span> = <span style="color:#a6e22e">replicas</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">MaxSurge</span>
+</span></span></code></pre></div><p>如上面代码所说，更新时首先创建 newRS，然后为其设定 replicas，计算 newRS 的 replicas 值的方法在 <code>NewRSNewReplicas()</code> 中，
 此时计算出 replicas 结果为 3，然后更新 deployment 的 annotation，创建 events，本次 syncLoop 完成。
 等到下一个 syncLoop 时，所有 rs 的 replicas 已经达到最大值 10 + 3 = 13，此时需要 oldRS 缩容。
 scale down 的数量是通过以下公式得到的：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 13 = 10 + 3
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">allPodsCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">GetReplicaCountForReplicaSets</span>(<span style="color:#a6e22e">allRSs</span>)
-<span style="color:#75715e">// 8 = 10 - 2
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">minAvailable</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">-</span> <span style="color:#a6e22e">maxUnavailable</span>
-<span style="color:#75715e">// ???
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">newRSUnavailablePodCount</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">-</span> <span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Status</span>.<span style="color:#a6e22e">AvailableReplicas</span>
-<span style="color:#75715e">// 13 - 8 - ???
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">maxScaledDown</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">allPodsCount</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">minAvailable</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">newRSUnavailablePodCount</span>
-</code></pre></div><p>allPodsCount = 13，minAvailable = 8 ，newRSUnavailablePodCount 此时不确定，但是值在 [0,3] 范围内。
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 13 = 10 + 3
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">allPodsCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">deploymentutil</span>.<span style="color:#a6e22e">GetReplicaCountForReplicaSets</span>(<span style="color:#a6e22e">allRSs</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 8 = 10 - 2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">minAvailable</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">deployment</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">-</span> <span style="color:#a6e22e">maxUnavailable</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// ???
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">newRSUnavailablePodCount</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Replicas</span>) <span style="color:#f92672">-</span> <span style="color:#a6e22e">newRS</span>.<span style="color:#a6e22e">Status</span>.<span style="color:#a6e22e">AvailableReplicas</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 13 - 8 - ???
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">maxScaledDown</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">allPodsCount</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">minAvailable</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">newRSUnavailablePodCount</span>
+</span></span></code></pre></div><p>allPodsCount = 13，minAvailable = 8 ，newRSUnavailablePodCount 此时不确定，但是值在 [0,3] 范围内。
 此时假设 newRS 的 3 个 pod 还处于 containerCreating 状态，则 newRSUnavailablePodCount = 3，
 根据以上公式计算所知 maxScaledDown = 2，则 oldRS 需要缩容 2 个 pod，其 replicas 需要改为 8，此时该 syncLoop 完成。
 下一个 syncLoop 时在 scaleUp 处计算得知 scaleUpCount = 13 - 8 - 3 = 2， 
 此时 newRS 需要更新 replicase 增加 2。以此轮询直到 newRS 扩容到 10，oldRS 缩容至 0。</p>
 <p>对于上面的示例，可以使用 kubectl get rs -w 进行观察，以下为输出：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ kubectl get rs -w
-NAME                          DESIRED   CURRENT   READY   AGE
-nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">5</span>       3s
-nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>       4m47s
-nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">6</span>       3s
-nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>       4m47s
-nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>       4m47s
-nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">7</span>       4s
-nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>       4m48s
-nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       4m48s
-nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">8</span>       4s
-nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       4m48s
-nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">0</span>       4m48s
-nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">9</span>       5s
-nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>      6s
-</code></pre></div></article>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get rs -w
+</span></span><span style="display:flex;"><span>NAME                          DESIRED   CURRENT   READY   AGE
+</span></span><span style="display:flex;"><span>nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">5</span>       3s
+</span></span><span style="display:flex;"><span>nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>       4m47s
+</span></span><span style="display:flex;"><span>nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">6</span>       3s
+</span></span><span style="display:flex;"><span>nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">3</span>         <span style="color:#ae81ff">3</span>       4m47s
+</span></span><span style="display:flex;"><span>nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>       4m47s
+</span></span><span style="display:flex;"><span>nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">7</span>       4s
+</span></span><span style="display:flex;"><span>nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">2</span>       4m48s
+</span></span><span style="display:flex;"><span>nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       4m48s
+</span></span><span style="display:flex;"><span>nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">8</span>       4s
+</span></span><span style="display:flex;"><span>nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>       4m48s
+</span></span><span style="display:flex;"><span>nginx-deployment-67dfd6c8f9   <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">0</span>       4m48s
+</span></span><span style="display:flex;"><span>nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">9</span>       5s
+</span></span><span style="display:flex;"><span>nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>        <span style="color:#ae81ff">10</span>      6s
+</span></span></code></pre></div></article>
  
       
 
@@ -1027,9 +1027,9 @@ nginx-deployment-5bbdfb5879   <span style="color:#ae81ff">10</span>        <span
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/473e4024715d141e4f89b57d8babc9f0cccc0309" title='Last modified by howieyuen | December 14, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/be46fbc5a56ee48b09bc3ac56cfce882f3ad2d9e" title='Last modified by howieyuen | May 5, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>December 14, 2021</span>
+      <span>May 5, 2022</span>
     </a>
   </div>
 

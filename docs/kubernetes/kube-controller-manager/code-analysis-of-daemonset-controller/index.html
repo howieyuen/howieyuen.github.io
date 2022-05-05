@@ -8,23 +8,23 @@
 这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。
 如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。
 1.1 应用场景 #   在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程  一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。
-1.2 基本功能 #   创建 删除  级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false   更新  RollingUpdate OnDelete   回滚  1.3 示例 #  apiVersion: apps/v1 kind: DaemonSet metadata: name: fluentd-elasticsearch namespace: kube-system labels: k8s-app: fluentd-logging spec: selector: matchLabels: name: fluentd-elasticsearch template: metadata: labels: name: fluentd-elasticsearch spec: tolerations: # this toleration is to have the daemonset runnable on master nodes # remove it if your masters can&#39;t run pods - key: node-role.">
+1.2 基本功能 #   创建 删除  级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false   更新  RollingUpdate OnDelete   回滚  1.3 示例 #  apiVersion: apps/v1 kind: DaemonSet metadata:  name: fluentd-elasticsearch  namespace: kube-system  labels:  k8s-app: fluentd-logging spec:  selector:  matchLabels:  name: fluentd-elasticsearch  template:  metadata:  labels:  name: fluentd-elasticsearch  spec:  tolerations:  # this toleration is to have the daemonset runnable on master nodes  # remove it if your masters can&#39;t run pods  - key: node-role.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="DaemonSet Controller 源码分析" />
 <meta property="og:description" content="1. DaemonSet 简介 #  我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
 这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。
 如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。
 1.1 应用场景 #   在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程  一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。
-1.2 基本功能 #   创建 删除  级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false   更新  RollingUpdate OnDelete   回滚  1.3 示例 #  apiVersion: apps/v1 kind: DaemonSet metadata: name: fluentd-elasticsearch namespace: kube-system labels: k8s-app: fluentd-logging spec: selector: matchLabels: name: fluentd-elasticsearch template: metadata: labels: name: fluentd-elasticsearch spec: tolerations: # this toleration is to have the daemonset runnable on master nodes # remove it if your masters can&#39;t run pods - key: node-role." />
+1.2 基本功能 #   创建 删除  级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false   更新  RollingUpdate OnDelete   回滚  1.3 示例 #  apiVersion: apps/v1 kind: DaemonSet metadata:  name: fluentd-elasticsearch  namespace: kube-system  labels:  k8s-app: fluentd-logging spec:  selector:  matchLabels:  name: fluentd-elasticsearch  template:  metadata:  labels:  name: fluentd-elasticsearch  spec:  tolerations:  # this toleration is to have the daemonset runnable on master nodes  # remove it if your masters can&#39;t run pods  - key: node-role." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2020-10-21T00:00:00+00:00" />
-<meta property="article:modified_time" content="2021-12-14T16:10:37+08:00" />
+<meta property="article:modified_time" content="2022-05-05T17:06:14+08:00" />
 
 <title>DaemonSet Controller 源码分析 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.d2411f9dc01bae540c5158d300f7882e67d59efa45c71cfe08fc07fef9b85b6b.js" integrity="sha256-0kEfncAbrlQMUVjTAPeILmfVnvpFxxz&#43;CPwH/vm4W2s="></script>
+<script defer src="/en.search.min.306f3039b68c95e12639226149ab899af825bbaf2c2b9228bc3adf4e030996ee.js" integrity="sha256-MG8wObaMleEmOSJhSauJmvglu68sK5IovDrfTgMJlu4="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -622,7 +622,7 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <script>(function(){var a=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(b){localStorage.setItem("menu.scrollTop",a.scrollTop)}),a.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+  <script>(function(){var e=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
 
 
  
@@ -723,51 +723,51 @@ https://github.com/alex-shpak/hugo-book
   1.3 示例
   <a class="anchor" href="#13-%e7%a4%ba%e4%be%8b">#</a>
 </h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
-<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">DaemonSet</span>
-<span style="color:#f92672">metadata</span>:
-  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">fluentd-elasticsearch</span>
-  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">kube-system</span>
-  <span style="color:#f92672">labels</span>:
-    <span style="color:#f92672">k8s-app</span>: <span style="color:#ae81ff">fluentd-logging</span>
-<span style="color:#f92672">spec</span>:
-  <span style="color:#f92672">selector</span>:
-    <span style="color:#f92672">matchLabels</span>:
-      <span style="color:#f92672">name</span>: <span style="color:#ae81ff">fluentd-elasticsearch</span>
-  <span style="color:#f92672">template</span>:
-    <span style="color:#f92672">metadata</span>:
-      <span style="color:#f92672">labels</span>:
-        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">fluentd-elasticsearch</span>
-    <span style="color:#f92672">spec</span>:
-      <span style="color:#f92672">tolerations</span>:
-      <span style="color:#75715e"># this toleration is to have the daemonset runnable on master nodes</span>
-      <span style="color:#75715e"># remove it if your masters can&#39;t run pods</span>
-      - <span style="color:#f92672">key</span>: <span style="color:#ae81ff">node-role.kubernetes.io/master</span>
-        <span style="color:#f92672">effect</span>: <span style="color:#ae81ff">NoSchedule</span>
-      <span style="color:#f92672">containers</span>:
-      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">fluentd-elasticsearch</span>
-        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">quay.io/fluentd_elasticsearch/fluentd:v2.5.2</span>
-        <span style="color:#f92672">resources</span>:
-          <span style="color:#f92672">limits</span>:
-            <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">200Mi</span>
-          <span style="color:#f92672">requests</span>:
-            <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">100m</span>
-            <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">200Mi</span>
-        <span style="color:#f92672">volumeMounts</span>:
-        - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">varlog</span>
-          <span style="color:#f92672">mountPath</span>: <span style="color:#ae81ff">/var/log</span>
-        - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">varlibdockercontainers</span>
-          <span style="color:#f92672">mountPath</span>: <span style="color:#ae81ff">/var/lib/docker/containers</span>
-          <span style="color:#f92672">readOnly</span>: <span style="color:#66d9ef">true</span>
-      <span style="color:#f92672">terminationGracePeriodSeconds</span>: <span style="color:#ae81ff">30</span>
-      <span style="color:#f92672">volumes</span>:
-      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">varlog</span>
-        <span style="color:#f92672">hostPath</span>:
-          <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/var/log</span>
-      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">varlibdockercontainers</span>
-        <span style="color:#f92672">hostPath</span>:
-          <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/var/lib/docker/containers</span>
-</code></pre></div><h1 id="2-源码分析">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">DaemonSet</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">fluentd-elasticsearch</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">kube-system</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">k8s-app</span>: <span style="color:#ae81ff">fluentd-logging</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">name</span>: <span style="color:#ae81ff">fluentd-elasticsearch</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">fluentd-elasticsearch</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">tolerations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># this toleration is to have the daemonset runnable on master nodes</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># remove it if your masters can&#39;t run pods</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">key</span>: <span style="color:#ae81ff">node-role.kubernetes.io/master</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">effect</span>: <span style="color:#ae81ff">NoSchedule</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">fluentd-elasticsearch</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">quay.io/fluentd_elasticsearch/fluentd:v2.5.2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">resources</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">limits</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">200Mi</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">requests</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">100m</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">200Mi</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">volumeMounts</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">varlog</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">mountPath</span>: <span style="color:#ae81ff">/var/log</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">varlibdockercontainers</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">mountPath</span>: <span style="color:#ae81ff">/var/lib/docker/containers</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">readOnly</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">terminationGracePeriodSeconds</span>: <span style="color:#ae81ff">30</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">varlog</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">hostPath</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/var/log</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">varlibdockercontainers</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">hostPath</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/var/lib/docker/containers</span>
+</span></span></code></pre></div><h1 id="2-源码分析">
   2. 源码分析
   <a class="anchor" href="#2-%e6%ba%90%e7%a0%81%e5%88%86%e6%9e%90">#</a>
 </h1>
@@ -780,51 +780,51 @@ https://github.com/alex-shpak/hugo-book
 </h2>
 <p>与其他资源的 Controller 启动方式一致，在 <code>startDaemonSetController()</code> 中初始化 DaemonSetController 对象，并调用 <code>Run()</code> 方法启动。从该方法可以看出，DaemonSet Controller 关心的是 <code>daemonset</code>、<code>controllerrevision</code>、<code>pod</code>、<code>node</code> 四种资源的变动，其中 <code>ConcurrentDaemonSetSyncs</code>  默认是 2。</p>
 <p><code>cmd/kube-controller-manager/app/apps.go:36</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">startDaemonSetController</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">ControllerContext</span>) (<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
-	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">AvailableResources</span>[<span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupVersionResource</span>{<span style="color:#a6e22e">Group</span>: <span style="color:#e6db74">&#34;apps&#34;</span>, <span style="color:#a6e22e">Version</span>: <span style="color:#e6db74">&#34;v1&#34;</span>, <span style="color:#a6e22e">Resource</span>: <span style="color:#e6db74">&#34;daemonsets&#34;</span>}] {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
-	}
-	<span style="color:#a6e22e">dsc</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">daemon</span>.<span style="color:#a6e22e">NewDaemonSetsController</span>(
-		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">InformerFactory</span>.<span style="color:#a6e22e">Apps</span>().<span style="color:#a6e22e">V1</span>().<span style="color:#a6e22e">DaemonSets</span>(),
-		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">InformerFactory</span>.<span style="color:#a6e22e">Apps</span>().<span style="color:#a6e22e">V1</span>().<span style="color:#a6e22e">ControllerRevisions</span>(),
-		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">InformerFactory</span>.<span style="color:#a6e22e">Core</span>().<span style="color:#a6e22e">V1</span>().<span style="color:#a6e22e">Pods</span>(),
-		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">InformerFactory</span>.<span style="color:#a6e22e">Core</span>().<span style="color:#a6e22e">V1</span>().<span style="color:#a6e22e">Nodes</span>(),
-		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ClientBuilder</span>.<span style="color:#a6e22e">ClientOrDie</span>(<span style="color:#e6db74">&#34;daemon-set-controller&#34;</span>),
-		<span style="color:#a6e22e">flowcontrol</span>.<span style="color:#a6e22e">NewBackOff</span>(<span style="color:#ae81ff">1</span><span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>, <span style="color:#ae81ff">15</span><span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Minute</span>),
-	)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;error creating DaemonSets controller: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
-	}
-	<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">Run</span>(int(<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ComponentConfig</span>.<span style="color:#a6e22e">DaemonSetController</span>.<span style="color:#a6e22e">ConcurrentDaemonSetSyncs</span>), <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Stop</span>)
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><h2 id="22-run">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">startDaemonSetController</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">ControllerContext</span>) (<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">AvailableResources</span>[<span style="color:#a6e22e">schema</span>.<span style="color:#a6e22e">GroupVersionResource</span>{<span style="color:#a6e22e">Group</span>: <span style="color:#e6db74">&#34;apps&#34;</span>, <span style="color:#a6e22e">Version</span>: <span style="color:#e6db74">&#34;v1&#34;</span>, <span style="color:#a6e22e">Resource</span>: <span style="color:#e6db74">&#34;daemonsets&#34;</span>}] {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">dsc</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">daemon</span>.<span style="color:#a6e22e">NewDaemonSetsController</span>(
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">InformerFactory</span>.<span style="color:#a6e22e">Apps</span>().<span style="color:#a6e22e">V1</span>().<span style="color:#a6e22e">DaemonSets</span>(),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">InformerFactory</span>.<span style="color:#a6e22e">Apps</span>().<span style="color:#a6e22e">V1</span>().<span style="color:#a6e22e">ControllerRevisions</span>(),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">InformerFactory</span>.<span style="color:#a6e22e">Core</span>().<span style="color:#a6e22e">V1</span>().<span style="color:#a6e22e">Pods</span>(),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">InformerFactory</span>.<span style="color:#a6e22e">Core</span>().<span style="color:#a6e22e">V1</span>().<span style="color:#a6e22e">Nodes</span>(),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ClientBuilder</span>.<span style="color:#a6e22e">ClientOrDie</span>(<span style="color:#e6db74">&#34;daemon-set-controller&#34;</span>),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">flowcontrol</span>.<span style="color:#a6e22e">NewBackOff</span>(<span style="color:#ae81ff">1</span><span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>, <span style="color:#ae81ff">15</span><span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Minute</span>),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;error creating DaemonSets controller: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">Run</span>(int(<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">ComponentConfig</span>.<span style="color:#a6e22e">DaemonSetController</span>.<span style="color:#a6e22e">ConcurrentDaemonSetSyncs</span>), <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Stop</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="22-run">
   2.2 Run()
   <a class="anchor" href="#22-run">#</a>
 </h2>
 <p>Run() 方法中执行 2 个核心操作：<code>sync</code> 和 <code>gc</code>。其中 sync 操作是 controller 的核心代码，响应上述所有操作。在初始化 controller 对象时，指定了 <code>failedPodsBackoff</code> 的参数，<code>defaultDuration = 1s</code>，<code>maxDuration = 15min</code>；<code>gc</code> 的主要作用是发现 daemonset 的 pod 的 phase 为 failed，就会重启该 Pod，如果已经超时（2*15min）会删除该条记录。</p>
 <p><code>pkg/controller/daemon/daemon_controller.go:281</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">Run</span>(<span style="color:#a6e22e">workers</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) {
-	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">utilruntime</span>.<span style="color:#a6e22e">HandleCrash</span>()
-	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">queue</span>.<span style="color:#a6e22e">ShutDown</span>()
-
-	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Starting daemon sets controller&#34;</span>)
-	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Shutting down daemon sets controller&#34;</span>)
-
-	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">cache</span>.<span style="color:#a6e22e">WaitForNamedCacheSync</span>(<span style="color:#e6db74">&#34;daemon sets&#34;</span>, <span style="color:#a6e22e">stopCh</span>, <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">podStoreSynced</span>, <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">nodeStoreSynced</span>, <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">historyStoreSynced</span>, <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">dsStoreSynced</span>) {
-		<span style="color:#66d9ef">return</span>
-	}
-
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">workers</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
-		<span style="color:#75715e">// sync
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">wait</span>.<span style="color:#a6e22e">Until</span>(<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">runWorker</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>, <span style="color:#a6e22e">stopCh</span>)
-	}
-	<span style="color:#75715e">// gc
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">wait</span>.<span style="color:#a6e22e">Until</span>(<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">failedPodsBackoff</span>.<span style="color:#a6e22e">GC</span>, <span style="color:#a6e22e">BackoffGCInterval</span>, <span style="color:#a6e22e">stopCh</span>)
-
-	<span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">stopCh</span>
-}
-</code></pre></div><h2 id="23-syncdaemonset">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">Run</span>(<span style="color:#a6e22e">workers</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">utilruntime</span>.<span style="color:#a6e22e">HandleCrash</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">queue</span>.<span style="color:#a6e22e">ShutDown</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Starting daemon sets controller&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Shutting down daemon sets controller&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">cache</span>.<span style="color:#a6e22e">WaitForNamedCacheSync</span>(<span style="color:#e6db74">&#34;daemon sets&#34;</span>, <span style="color:#a6e22e">stopCh</span>, <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">podStoreSynced</span>, <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">nodeStoreSynced</span>, <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">historyStoreSynced</span>, <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">dsStoreSynced</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">workers</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// sync
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">wait</span>.<span style="color:#a6e22e">Until</span>(<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">runWorker</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>, <span style="color:#a6e22e">stopCh</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// gc
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">wait</span>.<span style="color:#a6e22e">Until</span>(<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">failedPodsBackoff</span>.<span style="color:#a6e22e">GC</span>, <span style="color:#a6e22e">BackoffGCInterval</span>, <span style="color:#a6e22e">stopCh</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">stopCh</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="23-syncdaemonset">
   2.3 syncDaemonSet()
   <a class="anchor" href="#23-syncdaemonset">#</a>
 </h2>
@@ -843,67 +843,67 @@ https://github.com/alex-shpak/hugo-book
 <li>调用 <code>dsc.updateDaemonSetStatus()</code>，更新 status 子资源</li>
 </ol>
 <p><code>pkg/controller/daemon/daemon_controller.go:1129</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">syncDaemonSet</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
-	<span style="color:#f92672">...</span>
-    
-	<span style="color:#75715e">// 1. 通过 key 获取 ns 和 name
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">namespace</span>, <span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cache</span>.<span style="color:#a6e22e">SplitMetaNamespaceKey</span>(<span style="color:#a6e22e">key</span>)
-	<span style="color:#f92672">...</span>
-    
-	<span style="color:#75715e">// 2. 从 dsLister 获取 ds 对象
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">dsLister</span>.<span style="color:#a6e22e">DaemonSets</span>(<span style="color:#a6e22e">namespace</span>).<span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">name</span>)
-	<span style="color:#f92672">...</span>
-
-	<span style="color:#75715e">// 3. 从 nodeLister 获取全部 node 对象
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">nodeLister</span>.<span style="color:#a6e22e">List</span>(<span style="color:#a6e22e">labels</span>.<span style="color:#a6e22e">Everything</span>())
-	<span style="color:#f92672">...</span>
-    
-	<span style="color:#75715e">// 4. 获取 dsKey， 即：&lt;namespace&gt;/&lt;name&gt;
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">dsKey</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">controller</span>.<span style="color:#a6e22e">KeyFunc</span>(<span style="color:#a6e22e">ds</span>)
-	<span style="color:#f92672">...</span>
-	
-	<span style="color:#75715e">// 5. 判断 ds 是否处于删除中，如果正在删除，则等待删除完毕后再次进入 sync
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">DeletionTimestamp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-	}
-
-	<span style="color:#75715e">// 6. 获取 cur 和 old controllerrevision
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">cur</span>, <span style="color:#a6e22e">old</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">constructHistory</span>(<span style="color:#a6e22e">ds</span>)
-	<span style="color:#75715e">// hash 就是当前 controllerrevision 的 controller-revision-hash 值
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">hash</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cur</span>.<span style="color:#a6e22e">Labels</span>[<span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">DefaultDaemonSetUniqueLabelKey</span>]
-
-	<span style="color:#75715e">// 7. 判断是否满足 expectation 机制
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">expectations</span>.<span style="color:#a6e22e">SatisfiedExpectations</span>(<span style="color:#a6e22e">dsKey</span>) {
-		<span style="color:#75715e">// 不满足，只更新 status 子资源
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">updateDaemonSetStatus</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">hash</span>, <span style="color:#66d9ef">false</span>)
-	}
-
-	<span style="color:#75715e">// 8. 实际执行的 sync  操作
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">manage</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">hash</span>)
-	<span style="color:#f92672">...</span>
-
-	<span style="color:#75715e">// 9. 判断是否为更新操作，并执行
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">expectations</span>.<span style="color:#a6e22e">SatisfiedExpectations</span>(<span style="color:#a6e22e">dsKey</span>) {
-		<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">UpdateStrategy</span>.<span style="color:#a6e22e">Type</span> {
-		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">OnDeleteDaemonSetStrategyType</span>:
-		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">RollingUpdateDaemonSetStrategyType</span>:
-			<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">rollingUpdate</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">hash</span>)
-		}
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-		}
-	}
-
-	<span style="color:#75715e">// 10. 清理过期的 controllerrevision
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">cleanupHistory</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">old</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;failed to clean up revisions of DaemonSet: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
-	}
-
-	<span style="color:#75715e">// 11. 最后更新 status 子资源
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">updateDaemonSetStatus</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">hash</span>, <span style="color:#66d9ef">true</span>)
-}
-</code></pre></div><h2 id="24-dscmanage">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">syncDaemonSet</span>(<span style="color:#a6e22e">key</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 1. 通过 key 获取 ns 和 name
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">namespace</span>, <span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cache</span>.<span style="color:#a6e22e">SplitMetaNamespaceKey</span>(<span style="color:#a6e22e">key</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 2. 从 dsLister 获取 ds 对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">dsLister</span>.<span style="color:#a6e22e">DaemonSets</span>(<span style="color:#a6e22e">namespace</span>).<span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">name</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 3. 从 nodeLister 获取全部 node 对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">nodeLister</span>.<span style="color:#a6e22e">List</span>(<span style="color:#a6e22e">labels</span>.<span style="color:#a6e22e">Everything</span>())
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 4. 获取 dsKey， 即：&lt;namespace&gt;/&lt;name&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">dsKey</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">controller</span>.<span style="color:#a6e22e">KeyFunc</span>(<span style="color:#a6e22e">ds</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 5. 判断 ds 是否处于删除中，如果正在删除，则等待删除完毕后再次进入 sync
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">DeletionTimestamp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 6. 获取 cur 和 old controllerrevision
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">cur</span>, <span style="color:#a6e22e">old</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">constructHistory</span>(<span style="color:#a6e22e">ds</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// hash 就是当前 controllerrevision 的 controller-revision-hash 值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">hash</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cur</span>.<span style="color:#a6e22e">Labels</span>[<span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">DefaultDaemonSetUniqueLabelKey</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 7. 判断是否满足 expectation 机制
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">expectations</span>.<span style="color:#a6e22e">SatisfiedExpectations</span>(<span style="color:#a6e22e">dsKey</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 不满足，只更新 status 子资源
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">updateDaemonSetStatus</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">hash</span>, <span style="color:#66d9ef">false</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 8. 实际执行的 sync  操作
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">manage</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">hash</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 9. 判断是否为更新操作，并执行
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">expectations</span>.<span style="color:#a6e22e">SatisfiedExpectations</span>(<span style="color:#a6e22e">dsKey</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">UpdateStrategy</span>.<span style="color:#a6e22e">Type</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">OnDeleteDaemonSetStrategyType</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">RollingUpdateDaemonSetStrategyType</span>:
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">rollingUpdate</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">hash</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 10. 清理过期的 controllerrevision
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">cleanupHistory</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">old</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;failed to clean up revisions of DaemonSet: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 11. 最后更新 status 子资源
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">updateDaemonSetStatus</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">hash</span>, <span style="color:#66d9ef">true</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="24-dscmanage">
   2.4 dsc.manage()
   <a class="anchor" href="#24-dscmanage">#</a>
 </h2>
@@ -915,36 +915,36 @@ https://github.com/alex-shpak/hugo-book
 <li>调用 <code>dsc.syncNodes()</code> 为对应的 node 创建 daemon pod 以及删除多余的 pods；</li>
 </ol>
 <p><code>pkg/controller/daemon/daemon_controller.go:881</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">manage</span>(<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">DaemonSet</span>, <span style="color:#a6e22e">nodeList</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Node</span>, <span style="color:#a6e22e">hash</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
-    <span style="color:#75715e">// 1. 找到节点和 ds 创建的 Pod 的映射关系（nodeName:[]Pod{}）
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">nodeToDaemonPods</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">getNodesToDaemonPods</span>(<span style="color:#a6e22e">ds</span>)
-	<span style="color:#f92672">...</span>
-
-	<span style="color:#75715e">// 2. 检查每个节点是否应当运行该 daemonset 的 Pod，如果不该运行就要删掉，反之就要创建
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">podsToDelete</span> []<span style="color:#66d9ef">string</span>
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">node</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">nodeList</span> {
-		<span style="color:#a6e22e">nodesNeedingDaemonPodsOnNode</span>, <span style="color:#a6e22e">podsToDeleteOnNode</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">podsShouldBeOnNode</span>(
-			<span style="color:#a6e22e">node</span>, <span style="color:#a6e22e">nodeToDaemonPods</span>, <span style="color:#a6e22e">ds</span>)
-
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-			<span style="color:#66d9ef">continue</span>
-		}
-
-		<span style="color:#a6e22e">nodesNeedingDaemonPods</span> = append(<span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">nodesNeedingDaemonPodsOnNode</span><span style="color:#f92672">...</span>)
-		<span style="color:#a6e22e">podsToDelete</span> = append(<span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">podsToDeleteOnNode</span><span style="color:#f92672">...</span>)
-	}
-
-    <span style="color:#75715e">// 3. 调用 getUnscheduledPodsWithoutNode() 方法找到把调度到不存在的节点的 Pod
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">podsToDelete</span> = append(<span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">getUnscheduledPodsWithoutNode</span>(<span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">nodeToDaemonPods</span>)<span style="color:#f92672">...</span>)
-
-    <span style="color:#75715e">// 4. 调用 dsc.syncNodes()，删除多余的 Pod，为应该运行 daemonset Pod 的 node 创建 Pod
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">syncNodes</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">hash</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-	}
-
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><p>下面继续看下 <code>dsc.podsShouldBeOnNode()</code> 和 <code>dsc.syncNodes()</code> 两个方法的具体逻辑：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">manage</span>(<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">DaemonSet</span>, <span style="color:#a6e22e">nodeList</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Node</span>, <span style="color:#a6e22e">hash</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 1. 找到节点和 ds 创建的 Pod 的映射关系（nodeName:[]Pod{}）
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">nodeToDaemonPods</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">getNodesToDaemonPods</span>(<span style="color:#a6e22e">ds</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 2. 检查每个节点是否应当运行该 daemonset 的 Pod，如果不该运行就要删掉，反之就要创建
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">podsToDelete</span> []<span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">node</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">nodeList</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">nodesNeedingDaemonPodsOnNode</span>, <span style="color:#a6e22e">podsToDeleteOnNode</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">podsShouldBeOnNode</span>(
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">node</span>, <span style="color:#a6e22e">nodeToDaemonPods</span>, <span style="color:#a6e22e">ds</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">nodesNeedingDaemonPods</span> = append(<span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">nodesNeedingDaemonPodsOnNode</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">podsToDelete</span> = append(<span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">podsToDeleteOnNode</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 3. 调用 getUnscheduledPodsWithoutNode() 方法找到把调度到不存在的节点的 Pod
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">podsToDelete</span> = append(<span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">getUnscheduledPodsWithoutNode</span>(<span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">nodeToDaemonPods</span>)<span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 4. 调用 dsc.syncNodes()，删除多余的 Pod，为应该运行 daemonset Pod 的 node 创建 Pod
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">syncNodes</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">hash</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>下面继续看下 <code>dsc.podsShouldBeOnNode()</code> 和 <code>dsc.syncNodes()</code> 两个方法的具体逻辑：</p>
 <p>其中，<code>podsShouldBeOnNode()</code> 主要是为了确定在给定节点上的是需要创建还是删除 daemon pod。主要逻辑为：</p>
 <ol>
 <li>调用 <code>dsc.nodeShouldRunDaemonPod</code> 判断该 node 是否要运行以及是否能继续运行 ds pod</li>
@@ -964,184 +964,184 @@ https://github.com/alex-shpak/hugo-book
 </li>
 <li>最终返回需要运行 daemon pod 的节点集合和待删除 pod 的集合</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">podsShouldBeOnNode</span>(
-	<span style="color:#a6e22e">node</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Node</span>,
-	<span style="color:#a6e22e">nodeToDaemonPods</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>][]<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>,
-	<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">DaemonSet</span>,
-) (<span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">podsToDelete</span> []<span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
-	<span style="color:#75715e">// 1. 判断该 node 是否要运行以及是否能继续运行 ds pod
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">shouldRun</span>, <span style="color:#a6e22e">shouldContinueRunning</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">nodeShouldRunDaemonPod</span>(<span style="color:#a6e22e">node</span>, <span style="color:#a6e22e">ds</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span>
-	}
-	<span style="color:#75715e">// 2. 获取该节点上的该 daemon pod 列表
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">daemonPods</span>, <span style="color:#a6e22e">exists</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">nodeToDaemonPods</span>[<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>]
-
-	<span style="color:#66d9ef">switch</span> {
-	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">shouldRun</span> <span style="color:#f92672">&amp;&amp;</span> !<span style="color:#a6e22e">exists</span>:
-		<span style="color:#75715e">// 3.1 如果节点应该运行而没有运行，则创建该 Pod
-</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">nodesNeedingDaemonPods</span> = append(<span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>)
-	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">shouldContinueRunning</span>:
-		<span style="color:#75715e">// 3.2. 如果 daemon pod 应该继续在此节点上运行
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">daemonPodsRunning</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>
-		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">pod</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">daemonPods</span> {
-			<span style="color:#75715e">// 3.2.1 pod 在删除中，暂且不管
-</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">DeletionTimestamp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-				<span style="color:#66d9ef">continue</span>
-			}
-			<span style="color:#75715e">// 3.2.2 pod 处于 failed 状态，则删除 pod
-</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Status</span>.<span style="color:#a6e22e">Phase</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">PodFailed</span> {
-				<span style="color:#75715e">// This is a critical place where DS is often fighting with kubelet that rejects pods.
-</span><span style="color:#75715e"></span>				<span style="color:#75715e">// We need to avoid hot looping and backoff.
-</span><span style="color:#75715e"></span>				<span style="color:#a6e22e">backoffKey</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">failedPodsBackoffKey</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>)
-
-				<span style="color:#a6e22e">now</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">failedPodsBackoff</span>.<span style="color:#a6e22e">Clock</span>.<span style="color:#a6e22e">Now</span>()
-				<span style="color:#a6e22e">inBackoff</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">failedPodsBackoff</span>.<span style="color:#a6e22e">IsInBackOffSinceUpdate</span>(<span style="color:#a6e22e">backoffKey</span>, <span style="color:#a6e22e">now</span>)
-				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">inBackoff</span> {
-					<span style="color:#a6e22e">delay</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">failedPodsBackoff</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">backoffKey</span>)
-					<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Deleting failed pod %s/%s on node %s has been limited by backoff - %v remaining&#34;</span>,
-						<span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">delay</span>)
-					<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">enqueueDaemonSetAfter</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">delay</span>)
-					<span style="color:#66d9ef">continue</span>
-				}
-
-				<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">failedPodsBackoff</span>.<span style="color:#a6e22e">Next</span>(<span style="color:#a6e22e">backoffKey</span>, <span style="color:#a6e22e">now</span>)
-
-				<span style="color:#a6e22e">msg</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;Found failed daemon pod %s/%s on node %s, will try to kill it&#34;</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>)
-				<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">2</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#a6e22e">msg</span>)
-				<span style="color:#75715e">// Emit an event so that it&#39;s discoverable to users.
-</span><span style="color:#75715e"></span>				<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">eventRecorder</span>.<span style="color:#a6e22e">Eventf</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">EventTypeWarning</span>, <span style="color:#a6e22e">FailedDaemonPodReason</span>, <span style="color:#a6e22e">msg</span>)
-				<span style="color:#a6e22e">podsToDelete</span> = append(<span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>)
-			} <span style="color:#66d9ef">else</span> {
-				<span style="color:#a6e22e">daemonPodsRunning</span> = append(<span style="color:#a6e22e">daemonPodsRunning</span>, <span style="color:#a6e22e">pod</span>)
-			}
-		}
-		<span style="color:#75715e">// 3.2.3 如果 daemon pod 应该在此节点上运行，但存在的 pod 数 &gt; 1，则保留最早创建的 pod，其余删除
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">daemonPodsRunning</span>) &gt; <span style="color:#ae81ff">1</span> {
-			<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">podByCreationTimestampAndPhase</span>(<span style="color:#a6e22e">daemonPodsRunning</span>))
-			<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">i</span> &lt; len(<span style="color:#a6e22e">daemonPodsRunning</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
-				<span style="color:#a6e22e">podsToDelete</span> = append(<span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">daemonPodsRunning</span>[<span style="color:#a6e22e">i</span>].<span style="color:#a6e22e">Name</span>)
-			}
-		}
-	<span style="color:#66d9ef">case</span> !<span style="color:#a6e22e">shouldContinueRunning</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">exists</span>:
-		<span style="color:#75715e">// 3.3 如果 pod 不需要继续运行但 pod 已存在则需要删除 pod
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">pod</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">daemonPods</span> {
-			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">DeletionTimestamp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-				<span style="color:#66d9ef">continue</span>
-			}
-			<span style="color:#a6e22e">podsToDelete</span> = append(<span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>)
-		}
-	}
-    <span style="color:#75715e">// 4. 最终返回需要运行 daemon pod 的节点集合和待删除 pod 集合
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">podsToDelete</span>, <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><p>继续看 <code>dsc.syncNode()</code>，该方法主要是为需要 daemon pod 的 node 创建 pod 以及删除多余的 pod，其主要逻辑为：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">podsShouldBeOnNode</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">node</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Node</span>,
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">nodeToDaemonPods</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>][]<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>,
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">DaemonSet</span>,
+</span></span><span style="display:flex;"><span>) (<span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">podsToDelete</span> []<span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 1. 判断该 node 是否要运行以及是否能继续运行 ds pod
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">shouldRun</span>, <span style="color:#a6e22e">shouldContinueRunning</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">nodeShouldRunDaemonPod</span>(<span style="color:#a6e22e">node</span>, <span style="color:#a6e22e">ds</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 2. 获取该节点上的该 daemon pod 列表
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">daemonPods</span>, <span style="color:#a6e22e">exists</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">nodeToDaemonPods</span>[<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">switch</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">shouldRun</span> <span style="color:#f92672">&amp;&amp;</span> !<span style="color:#a6e22e">exists</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 3.1 如果节点应该运行而没有运行，则创建该 Pod
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">nodesNeedingDaemonPods</span> = append(<span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">shouldContinueRunning</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 3.2. 如果 daemon pod 应该继续在此节点上运行
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">daemonPodsRunning</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Pod</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">pod</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">daemonPods</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// 3.2.1 pod 在删除中，暂且不管
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">DeletionTimestamp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// 3.2.2 pod 处于 failed 状态，则删除 pod
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Status</span>.<span style="color:#a6e22e">Phase</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">PodFailed</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#75715e">// This is a critical place where DS is often fighting with kubelet that rejects pods.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>				<span style="color:#75715e">// We need to avoid hot looping and backoff.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>				<span style="color:#a6e22e">backoffKey</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">failedPodsBackoffKey</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">now</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">failedPodsBackoff</span>.<span style="color:#a6e22e">Clock</span>.<span style="color:#a6e22e">Now</span>()
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">inBackoff</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">failedPodsBackoff</span>.<span style="color:#a6e22e">IsInBackOffSinceUpdate</span>(<span style="color:#a6e22e">backoffKey</span>, <span style="color:#a6e22e">now</span>)
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">inBackoff</span> {
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">delay</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">failedPodsBackoff</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">backoffKey</span>)
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Deleting failed pod %s/%s on node %s has been limited by backoff - %v remaining&#34;</span>,
+</span></span><span style="display:flex;"><span>						<span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">delay</span>)
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">enqueueDaemonSetAfter</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">delay</span>)
+</span></span><span style="display:flex;"><span>					<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">failedPodsBackoff</span>.<span style="color:#a6e22e">Next</span>(<span style="color:#a6e22e">backoffKey</span>, <span style="color:#a6e22e">now</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">msg</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;Found failed daemon pod %s/%s on node %s, will try to kill it&#34;</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">2</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#a6e22e">msg</span>)
+</span></span><span style="display:flex;"><span>				<span style="color:#75715e">// Emit an event so that it&#39;s discoverable to users.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>				<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">eventRecorder</span>.<span style="color:#a6e22e">Eventf</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">EventTypeWarning</span>, <span style="color:#a6e22e">FailedDaemonPodReason</span>, <span style="color:#a6e22e">msg</span>)
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">podsToDelete</span> = append(<span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>			} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">daemonPodsRunning</span> = append(<span style="color:#a6e22e">daemonPodsRunning</span>, <span style="color:#a6e22e">pod</span>)
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 3.2.3 如果 daemon pod 应该在此节点上运行，但存在的 pod 数 &gt; 1，则保留最早创建的 pod，其余删除
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">daemonPodsRunning</span>) &gt; <span style="color:#ae81ff">1</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">podByCreationTimestampAndPhase</span>(<span style="color:#a6e22e">daemonPodsRunning</span>))
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">i</span> &lt; len(<span style="color:#a6e22e">daemonPodsRunning</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">podsToDelete</span> = append(<span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">daemonPodsRunning</span>[<span style="color:#a6e22e">i</span>].<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> !<span style="color:#a6e22e">shouldContinueRunning</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">exists</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 3.3 如果 pod 不需要继续运行但 pod 已存在则需要删除 pod
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">pod</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">daemonPods</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">DeletionTimestamp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">podsToDelete</span> = append(<span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 4. 最终返回需要运行 daemon pod 的节点集合和待删除 pod 集合
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">nodesNeedingDaemonPods</span>, <span style="color:#a6e22e">podsToDelete</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>继续看 <code>dsc.syncNode()</code>，该方法主要是为需要 daemon pod 的 node 创建 pod 以及删除多余的 pod，其主要逻辑为：</p>
 <ol>
 <li>将 <code>createDiff</code> 和 <code>deleteDiff</code> 与 <code>burstReplicas</code> 进行比较，<code>burstReplicas</code> 默认值为 250，即每个 syncLoop 中创建或者删除的 pod 数最多为 250 个，若超过其值则剩余需要创建或者删除的 pod 在下一个 syncLoop 继续操作；</li>
 <li>将 <code>createDiff</code> 和 <code>deleteDiff</code> 写入到 <code>expectations</code> 中；</li>
 <li>并发创建 pod，通过 <code>nodeAffinity</code> 来保证每个节点都运行一个 pod；</li>
 <li>并发删除 <code>deleteDiff</code> 中的所有 pod；</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">syncNodes</span>(<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">DaemonSet</span>, <span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">nodesNeedingDaemonPods</span> []<span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">hash</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
-	<span style="color:#75715e">// 1. 取 ds 的 key (namespace/name)
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">dsKey</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">controller</span>.<span style="color:#a6e22e">KeyFunc</span>(<span style="color:#a6e22e">ds</span>)
-	<span style="color:#f92672">...</span>
-	<span style="color:#75715e">// 2. 设置创删过程中可超过的副本数
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">createDiff</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">nodesNeedingDaemonPods</span>)
-	<span style="color:#a6e22e">deleteDiff</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">podsToDelete</span>)
-
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">createDiff</span> &gt; <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">burstReplicas</span> {
-		<span style="color:#a6e22e">createDiff</span> = <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">burstReplicas</span>
-	}
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">deleteDiff</span> &gt; <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">burstReplicas</span> {
-		<span style="color:#a6e22e">deleteDiff</span> = <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">burstReplicas</span>
-	}
-
-	<span style="color:#75715e">// 3. 设置 expectation
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">expectations</span>.<span style="color:#a6e22e">SetExpectations</span>(<span style="color:#a6e22e">dsKey</span>, <span style="color:#a6e22e">createDiff</span>, <span style="color:#a6e22e">deleteDiff</span>)
-
-	<span style="color:#75715e">// error channel to communicate back failures.  make the buffer big enough to avoid any blocking
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">errCh</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">error</span>, <span style="color:#a6e22e">createDiff</span><span style="color:#f92672">+</span><span style="color:#a6e22e">deleteDiff</span>)
-
-	<span style="color:#a6e22e">createWait</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
-	
-	<span style="color:#a6e22e">generation</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">GetTemplateGeneration</span>(<span style="color:#a6e22e">ds</span>)
-	<span style="color:#f92672">...</span>
-	<span style="color:#a6e22e">template</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">CreatePodTemplate</span>(<span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Template</span>, <span style="color:#a6e22e">generation</span>, <span style="color:#a6e22e">hash</span>)
-	
-	<span style="color:#75715e">// 4. 并发创建 pod，创建的 pod 数依次为 1, 2, 4, 8, ...
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">batchSize</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">integer</span>.<span style="color:#a6e22e">IntMin</span>(<span style="color:#a6e22e">createDiff</span>, <span style="color:#a6e22e">controller</span>.<span style="color:#a6e22e">SlowStartInitialBatchSize</span>)
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">pos</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">createDiff</span> &gt; <span style="color:#a6e22e">pos</span>; <span style="color:#a6e22e">batchSize</span>, <span style="color:#a6e22e">pos</span> = <span style="color:#a6e22e">integer</span>.<span style="color:#a6e22e">IntMin</span>(<span style="color:#ae81ff">2</span><span style="color:#f92672">*</span><span style="color:#a6e22e">batchSize</span>, <span style="color:#a6e22e">createDiff</span><span style="color:#f92672">-</span>(<span style="color:#a6e22e">pos</span><span style="color:#f92672">+</span><span style="color:#a6e22e">batchSize</span>)), <span style="color:#a6e22e">pos</span><span style="color:#f92672">+</span><span style="color:#a6e22e">batchSize</span> {
-		<span style="color:#a6e22e">errorCount</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">errCh</span>)
-		<span style="color:#a6e22e">createWait</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">batchSize</span>)
-		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pos</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">pos</span><span style="color:#f92672">+</span><span style="color:#a6e22e">batchSize</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
-			<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ix</span> <span style="color:#66d9ef">int</span>) {
-				<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">createWait</span>.<span style="color:#a6e22e">Done</span>()
-
-				<span style="color:#a6e22e">podTemplate</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">template</span>.<span style="color:#a6e22e">DeepCopy</span>()
-				
-				<span style="color:#75715e">// 5. 使用节点亲和性完成 daemon pod 调度
-</span><span style="color:#75715e"></span>				<span style="color:#a6e22e">podTemplate</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Affinity</span> = <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">ReplaceDaemonSetPodNodeNameNodeAffinity</span>(
-					<span style="color:#a6e22e">podTemplate</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Affinity</span>, <span style="color:#a6e22e">nodesNeedingDaemonPods</span>[<span style="color:#a6e22e">ix</span>])
-
-				<span style="color:#75715e">// 6. 创建 Pod 带上 ControllerRef
-</span><span style="color:#75715e"></span>				<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">podControl</span>.<span style="color:#a6e22e">CreatePodsWithControllerRef</span>(<span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">podTemplate</span>,
-					<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">NewControllerRef</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">controllerKind</span>))
-
-				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-					<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">HasStatusCause</span>(<span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">NamespaceTerminatingCause</span>) {
-						<span style="color:#75715e">// 如果此时 namespace 被删除，这里错误可以忽略
-</span><span style="color:#75715e"></span>						<span style="color:#66d9ef">return</span>
-					}
-				}
-				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-					<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">2</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Failed creation, decrementing expectations for set %q/%q&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>)
-					<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">expectations</span>.<span style="color:#a6e22e">CreationObserved</span>(<span style="color:#a6e22e">dsKey</span>)
-					<span style="color:#a6e22e">errCh</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">err</span>
-					<span style="color:#a6e22e">utilruntime</span>.<span style="color:#a6e22e">HandleError</span>(<span style="color:#a6e22e">err</span>)
-				}
-			}(<span style="color:#a6e22e">i</span>)
-		}
-		<span style="color:#a6e22e">createWait</span>.<span style="color:#a6e22e">Wait</span>()
-	
-		<span style="color:#75715e">// 6. 将创建失败的 Pod 记录到 expectation 中
-</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">skippedPods</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">createDiff</span> <span style="color:#f92672">-</span> (<span style="color:#a6e22e">batchSize</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">pos</span>)
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errorCount</span> &lt; len(<span style="color:#a6e22e">errCh</span>) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">skippedPods</span> &gt; <span style="color:#ae81ff">0</span> {
-			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">2</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Slow-start failure. Skipping creation of %d pods, decrementing expectations for set %q/%q&#34;</span>, <span style="color:#a6e22e">skippedPods</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>)
-			<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">expectations</span>.<span style="color:#a6e22e">LowerExpectations</span>(<span style="color:#a6e22e">dsKey</span>, <span style="color:#a6e22e">skippedPods</span>, <span style="color:#ae81ff">0</span>)
-			<span style="color:#75715e">// skippedPod 会在下轮 sync 时重试
-</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">break</span>
-		}
-	}
-
-	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Pods to delete for daemon set %s: %+v, deleting %d&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">deleteDiff</span>)
-	<span style="color:#a6e22e">deleteWait</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
-	<span style="color:#a6e22e">deleteWait</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">deleteDiff</span>)
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">deleteDiff</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
-		<span style="color:#75715e">// 7. 并发删除 deleteDiff 中的 pod
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ix</span> <span style="color:#66d9ef">int</span>) {
-			<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">deleteWait</span>.<span style="color:#a6e22e">Done</span>()
-			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">podControl</span>.<span style="color:#a6e22e">DeletePod</span>(<span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">podsToDelete</span>[<span style="color:#a6e22e">ix</span>], <span style="color:#a6e22e">ds</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-				<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">expectations</span>.<span style="color:#a6e22e">DeletionObserved</span>(<span style="color:#a6e22e">dsKey</span>)
-				<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">apierrors</span>.<span style="color:#a6e22e">IsNotFound</span>(<span style="color:#a6e22e">err</span>) {
-					<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">2</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Failed deletion, decremented expectations for set %q/%q&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>)
-					<span style="color:#a6e22e">errCh</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">err</span>
-					<span style="color:#a6e22e">utilruntime</span>.<span style="color:#a6e22e">HandleError</span>(<span style="color:#a6e22e">err</span>)
-				}
-			}
-		}(<span style="color:#a6e22e">i</span>)
-	}
-	<span style="color:#a6e22e">deleteWait</span>.<span style="color:#a6e22e">Wait</span>()
-
-	<span style="color:#75715e">// 收集错误返回
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">errors</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">error</span>{}
-	close(<span style="color:#a6e22e">errCh</span>)
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">errCh</span> {
-		<span style="color:#a6e22e">errors</span> = append(<span style="color:#a6e22e">errors</span>, <span style="color:#a6e22e">err</span>)
-	}
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">utilerrors</span>.<span style="color:#a6e22e">NewAggregate</span>(<span style="color:#a6e22e">errors</span>)
-}
-</code></pre></div><p>到此，总结一下，<code>dsc.manage()</code> 方法的主要流程：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">syncNodes</span>(<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">DaemonSet</span>, <span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">nodesNeedingDaemonPods</span> []<span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">hash</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 1. 取 ds 的 key (namespace/name)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">dsKey</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">controller</span>.<span style="color:#a6e22e">KeyFunc</span>(<span style="color:#a6e22e">ds</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 2. 设置创删过程中可超过的副本数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">createDiff</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">nodesNeedingDaemonPods</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">deleteDiff</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">podsToDelete</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">createDiff</span> &gt; <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">burstReplicas</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">createDiff</span> = <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">burstReplicas</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">deleteDiff</span> &gt; <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">burstReplicas</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">deleteDiff</span> = <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">burstReplicas</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 3. 设置 expectation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">expectations</span>.<span style="color:#a6e22e">SetExpectations</span>(<span style="color:#a6e22e">dsKey</span>, <span style="color:#a6e22e">createDiff</span>, <span style="color:#a6e22e">deleteDiff</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// error channel to communicate back failures.  make the buffer big enough to avoid any blocking
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">errCh</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">error</span>, <span style="color:#a6e22e">createDiff</span><span style="color:#f92672">+</span><span style="color:#a6e22e">deleteDiff</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">createWait</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">generation</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">GetTemplateGeneration</span>(<span style="color:#a6e22e">ds</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">template</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">CreatePodTemplate</span>(<span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Template</span>, <span style="color:#a6e22e">generation</span>, <span style="color:#a6e22e">hash</span>)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 4. 并发创建 pod，创建的 pod 数依次为 1, 2, 4, 8, ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">batchSize</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">integer</span>.<span style="color:#a6e22e">IntMin</span>(<span style="color:#a6e22e">createDiff</span>, <span style="color:#a6e22e">controller</span>.<span style="color:#a6e22e">SlowStartInitialBatchSize</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">pos</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">createDiff</span> &gt; <span style="color:#a6e22e">pos</span>; <span style="color:#a6e22e">batchSize</span>, <span style="color:#a6e22e">pos</span> = <span style="color:#a6e22e">integer</span>.<span style="color:#a6e22e">IntMin</span>(<span style="color:#ae81ff">2</span><span style="color:#f92672">*</span><span style="color:#a6e22e">batchSize</span>, <span style="color:#a6e22e">createDiff</span><span style="color:#f92672">-</span>(<span style="color:#a6e22e">pos</span><span style="color:#f92672">+</span><span style="color:#a6e22e">batchSize</span>)), <span style="color:#a6e22e">pos</span><span style="color:#f92672">+</span><span style="color:#a6e22e">batchSize</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">errorCount</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">errCh</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">createWait</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">batchSize</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pos</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">pos</span><span style="color:#f92672">+</span><span style="color:#a6e22e">batchSize</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ix</span> <span style="color:#66d9ef">int</span>) {
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">createWait</span>.<span style="color:#a6e22e">Done</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">podTemplate</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">template</span>.<span style="color:#a6e22e">DeepCopy</span>()
+</span></span><span style="display:flex;"><span>				
+</span></span><span style="display:flex;"><span>				<span style="color:#75715e">// 5. 使用节点亲和性完成 daemon pod 调度
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>				<span style="color:#a6e22e">podTemplate</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Affinity</span> = <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">ReplaceDaemonSetPodNodeNameNodeAffinity</span>(
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">podTemplate</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">Affinity</span>, <span style="color:#a6e22e">nodesNeedingDaemonPods</span>[<span style="color:#a6e22e">ix</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>				<span style="color:#75715e">// 6. 创建 Pod 带上 ControllerRef
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>				<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">podControl</span>.<span style="color:#a6e22e">CreatePodsWithControllerRef</span>(<span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">podTemplate</span>,
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">NewControllerRef</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">controllerKind</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>					<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">HasStatusCause</span>(<span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">NamespaceTerminatingCause</span>) {
+</span></span><span style="display:flex;"><span>						<span style="color:#75715e">// 如果此时 namespace 被删除，这里错误可以忽略
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>						<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>					}
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">2</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Failed creation, decrementing expectations for set %q/%q&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">expectations</span>.<span style="color:#a6e22e">CreationObserved</span>(<span style="color:#a6e22e">dsKey</span>)
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">errCh</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">utilruntime</span>.<span style="color:#a6e22e">HandleError</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>			}(<span style="color:#a6e22e">i</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">createWait</span>.<span style="color:#a6e22e">Wait</span>()
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 6. 将创建失败的 Pod 记录到 expectation 中
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">skippedPods</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">createDiff</span> <span style="color:#f92672">-</span> (<span style="color:#a6e22e">batchSize</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">pos</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errorCount</span> &lt; len(<span style="color:#a6e22e">errCh</span>) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">skippedPods</span> &gt; <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">2</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Slow-start failure. Skipping creation of %d pods, decrementing expectations for set %q/%q&#34;</span>, <span style="color:#a6e22e">skippedPods</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">expectations</span>.<span style="color:#a6e22e">LowerExpectations</span>(<span style="color:#a6e22e">dsKey</span>, <span style="color:#a6e22e">skippedPods</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// skippedPod 会在下轮 sync 时重试
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>			<span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Pods to delete for daemon set %s: %+v, deleting %d&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">podsToDelete</span>, <span style="color:#a6e22e">deleteDiff</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">deleteWait</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">deleteWait</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">deleteDiff</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">deleteDiff</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 7. 并发删除 deleteDiff 中的 pod
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ix</span> <span style="color:#66d9ef">int</span>) {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">deleteWait</span>.<span style="color:#a6e22e">Done</span>()
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">podControl</span>.<span style="color:#a6e22e">DeletePod</span>(<span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">podsToDelete</span>[<span style="color:#a6e22e">ix</span>], <span style="color:#a6e22e">ds</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">expectations</span>.<span style="color:#a6e22e">DeletionObserved</span>(<span style="color:#a6e22e">dsKey</span>)
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">apierrors</span>.<span style="color:#a6e22e">IsNotFound</span>(<span style="color:#a6e22e">err</span>) {
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">2</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Failed deletion, decremented expectations for set %q/%q&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Namespace</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">errCh</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">utilruntime</span>.<span style="color:#a6e22e">HandleError</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}(<span style="color:#a6e22e">i</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">deleteWait</span>.<span style="color:#a6e22e">Wait</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 收集错误返回
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">errors</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">error</span>{}
+</span></span><span style="display:flex;"><span>	close(<span style="color:#a6e22e">errCh</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">errCh</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">errors</span> = append(<span style="color:#a6e22e">errors</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">utilerrors</span>.<span style="color:#a6e22e">NewAggregate</span>(<span style="color:#a6e22e">errors</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>到此，总结一下，<code>dsc.manage()</code> 方法的主要流程：</p>
 
 
 <script src="/mermaid.min.js"></script>
@@ -1181,65 +1181,65 @@ graph LR
 <li>调用 <code>dsc.syncNodes()</code> 删除 <code>oldPodsToDelete</code> 数组中的 pods，syncNodes 方法在 manage 阶段已经分析过，此处不再赘述；</li>
 </ol>
 <p><code>pkg/controller/daemon/update.go:44</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">rollingUpdate</span>(<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">DaemonSet</span>, <span style="color:#a6e22e">nodeList</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Node</span>, <span style="color:#a6e22e">hash</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
-	<span style="color:#75715e">// 1. 获取 node 与 daemon pods 的映射关系
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">nodeToDaemonPods</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">getNodesToDaemonPods</span>(<span style="color:#a6e22e">ds</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;couldn&#39;t get node to daemon pod mapping for daemon set %q: %v&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">err</span>)
-	}
-
-	<span style="color:#75715e">// 2. 获取所有未更新的 pods
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">oldPods</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">getAllDaemonSetPods</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">nodeToDaemonPods</span>, <span style="color:#a6e22e">hash</span>)
-	<span style="color:#75715e">// 3. 计算 maxUnavailable, numUnavailable 的 pod 数值
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">maxUnavailable</span>, <span style="color:#a6e22e">numUnavailable</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">getUnavailableNumbers</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">nodeToDaemonPods</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;couldn&#39;t get unavailable numbers: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
-	}
-	<span style="color:#75715e">// 4. 把未更新的 pods 分成 available 和 unavailable
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">oldAvailablePods</span>, <span style="color:#a6e22e">oldUnavailablePods</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">SplitByAvailablePods</span>(<span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">MinReadySeconds</span>, <span style="color:#a6e22e">oldPods</span>)
-
-	<span style="color:#75715e">// 5. 将 unavailable 状态且没有删除标记的 pods 加入到 oldPodsToDelete 中
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">oldPodsToDelete</span> []<span style="color:#66d9ef">string</span>
-	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Marking all unavailable old pods for deletion&#34;</span>)
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">pod</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">oldUnavailablePods</span> {
-		<span style="color:#75715e">// Skip terminating pods. We won&#39;t delete them again
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">DeletionTimestamp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-			<span style="color:#66d9ef">continue</span>
-		}
-		<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Marking pod %s/%s for deletion&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>)
-		<span style="color:#a6e22e">oldPodsToDelete</span> = append(<span style="color:#a6e22e">oldPodsToDelete</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>)
-	}
-
-	<span style="color:#75715e">// 6. 根据 maxUnavailable 值确定是否需要删除 pod
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Marking old pods for deletion&#34;</span>)
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">pod</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">oldAvailablePods</span> {
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">numUnavailable</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">maxUnavailable</span> {
-			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Number of unavailable DaemonSet pods: %d, is equal to or exceeds allowed maximum: %d&#34;</span>, <span style="color:#a6e22e">numUnavailable</span>, <span style="color:#a6e22e">maxUnavailable</span>)
-			<span style="color:#66d9ef">break</span>
-		}
-		<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Marking pod %s/%s for deletion&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>)
-		<span style="color:#a6e22e">oldPodsToDelete</span> = append(<span style="color:#a6e22e">oldPodsToDelete</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>)
-		<span style="color:#a6e22e">numUnavailable</span><span style="color:#f92672">++</span>
-	}
-	<span style="color:#75715e">// 7. 调用 syncNodes 方法删除 oldPodsToDelete 数组中的 pods
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">syncNodes</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">oldPodsToDelete</span>, []<span style="color:#66d9ef">string</span>{}, <span style="color:#a6e22e">hash</span>)
-}
-</code></pre></div><h2 id="26-dscupdatedaemonsetstatus">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">rollingUpdate</span>(<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">DaemonSet</span>, <span style="color:#a6e22e">nodeList</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Node</span>, <span style="color:#a6e22e">hash</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 1. 获取 node 与 daemon pods 的映射关系
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">nodeToDaemonPods</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">getNodesToDaemonPods</span>(<span style="color:#a6e22e">ds</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;couldn&#39;t get node to daemon pod mapping for daemon set %q: %v&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 2. 获取所有未更新的 pods
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">oldPods</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">getAllDaemonSetPods</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">nodeToDaemonPods</span>, <span style="color:#a6e22e">hash</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 3. 计算 maxUnavailable, numUnavailable 的 pod 数值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">maxUnavailable</span>, <span style="color:#a6e22e">numUnavailable</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">getUnavailableNumbers</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">nodeList</span>, <span style="color:#a6e22e">nodeToDaemonPods</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;couldn&#39;t get unavailable numbers: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 4. 把未更新的 pods 分成 available 和 unavailable
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">oldAvailablePods</span>, <span style="color:#a6e22e">oldUnavailablePods</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">SplitByAvailablePods</span>(<span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">MinReadySeconds</span>, <span style="color:#a6e22e">oldPods</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 5. 将 unavailable 状态且没有删除标记的 pods 加入到 oldPodsToDelete 中
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">oldPodsToDelete</span> []<span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Marking all unavailable old pods for deletion&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">pod</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">oldUnavailablePods</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Skip terminating pods. We won&#39;t delete them again
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">DeletionTimestamp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Marking pod %s/%s for deletion&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">oldPodsToDelete</span> = append(<span style="color:#a6e22e">oldPodsToDelete</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 6. 根据 maxUnavailable 值确定是否需要删除 pod
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Marking old pods for deletion&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">pod</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">oldAvailablePods</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">numUnavailable</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">maxUnavailable</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Number of unavailable DaemonSet pods: %d, is equal to or exceeds allowed maximum: %d&#34;</span>, <span style="color:#a6e22e">numUnavailable</span>, <span style="color:#a6e22e">maxUnavailable</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Marking pod %s/%s for deletion&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">oldPodsToDelete</span> = append(<span style="color:#a6e22e">oldPodsToDelete</span>, <span style="color:#a6e22e">pod</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">numUnavailable</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 7. 调用 syncNodes 方法删除 oldPodsToDelete 数组中的 pods
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">syncNodes</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">oldPodsToDelete</span>, []<span style="color:#66d9ef">string</span>{}, <span style="color:#a6e22e">hash</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="26-dscupdatedaemonsetstatus">
   2.6 dsc.updateDaemonSetStatus()
   <a class="anchor" href="#26-dscupdatedaemonsetstatus">#</a>
 </h2>
 <p><code>dsc.updateDaemonSetStatus()</code> 是 sync 动作的最后一步，主要是用来更新 DaemonSet 的 status 子资源。ds.Status 的各个字段如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">status</span>:
-  <span style="color:#f92672">collisionCount</span>: <span style="color:#ae81ff">0</span>         <span style="color:#75715e"># hash 冲突数</span>
-  <span style="color:#f92672">currentNumberScheduled</span>: <span style="color:#ae81ff">1</span>  <span style="color:#75715e"># 已经运行了 DaemonSet Pod 的节点数量</span>
-  <span style="color:#f92672">desiredNumberScheduled</span>: <span style="color:#ae81ff">1</span>  <span style="color:#75715e"># 需要运行该 DaemonSet Pod 的节点数量</span>
-  <span style="color:#f92672">numberAvailable</span>: <span style="color:#ae81ff">1</span>        <span style="color:#75715e"># DaemonSet Pod 状态为 Ready 且运行时间超过 Spec.MinReadySeconds 的节点数量</span>
-  <span style="color:#f92672">numberUnavailable</span>: <span style="color:#ae81ff">0</span>      <span style="color:#75715e"># desiredNumberScheduled - numberAvailable 的节点数量</span>
-  <span style="color:#f92672">numberMisscheduled</span>: <span style="color:#ae81ff">0</span>     <span style="color:#75715e"># 不需要运行 DeamonSet Pod 但是已经运行了的节点数量</span>
-  <span style="color:#f92672">numberReady</span>: <span style="color:#ae81ff">1</span>           <span style="color:#75715e"># DaemonSet Pod 状态为 Ready 的节点数量</span>
-  <span style="color:#f92672">observedGeneration</span>: <span style="color:#ae81ff">1</span>
-  <span style="color:#f92672">updatedNumberScheduled</span>: <span style="color:#ae81ff">1</span> <span style="color:#75715e"># 已经完成 DaemonSet Pod 更新的节点数量</span>
-</code></pre></div><p>主要逻辑为：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">status</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">collisionCount</span>: <span style="color:#ae81ff">0</span>         <span style="color:#75715e"># hash 冲突数</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">currentNumberScheduled</span>: <span style="color:#ae81ff">1</span>  <span style="color:#75715e"># 已经运行了 DaemonSet Pod 的节点数量</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">desiredNumberScheduled</span>: <span style="color:#ae81ff">1</span>  <span style="color:#75715e"># 需要运行该 DaemonSet Pod 的节点数量</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">numberAvailable</span>: <span style="color:#ae81ff">1</span>        <span style="color:#75715e"># DaemonSet Pod 状态为 Ready 且运行时间超过 Spec.MinReadySeconds 的节点数量</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">numberUnavailable</span>: <span style="color:#ae81ff">0</span>      <span style="color:#75715e"># desiredNumberScheduled - numberAvailable 的节点数量</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">numberMisscheduled</span>: <span style="color:#ae81ff">0</span>     <span style="color:#75715e"># 不需要运行 DeamonSet Pod 但是已经运行了的节点数量</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">numberReady</span>: <span style="color:#ae81ff">1</span>           <span style="color:#75715e"># DaemonSet Pod 状态为 Ready 的节点数量</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">observedGeneration</span>: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">updatedNumberScheduled</span>: <span style="color:#ae81ff">1</span> <span style="color:#75715e"># 已经完成 DaemonSet Pod 更新的节点数量</span>
+</span></span></code></pre></div><p>主要逻辑为：</p>
 <ol>
 <li>调用 <code>dsc.getNodesToDaemonPods()</code> 获取 node 与已存在的 daemon pods 的映射关系；</li>
 <li>遍历所有 node，调用 <code>dsc.nodeShouldRunDaemonPod()</code> 判断该 node 是否需要运行 daemon pod，然后计算 status 中的部分字段值；</li>
@@ -1247,71 +1247,71 @@ graph LR
 <li>判断 ds 是否需要 resync；</li>
 </ol>
 <p><code>pkg/controller/daemon/daemon_controller.go:1075</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">updateDaemonSetStatus</span>(<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">DaemonSet</span>, <span style="color:#a6e22e">nodeList</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Node</span>, <span style="color:#a6e22e">hash</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">updateObservedGen</span> <span style="color:#66d9ef">bool</span>) <span style="color:#66d9ef">error</span> {
-	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Updating daemon set status&#34;</span>)
-	<span style="color:#75715e">// 1. 获取 node 与 daemon pods 的映射关系
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">nodeToDaemonPods</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">getNodesToDaemonPods</span>(<span style="color:#a6e22e">ds</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;couldn&#39;t get node to daemon pod mapping for daemon set %q: %v&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">err</span>)
-	}
-
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">desiredNumberScheduled</span>, <span style="color:#a6e22e">currentNumberScheduled</span>, <span style="color:#a6e22e">numberMisscheduled</span>, <span style="color:#a6e22e">numberReady</span>, <span style="color:#a6e22e">updatedNumberScheduled</span>, <span style="color:#a6e22e">numberAvailable</span> <span style="color:#66d9ef">int</span>
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">node</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">nodeList</span> {
-		<span style="color:#75715e">// 2. 判断该 node 是否需要运行 daemon pod
-</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">shouldRun</span>, <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">nodeShouldRunDaemonPod</span>(<span style="color:#a6e22e">node</span>, <span style="color:#a6e22e">ds</span>)
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-		}
-
-		<span style="color:#a6e22e">scheduled</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">nodeToDaemonPods</span>[<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>]) &gt; <span style="color:#ae81ff">0</span>
-		
-		<span style="color:#75715e">// 3. 计算 status 中的字段值
-</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">shouldRun</span> {
-			<span style="color:#a6e22e">desiredNumberScheduled</span><span style="color:#f92672">++</span>
-			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">scheduled</span> {
-				<span style="color:#a6e22e">currentNumberScheduled</span><span style="color:#f92672">++</span>
-				<span style="color:#75715e">// 按照创建时间排序，最早创建在最前
-</span><span style="color:#75715e"></span>				<span style="color:#a6e22e">daemonPods</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">nodeToDaemonPods</span>[<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>]
-				<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">podByCreationTimestampAndPhase</span>(<span style="color:#a6e22e">daemonPods</span>))
-				<span style="color:#a6e22e">pod</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">daemonPods</span>[<span style="color:#ae81ff">0</span>]
-				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">podutil</span>.<span style="color:#a6e22e">IsPodReady</span>(<span style="color:#a6e22e">pod</span>) {
-					<span style="color:#a6e22e">numberReady</span><span style="color:#f92672">++</span>
-					<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">podutil</span>.<span style="color:#a6e22e">IsPodAvailable</span>(<span style="color:#a6e22e">pod</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">MinReadySeconds</span>, <span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">Now</span>()) {
-						<span style="color:#a6e22e">numberAvailable</span><span style="color:#f92672">++</span>
-					}
-				}
-				<span style="color:#75715e">// If the returned error is not nil we have a parse error.
-</span><span style="color:#75715e"></span>				<span style="color:#75715e">// The controller handles this via the hash.
-</span><span style="color:#75715e"></span>				<span style="color:#a6e22e">generation</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">GetTemplateGeneration</span>(<span style="color:#a6e22e">ds</span>)
-				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-					<span style="color:#a6e22e">generation</span> = <span style="color:#66d9ef">nil</span>
-				}
-				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">IsPodUpdated</span>(<span style="color:#a6e22e">pod</span>, <span style="color:#a6e22e">hash</span>, <span style="color:#a6e22e">generation</span>) {
-					<span style="color:#a6e22e">updatedNumberScheduled</span><span style="color:#f92672">++</span>
-				}
-			}
-		} <span style="color:#66d9ef">else</span> {
-			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">scheduled</span> {
-				<span style="color:#a6e22e">numberMisscheduled</span><span style="color:#f92672">++</span>
-			}
-		}
-	}
-	<span style="color:#a6e22e">numberUnavailable</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">desiredNumberScheduled</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">numberAvailable</span>
-
-	<span style="color:#75715e">// 4. 更新 ds.status
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">storeDaemonSetStatus</span>(<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">kubeClient</span>.<span style="color:#a6e22e">AppsV1</span>().<span style="color:#a6e22e">DaemonSets</span>(<span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Namespace</span>), <span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">desiredNumberScheduled</span>, <span style="color:#a6e22e">currentNumberScheduled</span>, <span style="color:#a6e22e">numberMisscheduled</span>, <span style="color:#a6e22e">numberReady</span>, <span style="color:#a6e22e">updatedNumberScheduled</span>, <span style="color:#a6e22e">numberAvailable</span>, <span style="color:#a6e22e">numberUnavailable</span>, <span style="color:#a6e22e">updateObservedGen</span>)
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;error storing status for daemon set %#v: %v&#34;</span>, <span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">err</span>)
-	}
-
-	<span style="color:#75715e">// Resync the DaemonSet after MinReadySeconds as a last line of defense to guard against clock-skew.
-</span><span style="color:#75715e"></span>	<span style="color:#75715e">// 5. 判断 ds 是否需要 resync
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">MinReadySeconds</span> &gt; <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">numberReady</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">numberAvailable</span> {
-		<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">enqueueDaemonSetAfter</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>(<span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">MinReadySeconds</span>)<span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
-	}
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><h2 id="27-源码分析小结">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dsc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DaemonSetsController</span>) <span style="color:#a6e22e">updateDaemonSetStatus</span>(<span style="color:#a6e22e">ds</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apps</span>.<span style="color:#a6e22e">DaemonSet</span>, <span style="color:#a6e22e">nodeList</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">v1</span>.<span style="color:#a6e22e">Node</span>, <span style="color:#a6e22e">hash</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">updateObservedGen</span> <span style="color:#66d9ef">bool</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Updating daemon set status&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 1. 获取 node 与 daemon pods 的映射关系
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">nodeToDaemonPods</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">getNodesToDaemonPods</span>(<span style="color:#a6e22e">ds</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;couldn&#39;t get node to daemon pod mapping for daemon set %q: %v&#34;</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">desiredNumberScheduled</span>, <span style="color:#a6e22e">currentNumberScheduled</span>, <span style="color:#a6e22e">numberMisscheduled</span>, <span style="color:#a6e22e">numberReady</span>, <span style="color:#a6e22e">updatedNumberScheduled</span>, <span style="color:#a6e22e">numberAvailable</span> <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">node</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">nodeList</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 2. 判断该 node 是否需要运行 daemon pod
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">shouldRun</span>, <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">nodeShouldRunDaemonPod</span>(<span style="color:#a6e22e">node</span>, <span style="color:#a6e22e">ds</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">scheduled</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">nodeToDaemonPods</span>[<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>]) &gt; <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 3. 计算 status 中的字段值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">shouldRun</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">desiredNumberScheduled</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">scheduled</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">currentNumberScheduled</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>				<span style="color:#75715e">// 按照创建时间排序，最早创建在最前
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>				<span style="color:#a6e22e">daemonPods</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">nodeToDaemonPods</span>[<span style="color:#a6e22e">node</span>.<span style="color:#a6e22e">Name</span>]
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">podByCreationTimestampAndPhase</span>(<span style="color:#a6e22e">daemonPods</span>))
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">pod</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">daemonPods</span>[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">podutil</span>.<span style="color:#a6e22e">IsPodReady</span>(<span style="color:#a6e22e">pod</span>) {
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">numberReady</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>					<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">podutil</span>.<span style="color:#a6e22e">IsPodAvailable</span>(<span style="color:#a6e22e">pod</span>, <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">MinReadySeconds</span>, <span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">Now</span>()) {
+</span></span><span style="display:flex;"><span>						<span style="color:#a6e22e">numberAvailable</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>					}
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>				<span style="color:#75715e">// If the returned error is not nil we have a parse error.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>				<span style="color:#75715e">// The controller handles this via the hash.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>				<span style="color:#a6e22e">generation</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">GetTemplateGeneration</span>(<span style="color:#a6e22e">ds</span>)
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">generation</span> = <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">IsPodUpdated</span>(<span style="color:#a6e22e">pod</span>, <span style="color:#a6e22e">hash</span>, <span style="color:#a6e22e">generation</span>) {
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">updatedNumberScheduled</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">scheduled</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">numberMisscheduled</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">numberUnavailable</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">desiredNumberScheduled</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">numberAvailable</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 4. 更新 ds.status
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">storeDaemonSetStatus</span>(<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">kubeClient</span>.<span style="color:#a6e22e">AppsV1</span>().<span style="color:#a6e22e">DaemonSets</span>(<span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Namespace</span>), <span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">desiredNumberScheduled</span>, <span style="color:#a6e22e">currentNumberScheduled</span>, <span style="color:#a6e22e">numberMisscheduled</span>, <span style="color:#a6e22e">numberReady</span>, <span style="color:#a6e22e">updatedNumberScheduled</span>, <span style="color:#a6e22e">numberAvailable</span>, <span style="color:#a6e22e">numberUnavailable</span>, <span style="color:#a6e22e">updateObservedGen</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;error storing status for daemon set %#v: %v&#34;</span>, <span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Resync the DaemonSet after MinReadySeconds as a last line of defense to guard against clock-skew.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#75715e">// 5. 判断 ds 是否需要 resync
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">MinReadySeconds</span> &gt; <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">numberReady</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">numberAvailable</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">dsc</span>.<span style="color:#a6e22e">enqueueDaemonSetAfter</span>(<span style="color:#a6e22e">ds</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>(<span style="color:#a6e22e">ds</span>.<span style="color:#a6e22e">Spec</span>.<span style="color:#a6e22e">MinReadySeconds</span>)<span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="27-源码分析小结">
   2.7 源码分析小结
   <a class="anchor" href="#27-%e6%ba%90%e7%a0%81%e5%88%86%e6%9e%90%e5%b0%8f%e7%bb%93">#</a>
 </h2>
@@ -1357,9 +1357,9 @@ op1.1.2 --> op1.1.2.1(dsc.nodeShouldRunDaemonPod)
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/473e4024715d141e4f89b57d8babc9f0cccc0309" title='Last modified by howieyuen | December 14, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/be46fbc5a56ee48b09bc3ac56cfce882f3ad2d9e" title='Last modified by howieyuen | May 5, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>December 14, 2021</span>
+      <span>May 5, 2022</span>
     </a>
   </div>
 

@@ -33,7 +33,7 @@ go 是静态类型化，每个变量都有一个静态类型，也就是说，�
 一个接口类型变量存储了一对值：赋值给这个接口变量的具体值 + 这个值的类型描述符。更进一步的讲，这个“值”是实现了这个接口的底层具体数据项（underlying concrete data item)，而这个“类型”是描述了具体数据项（item）的全类型（full type）。
 所以反射是干嘛的呢？反射是一种检查存储在接口变量中的（类型/值）对的机制。reflect 包中提供的 2 个类型 Type 和 Value，提供了访问接口值的 reflect.Type 和 reflect.Value 部分。
 2. 三大法则 #  2.1. Reflection goes from interface value to reflecton object #  从 interface{} 变量可以反射出反射对象
-type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := reflect.</description>
+type MyInt int32  func main() {  var x MyInt = 7  v := reflect.</description>
     </item>
     
   </channel>

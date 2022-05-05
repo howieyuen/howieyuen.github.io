@@ -16,13 +16,13 @@ Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供�
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/tools/pprof/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2021-01-21T00:00:00+00:00" />
-<meta property="article:modified_time" content="2021-12-14T16:10:37+08:00" />
+<meta property="article:modified_time" content="2022-05-05T17:06:14+08:00" />
 
 <title>pprof | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.d2411f9dc01bae540c5158d300f7882e67d59efa45c71cfe08fc07fef9b85b6b.js" integrity="sha256-0kEfncAbrlQMUVjTAPeILmfVnvpFxxz&#43;CPwH/vm4W2s="></script>
+<script defer src="/en.search.min.306f3039b68c95e12639226149ab899af825bbaf2c2b9228bc3adf4e030996ee.js" integrity="sha256-MG8wObaMleEmOSJhSauJmvglu68sK5IovDrfTgMJlu4="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -620,7 +620,7 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <script>(function(){var a=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(b){localStorage.setItem("menu.scrollTop",a.scrollTop)}),a.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+  <script>(function(){var e=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
 
 
  
@@ -767,62 +767,62 @@ https://github.com/alex-shpak/hugo-book
 </h2>
 <p>拿 CPU profiling 举例，增加两行代码，调用 <code>pprof.StartCPUProfile</code> 启动 cpu profiling，
 调用 <code>pprof.StopCPUProfile()</code> 将数据刷到文件里：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
-
-<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;runtime/pprof&#34;</span>
-
-<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">cpuprofile</span> = <span style="color:#a6e22e">flag</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;cpuprofile&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#e6db74">&#34;write cpu profile to file&#34;</span>)
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#75715e">// …
-</span><span style="color:#75715e"></span>        
-    <span style="color:#a6e22e">pprof</span>.<span style="color:#a6e22e">StartCPUProfile</span>(<span style="color:#a6e22e">f</span>)
-    <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">pprof</span>.<span style="color:#a6e22e">StopCPUProfile</span>()
-    
-    <span style="color:#75715e">// …
-</span><span style="color:#75715e"></span>}
-</code></pre></div><h2 id="32-nethttppprof">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;runtime/pprof&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">cpuprofile</span> = <span style="color:#a6e22e">flag</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;cpuprofile&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#e6db74">&#34;write cpu profile to file&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// …
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pprof</span>.<span style="color:#a6e22e">StartCPUProfile</span>(<span style="color:#a6e22e">f</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">pprof</span>.<span style="color:#a6e22e">StopCPUProfile</span>()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// …
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><h2 id="32-nethttppprof">
   3.2 net/http/pprof
   <a class="anchor" href="#32-nethttppprof">#</a>
 </h2>
 <p>启动一个端口（和正常提供业务服务的端口不同）监听 pprof 请求：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
-
-<span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;log&#34;</span>
-    <span style="color:#e6db74">&#34;net/http&#34;</span>
-    <span style="color:#a6e22e">_</span> <span style="color:#e6db74">&#34;net/http/pprof&#34;</span>
-    <span style="color:#e6db74">&#34;regexp&#34;</span>
-)
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">handler</span>(<span style="color:#a6e22e">wr</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pattern</span> = <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`^(\w+)@foo.bar$`</span>)
-    <span style="color:#a6e22e">account</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">URL</span>.<span style="color:#a6e22e">Path</span>[<span style="color:#ae81ff">1</span>:]
-    <span style="color:#a6e22e">res</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pattern</span>.<span style="color:#a6e22e">FindSubmatch</span>([]byte(<span style="color:#a6e22e">account</span>))
-    <span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">res</span>) &gt; <span style="color:#ae81ff">1</span> {
-        <span style="color:#a6e22e">wr</span>.<span style="color:#a6e22e">Write</span>(<span style="color:#a6e22e">res</span>[<span style="color:#ae81ff">1</span>])
-    } <span style="color:#66d9ef">else</span> {
-        <span style="color:#a6e22e">wr</span>.<span style="color:#a6e22e">Write</span>([]byte(<span style="color:#e6db74">&#34;None&#34;</span>))
-    }
-}
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/&#34;</span>, <span style="color:#a6e22e">handler</span>)
-    <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#e6db74">&#34;:8888&#34;</span>, <span style="color:#66d9ef">nil</span>)
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-        <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#e6db74">&#34;ListenAndServe:&#34;</span>, <span style="color:#a6e22e">err</span>)
-    }
-}
-</code></pre></div><p>pprof 包会自动注册 handler， 处理相关的请求：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// src/net/http/pprof/pprof.go:71
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">init</span>() {
-    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/debug/pprof/&#34;</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>(<span style="color:#a6e22e">Index</span>))
-    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/debug/pprof/cmdline&#34;</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>(<span style="color:#a6e22e">Cmdline</span>))
-    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/debug/pprof/profile&#34;</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>(<span style="color:#a6e22e">Profile</span>))
-    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/debug/pprof/symbol&#34;</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>(<span style="color:#a6e22e">Symbol</span>))
-    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/debug/pprof/trace&#34;</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>(<span style="color:#a6e22e">Trace</span>))
-}
-</code></pre></div><p>启动服务后，直接在浏览器访问：http://localhost:8888/debug/pprof/，得到如下页面：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">_</span> <span style="color:#e6db74">&#34;net/http/pprof&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;regexp&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">handler</span>(<span style="color:#a6e22e">wr</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pattern</span> = <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`^(\w+)@foo.bar$`</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">account</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">URL</span>.<span style="color:#a6e22e">Path</span>[<span style="color:#ae81ff">1</span>:]
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">res</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pattern</span>.<span style="color:#a6e22e">FindSubmatch</span>([]byte(<span style="color:#a6e22e">account</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">res</span>) &gt; <span style="color:#ae81ff">1</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">wr</span>.<span style="color:#a6e22e">Write</span>(<span style="color:#a6e22e">res</span>[<span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">wr</span>.<span style="color:#a6e22e">Write</span>([]byte(<span style="color:#e6db74">&#34;None&#34;</span>))
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/&#34;</span>, <span style="color:#a6e22e">handler</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#e6db74">&#34;:8888&#34;</span>, <span style="color:#66d9ef">nil</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#e6db74">&#34;ListenAndServe:&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>pprof 包会自动注册 handler， 处理相关的请求：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// src/net/http/pprof/pprof.go:71
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">init</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/debug/pprof/&#34;</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>(<span style="color:#a6e22e">Index</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/debug/pprof/cmdline&#34;</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>(<span style="color:#a6e22e">Cmdline</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/debug/pprof/profile&#34;</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>(<span style="color:#a6e22e">Profile</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/debug/pprof/symbol&#34;</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>(<span style="color:#a6e22e">Symbol</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/debug/pprof/trace&#34;</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>(<span style="color:#a6e22e">Trace</span>))
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>启动服务后，直接在浏览器访问：http://localhost:8888/debug/pprof/，得到如下页面：</p>
 <iframe 
 src="/golang/tools/pprof/_debug_pprof_.html"
 height="600px"
@@ -840,9 +840,9 @@ frameborder="1">
 </h1>
 <p>开始采样之前，需要模拟服务访问，这里用到的是压力测试管径 
   <a href="https://github.com/wg/wrk">wrk</a>。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 启动 500 个 HTTP 连接，30 个线程，持续访问 1 分钟</span>
-wrk -c500 -t30 -d1m http://localhost:8888/zzz@foo.bar
-</code></pre></div><h2 id="41-报告生成">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 启动 500 个 HTTP 连接，30 个线程，持续访问 1 分钟</span>
+</span></span><span style="display:flex;"><span>wrk -c500 -t30 -d1m http://localhost:8888/zzz@foo.bar
+</span></span></code></pre></div><h2 id="41-报告生成">
   4.1 报告生成
   <a class="anchor" href="#41-%e6%8a%a5%e5%91%8a%e7%94%9f%e6%88%90">#</a>
 </h2>
@@ -854,8 +854,8 @@ wrk -c500 -t30 -d1m http://localhost:8888/zzz@foo.bar
 <p>下面以内置页面为例：
 在 debug/pprof 页面点击 profile，会在后台进行默认 30s 的数据采样，采样完成后，返回给浏览器一个采样文件，其他命令类似。
 然后使用以下命令：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go tool pprof -http<span style="color:#f92672">=</span>:8080 profile
-</code></pre></div><p>会在本地 8080 端口启动 http 服务，提供可视化界面：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go tool pprof -http<span style="color:#f92672">=</span>:8080 profile
+</span></span></code></pre></div><p>会在本地 8080 端口启动 http 服务，提供可视化界面：</p>
 <iframe 
 src="/golang/tools/pprof/cpu.html"
 height="600px"
@@ -876,42 +876,42 @@ frameborder="1">
   <a class="anchor" href="#42-%e4%ba%a4%e4%ba%92%e5%bc%8f%e5%91%bd%e4%bb%a4">#</a>
 </h2>
 <p>除了使用内置的页面采样分析，也直接使用如下命令，不需要通过浏览器直接进入~</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># step1：压测工具访问服务</span>
-wrk -c500 -t30 -d1m http://localhost:8888/zzz@foo.bar
-<span style="color:#75715e"># step2：采集数据，默认 30s</span>
-go tool pprof http://localhost:8888/debug/pprof/profile
-</code></pre></div><p>其他类似的采集数据命令还有：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 自定义等待时间 120s</span>
-go tool pprof http://localhost:8888/debug/pprof/profile?second<span style="color:#f92672">=</span><span style="color:#ae81ff">120</span>
-    
-<span style="color:#75715e"># 下载 heap profile</span>
-go tool pprof http://localhost:8888/debug/pprof/heap
-
-<span style="color:#75715e"># 下载 goroutine profile</span>
-go tool pprof http://localhost:8888/debug/pprof/goroutine
-
-<span style="color:#75715e"># 下载 block profile</span>
-go tool pprof http://localhost:8888/debug/pprof/block
-
-<span style="color:#75715e"># 下载 mutex profile</span>
-go tool pprof http://localhost:8888/debug/pprof/mutex
-</code></pre></div><p>下面开始进入命令行交互式模式，使用 <code>top</code>、<code>list</code>、<code>web</code> 等命令：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>pprof<span style="color:#f92672">)</span> top
-Showing nodes accounting <span style="color:#66d9ef">for</span> 86.85s, 91.15% of 95.28s total
-Dropped <span style="color:#ae81ff">397</span> nodes <span style="color:#f92672">(</span>cum &lt;<span style="color:#f92672">=</span> 0.48s<span style="color:#f92672">)</span>
-Showing top <span style="color:#ae81ff">10</span> nodes out of <span style="color:#ae81ff">93</span>
-      flat  flat%   sum%        cum   cum%
-    75.37s 79.10% 79.10%     75.60s 79.35%  syscall.syscall
-     3.79s  3.98% 83.08%      3.81s  4.00%  runtime.kevent
-     1.52s  1.60% 84.68%      1.53s  1.61%  runtime.usleep
-     1.21s  1.27% 85.95%      1.21s  1.27%  runtime.pthread_cond_wait
-     1.20s  1.26% 87.21%      1.20s  1.26%  runtime.pthread_kill
-     0.94s  0.99% 88.19%      0.94s  0.99%  runtime.nanotime1
-     0.89s  0.93% 89.13%      0.89s  0.93%  runtime.procyield
-     0.84s  0.88% 90.01%      0.84s  0.88%  indexbytebody
-     0.59s  0.62% 90.63%      0.59s  0.62%  runtime.pthread_cond_signal
-     0.50s  0.52% 91.15%      0.85s  0.89%  runtime.scanobject
-</code></pre></div><p>得到 5 列数据：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># step1：压测工具访问服务</span>
+</span></span><span style="display:flex;"><span>wrk -c500 -t30 -d1m http://localhost:8888/zzz@foo.bar
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># step2：采集数据，默认 30s</span>
+</span></span><span style="display:flex;"><span>go tool pprof http://localhost:8888/debug/pprof/profile
+</span></span></code></pre></div><p>其他类似的采集数据命令还有：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 自定义等待时间 120s</span>
+</span></span><span style="display:flex;"><span>go tool pprof http://localhost:8888/debug/pprof/profile?second<span style="color:#f92672">=</span><span style="color:#ae81ff">120</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 下载 heap profile</span>
+</span></span><span style="display:flex;"><span>go tool pprof http://localhost:8888/debug/pprof/heap
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 下载 goroutine profile</span>
+</span></span><span style="display:flex;"><span>go tool pprof http://localhost:8888/debug/pprof/goroutine
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 下载 block profile</span>
+</span></span><span style="display:flex;"><span>go tool pprof http://localhost:8888/debug/pprof/block
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 下载 mutex profile</span>
+</span></span><span style="display:flex;"><span>go tool pprof http://localhost:8888/debug/pprof/mutex
+</span></span></code></pre></div><p>下面开始进入命令行交互式模式，使用 <code>top</code>、<code>list</code>、<code>web</code> 等命令：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">(</span>pprof<span style="color:#f92672">)</span> top
+</span></span><span style="display:flex;"><span>Showing nodes accounting <span style="color:#66d9ef">for</span> 86.85s, 91.15% of 95.28s total
+</span></span><span style="display:flex;"><span>Dropped <span style="color:#ae81ff">397</span> nodes <span style="color:#f92672">(</span>cum &lt;<span style="color:#f92672">=</span> 0.48s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>Showing top <span style="color:#ae81ff">10</span> nodes out of <span style="color:#ae81ff">93</span>
+</span></span><span style="display:flex;"><span>      flat  flat%   sum%        cum   cum%
+</span></span><span style="display:flex;"><span>    75.37s 79.10% 79.10%     75.60s 79.35%  syscall.syscall
+</span></span><span style="display:flex;"><span>     3.79s  3.98% 83.08%      3.81s  4.00%  runtime.kevent
+</span></span><span style="display:flex;"><span>     1.52s  1.60% 84.68%      1.53s  1.61%  runtime.usleep
+</span></span><span style="display:flex;"><span>     1.21s  1.27% 85.95%      1.21s  1.27%  runtime.pthread_cond_wait
+</span></span><span style="display:flex;"><span>     1.20s  1.26% 87.21%      1.20s  1.26%  runtime.pthread_kill
+</span></span><span style="display:flex;"><span>     0.94s  0.99% 88.19%      0.94s  0.99%  runtime.nanotime1
+</span></span><span style="display:flex;"><span>     0.89s  0.93% 89.13%      0.89s  0.93%  runtime.procyield
+</span></span><span style="display:flex;"><span>     0.84s  0.88% 90.01%      0.84s  0.88%  indexbytebody
+</span></span><span style="display:flex;"><span>     0.59s  0.62% 90.63%      0.59s  0.62%  runtime.pthread_cond_signal
+</span></span><span style="display:flex;"><span>     0.50s  0.52% 91.15%      0.85s  0.89%  runtime.scanobject
+</span></span></code></pre></div><p>得到 5 列数据：</p>
 <table>
 <thead>
 <tr>
@@ -943,39 +943,39 @@ Showing top <span style="color:#ae81ff">10</span> nodes out of <span style="colo
 </tbody>
 </table>
 <p>上面的结果没啥有价值的信息，都是 go 的底层调用。使用 <code>list</code> 正则匹配业务代码：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>pprof<span style="color:#f92672">)</span> list handler
-Total: 1.65mins
-ROUTINE <span style="color:#f92672">========================</span> main.handler in /Users/yuanhao/Study/GoProjects/testProject/pprof/main.go
-      30ms      2.63s <span style="color:#f92672">(</span>flat, cum<span style="color:#f92672">)</span>  2.65% of Total
-         .          .      6:	_ <span style="color:#e6db74">&#34;net/http/pprof&#34;</span>
-         .          .      7:	<span style="color:#e6db74">&#34;regexp&#34;</span>
-         .          .      8:<span style="color:#f92672">)</span>
-         .          .      9:
-         .          .     10:func handler<span style="color:#f92672">(</span>wr http.ResponseWriter, r *http.Request<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-         .      2.38s     11:	var pattern <span style="color:#f92672">=</span> regexp.MustCompile<span style="color:#f92672">(</span><span style="color:#e6db74">`</span>^<span style="color:#f92672">(</span><span style="color:#ae81ff">\w</span>+<span style="color:#f92672">)</span>@foo.bar$<span style="color:#e6db74">`</span><span style="color:#f92672">)</span>
-      20ms       20ms     12:	account :<span style="color:#f92672">=</span> r.URL.Path<span style="color:#f92672">[</span>1:<span style="color:#f92672">]</span>
-         .      160ms     13:	res :<span style="color:#f92672">=</span> pattern.FindSubmatch<span style="color:#f92672">([]</span>byte<span style="color:#f92672">(</span>account<span style="color:#f92672">))</span>
-         .          .     14:	<span style="color:#66d9ef">if</span> len<span style="color:#f92672">(</span>res<span style="color:#f92672">)</span> &gt; <span style="color:#ae81ff">1</span> <span style="color:#f92672">{</span>
-      10ms       70ms     15:		wr.Write<span style="color:#f92672">(</span>res<span style="color:#f92672">[</span>1<span style="color:#f92672">])</span>
-         .          .     16:	<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-         .          .     17:		wr.Write<span style="color:#f92672">([]</span>byte<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;None&#34;</span><span style="color:#f92672">))</span>
-         .          .     18:	<span style="color:#f92672">}</span>
-         .          .     19:<span style="color:#f92672">}</span>
-         .          .     20:
-ROUTINE <span style="color:#f92672">========================</span> net/http.<span style="color:#f92672">(</span>*ServeMux<span style="color:#f92672">)</span>.handler in /usr/local/Cellar/go/1.15.1/libexec/src/net/http/server.go
-      10ms       10ms <span style="color:#f92672">(</span>flat, cum<span style="color:#f92672">)</span>  0.01% of Total
-         .          .   2384:	<span style="color:#66d9ef">return</span> mux.handler<span style="color:#f92672">(</span>host, r.URL.Path<span style="color:#f92672">)</span>
-         .          .   2385:<span style="color:#f92672">}</span>
-         .          .   2386:
-         .          .   2387:// handler is the main implementation of Handler.
-         .          .   2388:// The path is known to be in canonical form, except <span style="color:#66d9ef">for</span> CONNECT methods.
-      10ms       10ms   2389:func <span style="color:#f92672">(</span>mux *ServeMux<span style="color:#f92672">)</span> handler<span style="color:#f92672">(</span>host, path string<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>h Handler, pattern string<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-         .          .   2390:	mux.mu.RLock<span style="color:#f92672">()</span>
-         .          .   2391:	defer mux.mu.RUnlock<span style="color:#f92672">()</span>
-         .          .   2392:
-         .          .   2393:	// Host-specific pattern takes precedence over generic ones
-         .          .   2394:	<span style="color:#66d9ef">if</span> mux.hosts <span style="color:#f92672">{</span>
-</code></pre></div><p>可以看出，<code>main.handler</code> 总共用时 2.63s，其中 <code>regexp.MustComplie</code> 耗时 2.38ms。
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">(</span>pprof<span style="color:#f92672">)</span> list handler
+</span></span><span style="display:flex;"><span>Total: 1.65mins
+</span></span><span style="display:flex;"><span>ROUTINE <span style="color:#f92672">========================</span> main.handler in /Users/yuanhao/Study/GoProjects/testProject/pprof/main.go
+</span></span><span style="display:flex;"><span>      30ms      2.63s <span style="color:#f92672">(</span>flat, cum<span style="color:#f92672">)</span>  2.65% of Total
+</span></span><span style="display:flex;"><span>         .          .      6:	_ <span style="color:#e6db74">&#34;net/http/pprof&#34;</span>
+</span></span><span style="display:flex;"><span>         .          .      7:	<span style="color:#e6db74">&#34;regexp&#34;</span>
+</span></span><span style="display:flex;"><span>         .          .      8:<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>         .          .      9:
+</span></span><span style="display:flex;"><span>         .          .     10:func handler<span style="color:#f92672">(</span>wr http.ResponseWriter, r *http.Request<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>         .      2.38s     11:	var pattern <span style="color:#f92672">=</span> regexp.MustCompile<span style="color:#f92672">(</span><span style="color:#e6db74">`</span>^<span style="color:#f92672">(</span><span style="color:#ae81ff">\w</span>+<span style="color:#f92672">)</span>@foo.bar$<span style="color:#e6db74">`</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>      20ms       20ms     12:	account :<span style="color:#f92672">=</span> r.URL.Path<span style="color:#f92672">[</span>1:<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>         .      160ms     13:	res :<span style="color:#f92672">=</span> pattern.FindSubmatch<span style="color:#f92672">([]</span>byte<span style="color:#f92672">(</span>account<span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>         .          .     14:	<span style="color:#66d9ef">if</span> len<span style="color:#f92672">(</span>res<span style="color:#f92672">)</span> &gt; <span style="color:#ae81ff">1</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      10ms       70ms     15:		wr.Write<span style="color:#f92672">(</span>res<span style="color:#f92672">[</span>1<span style="color:#f92672">])</span>
+</span></span><span style="display:flex;"><span>         .          .     16:	<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>         .          .     17:		wr.Write<span style="color:#f92672">([]</span>byte<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;None&#34;</span><span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>         .          .     18:	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>         .          .     19:<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>         .          .     20:
+</span></span><span style="display:flex;"><span>ROUTINE <span style="color:#f92672">========================</span> net/http.<span style="color:#f92672">(</span>*ServeMux<span style="color:#f92672">)</span>.handler in /usr/local/Cellar/go/1.15.1/libexec/src/net/http/server.go
+</span></span><span style="display:flex;"><span>      10ms       10ms <span style="color:#f92672">(</span>flat, cum<span style="color:#f92672">)</span>  0.01% of Total
+</span></span><span style="display:flex;"><span>         .          .   2384:	<span style="color:#66d9ef">return</span> mux.handler<span style="color:#f92672">(</span>host, r.URL.Path<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>         .          .   2385:<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>         .          .   2386:
+</span></span><span style="display:flex;"><span>         .          .   2387:// handler is the main implementation of Handler.
+</span></span><span style="display:flex;"><span>         .          .   2388:// The path is known to be in canonical form, except <span style="color:#66d9ef">for</span> CONNECT methods.
+</span></span><span style="display:flex;"><span>      10ms       10ms   2389:func <span style="color:#f92672">(</span>mux *ServeMux<span style="color:#f92672">)</span> handler<span style="color:#f92672">(</span>host, path string<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>h Handler, pattern string<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>         .          .   2390:	mux.mu.RLock<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>         .          .   2391:	defer mux.mu.RUnlock<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>         .          .   2392:
+</span></span><span style="display:flex;"><span>         .          .   2393:	// Host-specific pattern takes precedence over generic ones
+</span></span><span style="display:flex;"><span>         .          .   2394:	<span style="color:#66d9ef">if</span> mux.hosts <span style="color:#f92672">{</span>
+</span></span></code></pre></div><p>可以看出，<code>main.handler</code> 总共用时 2.63s，其中 <code>regexp.MustComplie</code> 耗时 2.38ms。
 罪魁祸首在这里：服务器每次收到请求，都要重新解析正则表达式。</p>
 <p>进入下一步，使用 <code>web</code> 命令查看调用链，需要提前安装 graphviz 工具，自动调用浏览器展示下图：</p>
 <center>
@@ -1036,9 +1036,9 @@ width="35%"
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/473e4024715d141e4f89b57d8babc9f0cccc0309" title='Last modified by howieyuen | December 14, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/be46fbc5a56ee48b09bc3ac56cfce882f3ad2d9e" title='Last modified by howieyuen | May 5, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>December 14, 2021</span>
+      <span>May 5, 2022</span>
     </a>
   </div>
 

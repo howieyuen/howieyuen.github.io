@@ -7,22 +7,22 @@
 <meta name="description" content="1. 引言 #  Go 语言中最常见的、也是经常被人提及的设计模式就是 —— 不要通过共享内存的方式进行通信，而是应该通过通信的方式共享内存。
 先入先出
 目前的 Channel 收发操作均遵循了先入先出（FIFO）的设计，具体规则如下：
- 先从 Channel 读取数据的 Goroutine 会先接收到数据； 先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利；  2. 数据结构 #  type hchan struct { qcount uint // 当前队列中剩余元素个数 	dataqsiz uint // 环形队列长度，即可以存放的元素个数 	buf unsafe.Pointer // 环形队列指针 	elemsize uint16 // 每个元素的大小 	closed uint32 // 标识关闭状态 	elemtype *_type // 元素类型 	sendx uint // 发送操作处理到的位置 	recvx uint // 接收操作处理到的位置 	recvq waitq // 等待读消息的 goroutine 队列 	sendq waitq // 等待写消息的 goroutine 队列 	lock mutex // 互斥锁，chan 不允许并发读写 } 从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。">
+ 先从 Channel 读取数据的 Goroutine 会先接收到数据； 先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利；  2. 数据结构 #  type hchan struct { 	qcount uint // 当前队列中剩余元素个数 	dataqsiz uint // 环形队列长度，即可以存放的元素个数 	buf unsafe.Pointer // 环形队列指针 	elemsize uint16 // 每个元素的大小 	closed uint32 // 标识关闭状态 	elemtype *_type // 元素类型 	sendx uint // 发送操作处理到的位置 	recvx uint // 接收操作处理到的位置 	recvq waitq // 等待读消息的 goroutine 队列 	sendq waitq // 等待写消息的 goroutine 队列 	lock mutex // 互斥锁，chan 不允许并发读写 } 从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="chan" />
 <meta property="og:description" content="1. 引言 #  Go 语言中最常见的、也是经常被人提及的设计模式就是 —— 不要通过共享内存的方式进行通信，而是应该通过通信的方式共享内存。
 先入先出
 目前的 Channel 收发操作均遵循了先入先出（FIFO）的设计，具体规则如下：
- 先从 Channel 读取数据的 Goroutine 会先接收到数据； 先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利；  2. 数据结构 #  type hchan struct { qcount uint // 当前队列中剩余元素个数 	dataqsiz uint // 环形队列长度，即可以存放的元素个数 	buf unsafe.Pointer // 环形队列指针 	elemsize uint16 // 每个元素的大小 	closed uint32 // 标识关闭状态 	elemtype *_type // 元素类型 	sendx uint // 发送操作处理到的位置 	recvx uint // 接收操作处理到的位置 	recvq waitq // 等待读消息的 goroutine 队列 	sendq waitq // 等待写消息的 goroutine 队列 	lock mutex // 互斥锁，chan 不允许并发读写 } 从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。" />
+ 先从 Channel 读取数据的 Goroutine 会先接收到数据； 先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利；  2. 数据结构 #  type hchan struct { 	qcount uint // 当前队列中剩余元素个数 	dataqsiz uint // 环形队列长度，即可以存放的元素个数 	buf unsafe.Pointer // 环形队列指针 	elemsize uint16 // 每个元素的大小 	closed uint32 // 标识关闭状态 	elemtype *_type // 元素类型 	sendx uint // 发送操作处理到的位置 	recvx uint // 接收操作处理到的位置 	recvq waitq // 等待读消息的 goroutine 队列 	sendq waitq // 等待写消息的 goroutine 队列 	lock mutex // 互斥锁，chan 不允许并发读写 } 从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/data-structure/chan/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2020-12-14T00:00:00+00:00" />
-<meta property="article:modified_time" content="2021-12-14T16:10:37+08:00" />
+<meta property="article:modified_time" content="2022-05-05T17:06:14+08:00" />
 
 <title>chan | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.d2411f9dc01bae540c5158d300f7882e67d59efa45c71cfe08fc07fef9b85b6b.js" integrity="sha256-0kEfncAbrlQMUVjTAPeILmfVnvpFxxz&#43;CPwH/vm4W2s="></script>
+<script defer src="/en.search.min.306f3039b68c95e12639226149ab899af825bbaf2c2b9228bc3adf4e030996ee.js" integrity="sha256-MG8wObaMleEmOSJhSauJmvglu68sK5IovDrfTgMJlu4="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -620,7 +620,7 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <script>(function(){var a=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(b){localStorage.setItem("menu.scrollTop",a.scrollTop)}),a.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+  <script>(function(){var e=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
 
 
  
@@ -693,20 +693,20 @@ https://github.com/alex-shpak/hugo-book
   2. 数据结构
   <a class="anchor" href="#2-%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84">#</a>
 </h1>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">hchan</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">qcount</span>   <span style="color:#66d9ef">uint</span>           <span style="color:#75715e">// 当前队列中剩余元素个数
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">dataqsiz</span> <span style="color:#66d9ef">uint</span>           <span style="color:#75715e">// 环形队列长度，即可以存放的元素个数
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">buf</span>      <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span> <span style="color:#75715e">// 环形队列指针
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">elemsize</span> <span style="color:#66d9ef">uint16</span> <span style="color:#75715e">// 每个元素的大小
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">closed</span>   <span style="color:#66d9ef">uint32</span> <span style="color:#75715e">// 标识关闭状态
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">elemtype</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span> <span style="color:#75715e">// 元素类型
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">sendx</span>    <span style="color:#66d9ef">uint</span>   <span style="color:#75715e">// 发送操作处理到的位置
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">recvx</span>    <span style="color:#66d9ef">uint</span>   <span style="color:#75715e">// 接收操作处理到的位置
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">recvq</span>    <span style="color:#a6e22e">waitq</span>  <span style="color:#75715e">// 等待读消息的 goroutine 队列
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">sendq</span>    <span style="color:#a6e22e">waitq</span>  <span style="color:#75715e">// 等待写消息的 goroutine 队列
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">lock</span> <span style="color:#a6e22e">mutex</span>      <span style="color:#75715e">// 互斥锁，chan 不允许并发读写
-</span><span style="color:#75715e"></span>}
-</code></pre></div><p>从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">hchan</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">qcount</span>   <span style="color:#66d9ef">uint</span>           <span style="color:#75715e">// 当前队列中剩余元素个数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">dataqsiz</span> <span style="color:#66d9ef">uint</span>           <span style="color:#75715e">// 环形队列长度，即可以存放的元素个数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">buf</span>      <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span> <span style="color:#75715e">// 环形队列指针
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">elemsize</span> <span style="color:#66d9ef">uint16</span> <span style="color:#75715e">// 每个元素的大小
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">closed</span>   <span style="color:#66d9ef">uint32</span> <span style="color:#75715e">// 标识关闭状态
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">elemtype</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span> <span style="color:#75715e">// 元素类型
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">sendx</span>    <span style="color:#66d9ef">uint</span>   <span style="color:#75715e">// 发送操作处理到的位置
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">recvx</span>    <span style="color:#66d9ef">uint</span>   <span style="color:#75715e">// 接收操作处理到的位置
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">recvq</span>    <span style="color:#a6e22e">waitq</span>  <span style="color:#75715e">// 等待读消息的 goroutine 队列
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">sendq</span>    <span style="color:#a6e22e">waitq</span>  <span style="color:#75715e">// 等待写消息的 goroutine 队列
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">lock</span> <span style="color:#a6e22e">mutex</span>      <span style="color:#75715e">// 互斥锁，chan 不允许并发读写
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><p>从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。</p>
 <h2 id="21-环形队列">
   2.1 环形队列
   <a class="anchor" href="#21-%e7%8e%af%e5%bd%a2%e9%98%9f%e5%88%97">#</a>
@@ -795,38 +795,38 @@ https://github.com/alex-shpak/hugo-book
 <p>创建 channel 的过程实际上是初始化 hcha 结构。其中类型信息和缓冲区长度由 make 语句传入，
 buf 的大小则与元素 大小和缓冲区长度共同决定。</p>
 <p>创建 channel 的部分代码如下所示，只保留了核心创建逻辑：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">makechan</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">chantype</span>, <span style="color:#a6e22e">size</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">hchan</span> {
-    <span style="color:#a6e22e">elem</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">elem</span>
-    
-    <span style="color:#75715e">// ...
-</span><span style="color:#75715e"></span>    
-	<span style="color:#a6e22e">mem</span>, <span style="color:#a6e22e">overflow</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">math</span>.<span style="color:#a6e22e">MulUintptr</span>(<span style="color:#a6e22e">elem</span>.<span style="color:#a6e22e">size</span>, uintptr(<span style="color:#a6e22e">size</span>))
-    
-    <span style="color:#75715e">// ...
-</span><span style="color:#75715e"></span>    
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">hchan</span>
-	<span style="color:#66d9ef">switch</span> {
-	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">mem</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
-		<span style="color:#a6e22e">c</span> = (<span style="color:#f92672">*</span><span style="color:#a6e22e">hchan</span>)(<span style="color:#a6e22e">mallocgc</span>(<span style="color:#a6e22e">hchanSize</span>, <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>))
-		<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">buf</span> = <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">raceaddr</span>()
-	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">elem</span>.<span style="color:#a6e22e">ptrdata</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
-		<span style="color:#a6e22e">c</span> = (<span style="color:#f92672">*</span><span style="color:#a6e22e">hchan</span>)(<span style="color:#a6e22e">mallocgc</span>(<span style="color:#a6e22e">hchanSize</span><span style="color:#f92672">+</span><span style="color:#a6e22e">mem</span>, <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>))
-		<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">buf</span> = <span style="color:#a6e22e">add</span>(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">c</span>), <span style="color:#a6e22e">hchanSize</span>)
-	<span style="color:#66d9ef">default</span>:
-		<span style="color:#a6e22e">c</span> = new(<span style="color:#a6e22e">hchan</span>)
-		<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">buf</span> = <span style="color:#a6e22e">mallocgc</span>(<span style="color:#a6e22e">mem</span>, <span style="color:#a6e22e">elem</span>, <span style="color:#66d9ef">true</span>)
-	}
-
-	<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">elemsize</span> = uint16(<span style="color:#a6e22e">elem</span>.<span style="color:#a6e22e">size</span>)
-	<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">elemtype</span> = <span style="color:#a6e22e">elem</span>
-	<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">dataqsiz</span> = uint(<span style="color:#a6e22e">size</span>)
-	<span style="color:#a6e22e">lockInit</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">lock</span>, <span style="color:#a6e22e">lockRankHchan</span>)
-
-    <span style="color:#75715e">// ...
-</span><span style="color:#75715e"></span>    
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span>
-}
-</code></pre></div><h2 id="32-发送数据">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">makechan</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">chantype</span>, <span style="color:#a6e22e">size</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">hchan</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">elem</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">elem</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">mem</span>, <span style="color:#a6e22e">overflow</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">math</span>.<span style="color:#a6e22e">MulUintptr</span>(<span style="color:#a6e22e">elem</span>.<span style="color:#a6e22e">size</span>, uintptr(<span style="color:#a6e22e">size</span>))
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">hchan</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">switch</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">mem</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">c</span> = (<span style="color:#f92672">*</span><span style="color:#a6e22e">hchan</span>)(<span style="color:#a6e22e">mallocgc</span>(<span style="color:#a6e22e">hchanSize</span>, <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>))
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">buf</span> = <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">raceaddr</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">elem</span>.<span style="color:#a6e22e">ptrdata</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">c</span> = (<span style="color:#f92672">*</span><span style="color:#a6e22e">hchan</span>)(<span style="color:#a6e22e">mallocgc</span>(<span style="color:#a6e22e">hchanSize</span><span style="color:#f92672">+</span><span style="color:#a6e22e">mem</span>, <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">true</span>))
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">buf</span> = <span style="color:#a6e22e">add</span>(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">c</span>), <span style="color:#a6e22e">hchanSize</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">default</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">c</span> = new(<span style="color:#a6e22e">hchan</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">buf</span> = <span style="color:#a6e22e">mallocgc</span>(<span style="color:#a6e22e">mem</span>, <span style="color:#a6e22e">elem</span>, <span style="color:#66d9ef">true</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">elemsize</span> = uint16(<span style="color:#a6e22e">elem</span>.<span style="color:#a6e22e">size</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">elemtype</span> = <span style="color:#a6e22e">elem</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">dataqsiz</span> = uint(<span style="color:#a6e22e">size</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">lockInit</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">lock</span>, <span style="color:#a6e22e">lockRankHchan</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="32-发送数据">
   3.2 发送数据
   <a class="anchor" href="#32-%e5%8f%91%e9%80%81%e6%95%b0%e6%8d%ae">#</a>
 </h2>
@@ -935,9 +935,9 @@ e0 --> d3
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/473e4024715d141e4f89b57d8babc9f0cccc0309" title='Last modified by howieyuen | December 14, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/be46fbc5a56ee48b09bc3ac56cfce882f3ad2d9e" title='Last modified by howieyuen | May 5, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>December 14, 2021</span>
+      <span>May 5, 2022</span>
     </a>
   </div>
 

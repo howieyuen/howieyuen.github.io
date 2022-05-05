@@ -22,13 +22,13 @@ Unsafe 包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/language-basics/unsafe/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2020-12-18T00:00:00+00:00" />
-<meta property="article:modified_time" content="2021-12-14T16:10:37+08:00" />
+<meta property="article:modified_time" content="2022-05-05T17:06:14+08:00" />
 
 <title>unsafe | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.d2411f9dc01bae540c5158d300f7882e67d59efa45c71cfe08fc07fef9b85b6b.js" integrity="sha256-0kEfncAbrlQMUVjTAPeILmfVnvpFxxz&#43;CPwH/vm4W2s="></script>
+<script defer src="/en.search.min.306f3039b68c95e12639226149ab899af825bbaf2c2b9228bc3adf4e030996ee.js" integrity="sha256-MG8wObaMleEmOSJhSauJmvglu68sK5IovDrfTgMJlu4="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -626,7 +626,7 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <script>(function(){var a=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(b){localStorage.setItem("menu.scrollTop",a.scrollTop)}),a.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+  <script>(function(){var e=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
 
 
  
@@ -755,22 +755,22 @@ https://github.com/alex-shpak/hugo-book
 然后将 <code>unsafe.Pointer</code> 值转换为 T2 值（或 uintptr 值）。
 通过这种方式可以绕过 Go 类型系统和内存安全性。当然，滥用这种方式是很危险的。</p>
 <p>举个例子：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
-
-<span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;fmt&#34;</span>
-    <span style="color:#e6db74">&#34;unsafe&#34;</span>
-)
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int64</span> = <span style="color:#ae81ff">5</span>
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pn</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">n</span>
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pf</span> = (<span style="color:#f92672">*</span><span style="color:#66d9ef">float64</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">pn</span>))
-    <span style="color:#75715e">// now, pn and pf are pointing at the same memory address
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">pf</span>) <span style="color:#75715e">// 2.5e-323
-</span><span style="color:#75715e"></span>    <span style="color:#f92672">*</span><span style="color:#a6e22e">pf</span> = <span style="color:#ae81ff">3.14159</span>
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">n</span>) <span style="color:#75715e">// 4614256650576692846
-</span><span style="color:#75715e"></span>}
-</code></pre></div><p>在这个例子中的转换可能是无意义的，但它是安全和合法的（为什么它是安全的？）。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;unsafe&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int64</span> = <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pn</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">n</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pf</span> = (<span style="color:#f92672">*</span><span style="color:#66d9ef">float64</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">pn</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// now, pn and pf are pointing at the same memory address
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">pf</span>) <span style="color:#75715e">// 2.5e-323
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#f92672">*</span><span style="color:#a6e22e">pf</span> = <span style="color:#ae81ff">3.14159</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">n</span>) <span style="color:#75715e">// 4614256650576692846
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><p>在这个例子中的转换可能是无意义的，但它是安全和合法的（为什么它是安全的？）。</p>
 <p>因此，资源在 unsafe 包中的作用是为 Go 编译器服务，<code>unsafe.Pointer</code> 类型的作用是绕过 Go 类型系统和内存安全。</p>
 <h1 id="unsafepointer-和-uintptr">
   unsafe.Pointer 和 uintptr
@@ -793,39 +793,39 @@ https://github.com/alex-shpak/hugo-book
 </ul>
 <p>由于 <code>uintptr</code> 是一个整数类型，<code>uintptr</code> 值可以进行算术运算。
 所以通过使用 <code>uintptr</code> 和 <code>unsafe.Pointer</code>，我们可以绕过限制，<code>*T</code> 值不能在 Golang 中计算偏移量：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
-
-<span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;fmt&#34;</span>
-    <span style="color:#e6db74">&#34;unsafe&#34;</span>
-)
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>}
-    <span style="color:#a6e22e">p1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">1</span>])
-    <span style="color:#a6e22e">p3</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">p1</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Sizeof</span>(<span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">0</span>]))
-    <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p3</span>) = <span style="color:#ae81ff">6</span>
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;a =&#34;</span>, <span style="color:#a6e22e">a</span>) <span style="color:#75715e">// a = [0 1 2 6]
-</span><span style="color:#75715e"></span>
-    <span style="color:#75715e">// ...
-</span><span style="color:#75715e"></span>
-    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Person</span> <span style="color:#66d9ef">struct</span> {
-        <span style="color:#a6e22e">name</span>   <span style="color:#66d9ef">string</span>
-        <span style="color:#a6e22e">age</span>    <span style="color:#66d9ef">int</span>
-        <span style="color:#a6e22e">gender</span> <span style="color:#66d9ef">bool</span>
-    }
-
-    <span style="color:#a6e22e">who</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Person</span>{<span style="color:#e6db74">&#34;John&#34;</span>, <span style="color:#ae81ff">30</span>, <span style="color:#66d9ef">true</span>}
-    <span style="color:#a6e22e">pp</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">who</span>)
-    <span style="color:#a6e22e">pname</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">pp</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Offsetof</span>(<span style="color:#a6e22e">who</span>.<span style="color:#a6e22e">name</span>)))
-    <span style="color:#a6e22e">page</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">pp</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Offsetof</span>(<span style="color:#a6e22e">who</span>.<span style="color:#a6e22e">age</span>)))
-    <span style="color:#a6e22e">pgender</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#66d9ef">bool</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">pp</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Offsetof</span>(<span style="color:#a6e22e">who</span>.<span style="color:#a6e22e">gender</span>)))
-    <span style="color:#f92672">*</span><span style="color:#a6e22e">pname</span> = <span style="color:#e6db74">&#34;Alice&#34;</span>
-    <span style="color:#f92672">*</span><span style="color:#a6e22e">page</span> = <span style="color:#ae81ff">28</span>
-    <span style="color:#f92672">*</span><span style="color:#a6e22e">pgender</span> = <span style="color:#66d9ef">false</span>
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">who</span>) <span style="color:#75715e">// {Alice 28 false}
-</span><span style="color:#75715e"></span>}
-</code></pre></div><h1 id="unsafe-包有多危险">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;unsafe&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">p1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">p3</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">p1</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Sizeof</span>(<span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">0</span>]))
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p3</span>) = <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;a =&#34;</span>, <span style="color:#a6e22e">a</span>) <span style="color:#75715e">// a = [0 1 2 6]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Person</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">name</span>   <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">age</span>    <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">gender</span> <span style="color:#66d9ef">bool</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">who</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Person</span>{<span style="color:#e6db74">&#34;John&#34;</span>, <span style="color:#ae81ff">30</span>, <span style="color:#66d9ef">true</span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pp</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">who</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pname</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">pp</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Offsetof</span>(<span style="color:#a6e22e">who</span>.<span style="color:#a6e22e">name</span>)))
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">page</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">pp</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Offsetof</span>(<span style="color:#a6e22e">who</span>.<span style="color:#a6e22e">age</span>)))
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pgender</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#66d9ef">bool</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">pp</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Offsetof</span>(<span style="color:#a6e22e">who</span>.<span style="color:#a6e22e">gender</span>)))
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span><span style="color:#a6e22e">pname</span> = <span style="color:#e6db74">&#34;Alice&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span><span style="color:#a6e22e">page</span> = <span style="color:#ae81ff">28</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span><span style="color:#a6e22e">pgender</span> = <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">who</span>) <span style="color:#75715e">// {Alice 28 false}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><h1 id="unsafe-包有多危险">
   unsafe 包有多危险
   <a class="anchor" href="#unsafe-%e5%8c%85%e6%9c%89%e5%a4%9a%e5%8d%b1%e9%99%a9">#</a>
 </h1>
@@ -841,73 +841,73 @@ unsafe 包中这几个函数唯一不安全的是它们调用结果可能在后�
 <p>看起来所有的 unsafe 包的危险都与使用 <code>unsafe.Pointer</code> 有关。
 unsafe 包 docs 列出了一些使用 <code>unsafe.Pointer</code> 合法或非法的情况。
 这里只列出部分非法使用案例：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
-
-<span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;fmt&#34;</span>
-    <span style="color:#e6db74">&#34;unsafe&#34;</span>
-)
-
-<span style="color:#75715e">// case A: conversions between unsafe.Pointer and uintptr 
-</span><span style="color:#75715e">//         don&#39;t appear in the same expression
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">illegalUseA</span>() {
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;===================== illegalUseA&#34;</span>)
-
-    <span style="color:#a6e22e">pa</span> <span style="color:#f92672">:=</span> new([<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">int</span>)
-
-    <span style="color:#75715e">// split the legal use
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// p1 := unsafe.Pointer(uintptr(unsafe.Pointer(pa)) + unsafe.Sizeof(pa[0]))
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// into two expressions (illegal use):
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">ptr</span> <span style="color:#f92672">:=</span> uintptr(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">pa</span>))
-    <span style="color:#a6e22e">p1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">ptr</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Sizeof</span>(<span style="color:#a6e22e">pa</span>[<span style="color:#ae81ff">0</span>]))
-    <span style="color:#75715e">// &#34;go vet&#34; will make a warning for the above line:
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// possible misuse of unsafe.Pointer
-</span><span style="color:#75715e"></span>
-    <span style="color:#75715e">// the unsafe package docs, https://golang.org/pkg/unsafe/#Pointer,
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// thinks above splitting is illegal.
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// but the current Go compiler and runtime (1.7.3) can&#39;t detect
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// this illegal use.
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// however, to make your program run well for later Go versions,
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// it is best to comply with the unsafe package docs.
-</span><span style="color:#75715e"></span>
-    <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p1</span>) = <span style="color:#ae81ff">123</span>
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;*(*int)(p1)  :&#34;</span>, <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p1</span>)) <span style="color:#75715e">//
-</span><span style="color:#75715e"></span>}    
-
-<span style="color:#75715e">// case B: pointers are pointing at unknown addresses
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">illegalUseB</span>() {
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;===================== illegalUseB&#34;</span>)
-
-    <span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>}
-    <span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">a</span>)
-    <span style="color:#a6e22e">p</span> = <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">p</span>) <span style="color:#f92672">+</span> uintptr(len(<span style="color:#a6e22e">a</span>)) <span style="color:#f92672">*</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Sizeof</span>(<span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">0</span>]))
-    <span style="color:#75715e">// now p is pointing at the end of the memory occupied by value a.
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// up to now, although p is invalid, it is no problem.
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// but it is illegal if we modify the value pointed by p
-</span><span style="color:#75715e"></span>    <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p</span>) = <span style="color:#ae81ff">123</span>
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;*(*int)(p)  :&#34;</span>, <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p</span>)) <span style="color:#75715e">// 123 or not 123
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// the current Go compiler/runtime (1.7.3) and &#34;go vet&#34; 
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// will not detect the illegal use here.
-</span><span style="color:#75715e"></span>
-    <span style="color:#75715e">// however, the current Go runtime (1.7.3) will 
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// detect the illegal use and panic for the below code.
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">p</span> = <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">a</span>)
-    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;=</span> len(<span style="color:#a6e22e">a</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
-        <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p</span>) = <span style="color:#ae81ff">123</span> <span style="color:#75715e">// Go runtime (1.7.3) never panic here in the tests
-</span><span style="color:#75715e"></span>
-        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">i</span>, <span style="color:#e6db74">&#34;:&#34;</span>, <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p</span>))
-        <span style="color:#75715e">// panic at the above line for the last iteration, when i==4.
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// runtime error: invalid memory address or nil pointer dereference
-</span><span style="color:#75715e"></span>
-        <span style="color:#a6e22e">p</span> = <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">p</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Sizeof</span>(<span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">0</span>]))
-    }
-}
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#a6e22e">illegalUseA</span>()
-    <span style="color:#a6e22e">illegalUseB</span>()
-}
-</code></pre></div><p>编译器很难检测 Go 程序中非法的 <code>unsafe.Pointer</code> 使用。
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;unsafe&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// case A: conversions between unsafe.Pointer and uintptr 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//         don&#39;t appear in the same expression
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">illegalUseA</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;===================== illegalUseA&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pa</span> <span style="color:#f92672">:=</span> new([<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">int</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// split the legal use
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// p1 := unsafe.Pointer(uintptr(unsafe.Pointer(pa)) + unsafe.Sizeof(pa[0]))
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// into two expressions (illegal use):
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">ptr</span> <span style="color:#f92672">:=</span> uintptr(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">pa</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">p1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">ptr</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Sizeof</span>(<span style="color:#a6e22e">pa</span>[<span style="color:#ae81ff">0</span>]))
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// &#34;go vet&#34; will make a warning for the above line:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// possible misuse of unsafe.Pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the unsafe package docs, https://golang.org/pkg/unsafe/#Pointer,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// thinks above splitting is illegal.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// but the current Go compiler and runtime (1.7.3) can&#39;t detect
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// this illegal use.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// however, to make your program run well for later Go versions,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// it is best to comply with the unsafe package docs.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p1</span>) = <span style="color:#ae81ff">123</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;*(*int)(p1)  :&#34;</span>, <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p1</span>)) <span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}    
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// case B: pointers are pointing at unknown addresses
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">illegalUseB</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;===================== illegalUseB&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">a</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">p</span> = <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">p</span>) <span style="color:#f92672">+</span> uintptr(len(<span style="color:#a6e22e">a</span>)) <span style="color:#f92672">*</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Sizeof</span>(<span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">0</span>]))
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// now p is pointing at the end of the memory occupied by value a.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// up to now, although p is invalid, it is no problem.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// but it is illegal if we modify the value pointed by p
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p</span>) = <span style="color:#ae81ff">123</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;*(*int)(p)  :&#34;</span>, <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p</span>)) <span style="color:#75715e">// 123 or not 123
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// the current Go compiler/runtime (1.7.3) and &#34;go vet&#34; 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// will not detect the illegal use here.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// however, the current Go runtime (1.7.3) will 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// detect the illegal use and panic for the below code.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">p</span> = <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">a</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;=</span> len(<span style="color:#a6e22e">a</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p</span>) = <span style="color:#ae81ff">123</span> <span style="color:#75715e">// Go runtime (1.7.3) never panic here in the tests
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">i</span>, <span style="color:#e6db74">&#34;:&#34;</span>, <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">p</span>))
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// panic at the above line for the last iteration, when i==4.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// runtime error: invalid memory address or nil pointer dereference
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">p</span> = <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(uintptr(<span style="color:#a6e22e">p</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Sizeof</span>(<span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">0</span>]))
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">illegalUseA</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">illegalUseB</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>编译器很难检测 Go 程序中非法的 <code>unsafe.Pointer</code> 使用。
 运行 <code>go vet</code> 可以帮助找到一些潜在的错误，但不是所有的都能找到。
 同样是 Go 运行时，也不能检测所有的非法使用。
 非法 <code>unsafe.Pointer</code> 使用可能会使程序崩溃或表现得怪异（有时是正常的，有时是异常的）。
@@ -928,34 +928,34 @@ unsafe 包 docs 列出了一些使用 <code>unsafe.Pointer</code> 合法或非�
   <a class="anchor" href="#%e5%90%88%e6%b3%95%e7%94%a8%e4%be%8b-1%e5%9c%a8-t-%e5%92%8c-myt-%e4%b9%8b%e9%97%b4%e8%bd%ac%e6%8d%a2">#</a>
 </h2>
 <p>在这个例子里，我们用 int 作为 T：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">MyInt</span> <span style="color:#66d9ef">int</span>
-</code></pre></div><p>在 Golang 中，<code>[]int</code> 和 <code>[]MyInt</code> 是两种不同的类型，它们的底层类型是自身。
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">MyInt</span> <span style="color:#66d9ef">int</span>
+</span></span></code></pre></div><p>在 Golang 中，<code>[]int</code> 和 <code>[]MyInt</code> 是两种不同的类型，它们的底层类型是自身。
 因此，<code>[]int</code> 的值不能转换为 <code>[]MyInt</code>，反之亦然。 但是在 <code>unsafe.Pointer</code> 的帮助下，转换是可能的：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
-
-<span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;fmt&#34;</span>
-    <span style="color:#e6db74">&#34;unsafe&#34;</span>
-)
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">MyInt</span> <span style="color:#66d9ef">int</span>
-
-    <span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> []<span style="color:#a6e22e">MyInt</span>{<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>}
-    <span style="color:#75715e">// b := ([]int)(a) // error: cannot convert a (type []MyInt) to type []int
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">b</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>[]<span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">a</span>))
-
-    <span style="color:#a6e22e">b</span>[<span style="color:#ae81ff">0</span>]= <span style="color:#ae81ff">3</span>
-
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;a =&#34;</span>, <span style="color:#a6e22e">a</span>) <span style="color:#75715e">// a = [3 1 2]
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;b =&#34;</span>, <span style="color:#a6e22e">b</span>) <span style="color:#75715e">// b = [3 1 2]
-</span><span style="color:#75715e"></span>
-    <span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">2</span>] = <span style="color:#ae81ff">9</span>
-
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;a =&#34;</span>, <span style="color:#a6e22e">a</span>) <span style="color:#75715e">// a = [3 1 9]
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;b =&#34;</span>, <span style="color:#a6e22e">b</span>) <span style="color:#75715e">// b = [3 1 9]
-</span><span style="color:#75715e"></span>}
-</code></pre></div><h2 id="合法用例-2调用-syncatomic-包中指针相关的函数">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;unsafe&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">MyInt</span> <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> []<span style="color:#a6e22e">MyInt</span>{<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// b := ([]int)(a) // error: cannot convert a (type []MyInt) to type []int
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">b</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>[]<span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">a</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">b</span>[<span style="color:#ae81ff">0</span>]= <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;a =&#34;</span>, <span style="color:#a6e22e">a</span>) <span style="color:#75715e">// a = [3 1 2]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;b =&#34;</span>, <span style="color:#a6e22e">b</span>) <span style="color:#75715e">// b = [3 1 2]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">2</span>] = <span style="color:#ae81ff">9</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;a =&#34;</span>, <span style="color:#a6e22e">a</span>) <span style="color:#75715e">// a = [3 1 9]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;b =&#34;</span>, <span style="color:#a6e22e">b</span>) <span style="color:#75715e">// b = [3 1 9]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><h2 id="合法用例-2调用-syncatomic-包中指针相关的函数">
   合法用例 2：调用 sync/atomic 包中指针相关的函数
   <a class="anchor" href="#%e5%90%88%e6%b3%95%e7%94%a8%e4%be%8b-2%e8%b0%83%e7%94%a8-syncatomic-%e5%8c%85%e4%b8%ad%e6%8c%87%e9%92%88%e7%9b%b8%e5%85%b3%e7%9a%84%e5%87%bd%e6%95%b0">#</a>
 </h2>
@@ -970,69 +970,69 @@ unsafe 包 docs 列出了一些使用 <code>unsafe.Pointer</code> 合法或非�
 <blockquote>
 <p>注意： <code>unsafe.Pointer</code> 是一般类型，因此 <code>unsafe.Pointer</code> 的值可以转换为 <code>unsafe.Pointer</code>，反之亦然。</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
-
-<span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;fmt&#34;</span>
-    <span style="color:#e6db74">&#34;log&#34;</span>
-    <span style="color:#e6db74">&#34;time&#34;</span>
-    <span style="color:#e6db74">&#34;unsafe&#34;</span>
-    <span style="color:#e6db74">&#34;sync/atomic&#34;</span>
-    <span style="color:#e6db74">&#34;sync&#34;</span>
-    <span style="color:#e6db74">&#34;math/rand&#34;</span>
-)
-
-<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>
-
-<span style="color:#75715e">// get data atomically
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Data</span>() <span style="color:#66d9ef">string</span> {
-    <span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>)(<span style="color:#a6e22e">atomic</span>.<span style="color:#a6e22e">LoadPointer</span>(
-            (<span style="color:#f92672">*</span><span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">data</span>)),
-        ))
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">p</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
-        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>
-    } <span style="color:#66d9ef">else</span> {
-        <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">p</span>
-    }
-}
-
-<span style="color:#75715e">// set data atomically
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">SetData</span>(<span style="color:#a6e22e">d</span> <span style="color:#66d9ef">string</span>) {
-    <span style="color:#a6e22e">atomic</span>.<span style="color:#a6e22e">StorePointer</span>(
-            (<span style="color:#f92672">*</span><span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">data</span>)), 
-            <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">d</span>),
-        )
-}
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">wg</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>
-    <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">200</span>)
-
-    <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">range</span> [<span style="color:#ae81ff">100</span>]<span style="color:#66d9ef">struct</span>{}{} {
-        <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
-            <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>(<span style="color:#a6e22e">rand</span>.<span style="color:#a6e22e">Intn</span>(<span style="color:#ae81ff">1000</span>)) <span style="color:#f92672">/</span> <span style="color:#ae81ff">1000</span>)
-
-            <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">Data</span>())
-            <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
-        }()
-    }
-
-    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> [<span style="color:#ae81ff">100</span>]<span style="color:#66d9ef">struct</span>{}{} {
-        <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">int</span>) {
-            <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>(<span style="color:#a6e22e">rand</span>.<span style="color:#a6e22e">Intn</span>(<span style="color:#ae81ff">1000</span>)) <span style="color:#f92672">/</span> <span style="color:#ae81ff">1000</span>)
-            <span style="color:#a6e22e">s</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprint</span>(<span style="color:#e6db74">&#34;#&#34;</span>, <span style="color:#a6e22e">i</span>)
-            <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;====&#34;</span>, <span style="color:#a6e22e">s</span>)
-
-            <span style="color:#a6e22e">SetData</span>(<span style="color:#a6e22e">s</span>)
-            <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
-        }(<span style="color:#a6e22e">i</span>)
-    }
-
-    <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
-
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;final data = &#34;</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">data</span>)
-}
-</code></pre></div><h1 id="结论">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;unsafe&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;sync/atomic&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;sync&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;math/rand&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// get data atomically
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Data</span>() <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>)(<span style="color:#a6e22e">atomic</span>.<span style="color:#a6e22e">LoadPointer</span>(
+</span></span><span style="display:flex;"><span>            (<span style="color:#f92672">*</span><span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">data</span>)),
+</span></span><span style="display:flex;"><span>        ))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">p</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">p</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// set data atomically
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">SetData</span>(<span style="color:#a6e22e">d</span> <span style="color:#66d9ef">string</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">atomic</span>.<span style="color:#a6e22e">StorePointer</span>(
+</span></span><span style="display:flex;"><span>            (<span style="color:#f92672">*</span><span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">data</span>)), 
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">d</span>),
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">wg</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">200</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">range</span> [<span style="color:#ae81ff">100</span>]<span style="color:#66d9ef">struct</span>{}{} {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>(<span style="color:#a6e22e">rand</span>.<span style="color:#a6e22e">Intn</span>(<span style="color:#ae81ff">1000</span>)) <span style="color:#f92672">/</span> <span style="color:#ae81ff">1000</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">Data</span>())
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+</span></span><span style="display:flex;"><span>        }()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> [<span style="color:#ae81ff">100</span>]<span style="color:#66d9ef">struct</span>{}{} {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">int</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>(<span style="color:#a6e22e">rand</span>.<span style="color:#a6e22e">Intn</span>(<span style="color:#ae81ff">1000</span>)) <span style="color:#f92672">/</span> <span style="color:#ae81ff">1000</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">s</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprint</span>(<span style="color:#e6db74">&#34;#&#34;</span>, <span style="color:#a6e22e">i</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;====&#34;</span>, <span style="color:#a6e22e">s</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">SetData</span>(<span style="color:#a6e22e">s</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+</span></span><span style="display:flex;"><span>        }(<span style="color:#a6e22e">i</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;final data = &#34;</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">data</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h1 id="结论">
   结论
   <a class="anchor" href="#%e7%bb%93%e8%ae%ba">#</a>
 </h1>
@@ -1056,9 +1056,9 @@ unsafe 包用于有经验的程序员通过安全地绕过 Go 类型系统的安
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/473e4024715d141e4f89b57d8babc9f0cccc0309" title='Last modified by howieyuen | December 14, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/be46fbc5a56ee48b09bc3ac56cfce882f3ad2d9e" title='Last modified by howieyuen | May 5, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>December 14, 2021</span>
+      <span>May 5, 2022</span>
     </a>
   </div>
 

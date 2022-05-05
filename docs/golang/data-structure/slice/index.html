@@ -4,21 +4,21 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. 数据结构 #  type slice struct { array unsafe.Pointer len int cap int }  slice 的底层数据结构中的 array 是一个指针，指向的是一个 Array len 代表这个 slice 的元素个数 cap 表示 slice 指向的底层数组容量  对 slice 的赋值，以值作为函数参数时，只拷贝 1 个指针和 2 个 int 值。
-2. 操作 #  2.1 创建 #   var []T 或 []T{} func make([]T,len,cap) []T  2.2 nil 切片和空切片 #   nil 切片被用在很多标准库和内置函数中，描述一个不存在的切片的时候，就需要用到 nil 切片。比如函数在发生异常的时候，返回的切片就是 nil 切片。nil 切片的指针指向 nil. 空切片一般会用来表示一个空集合。比如数据库查询，一条结果也没有查到，那么就可以返回一个空切片。  2.">
+<meta name="description" content="1. 数据结构 #  type slice struct {  array unsafe.Pointer  len int  cap int }  slice 的底层数据结构中的 array 是一个指针，指向的是一个 Array len 代表这个 slice 的元素个数 cap 表示 slice 指向的底层数组容量  对 slice 的赋值，以值作为函数参数时，只拷贝 1 个指针和 2 个 int 值。
+2. 操作 #  2.1 创建 #   var []T 或 []T{} func make([]T,len,cap) []T  2.2 nil 切片和空切片 #   nil 切片被用在很多标准库和内置函数中，描述一个不存在的切片的时候，就需要用到 nil 切片。比如函数在发生异常的时候，返回的切片就是 nil 切片。nil 切片的指针指向 nil.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="slice" />
-<meta property="og:description" content="1. 数据结构 #  type slice struct { array unsafe.Pointer len int cap int }  slice 的底层数据结构中的 array 是一个指针，指向的是一个 Array len 代表这个 slice 的元素个数 cap 表示 slice 指向的底层数组容量  对 slice 的赋值，以值作为函数参数时，只拷贝 1 个指针和 2 个 int 值。
-2. 操作 #  2.1 创建 #   var []T 或 []T{} func make([]T,len,cap) []T  2.2 nil 切片和空切片 #   nil 切片被用在很多标准库和内置函数中，描述一个不存在的切片的时候，就需要用到 nil 切片。比如函数在发生异常的时候，返回的切片就是 nil 切片。nil 切片的指针指向 nil. 空切片一般会用来表示一个空集合。比如数据库查询，一条结果也没有查到，那么就可以返回一个空切片。  2." />
+<meta property="og:description" content="1. 数据结构 #  type slice struct {  array unsafe.Pointer  len int  cap int }  slice 的底层数据结构中的 array 是一个指针，指向的是一个 Array len 代表这个 slice 的元素个数 cap 表示 slice 指向的底层数组容量  对 slice 的赋值，以值作为函数参数时，只拷贝 1 个指针和 2 个 int 值。
+2. 操作 #  2.1 创建 #   var []T 或 []T{} func make([]T,len,cap) []T  2.2 nil 切片和空切片 #   nil 切片被用在很多标准库和内置函数中，描述一个不存在的切片的时候，就需要用到 nil 切片。比如函数在发生异常的时候，返回的切片就是 nil 切片。nil 切片的指针指向 nil." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/data-structure/slice/" /><meta property="article:section" content="docs" />
 
-<meta property="article:modified_time" content="2021-12-14T16:10:37+08:00" />
+<meta property="article:modified_time" content="2022-05-05T17:06:14+08:00" />
 
 <title>slice | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.d2411f9dc01bae540c5158d300f7882e67d59efa45c71cfe08fc07fef9b85b6b.js" integrity="sha256-0kEfncAbrlQMUVjTAPeILmfVnvpFxxz&#43;CPwH/vm4W2s="></script>
+<script defer src="/en.search.min.306f3039b68c95e12639226149ab899af825bbaf2c2b9228bc3adf4e030996ee.js" integrity="sha256-MG8wObaMleEmOSJhSauJmvglu68sK5IovDrfTgMJlu4="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
 <!--
@@ -616,7 +616,7 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <script>(function(){var a=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(b){localStorage.setItem("menu.scrollTop",a.scrollTop)}),a.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+  <script>(function(){var e=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
 
 
  
@@ -676,12 +676,12 @@ https://github.com/alex-shpak/hugo-book
   1. 数据结构
   <a class="anchor" href="#1-%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84">#</a>
 </h1>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">slice</span> <span style="color:#66d9ef">struct</span> {
-    <span style="color:#a6e22e">array</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
-    <span style="color:#a6e22e">len</span>   <span style="color:#66d9ef">int</span>
-    <span style="color:#a6e22e">cap</span>   <span style="color:#66d9ef">int</span>
-}
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">slice</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">array</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">len</span>   <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">cap</span>   <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
 <li><code>slice</code> 的底层数据结构中的 <code>array</code> 是一个指针，指向的是一个 <code>Array</code></li>
 <li><code>len</code> 代表这个 slice 的元素个数</li>
 <li><code>cap</code> 表示 slice 指向的底层数组容量</li>
@@ -765,9 +765,9 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/473e4024715d141e4f89b57d8babc9f0cccc0309" title='Last modified by howieyuen | December 14, 2021' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/be46fbc5a56ee48b09bc3ac56cfce882f3ad2d9e" title='Last modified by howieyuen | May 5, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>December 14, 2021</span>
+      <span>May 5, 2022</span>
     </a>
   </div>
 

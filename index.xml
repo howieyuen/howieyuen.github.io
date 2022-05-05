@@ -11,10 +11,9 @@
       <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
       
       <guid>https://howieyuen.github.io/posts/notes-of-circle-ci/</guid>
-      <description>1. 基本概念 #  首先介绍下 Circle CI 的 基本概念，帮助大家理解 Circle CI 是如何管理 CI/CD 流程。
-1.1 管控层 #  1.1.1 Project #  Circle CI 项目在你的 VCS（GitHub 或者 Bitbucket）中 ，共享代码库的名称。在 Circle CI 的主页中点击 Projects 可以自由添加项目进入仪表盘，以追踪代码变更。
-1.1.2 Configuration #  Circle CI 遵循配置即代码（Configuration as Code）原则，整个 CI/CD 的流程都是通过 config.yml 文件，该文件位于项目根目录下的 .circleci 文件夹中。以下按照术语和依赖性顺序，列举了 Circle CI 最常见的组件：
- Pipeline：代码表整个配置，仅用于 Circle CI 云 Workflow：负责编排多个 Job Job：负责运行执行命令的一系列 Step Step：运行命令（例如安装依赖项或运行测试）和 shell 脚本  1.1.3 User Type #  大多数都是从 VCS 帐号中继承的权限，主要包括以下四种：</description>
+      <description>&lt;p&gt;CircleCI 是基于云的 CI/CD 工具，可自动执行软件构建和交付过程。它提供快速的配置和维护，没有任何复杂性。
+由于它是基于云的 CI/CD 工具，因此消除了专用服务器的困扰，并降低了维护本地服务器的成本。
+此外，基于云的服务器是可扩展的，健壮的，并有助于更快地部署应用程序。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -39,7 +38,7 @@ Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供�
 kube-apiserver 目前提供了 6 种鉴权机制：
  AlwaysAllow：总是允许 AlwaysDeny：总是拒绝 ABAC：基于属性的访问控制（Attribute-Based Access Control） Node：节点鉴权，专门鉴权给 kubelet 发出的 API 请求 RBAC：基于角色额的访问控制（Role-Based Access Control） Webhook：基于 webhook 的一种 HTTP 回调机制，可以进行远程鉴权管理  在学习鉴权之前，有三个概念需要补齐：
  Decision：决策状态 Authorizer：鉴权接口 RuleResolver：规则解析器  1.1 Decision：决策状态 #  Decision 决策状态类似于认证中的 true 和 false，用于决定是否鉴权成功。 鉴权支持三种 Decision 决策状态，例如鉴权成功，则返回 DecisionAllow，代码如下：
-// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go type Decision int const ( DecisionDeny Decision = iota DecisionAllow DecisionNoOpinion )  DecisionDeny：拒绝该操作 DecisionAllow：允许该操作 DecisionNoOpinion：表示无明显意见允许或拒绝，继续执行下一个鉴权模块  1.</description>
+// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go type Decision int  const ( 	DecisionDeny Decision = iota 	DecisionAllow 	DecisionNoOpinion )  DecisionDeny：拒绝该操作 DecisionAllow：允许该操作 DecisionNoOpinion：表示无明显意见允许或拒绝，继续执行下一个鉴权模块  1.</description>
     </item>
     
     <item>
@@ -66,7 +65,7 @@ Unsafe 包的作用 #  直到现在（Go1.7），unsafe 包含以下资源：
       <description>1. 引言 #  Go 语言中最常见的、也是经常被人提及的设计模式就是 —— 不要通过共享内存的方式进行通信，而是应该通过通信的方式共享内存。
 先入先出
 目前的 Channel 收发操作均遵循了先入先出（FIFO）的设计，具体规则如下：
- 先从 Channel 读取数据的 Goroutine 会先接收到数据； 先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利；  2. 数据结构 #  type hchan struct { qcount uint // 当前队列中剩余元素个数 	dataqsiz uint // 环形队列长度，即可以存放的元素个数 	buf unsafe.Pointer // 环形队列指针 	elemsize uint16 // 每个元素的大小 	closed uint32 // 标识关闭状态 	elemtype *_type // 元素类型 	sendx uint // 发送操作处理到的位置 	recvx uint // 接收操作处理到的位置 	recvq waitq // 等待读消息的 goroutine 队列 	sendq waitq // 等待写消息的 goroutine 队列 	lock mutex // 互斥锁，chan 不允许并发读写 } 从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。</description>
+ 先从 Channel 读取数据的 Goroutine 会先接收到数据； 先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利；  2. 数据结构 #  type hchan struct { 	qcount uint // 当前队列中剩余元素个数 	dataqsiz uint // 环形队列长度，即可以存放的元素个数 	buf unsafe.Pointer // 环形队列指针 	elemsize uint16 // 每个元素的大小 	closed uint32 // 标识关闭状态 	elemtype *_type // 元素类型 	sendx uint // 发送操作处理到的位置 	recvx uint // 接收操作处理到的位置 	recvq waitq // 等待读消息的 goroutine 队列 	sendq waitq // 等待写消息的 goroutine 队列 	lock mutex // 互斥锁，chan 不允许并发读写 } 从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。</description>
     </item>
     
     <item>
@@ -110,7 +109,7 @@ API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他
 2. 源码解析 #  GarbageCollectorController 负责回收集群中的资源对象，要做到这一点，首先得监控所有资源。gc controller 会监听集群中所有可删除资源的事件，这些事件会放到一个队列中，然后启动多个 worker 协程处理。对于删除事件，则根据删除策略删除对象；其他事件，更新对象之间的依赖关系。
 2.1 startGarbageCollectorController() #  首先来看 gc controller 的入口方法，也就是 kube-controller-manager 是如何启动它的。它的主要逻辑：
  判断是否启用 gc controller，默认是 true 初始化 clientset，使用 discoveryClient 获取集群中所有资源 注册不考虑 gc 的资源，默认为空 调用 garbagecollector.NewGarbageCollector() 方法 初始化 gc controller 对象 调用 garbageCollector.Run() 启动 gc controller，workers 默认是 20 调用 garbageCollector.Sync() 监听集群中的资源，当出现新的资源时，同步到 minitors 中 调用 garbagecollector.NewDebugHandler() 注册 debug 接口，用来提供集群内所有对象的关联关系；  cmd/kube-controller-manager/app/core.go:538
-func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool, error) { // 1.</description>
+func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool, error) { 	// 1.</description>
     </item>
     
     <item>
@@ -123,7 +122,7 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
 这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。
 如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。
 1.1 应用场景 #   在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程  一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。
-1.2 基本功能 #   创建 删除  级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false   更新  RollingUpdate OnDelete   回滚  1.3 示例 #  apiVersion: apps/v1 kind: DaemonSet metadata: name: fluentd-elasticsearch namespace: kube-system labels: k8s-app: fluentd-logging spec: selector: matchLabels: name: fluentd-elasticsearch template: metadata: labels: name: fluentd-elasticsearch spec: tolerations: # this toleration is to have the daemonset runnable on master nodes # remove it if your masters can&amp;#39;t run pods - key: node-role.</description>
+1.2 基本功能 #   创建 删除  级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false   更新  RollingUpdate OnDelete   回滚  1.3 示例 #  apiVersion: apps/v1 kind: DaemonSet metadata:  name: fluentd-elasticsearch  namespace: kube-system  labels:  k8s-app: fluentd-logging spec:  selector:  matchLabels:  name: fluentd-elasticsearch  template:  metadata:  labels:  name: fluentd-elasticsearch  spec:  tolerations:  # this toleration is to have the daemonset runnable on master nodes  # remove it if your masters can&amp;#39;t run pods  - key: node-role.</description>
     </item>
     
     <item>
@@ -138,7 +137,7 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
  每个数组中的元素不会超过 100 数组的大小不会超过 200  示例 1:
 输入：[1, 5, 11, 5] 输出：true 解释：数组可以分割成 [1, 5, 5] 和 [11]. 示例 2:
 输入：[1, 2, 3, 5] 输出：false 解释：数组不能分割成两个元素和相等的子集。  方法一：0-1 背包问题
-// 0-1 背包问题 // dp[i][target] 表示 nums[0, i] 区间内是否能找到和为 target 的组合 // 对于每个 nums[i]，如果 nums[i] &amp;lt;= target，可以选择 or 不选，但只要有一个为 true，dp[i][target]=true // dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]] // 如果 nums[i] &amp;gt; target，只能不选，故： // dp[i][target] = dp[i-1][target] func canPartition(nums []int) bool { n := len(nums) if n &amp;lt; 2 { return false } sum := 0 maxNum := 0 for _, num := range nums { sum += num if num &amp;gt; maxNum { maxNum = num } } // 和为奇数 	if sum%2 !</description>
+// 0-1 背包问题 // dp[i][target] 表示 nums[0, i] 区间内是否能找到和为 target 的组合 // 对于每个 nums[i]，如果 nums[i] &amp;lt;= target，可以选择 or 不选，但只要有一个为 true，dp[i][target]=true // dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]] // 如果 nums[i] &amp;gt; target，只能不选，故： // dp[i][target] = dp[i-1][target] func canPartition(nums []int) bool { 	n := len(nums) 	if n &amp;lt; 2 { 	return false 	} 		sum := 0 	maxNum := 0 	for _, num := range nums { 	sum += num 	if num &amp;gt; maxNum { 	maxNum = num 	} 	} 	// 和为奇数 	if sum%2 !</description>
     </item>
     
     <item>
@@ -152,7 +151,7 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
 1.2 k8s 中的对象引用 #  某些 kubernetes 对象是其他一些对象的属主。例如一个 ReplicaSet 是一组 Pod 的属主；反之这组 Pod 就是此 ReplicaSet 的附属。 每个附属对象具有一个指向属主对象的 metadata.ownerReference 字段。
 Kubernetes 会自动为 ReplicationController、ReplicaSet、StatefulSet、DaemonSet、Deployment、Job 和 CronJob 自动设置 ownerReference 的值。 也可以通过手动设置 ownerReference 的值，来指定属主和附属之间的关系。
 先看一个 Pod 的详细信息，例如下面的配置显示 Pod 的属主是名为 my-replicaset 的 ReplicaSet：
-apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 controller: true blockOwnerDeletion: true kind: ReplicaSet name: my-rs uid: d9607e19-f88f-11e6-a518-42010a800195 .</description>
+apiVersion: v1 kind: Pod metadata:  ...  ownerReferences:  - apiVersion: apps/v1  controller: true  blockOwnerDeletion: true  kind: ReplicaSet  name: my-rs  uid: d9607e19-f88f-11e6-a518-42010a800195  .</description>
     </item>
     
     <item>
@@ -178,8 +177,8 @@ apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 co
       <description>1. 概念 #  滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
 2. Deployment 滚动更新 #  Deployment 更新方式有 2 种：
  RollingUpdate Recreate  其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：
-func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
-func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 	newRS, oldRSs, err := dc.</description>
+func (dc *DeploymentController) syncDeployment(key string) error {  ... 	switch d.Spec.Strategy.Type { 	case apps.RecreateDeploymentStrategyType: 	return dc.rolloutRecreate(d, rsList, podMap) 	case apps.RollingUpdateDeploymentStrategyType: 	return dc.rolloutRolling(d, rsList) 	} 	... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
+func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.</description>
     </item>
     
     <item>
@@ -219,9 +218,9 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/</guid>
       <description>1. 使用 taint 和 toleration 阻止节点调度到特定节点 #  1.1 taint 和 toleration #  taint，是在不修改已有 Pod 的前提下，通过在节点上添加污点信息，拒绝 Pod 的部署。 只有当一个 Pod 容忍某个节点的 taint 时，才能被调度到此节点上。
 显示节点 taint 信息
-kubectl describe node master.k8s ... Name: master.k8s Role: Labels: beta.kubernetes.io/arch=amd64 beta.kubernetes.io/os=linux kubernetes.io/hostname=master.k8s Annotations: node.alpha.kubernetes.io/ttl=0 Taints: node-role.kubernetes.io/master:NoSchedule ... 主节点上包含一个污点，污点包含一个 key 和 value，以及一个 effect，格式为=:。 上面的污点信息表示，key 为 node-role.kubernetes.io/master，value 是空，effect 是 NoSchedule。
+kubectl describe node master.k8s  ... Name: master.k8s Role: Labels:  beta.kubernetes.io/arch=amd64  beta.kubernetes.io/os=linux  kubernetes.io/hostname=master.k8s Annotations:  node.alpha.kubernetes.io/ttl=0 Taints:  node-role.kubernetes.io/master:NoSchedule ... 主节点上包含一个污点，污点包含一个 key 和 value，以及一个 effect，格式为=:。 上面的污点信息表示，key 为 node-role.kubernetes.io/master，value 是空，effect 是 NoSchedule。
 显示 Pod tolerations
-kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.kubernetes.io/master:=NoSchedule node.alpha.kubernetes.io/notReady=:Exists:NoExecute node.alpha.kubernetes.io/unreachable=:Exists:NoExecute ... 第一个 toleration 匹配了主节点的 taint，表示允许这个 Pod 调度到主节点上。</description>
+kubectl describe Pod kube-proxy-as92 -n kube-system  .</description>
     </item>
     
     <item>
@@ -242,7 +241,7 @@ kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.k
       
       <guid>https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/</guid>
       <description>1. 基本概念 #  1.1 Service 定义详解 #  Service 是对一组提供相同功能的 Pods 的抽象，并为它们提供一个统一的入口。借助 Service， 应用可以方便的实现服务发现与负载均衡，并实现应用的零宕机升级。Service 通过标签来选取服务后端， 一般配合 Replication Controller 或者 Deployment 来保证后端容器的正常运行。 这些匹配标签的 Pod IP 和端口列表组成 endpoints， 由 kube-proxy 负责将服务 IP 负载均衡到这些 endpoints 上。
-apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - name: string annotations: - name: string spec: selector: [] # ClusterIP、NodePort、LoadBalancer type: string # type=ClusterIP, 有自动分配的能力；type=LoadBalancer，需指定  clusterIP: string  # 是否支持 session，默认为空，可选值 ClutserIP，同一个 client 的 request，都发送到同一个后端 Pod  sessionAffinity: string  ports: - name: string # tcp、udp，默认 tcp protocol: string  port: int targetPort: int nodePort: int # spec.</description>
+apiVersion: v1 kind: Service metadata:  name: string  namespace: string  labels:  - name: string  annotations:  - name: string spec:  selector: []  # ClusterIP、NodePort、LoadBalancer  type: string  # type=ClusterIP, 有自动分配的能力；type=LoadBalancer，需指定   clusterIP: string   # 是否支持 session，默认为空，可选值 ClutserIP，同一个 client 的 request，都发送到同一个后端 Pod   sessionAffinity: string   ports:  - name: string  # tcp、udp，默认 tcp  protocol: string   port: int  targetPort: int  nodePort: int # spec.</description>
     </item>
     
     <item>
@@ -268,7 +267,7 @@ apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - 
       <description>1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表， 由一个 key 通过哈希函数得到哈希值， 64 位系统中就生成一个 64 bit 的哈希值， 由这个哈希值将 key 对应到不同的桶（bucket）中， 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
 1.1 hash 函数 #  首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找， 就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个 bucket 的哪个 cell。 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
 1.2 数据结构 #  hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。
-type hmap struct { // map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 	count int // map 状态标识，比如是否在被写或者迁移等，因为 map 不是线程安全的所以操作时需要判断 flags 	flags uint8 // log_2 of buckets （最多可以放 loadFactor * 2^B 个元素即 6.</description>
+type hmap struct { 	// map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 	count int 	// map 状态标识，比如是否在被写或者迁移等，因为 map 不是线程安全的所以操作时需要判断 flags 	flags uint8 	// log_2 of buckets （最多可以放 loadFactor * 2^B 个元素即 6.</description>
     </item>
     
     <item>
@@ -284,7 +283,7 @@ go 是静态类型化，每个变量都有一个静态类型，也就是说，�
 一个接口类型变量存储了一对值：赋值给这个接口变量的具体值 + 这个值的类型描述符。更进一步的讲，这个“值”是实现了这个接口的底层具体数据项（underlying concrete data item)，而这个“类型”是描述了具体数据项（item）的全类型（full type）。
 所以反射是干嘛的呢？反射是一种检查存储在接口变量中的（类型/值）对的机制。reflect 包中提供的 2 个类型 Type 和 Value，提供了访问接口值的 reflect.Type 和 reflect.Value 部分。
 2. 三大法则 #  2.1. Reflection goes from interface value to reflecton object #  从 interface{} 变量可以反射出反射对象
-type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := reflect.</description>
+type MyInt int32  func main() {  var x MyInt = 7  v := reflect.</description>
     </item>
     
     <item>
@@ -293,8 +292,8 @@ type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := refl
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://howieyuen.github.io/docs/golang/data-structure/slice/</guid>
-      <description>1. 数据结构 #  type slice struct { array unsafe.Pointer len int cap int }  slice 的底层数据结构中的 array 是一个指针，指向的是一个 Array len 代表这个 slice 的元素个数 cap 表示 slice 指向的底层数组容量  对 slice 的赋值，以值作为函数参数时，只拷贝 1 个指针和 2 个 int 值。
-2. 操作 #  2.1 创建 #   var []T 或 []T{} func make([]T,len,cap) []T  2.2 nil 切片和空切片 #   nil 切片被用在很多标准库和内置函数中，描述一个不存在的切片的时候，就需要用到 nil 切片。比如函数在发生异常的时候，返回的切片就是 nil 切片。nil 切片的指针指向 nil. 空切片一般会用来表示一个空集合。比如数据库查询，一条结果也没有查到，那么就可以返回一个空切片。  2.</description>
+      <description>1. 数据结构 #  type slice struct {  array unsafe.Pointer  len int  cap int }  slice 的底层数据结构中的 array 是一个指针，指向的是一个 Array len 代表这个 slice 的元素个数 cap 表示 slice 指向的底层数组容量  对 slice 的赋值，以值作为函数参数时，只拷贝 1 个指针和 2 个 int 值。
+2. 操作 #  2.1 创建 #   var []T 或 []T{} func make([]T,len,cap) []T  2.2 nil 切片和空切片 #   nil 切片被用在很多标准库和内置函数中，描述一个不存在的切片的时候，就需要用到 nil 切片。比如函数在发生异常的时候，返回的切片就是 nil 切片。nil 切片的指针指向 nil.</description>
     </item>
     
     <item>
