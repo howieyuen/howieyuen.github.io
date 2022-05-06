@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Blog on 袁昊的学习笔记</title>
-    <link>https://howieyuen.github.io/posts/</link>
-    <description>Recent content in Blog on 袁昊的学习笔记</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <title>protobuf on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/categories/protobuf/</link>
+    <description>Recent content in protobuf on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Thu, 05 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/categories/protobuf/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Protocal Buffers 概述</title>
       <link>https://howieyuen.github.io/posts/overview-of-protocal-buffers/</link>
@@ -24,17 +25,6 @@
 &lt;li&gt;特定语言的运行时库&lt;/li&gt;
 &lt;li&gt;序列化格式的数据（写入文件或者通过网络传输）&lt;/li&gt;
 &lt;/ul&gt;</description>
-    </item>
-    
-    <item>
-      <title>Circle CI 学习笔记</title>
-      <link>https://howieyuen.github.io/posts/notes-of-circle-ci/</link>
-      <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://howieyuen.github.io/posts/notes-of-circle-ci/</guid>
-      <description>&lt;p&gt;CircleCI 是基于云的 CI/CD 工具，可自动执行软件构建和交付过程。它提供快速的配置和维护，没有任何复杂性。
-由于它是基于云的 CI/CD 工具，因此消除了专用服务器的困扰，并降低了维护本地服务器的成本。
-此外，基于云的服务器是可扩展的，健壮的，并有助于更快地部署应用程序。&lt;/p&gt;</description>
     </item>
     
   </channel>

@@ -4,20 +4,20 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="  Golang   数据结构   切片  哈希表    语言基础   反射    内存管理   内存模型      Kubernetes   kube-apiserver   垃圾回收  k8s watch 关键设计    kube-controller-manager   DaemonSet Controller 源码分析  Statefulset Controller 源码分析  k8s 应用滚动更新    sig-network   深入了解 Service    kubelet   Eviction Manager 工作机制  Topology Manager 设计方案    kube-scheduler   高级调度      ">
-<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="" />
+<meta name="description" content="">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="protobuf" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://howieyuen.github.io/menu/" />
+<meta property="og:url" content="https://howieyuen.github.io/categories/protobuf/" />
 
-<title>Menu | 袁昊的学习笔记</title>
+<title>protobuf | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.306f3039b68c95e12639226149ab899af825bbaf2c2b9228bc3adf4e030996ee.js" integrity="sha256-MG8wObaMleEmOSJhSauJmvglu68sK5IovDrfTgMJlu4="></script>
+<script defer src="/en.search.min.22976e8d3a9e32ba070abf19b2d6cd9b3a135e5a3fe3bdf7e5c5709197b5db0e.js" integrity="sha256-IpdujTqeMroHCr8ZstbNmzoTXlo/47335cVwkZe12w4="></script>
 
 <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
-<link rel="alternate" type="application/rss+xml" href="https://howieyuen.github.io/menu/index.xml" title="袁昊的学习笔记" />
+<link rel="alternate" type="application/rss+xml" href="https://howieyuen.github.io/categories/protobuf/index.xml" title="袁昊的学习笔记" />
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -627,7 +627,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>Menu</strong>
+  <strong>protobuf</strong>
 
   <label for="toc-control">
     
@@ -640,7 +640,59 @@ https://github.com/alex-shpak/hugo-book
   
   <aside class="hidden clearfix">
     
-  <nav id="TableOfContents"></nav>
+  <nav>
+  <ul>
+  
+    
+    <li class="book-section-flat">
+      <strong>Categories</strong>
+      <ul>
+      
+        <li class="flex justify-between">
+          <a href="/categories/protobuf/">protobuf</a>
+          <span>1</span>
+        </li>
+      
+        <li class="flex justify-between">
+          <a href="/categories/CI/CD/">CI/CD</a>
+          <span>1</span>
+        </li>
+      
+      </ul>
+    </li>
+    
+  
+    
+    <li class="book-section-flat">
+      <strong>Tags</strong>
+      <ul>
+      
+        <li class="flex justify-between">
+          <a href="/tags/CircleCI/">CircleCI</a>
+          <span>1</span>
+        </li>
+      
+        <li class="flex justify-between">
+          <a href="/tags/Orb/">Orb</a>
+          <span>1</span>
+        </li>
+      
+        <li class="flex justify-between">
+          <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">动态规划</a>
+          <span>2</span>
+        </li>
+      
+        <li class="flex justify-between">
+          <a href="/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/">贪心算法</a>
+          <span>1</span>
+        </li>
+      
+      </ul>
+    </li>
+    
+  
+  </ul>
+</nav>
 
 
   </aside>
@@ -650,85 +702,46 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><ul>
-<li>
-  <a href="/docs/golang/">Golang</a>
+  
+  <article class="markdown book-post">
+    <h2>
+      <a href="/posts/overview-of-protocal-buffers/">Protocal Buffers 概述</a>
+    </h2>
+    
+  <h5>May 5, 2022</h5>
+
+
+
+  
+  <div>
+    
+      <a href="/categories/protobuf/">protobuf</a>
+  </div>
+  
+
+  
+
+
+    <p><blockquote>
+<p>原文链接：
+  <a href="https://developers.google.com/protocol-buffers/docs/overview">Overview | Protocol Buffers | Google Developers</a></p>
+</blockquote>
+<p>协议缓冲区（Protocol Buffers）提供了一种语言中立、平台中立、可扩展的机制，用来序列化结构化数据，并且支持向前/向后兼容。
+它类似于 JSON，只是它更小更快，并且能生成本地语言绑定。</p>
+<p>协议缓冲区包含以下模块：</p>
 <ul>
-<li>
-  <a href="/docs/golang/data-structure/">数据结构</a>
-<ul>
-<li>
-  <a href="/docs/golang/data-structure/slice/">切片</a></li>
-<li>
-  <a href="/docs/golang/data-structure/map/">哈希表</a></li>
+<li>定义语言（在 <code>.proto</code> 文件中创建）</li>
+<li>连接数据的代码（ proto 编译器生成）</li>
+<li>特定语言的运行时库</li>
+<li>序列化格式的数据（写入文件或者通过网络传输）</li>
 </ul>
-</li>
-<li>
-  <a href="/docs/golang/language-basics/">语言基础</a>
-<ul>
-<li>
-  <a href="/docs/golang/language-basics/reflect/">反射</a></li>
-</ul>
-</li>
-<li>
-  <a href="/docs/golang/memory-manage/">内存管理</a>
-<ul>
-<li>
-  <a href="/docs/golang/memory-manage/memory-model/">内存模型</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-  <a href="/docs/kubernetes/">Kubernetes</a>
-<ul>
-<li>
-  <a href="/docs/kubernetes/kube-apiserver/">kube-apiserver</a>
-<ul>
-<li>
-  <a href="/docs/kubernetes/kube-apiserver/garbage-collector/">垃圾回收</a></li>
-<li>
-  <a href="/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/">k8s watch 关键设计</a></li>
-</ul>
-</li>
-<li>
-  <a href="/docs/kubernetes/kube-controller-manager/">kube-controller-manager</a>
-<ul>
-<li>
-  <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/">DaemonSet Controller 源码分析</a></li>
-<li>
-  <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/">Statefulset Controller 源码分析</a></li>
-<li>
-  <a href="/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/">k8s 应用滚动更新</a></li>
-</ul>
-</li>
-<li>
-  <a href="/docs/kubernetes/sig-network/">sig-network</a>
-<ul>
-<li>
-  <a href="/docs/kubernetes/sig-network/learn-about-Service/">深入了解 Service</a></li>
-</ul>
-</li>
-<li>
-  <a href="/docs/kubernetes/kubelet/">kubelet</a>
-<ul>
-<li>
-  <a href="/docs/kubernetes/kubelet/kubelet-eviction-manager/">Eviction Manager 工作机制</a></li>
-<li>
-  <a href="/docs/kubernetes/kubelet/kubelet-topology-manager/">Topology Manager 设计方案</a></li>
-</ul>
-</li>
-<li>
-  <a href="/docs/kubernetes/kube-scheduler/">kube-scheduler</a>
-<ul>
-<li>
-  <a href="/docs/kubernetes/kube-scheduler/advanced-scheduling/">高级调度</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</article>
+        <a href="/posts/overview-of-protocal-buffers/">...</a>
+      
+    </p>
+  </article>
+  
+
+  
  
       
 
@@ -737,12 +750,6 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/be46fbc5a56ee48b09bc3ac56cfce882f3ad2d9e" title='Last modified by howieyuen | May 5, 2022' target="_blank" rel="noopener">
-      <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>May 5, 2022</span>
-    </a>
-  </div>
 
 
 
@@ -754,34 +761,6 @@ https://github.com/alex-shpak/hugo-book
 
       
   
-  <div class="book-comments">
-
-
-
-  <div id="gitalk-container"></div>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-  <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
-  <script>
-    let splits = location.pathname.split("/")
-    const gitalk = new Gitalk({
-      clientID: '25d476132e0758875147',
-      clientSecret: '9648a660ceabeb1a20a6354a3c131481724f62db',
-      repo: 'howieyuen.github.io',
-      owner: 'howieyuen',
-      admin: ['howieyuen'],
-      id: splits[splits.length-2], 
-      distractionFreeMode: false 
-    });
-    (function() {
-      if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-        document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
-        return;
-      }
-      gitalk.render('gitalk-container');
-    })();
-  </script>
-</div>
-  
  
 
       <label for="menu-control" class="hidden book-menu-overlay"></label>
@@ -790,7 +769,59 @@ https://github.com/alex-shpak/hugo-book
     
     <aside class="book-toc">
       
-  <nav id="TableOfContents"></nav>
+  <nav>
+  <ul>
+  
+    
+    <li class="book-section-flat">
+      <strong>Categories</strong>
+      <ul>
+      
+        <li class="flex justify-between">
+          <a href="/categories/protobuf/">protobuf</a>
+          <span>1</span>
+        </li>
+      
+        <li class="flex justify-between">
+          <a href="/categories/CI/CD/">CI/CD</a>
+          <span>1</span>
+        </li>
+      
+      </ul>
+    </li>
+    
+  
+    
+    <li class="book-section-flat">
+      <strong>Tags</strong>
+      <ul>
+      
+        <li class="flex justify-between">
+          <a href="/tags/CircleCI/">CircleCI</a>
+          <span>1</span>
+        </li>
+      
+        <li class="flex justify-between">
+          <a href="/tags/Orb/">Orb</a>
+          <span>1</span>
+        </li>
+      
+        <li class="flex justify-between">
+          <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">动态规划</a>
+          <span>2</span>
+        </li>
+      
+        <li class="flex justify-between">
+          <a href="/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/">贪心算法</a>
+          <span>1</span>
+        </li>
+      
+      </ul>
+    </li>
+    
+  
+  </ul>
+</nav>
 
  
     </aside>
