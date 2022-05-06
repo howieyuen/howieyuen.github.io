@@ -102,7 +102,7 @@ params:
   enableGitalk: true
   Gitalk:
     clientID: "25d476132e0758875147" # Your client ID
-    clientSecret: "9648a660ceabeb1a20a6354a3c131481724f62db" # Your client secret
+    clientSecret: "024da24d24ebb684b7ea4c0d493ff531ad5a0c61" # Your client secret
     repo: "howieyuen.github.io" # The repo to store comments
     owner: "howieyuen" # Your GitHub ID
     admin: "howieyuen" # Required. Github repository owner and collaborators. (Users who having write access to this repository)

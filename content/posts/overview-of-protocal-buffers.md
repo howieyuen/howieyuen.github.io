@@ -230,7 +230,7 @@ std::string email = john.email();
 - [LatLng](https://github.com/googleapis/googleapis/blob/master/google/type/latlng.proto)
   是一个纬度/经度对，例如 37.386051 纬度和 -122.083855 经度。
 - [Money](https://github.com/googleapis/googleapis/blob/master/google/type/money.proto)
-  是具有货币类型的货币数量，例如 42 美元。
+  是具有货币类型的货币数量，例如 42 USD。
 - [PostalAddress](https://github.com/googleapis/googleapis/blob/master/google/type/postal_address.proto)
   是一个邮政地址，例如 1600 Amphitheatre Parkway Mountain View, CA 94043 USA。
 - [Color](https://github.com/googleapis/googleapis/blob/master/google/type/color.proto)
