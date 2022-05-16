@@ -6,27 +6,6 @@
     <description>Recent content in Blog on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Protocal Buffers 概述</title>
-      <link>https://howieyuen.github.io/posts/overview-of-protocal-buffers/</link>
-      <pubDate>Thu, 05 May 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://howieyuen.github.io/posts/overview-of-protocal-buffers/</guid>
-      <description>&lt;blockquote&gt;
-&lt;p&gt;原文链接：
-  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/overview&#34;&gt;Overview | Protocol Buffers | Google Developers&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;协议缓冲区（Protocol Buffers）提供了一种语言中立、平台中立、可扩展的机制，用来序列化结构化数据，并且支持向前/向后兼容。
-它类似于 JSON，只是它更小更快，并且能生成本地语言绑定。&lt;/p&gt;
-&lt;p&gt;协议缓冲区包含以下模块：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;定义语言（在 &lt;code&gt;.proto&lt;/code&gt; 文件中创建）&lt;/li&gt;
-&lt;li&gt;连接数据的代码（ proto 编译器生成）&lt;/li&gt;
-&lt;li&gt;特定语言的运行时库&lt;/li&gt;
-&lt;li&gt;序列化格式的数据（写入文件或者通过网络传输）&lt;/li&gt;
-&lt;/ul&gt;</description>
-    </item>
-    
-    <item>
       <title>Circle CI 学习笔记</title>
       <link>https://howieyuen.github.io/posts/notes-of-circle-ci/</link>
       <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>

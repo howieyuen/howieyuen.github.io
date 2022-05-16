@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir=>
-
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,23 +7,24 @@
 原文链接：
   Overview | Protocol Buffers | Google Developers
 
-协议缓冲区（Protocol Buffers）提供了一种语言中立、平台中立、可扩展的机制，用来序列化结构化数据，并且支持向前/向后兼容。
+协议缓冲区（Protocol Buffers，protobuf）提供了一种语言中立、平台中立、可扩展的机制，用来序列化结构化数据，并且支持向前/向后兼容。
 它类似于 JSON，只是它更小更快，并且能生成本地语言绑定。
-协议缓冲区包含以下模块：
+protobuf 包含以下模块：
 
 定义语言（在 .proto 文件中创建）
 连接数据的代码（ proto 编译器生成）
 特定语言的运行时库
 序列化格式的数据（写入文件或者通过网络传输）
 ">
-<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Protocal Buffers 概述" />
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="概述" />
 <meta property="og:description" content="
 原文链接：
   Overview | Protocol Buffers | Google Developers
 
-协议缓冲区（Protocol Buffers）提供了一种语言中立、平台中立、可扩展的机制，用来序列化结构化数据，并且支持向前/向后兼容。
+协议缓冲区（Protocol Buffers，protobuf）提供了一种语言中立、平台中立、可扩展的机制，用来序列化结构化数据，并且支持向前/向后兼容。
 它类似于 JSON，只是它更小更快，并且能生成本地语言绑定。
-协议缓冲区包含以下模块：
+protobuf 包含以下模块：
 
 定义语言（在 .proto 文件中创建）
 连接数据的代码（ proto 编译器生成）
@@ -32,34 +32,34 @@
 序列化格式的数据（写入文件或者通过网络传输）
 " />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://howieyuen.github.io/posts/overview-of-protocal-buffers/" /><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/translation/protobuf/overview-of-protocal-buffers/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2022-05-05T00:00:00+00:00" />
-<meta property="article:modified_time" content="2022-05-06T14:38:13+08:00" />
+<meta property="article:modified_time" content="2022-05-16T20:58:43+08:00" />
 
-<title>Protocal Buffers 概述 | 袁昊的学习笔记</title>
+<title>概述 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
-<link rel="stylesheet" href="/book.min.78dd9f31800b2b5e96d379b042e0b5781bff2d1721c46b00055aa3e7222f3a3c.css" integrity="sha256-eN2fMYALK16W03mwQuC1eBv/LRchxGsABVqj5yIvOjw=">
-<script defer src="/en.search.min.41894655326f91d588f64916a772be7e9d8e527c9fd58381e7489ee6f68afb53.js" integrity="sha256-QYlGVTJvkdWI9kkWp3K&#43;fp2OUnyf1YOB50ie5vaK&#43;1M="></script>
+<link rel="stylesheet" href="/book.min.82c5dbd23447cee0b4c2aa3ed08ce0961faa40e1fa370eee4f8c9f02e0d46b5f.css" integrity="sha256-gsXb0jRHzuC0wqo&#43;0Izglh&#43;qQOH6Nw7uT4yfAuDUa18=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.5f4f9f57b16af9a200ba7f45544522393c7dda52a4e182ac6b3f0f153801d79a.js" integrity="sha256-X0&#43;fV7Fq&#43;aIAun9FVEUiOTx92lKk4YKsaz8PFTgB15o=" crossorigin="anonymous"></script>
 
-<script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk="></script>
+  <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
 -->
-
   
 </head>
-
-<body dir=>
+<body dir="ltr">
   <input type="checkbox" class="hidden toggle" id="menu-control" />
   <input type="checkbox" class="hidden toggle" id="toc-control" />
   <main class="container flex">
     <aside class="book-menu">
-      
+      <div class="book-menu-content">
+        
   <nav>
 <h2 class="book-brand">
-  <a href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  <a class="flex align-center" href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
   </a>
 </h2>
 
@@ -69,6 +69,7 @@ https://github.com/alex-shpak/hugo-book
   <div class="book-search-spinner hidden"></div>
   <ul id="book-search-results"></ul>
 </div>
+
 
 
 
@@ -120,7 +121,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/golang/data-structure/chan/" class="">chan</a>
+    <a href="/docs/golang/data-structure/chan/" class="">chan</a>
   
 
         </li>
@@ -133,7 +134,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/golang/data-structure/map/" class="">map</a>
+    <a href="/docs/golang/data-structure/map/" class="">map</a>
   
 
         </li>
@@ -146,7 +147,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/golang/data-structure/slice/" class="">slice</a>
+    <a href="/docs/golang/data-structure/slice/" class="">slice</a>
   
 
         </li>
@@ -177,7 +178,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/golang/language-basics/unsafe/" class="">unsafe</a>
+    <a href="/docs/golang/language-basics/unsafe/" class="">unsafe</a>
   
 
         </li>
@@ -190,7 +191,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/golang/language-basics/reflect/" class="">reflect</a>
+    <a href="/docs/golang/language-basics/reflect/" class="">reflect</a>
   
 
         </li>
@@ -221,7 +222,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+    <a href="/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
   
 
         </li>
@@ -252,7 +253,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/golang/tools/pprof/" class="">pprof</a>
+    <a href="/docs/golang/tools/pprof/" class="">pprof</a>
   
 
         </li>
@@ -301,7 +302,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
+    <a href="/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
   
 
         </li>
@@ -314,7 +315,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+    <a href="/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
   
 
         </li>
@@ -327,7 +328,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+    <a href="/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
   
 
         </li>
@@ -340,7 +341,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+    <a href="/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
   
 
         </li>
@@ -353,7 +354,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+    <a href="/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
   
 
         </li>
@@ -384,7 +385,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
   
 
         </li>
@@ -397,7 +398,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
   
 
         </li>
@@ -410,7 +411,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
   
 
         </li>
@@ -423,7 +424,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+    <a href="/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
   
 
         </li>
@@ -454,7 +455,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+    <a href="/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
   
 
         </li>
@@ -485,7 +486,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+    <a href="/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
   
 
         </li>
@@ -498,7 +499,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+    <a href="/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
   
 
         </li>
@@ -529,7 +530,72 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
+    <a href="/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Translation</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f59f78b27df0d3218be457339234a283" class="toggle" checked />
+    <label for="section-f59f78b27df0d3218be457339234a283" class="flex justify-between">
+      <a role="button" class="">Protocol Buffers</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/overview-of-protocal-buffers/" class="active">概述</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/language-guideproto3/" class="">语言指南（proto3）</a>
   
 
         </li>
@@ -554,8 +620,7 @@ https://github.com/alex-shpak/hugo-book
   
     <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
     <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
-      <a  class="">LeetCode</a>
-      <span>▾</span>
+      <a role="button" class="">LeetCode</a>
     </label>
   
 
@@ -569,7 +634,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/leetcode/0321/" class="">321. 拼接最大数</a>
+    <a href="/docs/leetcode/0321/" class="">321. 拼接最大数</a>
   
 
         </li>
@@ -582,7 +647,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="https://howieyuen.github.io/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+    <a href="/docs/leetcode/0416/" class="">416. 分割等和子集</a>
   
 
         </li>
@@ -638,10 +703,11 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <script>(function(){var e=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
 
 
  
+      </div>
     </aside>
 
     <div class="book-page">
@@ -652,7 +718,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>Protocal Buffers 概述</strong>
+  <strong>概述</strong>
 
   <label for="toc-control">
     
@@ -665,32 +731,34 @@ https://github.com/alex-shpak/hugo-book
   
   <aside class="hidden clearfix">
     
-  <nav id="TableOfContents">
+  
+<nav id="TableOfContents">
   <ul>
     <li>
       <ul>
-        <li><a href="#solve">Protocol Buffers 解决了哪些问题？</a></li>
-        <li><a href="#benefits">Protocol Buffers 带来的好处是什么？</a>
+        <li><a href="#solve">protobuf 解决了哪些问题？</a></li>
+        <li><a href="#benefits">protobuf 带来的好处是什么？</a>
           <ul>
             <li><a href="#cross-lang">跨语言兼容性</a></li>
             <li><a href="#cross-proj">跨项目支持</a></li>
             <li><a href="#update-defs">在不更新代码的情况下更新原型定义</a></li>
-            <li><a href="#not-good-fit">什么时候 Protocol Buffers 不适合？</a></li>
+            <li><a href="#not-good-fit">什么时候 protobuf 不适合？</a></li>
           </ul>
         </li>
         <li><a href="#who-uses">谁使用 Protocol Buffers？</a></li>
-        <li><a href="#work">Protocol Buffers 如何工作？</a></li>
-        <li><a href="#syntax">Protocol Buffers 定义语法</a></li>
+        <li><a href="#work">protobuf 如何工作？</a></li>
+        <li><a href="#syntax">protobuf 定义语法</a></li>
         <li><a href="#data-types">额外的数据类型支持</a>
           <ul>
             <li><a href="#common-types">常见类型 </a></li>
-            <li><a href="#protocol_buffers_open_source_philosophy">Protocol Buffers 开源哲学</a></li>
+            <li><a href="#protocol_buffers_open_source_philosophy">protobuf 开源哲学</a></li>
           </ul>
         </li>
       </ul>
     </li>
   </ul>
 </nav>
+
 
 
   </aside>
@@ -700,32 +768,13 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-<article class="markdown">
-  <h1>
-    <a href="/posts/overview-of-protocal-buffers/">Protocal Buffers 概述</a>
-  </h1>
-  
-  <h5>May 5, 2022</h5>
-
-
-
-  
-  <div>
-    
-      <a href="/categories/protobuf/">protobuf</a>
-  </div>
-  
-
-  
-
-
-  <p><blockquote>
+  <article class="markdown"><blockquote>
 <p>原文链接：
   <a href="https://developers.google.com/protocol-buffers/docs/overview">Overview | Protocol Buffers | Google Developers</a></p>
 </blockquote>
-<p>协议缓冲区（Protocol Buffers）提供了一种语言中立、平台中立、可扩展的机制，用来序列化结构化数据，并且支持向前/向后兼容。
+<p>协议缓冲区（Protocol Buffers，protobuf）提供了一种语言中立、平台中立、可扩展的机制，用来序列化结构化数据，并且支持向前/向后兼容。
 它类似于 JSON，只是它更小更快，并且能生成本地语言绑定。</p>
-<p>协议缓冲区包含以下模块：</p>
+<p>protobuf 包含以下模块：</p>
 <ul>
 <li>定义语言（在 <code>.proto</code> 文件中创建）</li>
 <li>连接数据的代码（ proto 编译器生成）</li>
@@ -733,13 +782,13 @@ https://github.com/alex-shpak/hugo-book
 <li>序列化格式的数据（写入文件或者通过网络传输）</li>
 </ul>
 <h2 id="solve">
-  Protocol Buffers 解决了哪些问题？
+  protobuf 解决了哪些问题？
   <a class="anchor" href="#solve">#</a>
 </h2>
-<p>协议缓冲区为大小高达几 MB 的类型化、结构化数据包提供了一种序列化格式。
+<p>protobuf 为大小高达几 MB 的类型化、结构化数据包提供了一种序列化格式。
 该格式既适用于临时网络流量，又适用于长期数据存储。
-可以使用新信息扩展协议缓冲区，而无需废弃当前数据或更新代码。</p>
-<p>协议缓冲区是 Google 最常用的数据格式。
+可以使用新信息扩展 protobuf ，而无需废弃当前数据或更新代码。</p>
+<p>protobuf 是 Google 最常用的数据格式。
 它们广泛用于服务器间通信以及磁盘上数据的归档存储。
 Protocol buffer 的 <code>message</code> 和 <code>service</code> 由工程师编写的 <code>.proto</code> 文件描述。
 下面是一个 <code>message</code> 示例：</p>
@@ -749,7 +798,7 @@ Protocol buffer 的 <code>message</code> 和 <code>service</code> 由工程师�
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">optional</span> <span style="color:#66d9ef">string</span> email <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;<span style="color:#960050;background-color:#1e0010">
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>}<span style="color:#960050;background-color:#1e0010">
 </span></span></span></code></pre></div><p>proto 编译器在构建 <code>.proto</code> 文件时，生成各种编程语言的代码
-（在后文的<a href= "#cross-lang">跨语言兼容性</a>中有说明）来操作相应的协议缓冲区。
+（在后文的<a href= "#cross-lang">跨语言兼容性</a>中有说明）来操作相应的 protobuf 。
 每个生成的类都包含每个字段和方法的简单访问器，用于序列化和解析整个结构与原始字节之间的关系。
 下面向你展示了一个使用这些生成方法的示例：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span>Person john <span style="color:#f92672">=</span> Person.newBuilder()<span style="color:#960050;background-color:#1e0010">
@@ -759,16 +808,16 @@ Protocol buffer 的 <code>message</code> 和 <code>service</code> 由工程师�
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#f92672">.</span>build();<span style="color:#960050;background-color:#1e0010">
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>output <span style="color:#f92672">=</span> new FileOutputStream(args[<span style="color:#ae81ff">0</span>]);<span style="color:#960050;background-color:#1e0010">
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>john.writeTo(output);<span style="color:#960050;background-color:#1e0010">
-</span></span></span></code></pre></div><p>由于协议缓冲区在 Google 的各种服务中广泛使用，并且其中的数据可能会保留一段时间，因此保持向后兼容性至关重要。
-协议缓冲区允许无缝支持对任何协议缓冲区的更改，包括添加新字段和删除现有字段，而不会破坏现有服务。
+</span></span></span></code></pre></div><p>由于 protobuf 在 Google 的各种服务中广泛使用，并且其中的数据可能会保留一段时间，因此保持向后兼容性至关重要。
+protobuf 允许无缝支持对任何 protobuf 的更改，包括添加新字段和删除现有字段，而不会破坏现有服务。
 有关此话题的更多信息，请参阅后文的<a href="#update-defs">在不更新代码的情况下更新原型定义</a>。</p>
 <h2 id="benefits">
-  Protocol Buffers 带来的好处是什么？
+  protobuf 带来的好处是什么？
   <a class="anchor" href="#benefits">#</a>
 </h2>
-<p>协议缓冲区非常适合需要以语言中立、平台中立并且可扩展的方式去序列化结构化、类似记录、类型化数据的情况。
+<p>protobuf 非常适合需要以语言中立、平台中立并且可扩展的方式去序列化结构化、类似记录、类型化数据的情况。
 它们最常用于定义通信协议（与 gRPC 一起）和数据存储。</p>
-<p>使用协议缓冲区的优势包括：</p>
+<p>使用 protobuf 的优势包括：</p>
 <ul>
 <li>紧凑的数据存储</li>
 <li>快速解析</li>
@@ -782,7 +831,7 @@ Protocol buffer 的 <code>message</code> 和 <code>service</code> 由工程师�
 <p>以任何受支持的编程语言编写的代码都可以读取相同的消息。
 你可以让一个平台上的 Java 程序从一个软件系统捕获数据，根据 <code>.proto</code> 定义对其进行序列化，
 然后在另一个平台上运行的单独 Python 应用程序中从序列化数据中提取特定值。</p>
-<p>协议缓冲区编译器（protoc）直接支持以下语言：</p>
+<p>protobuf 编译器（protoc）直接支持以下语言：</p>
 <ul>
 <li>
   <a href="https://developers.google.com/protocol-buffers/docs/reference/cpp-generated#invocation">C++</a></li>
@@ -817,7 +866,7 @@ protoc 编译器使用这些语言的插件：</p>
   跨项目支持
   <a class="anchor" href="#cross-proj">#</a>
 </h3>
-<p>你可以通过在驻留在特定项目代码库之外的 <code>.proto</code> 文件中定义 <code>message</code> 类型来跨项目使用协议缓冲区。
+<p>你可以通过在驻留在特定项目代码库之外的 <code>.proto</code> 文件中定义 <code>message</code> 类型来跨项目使用 protobuf 。
 如果你正在定义预计在你的直接团队之外广泛使用的 <code>message</code> 类型或枚举，你可以将它们放在自己的文件中，而无需依赖。</p>
 <p>在 Google 中广泛使用的几个原型定义示例是
 
@@ -833,36 +882,36 @@ protoc 编译器使用这些语言的插件：</p>
   <a href="https://developers.google.com/protocol-buffers/docs/proto#updating">简单的做法</a>，
 旧代码将毫无问题地读取新消息，而忽略任何新添加的字段。
 对于旧代码，已删除的字段将具有默认值，已删除的重复字段将为空。
-有关什么是“重复”字段的信息，请后续的<a href="#syntax">协议缓冲区定义语法</a>小节。</p>
+有关什么是“重复”字段的信息，请后续的<a href="#syntax"> protobuf 定义语法</a>小节。</p>
 <p>新代码也将透明地读取旧消息。旧消息中不会出现新字段；
-在这些情况下，协议缓冲区提供了一个合理的默认值。</p>
+在这些情况下， protobuf 提供了一个合理的默认值。</p>
 <h3 id="not-good-fit">
-  什么时候 Protocol Buffers 不适合？
+  什么时候 protobuf 不适合？
   <a class="anchor" href="#not-good-fit">#</a>
 </h3>
-<p>协议缓冲区并不适合所有数据。尤其：</p>
+<p>protobuf 并不适合所有数据。尤其：</p>
 <ul>
-<li>协议缓冲区倾向于假设整个消息可以一次加载到内存中并且不大于对象图。
+<li>protobuf 倾向于假设整个消息可以一次加载到内存中并且不大于对象图。
 对于超过几兆字节的数据，考虑不同的解决方案；
 在处理较大的数据时，由于序列化副本，你可能会有效地获得多个数据副本，
 这可能会导致内存使用量出现惊人的峰值。</li>
-<li>当协议缓冲区被序列化时，相同的数据可以有许多不同的二进制序列化。
+<li>当 protobuf 被序列化时，相同的数据可以有许多不同的二进制序列化。
 如果不完全解析它们，就无法比较两条消息是否等同。</li>
 <li>消息未压缩。虽然消息可以像任何其他文件一样被压缩或 gzip 压缩，
 但 JPEG 和 PNG 使用的专用压缩算法将为适当类型的数据生成更小的文件。</li>
-<li>对于许多涉及大型多维浮点数数组的科学和工程用途，协议缓冲区消息在大小和速度方面都没有达到最大效率。
+<li>对于许多涉及大型多维浮点数数组的科学和工程用途， protobuf 消息在大小和速度方面都没有达到最大效率。
 对于这些应用程序，
   <a href="https://en.wikipedia.org/wiki/FITS">FITS</a> 和类似格式的开销较小。</li>
-<li>协议缓冲区在科学计算中流行的非面向对象语言（例如 Fortran 和 IDL）中没有得到很好的支持。</li>
-<li>协议缓冲区消息本身并不自我描述其数据，但它们具有完全反射的模式，你可以使用它来实现自我描述。
+<li>protobuf 在科学计算中流行的非面向对象语言（例如 Fortran 和 IDL）中没有得到很好的支持。</li>
+<li>protobuf 消息本身并不自我描述其数据，但它们具有完全反射的模式，你可以使用它来实现自我描述。
 也就是说，如果不访问其相应的 <code>.proto</code> 文件，你将无法完全解释它。</li>
-<li>协议缓冲区不是任何组织的正式标准。这使得它们不适合在具有法律或其他要求以建立在标准之上的环境中使用。</li>
+<li>protobuf 不是任何组织的正式标准。这使得它们不适合在具有法律或其他要求以建立在标准之上的环境中使用。</li>
 </ul>
 <h2 id="who-uses">
   谁使用 Protocol Buffers？
   <a class="anchor" href="#who-uses">#</a>
 </h2>
-<p>许多外部可用的项目使用协议缓冲区，包括以下内容：</p>
+<p>许多外部可用的项目使用 protobuf ，包括以下内容：</p>
 <ul>
 <li>
   <a href="https://grpc.io/">gRPC</a></li>
@@ -872,12 +921,12 @@ protoc 编译器使用这些语言的插件：</p>
   <a href="https://www.envoyproxy.io/">Envoy Proxy</a></li>
 </ul>
 <h2 id="work">
-  Protocol Buffers 如何工作？
+  protobuf 如何工作？
   <a class="anchor" href="#work">#</a>
 </h2>
-<p>下图显示了如何使用协议缓冲区来处理数据：</p>
+<p>下图显示了如何使用 protobuf 来处理数据：</p>
 <center><img src="/posts/overview-of-protocal-buffers/workflow.png"/></center>
-<p>协议缓冲区生成的代码提供了实用方法来从文件和流中检索数据、从数据中提取单个值、检查数据是否存在、将数据序列化回文件或流以及其他有用的功能。</p>
+<p>protobuf 生成的代码提供了实用方法来从文件和流中检索数据、从数据中提取单个值、检查数据是否存在、将数据序列化回文件或流以及其他有用的功能。</p>
 <p>以下代码示例向你展示了此流程在 Java 中的示例。如前所示，这是一个 <code>.proto</code> 定义：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#66d9ef">message</span> <span style="color:#a6e22e">Person</span> {<span style="color:#960050;background-color:#1e0010">
 </span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">optional</span> <span style="color:#66d9ef">string</span> name <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;<span style="color:#960050;background-color:#1e0010">
@@ -892,7 +941,7 @@ protoc 编译器使用这些语言的插件：</p>
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
 </span></span><span style="display:flex;"><span>output <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FileOutputStream<span style="color:#f92672">(</span>args<span style="color:#f92672">[</span>0<span style="color:#f92672">]);</span>
 </span></span><span style="display:flex;"><span>john<span style="color:#f92672">.</span><span style="color:#a6e22e">writeTo</span><span style="color:#f92672">(</span>output<span style="color:#f92672">);</span>
-</span></span></code></pre></div><p>然后，你可以使用协议缓冲区在其他语言（如 C++）中创建的方法反序列化数据：</p>
+</span></span></code></pre></div><p>然后，你可以使用 protobuf 在其他语言（如 C++）中创建的方法反序列化数据：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Person john;
 </span></span><span style="display:flex;"><span>fstream <span style="color:#a6e22e">input</span>(argv[<span style="color:#ae81ff">1</span>], ios<span style="color:#f92672">::</span>in <span style="color:#f92672">|</span> ios<span style="color:#f92672">::</span>binary);
 </span></span><span style="display:flex;"><span>john.ParseFromIstream(<span style="color:#f92672">&amp;</span>input);
@@ -900,7 +949,7 @@ protoc 编译器使用这些语言的插件：</p>
 </span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>string name <span style="color:#f92672">=</span> john.name();
 </span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>string email <span style="color:#f92672">=</span> john.email();
 </span></span></code></pre></div><h2 id="syntax">
-  Protocol Buffers 定义语法
+  protobuf 定义语法
   <a class="anchor" href="#syntax">#</a>
 </h2>
 <p>定义 <code>.proto</code> 文件时，你可以指定字段是 <code>optional</code> 或 <code>repeated</code>（proto2 和 proto3）或 <code>singular</code>（proto3）。
@@ -910,7 +959,7 @@ protoc 编译器使用这些语言的插件：</p>
   <a href="https://developers.google.com/protocol-buffers/docs/proto#specifying-rules">指定字段规则</a>
 中的 &ldquo;Required is Forever&rdquo;。）</p>
 <p>在设置字段的可选性/可重复性后，你指定数据类型。
-协议缓冲区支持通常的原始数据类型，例如整数、布尔值和浮点数。
+protobuf 支持通常的原始数据类型，例如整数、布尔值和浮点数。
 有关完整列表，请参阅
   <a href="https://developers.google.com/protocol-buffers/docs/proto#scalar">标量值类型</a>。</p>
 <p>一个字段也可以是：</p>
@@ -934,7 +983,7 @@ protoc 编译器使用这些语言的插件：</p>
   额外的数据类型支持
   <a class="anchor" href="#data-types">#</a>
 </h2>
-<p>协议缓冲区支持许多标量值类型，包括使用可变长度编码和固定大小的整数。
+<p>protobuf 支持许多标量值类型，包括使用可变长度编码和固定大小的整数。
 你还可以通过定义消息来创建自己的复合数据类型，这些消息本身就是可以分配给字段的数据类型。
 除了简单和复合值类型之外，还发布了几种常见类型。</p>
 <h3 id="common-types">
@@ -977,13 +1026,12 @@ protoc 编译器使用这些语言的插件：</p>
 是一年中的某个月，例如 April（四月）。</li>
 </ul>
 <h3 id="protocol_buffers_open_source_philosophy">
-  Protocol Buffers 开源哲学
+  protobuf 开源哲学
   <a class="anchor" href="#protocol_buffers_open_source_philosophy">#</a>
 </h3>
-<p>协议缓冲区于 2008 年开源，旨在为 Google 以外的开发人员提供与我们在内部从中获得的相同好处的一种方式。
+<p>protobuf 于 2008 年开源，旨在为 Google 以外的开发人员提供与我们在内部从中获得的相同好处的一种方式。
 我们通过定期更新语言来支持开源社区，因为我们进行这些更改以支持我们的内部需求。
-虽然我们接受来自外部开发人员的精选拉取请求，但我们不能总是优先考虑不符合 Google 特定需求的功能请求和错误修复。</p></p>
-</article>
+虽然我们接受来自外部开发人员的精选拉取请求，但我们不能总是优先考虑不符合 Google 特定需求的功能请求和错误修复。</p></article>
  
       
 
@@ -992,16 +1040,21 @@ protoc 编译器使用这些语言的插件：</p>
   <div class="flex flex-wrap justify-between">
 
 
-
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/ccfbfdc8d7b681cb5ec3d91b43c003f99f664534" title='Last modified by howieyuen | May 6, 2022' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/792a8c28e8ef9fe56e1d9fd8a21baae57d7823ad" title='Last modified by howieyuen | May 16, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>May 6, 2022</span>
+      <span>May 16, 2022</span>
     </a>
   </div>
 
 
 
+
 </div>
+
+
+
+  <script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
 
  
         
@@ -1011,30 +1064,6 @@ protoc 编译器使用这些语言的插件：</p>
   
   <div class="book-comments">
 
-
-
-  <div id="gitalk-container"></div>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-  <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
-  <script>
-    let splits = location.pathname.split("/")
-    const gitalk = new Gitalk({
-      clientID: '25d476132e0758875147',
-      clientSecret: '024da24d24ebb684b7ea4c0d493ff531ad5a0c61',
-      repo: 'howieyuen.github.io',
-      owner: 'howieyuen',
-      admin: ['howieyuen'],
-      id: splits[splits.length-2], 
-      distractionFreeMode: false 
-    });
-    (function() {
-      if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-        document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
-        return;
-      }
-      gitalk.render('gitalk-container');
-    })();
-  </script>
 </div>
   
  
@@ -1044,27 +1073,29 @@ protoc 编译器使用这些语言的插件：</p>
 
     
     <aside class="book-toc">
-      
-  <nav id="TableOfContents">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
   <ul>
     <li>
       <ul>
-        <li><a href="#solve">Protocol Buffers 解决了哪些问题？</a></li>
-        <li><a href="#benefits">Protocol Buffers 带来的好处是什么？</a>
+        <li><a href="#solve">protobuf 解决了哪些问题？</a></li>
+        <li><a href="#benefits">protobuf 带来的好处是什么？</a>
           <ul>
             <li><a href="#cross-lang">跨语言兼容性</a></li>
             <li><a href="#cross-proj">跨项目支持</a></li>
             <li><a href="#update-defs">在不更新代码的情况下更新原型定义</a></li>
-            <li><a href="#not-good-fit">什么时候 Protocol Buffers 不适合？</a></li>
+            <li><a href="#not-good-fit">什么时候 protobuf 不适合？</a></li>
           </ul>
         </li>
         <li><a href="#who-uses">谁使用 Protocol Buffers？</a></li>
-        <li><a href="#work">Protocol Buffers 如何工作？</a></li>
-        <li><a href="#syntax">Protocol Buffers 定义语法</a></li>
+        <li><a href="#work">protobuf 如何工作？</a></li>
+        <li><a href="#syntax">protobuf 定义语法</a></li>
         <li><a href="#data-types">额外的数据类型支持</a>
           <ul>
             <li><a href="#common-types">常见类型 </a></li>
-            <li><a href="#protocol_buffers_open_source_philosophy">Protocol Buffers 开源哲学</a></li>
+            <li><a href="#protocol_buffers_open_source_philosophy">protobuf 开源哲学</a></li>
           </ul>
         </li>
       </ul>
@@ -1072,14 +1103,15 @@ protoc 编译器使用这些语言的插件：</p>
   </ul>
 </nav>
 
+
  
+      </div>
     </aside>
     
   </main>
 
   
 </body>
-
 </html>
 
 

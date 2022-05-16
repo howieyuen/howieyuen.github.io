@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>protobuf on 袁昊的学习笔记</title>
-    <link>https://howieyuen.github.io/categories/protobuf/</link>
-    <description>Recent content in protobuf on 袁昊的学习笔记</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 10 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/categories/protobuf/index.xml" rel="self" type="application/rss+xml" />
+    <title>Protocol Buffers on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/docs/translation/protobuf/</link>
+    <description>Recent content in Protocol Buffers on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/docs/translation/protobuf/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>概述</title>
       <link>https://howieyuen.github.io/docs/translation/protobuf/overview-of-protocal-buffers/</link>
