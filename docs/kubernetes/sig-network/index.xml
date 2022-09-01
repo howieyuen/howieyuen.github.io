@@ -11,8 +11,8 @@
       <pubDate>Fri, 24 Jan 2020 00:00:00 +0000</pubDate>
       
       <guid>https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/</guid>
-      <description>1. 基本概念 #  1.1 Service 定义详解 #  Service 是对一组提供相同功能的 Pods 的抽象，并为它们提供一个统一的入口。借助 Service， 应用可以方便的实现服务发现与负载均衡，并实现应用的零宕机升级。Service 通过标签来选取服务后端， 一般配合 Replication Controller 或者 Deployment 来保证后端容器的正常运行。 这些匹配标签的 Pod IP 和端口列表组成 endpoints， 由 kube-proxy 负责将服务 IP 负载均衡到这些 endpoints 上。
-apiVersion: v1 kind: Service metadata:  name: string  namespace: string  labels:  - name: string  annotations:  - name: string spec:  selector: []  # ClusterIP、NodePort、LoadBalancer  type: string  # type=ClusterIP, 有自动分配的能力；type=LoadBalancer，需指定   clusterIP: string   # 是否支持 session，默认为空，可选值 ClutserIP，同一个 client 的 request，都发送到同一个后端 Pod   sessionAffinity: string   ports:  - name: string  # tcp、udp，默认 tcp  protocol: string   port: int  targetPort: int  nodePort: int # spec.</description>
+      <description>1. 基本概念 # 1.1 Service 定义详解 # Service 是对一组提供相同功能的 Pods 的抽象，并为它们提供一个统一的入口。借助 Service， 应用可以方便的实现服务发现与负载均衡，并实现应用的零宕机升级。Service 通过标签来选取服务后端， 一般配合 Replication Controller 或者 Deployment 来保证后端容器的正常运行。 这些匹配标签的 Pod IP 和端口列表组成 endpoints， 由 kube-proxy 负责将服务 IP 负载均衡到这些 endpoints 上。
+apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - name: string annotations: - name: string spec: selector: [] # ClusterIP、NodePort、LoadBalancer type: string # type=ClusterIP, 有自动分配的能力；type=LoadBalancer，需指定 clusterIP: string # 是否支持 session，默认为空，可选值 ClutserIP，同一个 client 的 request，都发送到同一个后端 Pod sessionAffinity: string ports: - name: string # tcp、udp，默认 tcp protocol: string port: int targetPort: int nodePort: int # spec.</description>
     </item>
     
   </channel>

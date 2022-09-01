@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="原文链接：https://releasehub.com/blog/how-to-manage-gitops-secrets-a-detailed-guide
+GitOps 正变得越来越流行。越来越多的公司开始使用 Git 作为其基础设施和应用程序配置的真实来源。然而，伴随其优势而来的是挑战。例如，如果你的所有配置都存储在 Git 中，你如何管理 Secret？你不能简单地将密码和令牌以明文形式提交到 Git 存储库，即使该存储库是私有的并且只有少数人可以访问它。在这篇文章中，你将学习如何安全地管理 GitOps Secret 。敬请关注。
+GitOps vs Secret # 如果你以前从未使用过 GitOps，这里有一个简短的介绍。GitOps 是一种纯粹通过 Git 存储库以声明方式管理基础设施和应用程序配置的方法。它的工作原理如下：你将所有配置存储在 Git 中，然后在某处安装一个 GitOps 工具，该工具会持续监控对该 Git 存储库的更改，并在检测到存储库中发生更改时应用基础架构和应用程序更改。GitOps 的全部意义在于，你的所有基础架构和应用程序配置都拥有一个集中的、单一的事实点。GitOps 最常与 Kubernetes 一起使用。
+但正如本文开头所述，使用 GitOps 时存在一些挑战。而最大的一个是 Secret 管理。你的基础设施将需要许多 Secret。你的应用程序配置可能也充满了 Secret。不用说，以纯文本形式将 Secret 存储在 Git 存储库中是一个安全漏洞。即使该存储库是私有的也是如此。你需要一个不同的解决方案，但理想情况下仍然以 GitOps 方式工作的东西。这意味着最好不要有一个单独的过程来定义 Secret。我会告诉你如何做到这一点。
+GitOps 方式的 Secret # 有两种流行的方法可以解决这个问题。它们的工作方式完全不同，但都实现了相同的结果：将 Secret 或其引用存储在 Git 存储库中的能力。你选择哪一种将取决于你的需求。我们来聊聊此二者。
+SealedSecrets # 我们已经确定你不能在 Git 存储库中以纯文本形式存储 Secret 。但是如何将它们存储在非纯文本版本中呢？这正是 SealedSecrets 工具所做的。它允许你加密你的 Secret，并且只将它们的加密版本存储在你的 Git 存储库中。就那么简单。
+你问 SealedSecrets 是如何工作的？你在 Kubernetes 集群上安装 SealedSecrets Controller，在本地机器上安装 kubeseal 二进制文件。SealedSecrets 将生成用于加密 Secret 的私钥和公钥。在将密钥提交到 Git 存储库之前，你将使用 kubeseal 二进制文件对其进行加密。然后，以加密形式将其存储在存储库中是完全安全的，只有运行在 Kubernetes 集群中的 SealedSecrets Controller 才能解密。">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="如何管理 GitOps Secret：详细指南" />
+<meta property="og:description" content="原文链接：https://releasehub.com/blog/how-to-manage-gitops-secrets-a-detailed-guide
+GitOps 正变得越来越流行。越来越多的公司开始使用 Git 作为其基础设施和应用程序配置的真实来源。然而，伴随其优势而来的是挑战。例如，如果你的所有配置都存储在 Git 中，你如何管理 Secret？你不能简单地将密码和令牌以明文形式提交到 Git 存储库，即使该存储库是私有的并且只有少数人可以访问它。在这篇文章中，你将学习如何安全地管理 GitOps Secret 。敬请关注。
+GitOps vs Secret # 如果你以前从未使用过 GitOps，这里有一个简短的介绍。GitOps 是一种纯粹通过 Git 存储库以声明方式管理基础设施和应用程序配置的方法。它的工作原理如下：你将所有配置存储在 Git 中，然后在某处安装一个 GitOps 工具，该工具会持续监控对该 Git 存储库的更改，并在检测到存储库中发生更改时应用基础架构和应用程序更改。GitOps 的全部意义在于，你的所有基础架构和应用程序配置都拥有一个集中的、单一的事实点。GitOps 最常与 Kubernetes 一起使用。
+但正如本文开头所述，使用 GitOps 时存在一些挑战。而最大的一个是 Secret 管理。你的基础设施将需要许多 Secret。你的应用程序配置可能也充满了 Secret。不用说，以纯文本形式将 Secret 存储在 Git 存储库中是一个安全漏洞。即使该存储库是私有的也是如此。你需要一个不同的解决方案，但理想情况下仍然以 GitOps 方式工作的东西。这意味着最好不要有一个单独的过程来定义 Secret。我会告诉你如何做到这一点。
+GitOps 方式的 Secret # 有两种流行的方法可以解决这个问题。它们的工作方式完全不同，但都实现了相同的结果：将 Secret 或其引用存储在 Git 存储库中的能力。你选择哪一种将取决于你的需求。我们来聊聊此二者。
+SealedSecrets # 我们已经确定你不能在 Git 存储库中以纯文本形式存储 Secret 。但是如何将它们存储在非纯文本版本中呢？这正是 SealedSecrets 工具所做的。它允许你加密你的 Secret，并且只将它们的加密版本存储在你的 Git 存储库中。就那么简单。
+你问 SealedSecrets 是如何工作的？你在 Kubernetes 集群上安装 SealedSecrets Controller，在本地机器上安装 kubeseal 二进制文件。SealedSecrets 将生成用于加密 Secret 的私钥和公钥。在将密钥提交到 Git 存储库之前，你将使用 kubeseal 二进制文件对其进行加密。然后，以加密形式将其存储在存储库中是完全安全的，只有运行在 Kubernetes 集群中的 SealedSecrets Controller 才能解密。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/" /><meta property="article:section" content="docs" />
+<meta property="article:published_time" content="2022-09-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-09-01T19:50:57+08:00" />
+
+<title>如何管理 GitOps Secret：详细指南 | 袁昊的学习笔记</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.82c5dbd23447cee0b4c2aa3ed08ce0961faa40e1fa370eee4f8c9f02e0d46b5f.css" integrity="sha256-gsXb0jRHzuC0wqo&#43;0Izglh&#43;qQOH6Nw7uT4yfAuDUa18=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.c543337828d696a1c9b0d94c3a02f032d384cedded00d64ff265f62c14b14dea.js" integrity="sha256-xUMzeCjWlqHJsNlMOgLwMtOEzt3tANZP8mX2LBSxTeo=" crossorigin="anonymous"></script>
+
+  <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Golang</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>数据结构</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/chan/" class="">chan</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/map/" class="">map</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/slice/" class="">slice</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>语言基础</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/unsafe/" class="">unsafe</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/reflect/" class="">reflect</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>内存管理</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>golang 工具</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/tools/pprof/" class="">pprof</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Kubernetes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-apisever</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-controller-manager</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kube-scheduler</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>kubelet</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>sig-network</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Translation</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f59f78b27df0d3218be457339234a283" class="toggle"  />
+    <label for="section-f59f78b27df0d3218be457339234a283" class="flex justify-between">
+      <a role="button" class="">Protocol Buffers</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/overview-of-protocal-buffers/" class="">概述</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/language-guideproto3/" class="">语言指南（proto3）</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f44f2048d84a295b965240d95f5edc80" class="toggle" checked />
+    <label for="section-f44f2048d84a295b965240d95f5edc80" class="flex justify-between">
+      <a role="button" class="">X as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/" class="active">如何管理 GitOps Secret：详细指南</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a role="button" class="">LeetCode</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0321/" class="">321. 拼接最大数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="/posts/" >
+        Blog
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://github.com/howieyuen/" target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/" target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>如何管理 GitOps Secret：详细指南</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#gitops-vs-secret">GitOps vs Secret</a></li>
+        <li><a href="#gitops-方式的-secret">GitOps 方式的 Secret</a>
+          <ul>
+            <li><a href="#sealedsecrets">SealedSecrets</a></li>
+            <li><a href="#externalsecrets">ExternalSecrets</a></li>
+          </ul>
+        </li>
+        <li><a href="#总结">总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><blockquote>
+<p>原文链接：https://releasehub.com/blog/how-to-manage-gitops-secrets-a-detailed-guide</p>
+</blockquote>
+<p>GitOps 正变得越来越流行。越来越多的公司开始使用 Git 作为其基础设施和应用程序配置的真实来源。然而，伴随其优势而来的是挑战。例如，如果你的所有配置都存储在 Git 中，你如何管理 Secret？你不能简单地将密码和令牌以明文形式提交到 Git 存储库，即使该存储库是私有的并且只有少数人可以访问它。在这篇文章中，你将学习如何安全地管理 GitOps  Secret 。敬请关注。</p>
+<h2 id="gitops-vs-secret">
+  GitOps vs Secret
+  <a class="anchor" href="#gitops-vs-secret">#</a>
+</h2>
+<p>如果你以前从未使用过 GitOps，这里有一个简短的介绍。GitOps 是一种纯粹通过 Git 存储库以声明方式管理基础设施和应用程序配置的方法。它的工作原理如下：你将所有配置存储在 Git 中，然后在某处安装一个 GitOps 工具，该工具会持续监控对该 Git 存储库的更改，并在检测到存储库中发生更改时应用基础架构和应用程序更改。GitOps 的全部意义在于，你的所有基础架构和应用程序配置都拥有一个集中的、单一的事实点。GitOps 最常与 Kubernetes 一起使用。</p>
+<p>但正如本文开头所述，使用 GitOps 时存在一些挑战。而最大的一个是 Secret 管理。你的基础设施将需要许多 Secret。你的应用程序配置可能也充满了 Secret。不用说，以纯文本形式将 Secret 存储在 Git 存储库中是一个安全漏洞。即使该存储库是私有的也是如此。你需要一个不同的解决方案，但理想情况下仍然以 GitOps 方式工作的东西。这意味着最好不要有一个单独的过程来定义 Secret。我会告诉你如何做到这一点。</p>
+<h2 id="gitops-方式的-secret">
+  GitOps 方式的 Secret
+  <a class="anchor" href="#gitops-%e6%96%b9%e5%bc%8f%e7%9a%84-secret">#</a>
+</h2>
+<p>有两种流行的方法可以解决这个问题。它们的工作方式完全不同，但都实现了相同的结果：将 Secret 或其引用存储在 Git 存储库中的能力。你选择哪一种将取决于你的需求。我们来聊聊此二者。</p>
+<h3 id="sealedsecrets">
+  SealedSecrets
+  <a class="anchor" href="#sealedsecrets">#</a>
+</h3>
+<p>我们已经确定你不能在 Git 存储库中以纯文本形式存储 Secret 。但是如何将它们存储在非纯文本版本中呢？这正是 <em>SealedSecrets</em> 工具所做的。它允许你加密你的 Secret，并且只将它们的加密版本存储在你的 Git 存储库中。就那么简单。</p>
+<p>你问 <em>SealedSecrets</em> 是如何工作的？你在 Kubernetes 集群上安装 <em>SealedSecrets Controller</em>，在本地机器上安装 <em>kubeseal</em> 二进制文件。<em>SealedSecrets</em> 将生成用于加密 Secret 的私钥和公钥。在将密钥提交到 Git 存储库之前，你将使用 <em>kubeseal</em> 二进制文件对其进行加密。然后，以加密形式将其存储在存储库中是完全安全的，只有运行在 Kubernetes 集群中的 <em>SealedSecrets Controller</em> 才能解密。</p>
+<h4 id="如何使用-sealedsecrets">
+  如何使用 SealedSecrets
+  <a class="anchor" href="#%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8-sealedsecrets">#</a>
+</h4>
+<p>首先，按照此处的 <em>SealedSecrets</em> 安装说明进行操作。 启动并运行它后，你可以尝试使用 <em>kubeseal</em> 密封你的第一个 Secret。让我们创建一个简单的 Kubernetes  Secret 定义 YAML 文件并使用 <em>kubeseal</em> 对其进行密封。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Secret</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">example-secret</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">type</span>: <span style="color:#ae81ff">Opaque</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">data</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">username</span>: <span style="color:#ae81ff">my-username</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">password</span>: <span style="color:#ae81ff">super-secret-password</span>
+</span></span></code></pre></div><p>获得文件后，你可以将其内容传给 <em>kubeseal</em>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat secret.yaml| kubeseal --controller-name<span style="color:#f92672">=</span>sealed-secrets-controller --format yaml &gt; sealed-secret.yaml
+</span></span></code></pre></div><p>如果你现在查看创建的 seal-secret.yaml 文件，你会看到实际的用户名和密码已加密。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">bitnami.com/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">SealedSecret</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">creationTimestamp</span>: <span style="color:#66d9ef">null</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">example-secret</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">encryptedData</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">password</span>: <span style="color:#ae81ff">AgC7jlVk(...)eb+XOk5/99fKHk=</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">username</span>: <span style="color:#ae81ff">AgAHbCU7(...)hIgv5D6LDYopF4n</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">data</span>: <span style="color:#66d9ef">null</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">creationTimestamp</span>: <span style="color:#66d9ef">null</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">name</span>: <span style="color:#ae81ff">example-secret</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">Opaque</span>
+</span></span></code></pre></div><p>该文件现在可以安全地存储在 Git 存储库中，因为只有用于加密该文件的 <em>SealedSecrets Controller</em> 才能解密它。</p>
+<p>但是你如何在你的集群中使用这个 Secret 呢？这很简单。你可以直接将该密封文件应用到你的集群，运行在其上的 <em>SealedSecrets</em> 控制器将自动解封它并从中创建一个标准的 Kubernetes  Secret 资源。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ kubectl apply -f sealed-secret.yaml
+</span></span><span style="display:flex;"><span>sealedsecret.bitnami.com/example-secret created
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ kubectl get secret
+</span></span><span style="display:flex;"><span>NAME                                 TYPE                 DATA   AGE
+</span></span><span style="display:flex;"><span>example-secret                       Opaque               <span style="color:#ae81ff">2</span>      7s
+</span></span></code></pre></div><p>从现在开始，你可以像使用任何标准 Kubernetes 密钥一样使用 example-secret。</p>
+<h3 id="externalsecrets">
+  ExternalSecrets
+  <a class="anchor" href="#externalsecrets">#</a>
+</h3>
+<p>为你的 GitOps 需求存储 Secret 的另一种方法是使用 <em>ExternalSecrets</em>。它的工作方式与 <em>SealedSecrets</em> 不同，但也解决了在 Git 存储库中存储纯文本 Secret 的问题。<em>ExternalSecrets</em> 通过消除将实际 Secret 存储在存储库中的需要来做到这一点。相反，你的 Secret 可以安全地存储在 Secret 保险库中，你只需要将对 Secret 的引用存储在你的存储库中。</p>
+<p>因此，例如，在 Git 中的文件中没有实际的用户名和密码，而是有一个文件，上面写着“这个用户名是密码存储在此 key 下的 Secret 保险库中”。然后，<em>External Secret Operator</em> 的工作就是在你需要时为你获取实际值。</p>
+<h4 id="使用-esoexternal-secret-operator">
+  使用 ESO（External Secret Operator）
+  <a class="anchor" href="#%e4%bd%bf%e7%94%a8-esoexternal-secret-operator">#</a>
+</h4>
+<p>可以像使用 Helm 的任何其他工具一样安装 <em>External Secret Operator</em>。你可以按照此处的安装和初始配置步骤进行操作。启动并运行 <em>ExternalSecrets</em> 后，使用它就非常简单。你首先需要将你的 Secret 添加到要使用的 Secret 保险库中，然后创建一个 <em>ExternalSecrets</em> 引用文件。此文件将替代你的典型 Kubernetes  Secret 定义文件。</p>
+<p>如前所述，使用 ESO 意味着从外部 Secret 保险库中引用实际 Secret 。因此，你创建了一个外部 Secret 资源，ESO 将从后台的外部保险库中获取实际 Secret，并为你创建一个实际的 Kubernetes Secret。这是一个例子：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">external-secrets.io/v1beta1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ExternalSecret</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">database-externalsecret</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">refreshInterval</span>: <span style="color:#ae81ff">3h</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">secretStoreRef</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">azure-keyvault</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">SecretStore</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">target</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">database-secret</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">creationPolicy</span>: <span style="color:#ae81ff">Owner</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">data</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">secretKey</span>: <span style="color:#ae81ff">database-secret-dev</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">remoteRef</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">key</span>: <span style="color:#ae81ff">database-secret-dev</span>
+</span></span></code></pre></div><p>这是一个 <em>ExternalSecrets</em> 定义文件，它告诉 ESO 从 Azure Key Vault 获取 <strong>database-secret-dev</strong> 密钥的值，并从中创建一个名为 <strong>database-secret</strong> 的 Kubernetes 密钥。如你所见，我们在此文件中没有实际的 Secret 值，因此将其存储在 Git 存储库中非常好。</p>
+<p>在使用 Secret 方面也是如此。你只需将该 <em>ExternalSecrets</em> 定义文件应用到你的集群，ESO 就会自动从定义的 Secret 保险库中获取 Secret 并从中创建一个实际的 Kubernetes  Secret 。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ kubectl apply -f external-secret.yaml
+</span></span><span style="display:flex;"><span>externalsecret.external-secrets.io/database-externalsecret created
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ kubectl get secret
+</span></span><span style="display:flex;"><span>NAME                                 TYPE                 DATA   AGE
+</span></span><span style="display:flex;"><span>example-secret                       Opaque               <span style="color:#ae81ff">2</span>      12m
+</span></span><span style="display:flex;"><span>database-secret                      Opaque               <span style="color:#ae81ff">2</span>      4s
+</span></span></code></pre></div><h2 id="总结">
+  总结
+  <a class="anchor" href="#%e6%80%bb%e7%bb%93">#</a>
+</h2>
+<p>如你所见，GitOps  Secret 问题可以得到解决。这甚至没有那么困难。但是，它确实包含一些额外的步骤和工具。但是一旦完成初始设置，在 GitOps 实践中安全地管理 Secret 就不需要其他的日常工作。</p>
+<p>如果你想了解更多有关 Secret 或 GitOps 的信息，可以在
+  <a href="https://releasehub.com/blog">我们的博客</a>上找到更多内容。</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/d20e45bc3094ae64dc357c50b05cf2cc08da89cf" title='Last modified by howieyuen | September 1, 2022' target="_blank" rel="noopener">
+      <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
+      <span>September 1, 2022</span>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#gitops-vs-secret">GitOps vs Secret</a></li>
+        <li><a href="#gitops-方式的-secret">GitOps 方式的 Secret</a>
+          <ul>
+            <li><a href="#sealedsecrets">SealedSecrets</a></li>
+            <li><a href="#externalsecrets">ExternalSecrets</a></li>
+          </ul>
+        </li>
+        <li><a href="#总结">总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

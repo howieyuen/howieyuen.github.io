@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表， 由一个 key 通过哈希函数得到哈希值， 64 位系统中就生成一个 64 bit 的哈希值， 由这个哈希值将 key 对应到不同的桶（bucket）中， 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
-1.1 hash 函数 #  首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找， 就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个 bucket 的哪个 cell。 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
-1.2 数据结构 #  hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。
-type hmap struct { 	// map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 	count int 	// map 状态标识，比如是否在被写或者迁移等，因为 map 不是线程安全的所以操作时需要判断 flags 	flags uint8 	// log_2 of buckets （最多可以放 loadFactor * 2^B 个元素即 6.">
+<meta name="description" content="1. 引言 # 粗略的讲，Go 语言中 map 采用的是哈希查找表， 由一个 key 通过哈希函数得到哈希值， 64 位系统中就生成一个 64 bit 的哈希值， 由这个哈希值将 key 对应到不同的桶（bucket）中， 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
+1.1 hash 函数 # 首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找， 就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个 bucket 的哪个 cell。 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
+1.2 数据结构 # hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。
+type hmap struct { // map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 count int // map 状态标识，比如是否在被写或者迁移等，因为 map 不是线程安全的所以操作时需要判断 flags flags uint8 // log_2 of buckets （最多可以放 loadFactor * 2^B 个元素即 6.">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="map" />
-<meta property="og:description" content="1. 引言 #  粗略的讲，Go 语言中 map 采用的是哈希查找表， 由一个 key 通过哈希函数得到哈希值， 64 位系统中就生成一个 64 bit 的哈希值， 由这个哈希值将 key 对应到不同的桶（bucket）中， 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
-1.1 hash 函数 #  首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找， 就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个 bucket 的哪个 cell。 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
-1.2 数据结构 #  hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。
-type hmap struct { 	// map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 	count int 	// map 状态标识，比如是否在被写或者迁移等，因为 map 不是线程安全的所以操作时需要判断 flags 	flags uint8 	// log_2 of buckets （最多可以放 loadFactor * 2^B 个元素即 6." />
+<meta property="og:description" content="1. 引言 # 粗略的讲，Go 语言中 map 采用的是哈希查找表， 由一个 key 通过哈希函数得到哈希值， 64 位系统中就生成一个 64 bit 的哈希值， 由这个哈希值将 key 对应到不同的桶（bucket）中， 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
+1.1 hash 函数 # 首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找， 就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个 bucket 的哪个 cell。 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
+1.2 数据结构 # hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。
+type hmap struct { // map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 count int // map 状态标识，比如是否在被写或者迁移等，因为 map 不是线程安全的所以操作时需要判断 flags flags uint8 // log_2 of buckets （最多可以放 loadFactor * 2^B 个元素即 6." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/data-structure/map/" /><meta property="article:section" content="docs" />
 
-<meta property="article:modified_time" content="2022-05-16T20:58:43+08:00" />
+<meta property="article:modified_time" content="2022-09-01T19:50:57+08:00" />
 
 <title>map | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.82c5dbd23447cee0b4c2aa3ed08ce0961faa40e1fa370eee4f8c9f02e0d46b5f.css" integrity="sha256-gsXb0jRHzuC0wqo&#43;0Izglh&#43;qQOH6Nw7uT4yfAuDUa18=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.5f4f9f57b16af9a200ba7f45544522393c7dda52a4e182ac6b3f0f153801d79a.js" integrity="sha256-X0&#43;fV7Fq&#43;aIAun9FVEUiOTx92lKk4YKsaz8PFTgB15o=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.c543337828d696a1c9b0d94c3a02f032d384cedded00d64ff265f62c14b14dea.js" integrity="sha256-xUMzeCjWlqHJsNlMOgLwMtOEzt3tANZP8mX2LBSxTeo=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -588,6 +588,40 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f44f2048d84a295b965240d95f5edc80" class="toggle"  />
+    <label for="section-f44f2048d84a295b965240d95f5edc80" class="flex justify-between">
+      <a role="button" class="">X as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/" class="">如何管理 GitOps Secret：详细指南</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
         </li>
@@ -893,9 +927,9 @@ Go 设计者为了让大家不依赖遍历的顺序，<strong>故意在实现 ma
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/792a8c28e8ef9fe56e1d9fd8a21baae57d7823ad" title='Last modified by howieyuen | May 16, 2022' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/d20e45bc3094ae64dc357c50b05cf2cc08da89cf" title='Last modified by howieyuen | September 1, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>May 16, 2022</span>
+      <span>September 1, 2022</span>
     </a>
   </div>
 
@@ -906,7 +940,7 @@ Go 设计者为了让大家不依赖遍历的顺序，<strong>故意在实现 ma
 
 
 
-  <script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
 
 
  

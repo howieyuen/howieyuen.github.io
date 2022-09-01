@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. 什么是 pprof #  Profiling 是指在程序执行过程中，收集能够反映程序执行状态的数据。 在软件工程中，性能分析（performance analysis，也称为 profiling）， 是以收集程序运行时信息为手段研究程序行为的分析方法，是一种动态程序分析的方法。
+<meta name="description" content="1. 什么是 pprof # Profiling 是指在程序执行过程中，收集能够反映程序执行状态的数据。 在软件工程中，性能分析（performance analysis，也称为 profiling）， 是以收集程序运行时信息为手段研究程序行为的分析方法，是一种动态程序分析的方法。
 Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供可视化的功能。它包含两个相关的库：
- runtime/pprof 对于只跑一次的程序，例如每天只跑一次的离线预处理程序，调用 pprof 包提供的函数，手动开启性能数据采集。 net/http/pprof 对于在线服务，对于一个 HTTP Server，访问 pprof 提供的 HTTP 接口，获得性能数据。 当然，实际上这里底层也是调用的 runtime/pprof 提供的函数，封装成接口对外提供网络访问。  2. pprof 的作用 #   下表来自 golang pprof 实战
-    类型 描述 备注     allocs 内存分配情况的采样信息 可以用浏览器打开，但可读性不高   blocks 阻塞操作情况的采样信息 可以用浏览器打开，但可读性不高   cmdline 当前程序的命令行调用 可以用浏览器打开，显示编译文件的临时目录   goroutine 当前所有协程的堆栈信息 可以用浏览器打开，但可读性不高   heap 堆上内存使用情况的采样信息 可以用浏览器打开，但可读性不高   mutex 锁争用情况的采样信息 可以用浏览器打开，但可读性不高   profile CPU 占用情况的采样信息 浏览器打开会下载文件   threadcreate 系统线程创建情况的采样信息 可以用浏览器打开，但可读性不高   trace 程序运行跟踪信息 浏览器打开会下载文件，本文不涉及，可另行参阅 深入浅出 Go trace    allocs 和 heap 采样的信息一致，不过前者是所有对象的内存分配，而 heap 则是活跃对象的内存分配。">
+runtime/pprof 对于只跑一次的程序，例如每天只跑一次的离线预处理程序，调用 pprof 包提供的函数，手动开启性能数据采集。 net/http/pprof 对于在线服务，对于一个 HTTP Server，访问 pprof 提供的 HTTP 接口，获得性能数据。 当然，实际上这里底层也是调用的 runtime/pprof 提供的函数，封装成接口对外提供网络访问。 2. pprof 的作用 # 下表来自 golang pprof 实战
+类型 描述 备注 allocs 内存分配情况的采样信息 可以用浏览器打开，但可读性不高 blocks 阻塞操作情况的采样信息 可以用浏览器打开，但可读性不高 cmdline 当前程序的命令行调用 可以用浏览器打开，显示编译文件的临时目录 goroutine 当前所有协程的堆栈信息 可以用浏览器打开，但可读性不高 heap 堆上内存使用情况的采样信息 可以用浏览器打开，但可读性不高 mutex 锁争用情况的采样信息 可以用浏览器打开，但可读性不高 profile CPU 占用情况的采样信息 浏览器打开会下载文件 threadcreate 系统线程创建情况的采样信息 可以用浏览器打开，但可读性不高 trace 程序运行跟踪信息 浏览器打开会下载文件，本文不涉及，可另行参阅 深入浅出 Go trace allocs 和 heap 采样的信息一致，不过前者是所有对象的内存分配，而 heap 则是活跃对象的内存分配。">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="pprof" />
-<meta property="og:description" content="1. 什么是 pprof #  Profiling 是指在程序执行过程中，收集能够反映程序执行状态的数据。 在软件工程中，性能分析（performance analysis，也称为 profiling）， 是以收集程序运行时信息为手段研究程序行为的分析方法，是一种动态程序分析的方法。
+<meta property="og:description" content="1. 什么是 pprof # Profiling 是指在程序执行过程中，收集能够反映程序执行状态的数据。 在软件工程中，性能分析（performance analysis，也称为 profiling）， 是以收集程序运行时信息为手段研究程序行为的分析方法，是一种动态程序分析的方法。
 Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供可视化的功能。它包含两个相关的库：
- runtime/pprof 对于只跑一次的程序，例如每天只跑一次的离线预处理程序，调用 pprof 包提供的函数，手动开启性能数据采集。 net/http/pprof 对于在线服务，对于一个 HTTP Server，访问 pprof 提供的 HTTP 接口，获得性能数据。 当然，实际上这里底层也是调用的 runtime/pprof 提供的函数，封装成接口对外提供网络访问。  2. pprof 的作用 #   下表来自 golang pprof 实战
-    类型 描述 备注     allocs 内存分配情况的采样信息 可以用浏览器打开，但可读性不高   blocks 阻塞操作情况的采样信息 可以用浏览器打开，但可读性不高   cmdline 当前程序的命令行调用 可以用浏览器打开，显示编译文件的临时目录   goroutine 当前所有协程的堆栈信息 可以用浏览器打开，但可读性不高   heap 堆上内存使用情况的采样信息 可以用浏览器打开，但可读性不高   mutex 锁争用情况的采样信息 可以用浏览器打开，但可读性不高   profile CPU 占用情况的采样信息 浏览器打开会下载文件   threadcreate 系统线程创建情况的采样信息 可以用浏览器打开，但可读性不高   trace 程序运行跟踪信息 浏览器打开会下载文件，本文不涉及，可另行参阅 深入浅出 Go trace    allocs 和 heap 采样的信息一致，不过前者是所有对象的内存分配，而 heap 则是活跃对象的内存分配。" />
+runtime/pprof 对于只跑一次的程序，例如每天只跑一次的离线预处理程序，调用 pprof 包提供的函数，手动开启性能数据采集。 net/http/pprof 对于在线服务，对于一个 HTTP Server，访问 pprof 提供的 HTTP 接口，获得性能数据。 当然，实际上这里底层也是调用的 runtime/pprof 提供的函数，封装成接口对外提供网络访问。 2. pprof 的作用 # 下表来自 golang pprof 实战
+类型 描述 备注 allocs 内存分配情况的采样信息 可以用浏览器打开，但可读性不高 blocks 阻塞操作情况的采样信息 可以用浏览器打开，但可读性不高 cmdline 当前程序的命令行调用 可以用浏览器打开，显示编译文件的临时目录 goroutine 当前所有协程的堆栈信息 可以用浏览器打开，但可读性不高 heap 堆上内存使用情况的采样信息 可以用浏览器打开，但可读性不高 mutex 锁争用情况的采样信息 可以用浏览器打开，但可读性不高 profile CPU 占用情况的采样信息 浏览器打开会下载文件 threadcreate 系统线程创建情况的采样信息 可以用浏览器打开，但可读性不高 trace 程序运行跟踪信息 浏览器打开会下载文件，本文不涉及，可另行参阅 深入浅出 Go trace allocs 和 heap 采样的信息一致，不过前者是所有对象的内存分配，而 heap 则是活跃对象的内存分配。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/tools/pprof/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2021-01-21T00:00:00+00:00" />
-<meta property="article:modified_time" content="2022-05-16T20:58:43+08:00" />
+<meta property="article:modified_time" content="2022-09-01T19:50:57+08:00" />
 
 <title>pprof | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.82c5dbd23447cee0b4c2aa3ed08ce0961faa40e1fa370eee4f8c9f02e0d46b5f.css" integrity="sha256-gsXb0jRHzuC0wqo&#43;0Izglh&#43;qQOH6Nw7uT4yfAuDUa18=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.5f4f9f57b16af9a200ba7f45544522393c7dda52a4e182ac6b3f0f153801d79a.js" integrity="sha256-X0&#43;fV7Fq&#43;aIAun9FVEUiOTx92lKk4YKsaz8PFTgB15o=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.c543337828d696a1c9b0d94c3a02f032d384cedded00d64ff265f62c14b14dea.js" integrity="sha256-xUMzeCjWlqHJsNlMOgLwMtOEzt3tANZP8mX2LBSxTeo=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -588,6 +588,40 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f44f2048d84a295b965240d95f5edc80" class="toggle"  />
+    <label for="section-f44f2048d84a295b965240d95f5edc80" class="flex justify-between">
+      <a role="button" class="">X as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/" class="">如何管理 GitOps Secret：详细指南</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
         </li>
@@ -1103,9 +1137,9 @@ width="35%"
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/792a8c28e8ef9fe56e1d9fd8a21baae57d7823ad" title='Last modified by howieyuen | May 16, 2022' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/d20e45bc3094ae64dc357c50b05cf2cc08da89cf" title='Last modified by howieyuen | September 1, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>May 16, 2022</span>
+      <span>September 1, 2022</span>
     </a>
   </div>
 
@@ -1116,7 +1150,7 @@ width="35%"
 
 
 
-  <script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
 
 
  

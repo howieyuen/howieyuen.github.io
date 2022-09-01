@@ -3,27 +3,29 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. 引言 #  Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。
-2. 设计原则 #  2.1 happens-before #  假设 A 和 B 表示一个多线程的程序执行的两个操作。如果 A happens-before B，那么 A 操作对内存的影响将对执行 B 的线程（且执行 B 之前）可见。
+<meta name="description" content="1. 引言 # Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。
+2. 设计原则 # 2.1 happens-before # 假设 A 和 B 表示一个多线程的程序执行的两个操作。如果 A happens-before B，那么 A 操作对内存的影响将对执行 B 的线程（且执行 B 之前）可见。
 单一 goroutine 中当满足下面条件时候，对一个变量的写操作 w1 对读操作 r1 可见：
- 读操作 r1 不是发生在写操作 w1 前 在读操作 r1 之前，写操作 w1 之后没有其他的写操作 w2 对变量进行了修改  多 goroutine 下则需要满足下面条件才能保证写操作 w1 对读操作 r1 可见：">
+读操作 r1 不是发生在写操作 w1 前 在读操作 r1 之前，写操作 w1 之后没有其他的写操作 w2 对变量进行了修改 多 goroutine 下则需要满足下面条件才能保证写操作 w1 对读操作 r1 可见：
+写操作 w1 先于读操作 r1 任何对变量的写操作 w2 要先于写操作 w1 或者晚于读操作 r1 关于 channel 的 happens-before 在 Go 的内存模型中提到了三种情况：">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="内存模型" />
-<meta property="og:description" content="1. 引言 #  Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。
-2. 设计原则 #  2.1 happens-before #  假设 A 和 B 表示一个多线程的程序执行的两个操作。如果 A happens-before B，那么 A 操作对内存的影响将对执行 B 的线程（且执行 B 之前）可见。
+<meta property="og:description" content="1. 引言 # Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。
+2. 设计原则 # 2.1 happens-before # 假设 A 和 B 表示一个多线程的程序执行的两个操作。如果 A happens-before B，那么 A 操作对内存的影响将对执行 B 的线程（且执行 B 之前）可见。
 单一 goroutine 中当满足下面条件时候，对一个变量的写操作 w1 对读操作 r1 可见：
- 读操作 r1 不是发生在写操作 w1 前 在读操作 r1 之前，写操作 w1 之后没有其他的写操作 w2 对变量进行了修改  多 goroutine 下则需要满足下面条件才能保证写操作 w1 对读操作 r1 可见：" />
+读操作 r1 不是发生在写操作 w1 前 在读操作 r1 之前，写操作 w1 之后没有其他的写操作 w2 对变量进行了修改 多 goroutine 下则需要满足下面条件才能保证写操作 w1 对读操作 r1 可见：
+写操作 w1 先于读操作 r1 任何对变量的写操作 w2 要先于写操作 w1 或者晚于读操作 r1 关于 channel 的 happens-before 在 Go 的内存模型中提到了三种情况：" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/memory-manage/memory-model/" /><meta property="article:section" content="docs" />
 
-<meta property="article:modified_time" content="2022-05-16T20:58:43+08:00" />
+<meta property="article:modified_time" content="2022-09-01T19:50:57+08:00" />
 
 <title>内存模型 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.82c5dbd23447cee0b4c2aa3ed08ce0961faa40e1fa370eee4f8c9f02e0d46b5f.css" integrity="sha256-gsXb0jRHzuC0wqo&#43;0Izglh&#43;qQOH6Nw7uT4yfAuDUa18=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.5f4f9f57b16af9a200ba7f45544522393c7dda52a4e182ac6b3f0f153801d79a.js" integrity="sha256-X0&#43;fV7Fq&#43;aIAun9FVEUiOTx92lKk4YKsaz8PFTgB15o=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.c543337828d696a1c9b0d94c3a02f032d384cedded00d64ff265f62c14b14dea.js" integrity="sha256-xUMzeCjWlqHJsNlMOgLwMtOEzt3tANZP8mX2LBSxTeo=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -588,6 +590,40 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f44f2048d84a295b965240d95f5edc80" class="toggle"  />
+    <label for="section-f44f2048d84a295b965240d95f5edc80" class="flex justify-between">
+      <a role="button" class="">X as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/" class="">如何管理 GitOps Secret：详细指南</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
         </li>
@@ -836,9 +872,9 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/792a8c28e8ef9fe56e1d9fd8a21baae57d7823ad" title='Last modified by howieyuen | May 16, 2022' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/d20e45bc3094ae64dc357c50b05cf2cc08da89cf" title='Last modified by howieyuen | September 1, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>May 16, 2022</span>
+      <span>September 1, 2022</span>
     </a>
   </div>
 
@@ -849,7 +885,7 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
 
 
  

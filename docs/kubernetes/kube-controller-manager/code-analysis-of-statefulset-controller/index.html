@@ -3,31 +3,31 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. StatefulSet 简介 #  Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
+<meta name="description" content="1. StatefulSet 简介 # Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
 这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
 是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
 适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。
-1.1 特点 #    稳定、唯一的网络标识符
+1.1 特点 # 稳定、唯一的网络标识符
 如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="Statefulset Controller 源码分析" />
-<meta property="og:description" content="1. StatefulSet 简介 #  Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
+<meta property="og:description" content="1. StatefulSet 简介 # Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
 这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
 是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
 适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。
-1.1 特点 #    稳定、唯一的网络标识符
+1.1 特点 # 稳定、唯一的网络标识符
 如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2020-10-12T00:00:00+00:00" />
-<meta property="article:modified_time" content="2022-05-16T20:58:43+08:00" />
+<meta property="article:modified_time" content="2022-09-01T19:50:57+08:00" />
 
 <title>Statefulset Controller 源码分析 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.82c5dbd23447cee0b4c2aa3ed08ce0961faa40e1fa370eee4f8c9f02e0d46b5f.css" integrity="sha256-gsXb0jRHzuC0wqo&#43;0Izglh&#43;qQOH6Nw7uT4yfAuDUa18=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.5f4f9f57b16af9a200ba7f45544522393c7dda52a4e182ac6b3f0f153801d79a.js" integrity="sha256-X0&#43;fV7Fq&#43;aIAun9FVEUiOTx92lKk4YKsaz8PFTgB15o=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.c543337828d696a1c9b0d94c3a02f032d384cedded00d64ff265f62c14b14dea.js" integrity="sha256-xUMzeCjWlqHJsNlMOgLwMtOEzt3tANZP8mX2LBSxTeo=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -582,6 +582,40 @@ https://github.com/alex-shpak/hugo-book
 
   
     <a href="/docs/translation/protobuf/language-guideproto3/" class="">语言指南（proto3）</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f44f2048d84a295b965240d95f5edc80" class="toggle"  />
+    <label for="section-f44f2048d84a295b965240d95f5edc80" class="flex justify-between">
+      <a role="button" class="">X as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/" class="">如何管理 GitOps Secret：详细指南</a>
   
 
         </li>
@@ -1323,9 +1357,9 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/792a8c28e8ef9fe56e1d9fd8a21baae57d7823ad" title='Last modified by howieyuen | May 16, 2022' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/d20e45bc3094ae64dc357c50b05cf2cc08da89cf" title='Last modified by howieyuen | September 1, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>May 16, 2022</span>
+      <span>September 1, 2022</span>
     </a>
   </div>
 
@@ -1336,7 +1370,7 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
 
 
  

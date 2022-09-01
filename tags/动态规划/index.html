@@ -15,7 +15,7 @@
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.82c5dbd23447cee0b4c2aa3ed08ce0961faa40e1fa370eee4f8c9f02e0d46b5f.css" integrity="sha256-gsXb0jRHzuC0wqo&#43;0Izglh&#43;qQOH6Nw7uT4yfAuDUa18=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.5f4f9f57b16af9a200ba7f45544522393c7dda52a4e182ac6b3f0f153801d79a.js" integrity="sha256-X0&#43;fV7Fq&#43;aIAun9FVEUiOTx92lKk4YKsaz8PFTgB15o=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.c543337828d696a1c9b0d94c3a02f032d384cedded00d64ff265f62c14b14dea.js" integrity="sha256-xUMzeCjWlqHJsNlMOgLwMtOEzt3tANZP8mX2LBSxTeo=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <link rel="alternate" type="application/rss+xml" href="https://howieyuen.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/index.xml" title="袁昊的学习笔记" />
@@ -581,6 +581,40 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f44f2048d84a295b965240d95f5edc80" class="toggle"  />
+    <label for="section-f44f2048d84a295b965240d95f5edc80" class="flex justify-between">
+      <a role="button" class="">X as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/" class="">如何管理 GitOps Secret：详细指南</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
         </li>
@@ -715,6 +749,16 @@ https://github.com/alex-shpak/hugo-book
       <ul>
       
         <li class="flex justify-between">
+          <a href="/categories/GitOps/">GitOps</a>
+          <span>1</span>
+        </li>
+      
+        <li class="flex justify-between">
+          <a href="/categories/Secret/">Secret</a>
+          <span>1</span>
+        </li>
+      
+        <li class="flex justify-between">
           <a href="/categories/protobuf/">protobuf</a>
           <span>2</span>
         </li>
@@ -791,8 +835,8 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-    <p>321. 拼接最大数 #   leetcode 链接： https://leetcode-cn.com/problems/create-maximum-number/
-  给定长度分别为 m 和 n 的两个数组，其元素由 0-9 构成，表示两个自然数各位上的数字。现在从这两个数组中选出 k (k &lt;= m + n) 个数字拼接成一个新的数，要求从同一个数组中取出的数字保持其在原数组中的相对顺序。
+    <p>321. 拼接最大数 # leetcode 链接： https://leetcode-cn.com/problems/create-maximum-number/
+给定长度分别为 m 和 n 的两个数组，其元素由 0-9 构成，表示两个自然数各位上的数字。现在从这两个数组中选出 k (k &lt;= m + n) 个数字拼接成一个新的数，要求从同一个数组中取出的数字保持其在原数组中的相对顺序。
 求满足该条件的最大数。结果返回一个表示该最大数的长度为 k 的数组。
 说明：请尽可能地优化你算法的时间和空间复杂度。
 示例 1:
@@ -824,13 +868,13 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-    <p>416. 分割等和子集 #   leetcode 链接： https://leetcode-cn.com/problems/partition-equal-subset-sum/
-  给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+    <p>416. 分割等和子集 # leetcode 链接： https://leetcode-cn.com/problems/partition-equal-subset-sum/
+给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
 注意：
- 每个数组中的元素不会超过 100 数组的大小不会超过 200  示例 1:
+每个数组中的元素不会超过 100 数组的大小不会超过 200 示例 1:
 输入：[1, 5, 11, 5] 输出：true 解释：数组可以分割成 [1, 5, 5] 和 [11]. 示例 2:
-输入：[1, 2, 3, 5] 输出：false 解释：数组不能分割成两个元素和相等的子集。  方法一：0-1 背包问题
-// 0-1 背包问题 // dp[i][target] 表示 nums[0, i] 区间内是否能找到和为 target 的组合 // 对于每个 nums[i]，如果 nums[i] &lt;= target，可以选择 or 不选，但只要有一个为 true，dp[i][target]=true // dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]] // 如果 nums[i] &gt; target，只能不选，故： // dp[i][target] = dp[i-1][target] func canPartition(nums []int) bool { 	n := len(nums) 	if n &lt; 2 { 	return false 	} 		sum := 0 	maxNum := 0 	for _, num := range nums { 	sum += num 	if num &gt; maxNum { 	maxNum = num 	} 	} 	// 和为奇数 	if sum%2 !
+输入：[1, 2, 3, 5] 输出：false 解释：数组不能分割成两个元素和相等的子集。 方法一：0-1 背包问题
+// 0-1 背包问题 // dp[i][target] 表示 nums[0, i] 区间内是否能找到和为 target 的组合 // 对于每个 nums[i]，如果 nums[i] &lt;= target，可以选择 or 不选，但只要有一个为 true，dp[i][target]=true // dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]] // 如果 nums[i] &gt; target，只能不选，故： // dp[i][target] = dp[i-1][target] func canPartition(nums []int) bool { n := len(nums) if n &lt; 2 { return false } sum := 0 maxNum := 0 for _, num := range nums { sum += num if num &gt; maxNum { maxNum = num } } // 和为奇数 if sum%2 !
         <a href="/docs/leetcode/0416/">...</a>
       
     </p>
@@ -853,7 +897,7 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
 
 
  
@@ -878,6 +922,16 @@ https://github.com/alex-shpak/hugo-book
     <li class="book-section-flat">
       <strong>Categories</strong>
       <ul>
+      
+        <li class="flex justify-between">
+          <a href="/categories/GitOps/">GitOps</a>
+          <span>1</span>
+        </li>
+      
+        <li class="flex justify-between">
+          <a href="/categories/Secret/">Secret</a>
+          <span>1</span>
+        </li>
       
         <li class="flex justify-between">
           <a href="/categories/protobuf/">protobuf</a>

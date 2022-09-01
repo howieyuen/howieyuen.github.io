@@ -3,29 +3,29 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. DaemonSet 简介 #  我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
+<meta name="description" content="1. DaemonSet 简介 # 我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
 这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。
 如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。
-1.1 应用场景 #   在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程  一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。
-1.2 基本功能 #   创建 删除  级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false   更新  RollingUpdate OnDelete   回滚  1.3 示例 #  apiVersion: apps/v1 kind: DaemonSet metadata:  name: fluentd-elasticsearch  namespace: kube-system  labels:  k8s-app: fluentd-logging spec:  selector:  matchLabels:  name: fluentd-elasticsearch  template:  metadata:  labels:  name: fluentd-elasticsearch  spec:  tolerations:  # this toleration is to have the daemonset runnable on master nodes  # remove it if your masters can&#39;t run pods  - key: node-role.">
+1.1 应用场景 # 在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程 一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。
+1.2 基本功能 # 创建 删除 级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false 更新 RollingUpdate OnDelete 回滚 1.3 示例 # apiVersion: apps/v1 kind: DaemonSet metadata: name: fluentd-elasticsearch namespace: kube-system labels: k8s-app: fluentd-logging spec: selector: matchLabels: name: fluentd-elasticsearch template: metadata: labels: name: fluentd-elasticsearch spec: tolerations: # this toleration is to have the daemonset runnable on master nodes # remove it if your masters can&#39;t run pods - key: node-role.">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="DaemonSet Controller 源码分析" />
-<meta property="og:description" content="1. DaemonSet 简介 #  我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
+<meta property="og:description" content="1. DaemonSet 简介 # 我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
 这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。
 如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。
-1.1 应用场景 #   在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程  一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。
-1.2 基本功能 #   创建 删除  级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false   更新  RollingUpdate OnDelete   回滚  1.3 示例 #  apiVersion: apps/v1 kind: DaemonSet metadata:  name: fluentd-elasticsearch  namespace: kube-system  labels:  k8s-app: fluentd-logging spec:  selector:  matchLabels:  name: fluentd-elasticsearch  template:  metadata:  labels:  name: fluentd-elasticsearch  spec:  tolerations:  # this toleration is to have the daemonset runnable on master nodes  # remove it if your masters can&#39;t run pods  - key: node-role." />
+1.1 应用场景 # 在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程 一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。
+1.2 基本功能 # 创建 删除 级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false 更新 RollingUpdate OnDelete 回滚 1.3 示例 # apiVersion: apps/v1 kind: DaemonSet metadata: name: fluentd-elasticsearch namespace: kube-system labels: k8s-app: fluentd-logging spec: selector: matchLabels: name: fluentd-elasticsearch template: metadata: labels: name: fluentd-elasticsearch spec: tolerations: # this toleration is to have the daemonset runnable on master nodes # remove it if your masters can&#39;t run pods - key: node-role." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2020-10-21T00:00:00+00:00" />
-<meta property="article:modified_time" content="2022-05-16T20:58:43+08:00" />
+<meta property="article:modified_time" content="2022-09-01T19:50:57+08:00" />
 
 <title>DaemonSet Controller 源码分析 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.82c5dbd23447cee0b4c2aa3ed08ce0961faa40e1fa370eee4f8c9f02e0d46b5f.css" integrity="sha256-gsXb0jRHzuC0wqo&#43;0Izglh&#43;qQOH6Nw7uT4yfAuDUa18=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.5f4f9f57b16af9a200ba7f45544522393c7dda52a4e182ac6b3f0f153801d79a.js" integrity="sha256-X0&#43;fV7Fq&#43;aIAun9FVEUiOTx92lKk4YKsaz8PFTgB15o=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.c543337828d696a1c9b0d94c3a02f032d384cedded00d64ff265f62c14b14dea.js" integrity="sha256-xUMzeCjWlqHJsNlMOgLwMtOEzt3tANZP8mX2LBSxTeo=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -580,6 +580,40 @@ https://github.com/alex-shpak/hugo-book
 
   
     <a href="/docs/translation/protobuf/language-guideproto3/" class="">语言指南（proto3）</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f44f2048d84a295b965240d95f5edc80" class="toggle"  />
+    <label for="section-f44f2048d84a295b965240d95f5edc80" class="flex justify-between">
+      <a role="button" class="">X as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/" class="">如何管理 GitOps Secret：详细指南</a>
   
 
         </li>
@@ -1424,9 +1458,9 @@ op1.1.2 --> op1.1.2.1(dsc.nodeShouldRunDaemonPod)
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/792a8c28e8ef9fe56e1d9fd8a21baae57d7823ad" title='Last modified by howieyuen | May 16, 2022' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/d20e45bc3094ae64dc357c50b05cf2cc08da89cf" title='Last modified by howieyuen | September 1, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>May 16, 2022</span>
+      <span>September 1, 2022</span>
     </a>
   </div>
 
@@ -1437,7 +1471,7 @@ op1.1.2 --> op1.1.2.1(dsc.nodeShouldRunDaemonPod)
 
 
 
-  <script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
 
 
  

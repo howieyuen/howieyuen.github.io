@@ -4,30 +4,32 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="注：本文转自 图解 kubernetes 中基于 etcd 的 watch 关键设计
- 本文介绍了 kubernetes 针对 etcd 的 watch 场景，k8s 在性能优化上面的一些设计， 逐个介绍缓存、定时器、序列化缓存、bookmark 机制、forget 机制、 针对数据的索引与 ringbuffer 等组件的场景以及解决的问题， 希望能帮助到那些对 apiserver 中的 watch 机制实现感兴趣的朋友。
-1. 事件驱动与控制器 #   k8s 中并没有将业务的具体处理逻辑耦合在 rest 接口中，rest 接口只负责数据的存储， 通过控制器模式，分离数据存储与业务逻辑的耦合，保证 apiserver 业务逻辑的简洁。
- 控制器通过 watch 接口来感知对应的资源的数据变更，从而根据资源对象中的期望状态与当前状态之间的差异， 来决策业务逻辑的控制，watch 本质上做的事情其实就是将感知到的事件发生给关注该事件的控制器。
-2. Watch 的核心机制 #  这里我们先介绍基于 etcd 实现的基础的 watch 模块。
-2.1 事件类型与 etcd #   一个数据变更本质上无非就是三种类型：新增、更新和删除， 其中新增和删除都比较容易因为都可以通过当前数据获取，而更新则可能需要获取之前的数据， 这里其实就是借助了 etcd 中 revision 和 mvcc 机制来实现，这样就可以获取到之前的状态和更新后的状态， 并且获取后续的通知。">
+本文介绍了 kubernetes 针对 etcd 的 watch 场景，k8s 在性能优化上面的一些设计， 逐个介绍缓存、定时器、序列化缓存、bookmark 机制、forget 机制、 针对数据的索引与 ringbuffer 等组件的场景以及解决的问题， 希望能帮助到那些对 apiserver 中的 watch 机制实现感兴趣的朋友。
+1. 事件驱动与控制器 # k8s 中并没有将业务的具体处理逻辑耦合在 rest 接口中，rest 接口只负责数据的存储， 通过控制器模式，分离数据存储与业务逻辑的耦合，保证 apiserver 业务逻辑的简洁。
+控制器通过 watch 接口来感知对应的资源的数据变更，从而根据资源对象中的期望状态与当前状态之间的差异， 来决策业务逻辑的控制，watch 本质上做的事情其实就是将感知到的事件发生给关注该事件的控制器。
+2. Watch 的核心机制 # 这里我们先介绍基于 etcd 实现的基础的 watch 模块。
+2.1 事件类型与 etcd # 一个数据变更本质上无非就是三种类型：新增、更新和删除， 其中新增和删除都比较容易因为都可以通过当前数据获取，而更新则可能需要获取之前的数据， 这里其实就是借助了 etcd 中 revision 和 mvcc 机制来实现，这样就可以获取到之前的状态和更新后的状态， 并且获取后续的通知。
+2.2 事件管道 # 事件管道则是负责事件的传递，在 watch 的实现中通过两级管道来实现消息的分发， 首先通过 watch etcd 中的 key 获取感兴趣的事件，并进行数据的解析， 完成从 bytes 到内部事件的转换并且发送到输入管道 (incomingEventChan) 中， 然后后台会有线程负责输入管道中获取数据，并进行解析发送到输出管道 (resultChan) 中， 后续会从该管道来进行事件的读取发送给对应的客户端。">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="watch 关键设计" />
 <meta property="og:description" content="注：本文转自 图解 kubernetes 中基于 etcd 的 watch 关键设计
- 本文介绍了 kubernetes 针对 etcd 的 watch 场景，k8s 在性能优化上面的一些设计， 逐个介绍缓存、定时器、序列化缓存、bookmark 机制、forget 机制、 针对数据的索引与 ringbuffer 等组件的场景以及解决的问题， 希望能帮助到那些对 apiserver 中的 watch 机制实现感兴趣的朋友。
-1. 事件驱动与控制器 #   k8s 中并没有将业务的具体处理逻辑耦合在 rest 接口中，rest 接口只负责数据的存储， 通过控制器模式，分离数据存储与业务逻辑的耦合，保证 apiserver 业务逻辑的简洁。
- 控制器通过 watch 接口来感知对应的资源的数据变更，从而根据资源对象中的期望状态与当前状态之间的差异， 来决策业务逻辑的控制，watch 本质上做的事情其实就是将感知到的事件发生给关注该事件的控制器。
-2. Watch 的核心机制 #  这里我们先介绍基于 etcd 实现的基础的 watch 模块。
-2.1 事件类型与 etcd #   一个数据变更本质上无非就是三种类型：新增、更新和删除， 其中新增和删除都比较容易因为都可以通过当前数据获取，而更新则可能需要获取之前的数据， 这里其实就是借助了 etcd 中 revision 和 mvcc 机制来实现，这样就可以获取到之前的状态和更新后的状态， 并且获取后续的通知。" />
+本文介绍了 kubernetes 针对 etcd 的 watch 场景，k8s 在性能优化上面的一些设计， 逐个介绍缓存、定时器、序列化缓存、bookmark 机制、forget 机制、 针对数据的索引与 ringbuffer 等组件的场景以及解决的问题， 希望能帮助到那些对 apiserver 中的 watch 机制实现感兴趣的朋友。
+1. 事件驱动与控制器 # k8s 中并没有将业务的具体处理逻辑耦合在 rest 接口中，rest 接口只负责数据的存储， 通过控制器模式，分离数据存储与业务逻辑的耦合，保证 apiserver 业务逻辑的简洁。
+控制器通过 watch 接口来感知对应的资源的数据变更，从而根据资源对象中的期望状态与当前状态之间的差异， 来决策业务逻辑的控制，watch 本质上做的事情其实就是将感知到的事件发生给关注该事件的控制器。
+2. Watch 的核心机制 # 这里我们先介绍基于 etcd 实现的基础的 watch 模块。
+2.1 事件类型与 etcd # 一个数据变更本质上无非就是三种类型：新增、更新和删除， 其中新增和删除都比较容易因为都可以通过当前数据获取，而更新则可能需要获取之前的数据， 这里其实就是借助了 etcd 中 revision 和 mvcc 机制来实现，这样就可以获取到之前的状态和更新后的状态， 并且获取后续的通知。
+2.2 事件管道 # 事件管道则是负责事件的传递，在 watch 的实现中通过两级管道来实现消息的分发， 首先通过 watch etcd 中的 key 获取感兴趣的事件，并进行数据的解析， 完成从 bytes 到内部事件的转换并且发送到输入管道 (incomingEventChan) 中， 然后后台会有线程负责输入管道中获取数据，并进行解析发送到输出管道 (resultChan) 中， 后续会从该管道来进行事件的读取发送给对应的客户端。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2020-09-24T00:00:00+00:00" />
-<meta property="article:modified_time" content="2022-05-16T20:58:43+08:00" />
+<meta property="article:modified_time" content="2022-09-01T19:50:57+08:00" />
 
 <title>watch 关键设计 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.82c5dbd23447cee0b4c2aa3ed08ce0961faa40e1fa370eee4f8c9f02e0d46b5f.css" integrity="sha256-gsXb0jRHzuC0wqo&#43;0Izglh&#43;qQOH6Nw7uT4yfAuDUa18=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.5f4f9f57b16af9a200ba7f45544522393c7dda52a4e182ac6b3f0f153801d79a.js" integrity="sha256-X0&#43;fV7Fq&#43;aIAun9FVEUiOTx92lKk4YKsaz8PFTgB15o=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.c543337828d696a1c9b0d94c3a02f032d384cedded00d64ff265f62c14b14dea.js" integrity="sha256-xUMzeCjWlqHJsNlMOgLwMtOEzt3tANZP8mX2LBSxTeo=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -592,6 +594,40 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f44f2048d84a295b965240d95f5edc80" class="toggle"  />
+    <label for="section-f44f2048d84a295b965240d95f5edc80" class="flex justify-between">
+      <a role="button" class="">X as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/" class="">如何管理 GitOps Secret：详细指南</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
         </li>
@@ -935,9 +971,9 @@ bookmark 通过构建一种 BookMark 类型的事件来进行 revision 的传递
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/792a8c28e8ef9fe56e1d9fd8a21baae57d7823ad" title='Last modified by howieyuen | May 16, 2022' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/d20e45bc3094ae64dc357c50b05cf2cc08da89cf" title='Last modified by howieyuen | September 1, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>May 16, 2022</span>
+      <span>September 1, 2022</span>
     </a>
   </div>
 
@@ -948,7 +984,7 @@ bookmark 通过构建一种 BookMark 类型的事件来进行 revision 的传递
 
 
 
-  <script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
 
 
  

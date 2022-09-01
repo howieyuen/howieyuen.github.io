@@ -3,35 +3,35 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. Kubernetes 中的用户 #  所有 Kubernetes 集群都有两类用户：由 Kubernetes 管理的 ServiceAccount 和普通用户。
+<meta name="description" content="1. Kubernetes 中的用户 # 所有 Kubernetes 集群都有两类用户：由 Kubernetes 管理的 ServiceAccount 和普通用户。
 对于与普通用户，Kuernetes 使用以下方式管理：
- 负责分发私钥的管理员 类似 Keystone 或者 Google Accounts 这类用户数据库 包含用户名和密码列表的文件  因此，kubernetes 并不提供普通用户的定义，普通用户是无法通过 API 调用写入到集群中的。
+负责分发私钥的管理员 类似 Keystone 或者 Google Accounts 这类用户数据库 包含用户名和密码列表的文件 因此，kubernetes 并不提供普通用户的定义，普通用户是无法通过 API 调用写入到集群中的。
 尽管如此，通过集群的证书机构签名的合法证书的用户，kubernetes 依旧可以认为是合法用户。基于此，kubernetes 使用证书中的 subject.CommonName 字段来确定用户名，接下来，通过 RBAC 确认用户对某资源是否存在要求的操作权限。
 与此不同的 ServiceAccount，与 Namespace 绑定，与一组 Secret 所包含的凭据有关。这些凭据会挂载到 Pod 中，从而允许访问 kubernetes 的 API。
 API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他的视为匿名请求。这意味着集群内和集群外的每个进程向 kube-apiserver 发起请求时，都必须通过身份认证，否则会被视为匿名用户。
-2. 认证机制 #  目前 kubernetes 提供的认证机制丰富多样，尤其是身份验证，更是五花八门：
- 身份验证  X509 Client Cert Static Token File Bootstrap Tokens Static Password File（deprecated in v1.">
+2. 认证机制 # 目前 kubernetes 提供的认证机制丰富多样，尤其是身份验证，更是五花八门：
+身份验证 X509 Client Cert Static Token File Bootstrap Tokens Static Password File（deprecated in v1.16） ServiceAccount Token OpenID Connect Token Webhook Token Authentication Proxy 匿名请求 用户伪装 client-go 凭据插件 2.">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="认证机制" />
-<meta property="og:description" content="1. Kubernetes 中的用户 #  所有 Kubernetes 集群都有两类用户：由 Kubernetes 管理的 ServiceAccount 和普通用户。
+<meta property="og:description" content="1. Kubernetes 中的用户 # 所有 Kubernetes 集群都有两类用户：由 Kubernetes 管理的 ServiceAccount 和普通用户。
 对于与普通用户，Kuernetes 使用以下方式管理：
- 负责分发私钥的管理员 类似 Keystone 或者 Google Accounts 这类用户数据库 包含用户名和密码列表的文件  因此，kubernetes 并不提供普通用户的定义，普通用户是无法通过 API 调用写入到集群中的。
+负责分发私钥的管理员 类似 Keystone 或者 Google Accounts 这类用户数据库 包含用户名和密码列表的文件 因此，kubernetes 并不提供普通用户的定义，普通用户是无法通过 API 调用写入到集群中的。
 尽管如此，通过集群的证书机构签名的合法证书的用户，kubernetes 依旧可以认为是合法用户。基于此，kubernetes 使用证书中的 subject.CommonName 字段来确定用户名，接下来，通过 RBAC 确认用户对某资源是否存在要求的操作权限。
 与此不同的 ServiceAccount，与 Namespace 绑定，与一组 Secret 所包含的凭据有关。这些凭据会挂载到 Pod 中，从而允许访问 kubernetes 的 API。
 API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他的视为匿名请求。这意味着集群内和集群外的每个进程向 kube-apiserver 发起请求时，都必须通过身份认证，否则会被视为匿名用户。
-2. 认证机制 #  目前 kubernetes 提供的认证机制丰富多样，尤其是身份验证，更是五花八门：
- 身份验证  X509 Client Cert Static Token File Bootstrap Tokens Static Password File（deprecated in v1." />
+2. 认证机制 # 目前 kubernetes 提供的认证机制丰富多样，尤其是身份验证，更是五花八门：
+身份验证 X509 Client Cert Static Token File Bootstrap Tokens Static Password File（deprecated in v1.16） ServiceAccount Token OpenID Connect Token Webhook Token Authentication Proxy 匿名请求 用户伪装 client-go 凭据插件 2." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2020-11-22T00:00:00+00:00" />
-<meta property="article:modified_time" content="2022-05-16T20:58:43+08:00" />
+<meta property="article:modified_time" content="2022-09-01T19:50:57+08:00" />
 
 <title>认证机制 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.82c5dbd23447cee0b4c2aa3ed08ce0961faa40e1fa370eee4f8c9f02e0d46b5f.css" integrity="sha256-gsXb0jRHzuC0wqo&#43;0Izglh&#43;qQOH6Nw7uT4yfAuDUa18=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.5f4f9f57b16af9a200ba7f45544522393c7dda52a4e182ac6b3f0f153801d79a.js" integrity="sha256-X0&#43;fV7Fq&#43;aIAun9FVEUiOTx92lKk4YKsaz8PFTgB15o=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.c543337828d696a1c9b0d94c3a02f032d384cedded00d64ff265f62c14b14dea.js" integrity="sha256-xUMzeCjWlqHJsNlMOgLwMtOEzt3tANZP8mX2LBSxTeo=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -586,6 +586,40 @@ https://github.com/alex-shpak/hugo-book
 
   
     <a href="/docs/translation/protobuf/language-guideproto3/" class="">语言指南（proto3）</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f44f2048d84a295b965240d95f5edc80" class="toggle"  />
+    <label for="section-f44f2048d84a295b965240d95f5edc80" class="flex justify-between">
+      <a role="button" class="">X as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/" class="">如何管理 GitOps Secret：详细指南</a>
   
 
         </li>
@@ -1290,9 +1324,9 @@ sequenceDiagram
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/792a8c28e8ef9fe56e1d9fd8a21baae57d7823ad" title='Last modified by howieyuen | May 16, 2022' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/d20e45bc3094ae64dc357c50b05cf2cc08da89cf" title='Last modified by howieyuen | September 1, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>May 16, 2022</span>
+      <span>September 1, 2022</span>
     </a>
   </div>
 
@@ -1303,7 +1337,7 @@ sequenceDiagram
 
 
 
-  <script>(function(){function e(n){const e=window.getSelection(),t=document.createRange();t.selectNodeContents(n),e.removeAllRanges(),e.addRange(t)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
 
 
  
