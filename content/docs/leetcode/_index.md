@@ -1,6 +1,5 @@
 ---
-bookFlatSection: true
-bookCollapseSection: true
-weight: 4
 title: LeetCode
+weight: 5
+bookCollapseSection: true
 ---

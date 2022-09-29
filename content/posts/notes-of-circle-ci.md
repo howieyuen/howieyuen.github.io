@@ -11,17 +11,17 @@ CircleCI 是基于云的 CI/CD 工具，可自动执行软件构建和交付过�
 
 <!--more-->
 
-# 1. 基本概念
+# 基本概念
 
 首先介绍下 Circle CI 的[基本概念](https://circleci.com/docs/2.0/concepts/)，帮助大家理解 Circle CI 是如何管理 CI/CD 流程。
 
-## 1.1 管控层
+## 管控层
 
-### 1.1.1 Project
+### Project
 
 Circle CI 项目在你的 VCS（GitHub 或者 Bitbucket）中 ，共享代码库的名称。在 Circle CI 的主页中点击 _Projects_ 可以自由添加项目进入仪表盘，以追踪代码变更。
 
-### 1.1.2 Configuration
+### Configuration
 
 Circle CI 遵循配置即代码（Configuration as Code）原则，整个 CI/CD 的流程都是通过 _config.yml_ 文件，该文件位于项目根目录下的 _.circleci_ 文件夹中。以下按照术语和依赖性顺序，列举了 Circle CI 最常见的组件：
   - Pipeline：代码表整个配置，仅用于 Circle CI 云
@@ -29,7 +29,7 @@ Circle CI 遵循配置即代码（Configuration as Code）原则，整个 CI/CD 
   - Job：负责运行执行命令的一系列 Step
   - Step：运行命令（例如安装依赖项或运行测试）和 shell 脚本
   
-### 1.1.3 User Type
+### User Type
 
 大多数都是从 VCS 帐号中继承的权限，主要包括以下四种：
 
@@ -41,13 +41,13 @@ Circle CI 遵循配置即代码（Configuration as Code）原则，整个 CI/CD 
 - Circle CI 用户（Circle CI User）：可以使用用户名和密码登录 Circle CI 平台的任何人。
   
 
-## 1.2 配置层
+## 配置层
 
-### ~~1.2.1 Pipeline~~
+### Pipeline
 
 管道是触发项目工作时运行的全套流程，它包含了 Workflow，Workflow 会协调 Job，这些都应在项目的配置文件中。**Pipeline 在 Circle CI 2.X 版本不可用**。
 
-### 1.2.2 Orb
+### Orb
 
 [Orb](https://circleci.com/docs/2.0/orb-intro/) 是可重复使用的代码片段，有助于自动化重复流程、加快项目设置并使其易于与第三方工具集成。
 
@@ -63,7 +63,7 @@ workflow:
 			- maven/test
 ```
 
-### 1.2.3 Job
+### Job
 
 作业是配置的基础，也是 Step 的集合，根据需要运行命令/脚本。每个作业必须声明 Executor，它可以是：
 
@@ -72,7 +72,7 @@ workflow:
 - windows：必须使用 Window Orb
 - macos：必须执行 XCode 版本
 
-### 1.2.4 Executor 和 images
+### Executor 和 images
 
 每个作业都可以在唯一的执行器中运行，可以是 Docker 容器，也可以是 Linux/Windows 的虚拟机。**Circle CI 2.X 不支持 MacOS**。
 
@@ -101,7 +101,7 @@ jobs:
 ```
 
 
-### 1.2.5 Step
+### Step
 
 步骤通常是一组可执行命令，例如内置命令 `checkout` 通过 SSH 检查源码；`run` 可以自定义命令。命令可以定义成全局，供多次使用。
 
@@ -120,11 +120,11 @@ jobs:
           command: make test # 默认情况下，可执行命令在非登录 shell 中使用 /bin/bash -eo pipefail 选项运行。
 ```
 
-### 1.2.6 Image
+### Image
 
 镜像就是一个打包的系统，在 _.circleci/config.yml_ 中定义的主镜像，这是 Docker 或者其他执行器执行 Job 命令的地方。
 
-### 1.2.7 Workflow
+### Workflow
 
 工作流定义了 Job 列表及其运行顺序。可以并行、串行、按计划或使用 approval 的来运行 Job。
 
@@ -147,7 +147,7 @@ workflows:
             - hold
 ```
 
-### 1.2.8 Cache/Workspace/Artifact
+### Cache/Workspace/Artifact
 
 - Cache 在对象存储中保存的是文件或文件目录，例如依赖项或源代码。每个作业都可能包含特殊步骤，例如使用先前作业缓存的依赖项来加速构建。
 
@@ -214,17 +214,17 @@ jobs:
           destination: artifact-file
 ```
 
-## 1.3 小结
+## 小结
 
 走到这里，应该对 Circle CI 有了粗浅的认识，但想要上手甚至是玩转，还需要更多指导和实践。这是初次尝试 Circle CI 时写 [config.yml](https://github.com/howieyuen/hello-circle-ci/blob/circleci-project-setup/.circleci/config.yml)。当然 Circle CI 提供了丰富的配置项，详情可以移步这里：[Circle CI 配置参考](https://circleci.com/docs/2.0/configuration-reference/)。
 
 
 
-# 2. Orb 简介
+# Orb 简介
 
 Circle CI [Orb](https://circleci.com/docs/2.0/orb-concepts/) 是可共享的配置包，可以看做是 lib 库，选择合适的 Orb ，会让 Circle CI 配置编写更容易。Orb 中可配置元素主要包括：Command、Executor 和 Job。
 
-## 2.1 Command 示例
+## Command 示例
 
 ```yaml
 version: 2.1
@@ -248,7 +248,7 @@ jobs:
           to: 's3://my-s3-bucket-name'
 ```
 
-## 2.2 Executor 示例
+## Executor 示例
 
 ```yaml
 description: >
@@ -268,7 +268,7 @@ parameters:
     type: string
 ```
 
-## 2.3 Job 示例
+## Job 示例
 
 ```yaml
 version: 2.1
@@ -284,11 +284,11 @@ workflows:
 
 
 
-# 3. Orb 开发实践
+# Orb 开发实践
 
 Orb 实践，简单来说包括这些阶段：取名、分类、说明、context 限制、发布、升级。在实践之前，先安装 Orb 开发套件：[*circleci*](https://circleci.com/docs/2.0/local-cli/)。
 
-## 3.1 取名
+## 取名
 
 一个好的 Orb 命名，是由 Namespace + 名称组成，由正斜杠分隔。Namespace 代表拥有和维护 Orb 的个人、公司或组织，而 Orb 名称本身应描述提供的产品、服务或操作。取名之前，先注册 Namespace，这里需要关联 Circle CI 帐号，所以需要获取 [Access Token](https://app.circleci.com/settings/user/tokens)（注意保存），然后就可以使用[注册 Namespace](https://circleci.com/docs/2.0/orb-author-intro/#register-a-namespace) 命令 `circleci namespace create <name> <vcs-type> <org-name> [flags]`，详细如下：
 
@@ -305,7 +305,7 @@ Namespace `howieyuen-orb` created.
 Please note that any orbs you publish in this namespace are open orbs and are world-readable.
 ```
 
-## 3.2 初始化
+## 初始化
 
 *circleci* 工具提供了[初始化 Orb](https://circleci.com/docs/2.0/orb-author/#orb-development-kit) 命令：`circleci orb init`。它包含了分类、说明等操作。但有几个前置操作需要完成：
 
@@ -343,7 +343,7 @@ View orb publishing doc: https://circleci.com/docs/2.0/orb-author
 
 该步骤完成后，项目默认位于 alpha 分支，该分支代码是从模板克隆，模板详见[链接](https://github.com/CircleCI-Public/Orb-Project-Template)。
 
-## 3.3 发布
+## 发布
 
 在发布之前，可以将 alpha 分支，推送到远端，触发 _test-pack workflow_，执行基本验证、lint 和单元测试。
 
@@ -358,7 +358,7 @@ View orb publishing doc: https://circleci.com/docs/2.0/orb-author
 
 因此，发布版本，只需要修改 alpha 分支的 commit message，将 “skip” 改成 *increment* 任何一个值即可，Circle CI 就会触发 _integration_test_deploy_ 工作流，待完成后，即可在 [Orb 市场](https://circleci.com/developer/orbs)检索到刚才发布的 Orb：[howieyuen-orb/hello-circleci-orb@1.0.0](https://circleci.com/developer/orbs/orb/howieyuen-orb/hello-circleci-orb)。
 
-# 4. 参考资料
+# 参考资料
 
 - [Circle CI 基本概念]([https://circleci.com/docs/2.0/concepts/](https://circleci.com/docs/2.0/concepts/#))
 - [Circle CI 配置样例](https://circleci.com/docs/2.0/sample-config)

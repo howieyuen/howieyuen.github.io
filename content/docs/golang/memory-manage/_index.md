@@ -1,5 +1,5 @@
 ---
-weight: 3
-bookFlatSection: false
 title: 内存管理
+weight: 3
+bookCollapseSection: true
 ---
