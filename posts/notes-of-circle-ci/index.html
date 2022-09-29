@@ -14,7 +14,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/posts/notes-of-circle-ci/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-12-14T00:00:00+00:00" />
-<meta property="article:modified_time" content="2022-09-29T16:11:47+08:00" />
+<meta property="article:modified_time" content="2022-09-29T16:47:10+08:00" />
 
 <title>Circle CI 学习笔记 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
@@ -1259,7 +1259,7 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/1535ad5d940570eeed948be0098d8fc362e69564" title='Last modified by howieyuen | September 29, 2022' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/38c2321539c3e23fce15b48482f8a0d466494873" title='Last modified by howieyuen | September 29, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
       <span>September 29, 2022</span>
     </a>
@@ -1282,6 +1282,30 @@ https://github.com/alex-shpak/hugo-book
       
   
   <div class="book-comments">
+
+
+
+<div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script>
+  const gitalk = new Gitalk({
+    clientID: '25d476132e0758875147',
+    clientSecret: '024da24d24ebb684b7ea4c0d493ff531ad5a0c61',
+    repo: 'howieyuen.github.io',
+    owner: 'howieyuen',
+    admin: ['howieyuen'],
+    id: location.pathname, 
+    distractionFreeMode: false 
+  });
+  (function() {
+    if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+      document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
+      return;
+    }
+    gitalk.render('gitalk-container');
+  })();
+</script>
 
 </div>
   
