@@ -4,7 +4,8 @@
     <title>sig-network on 袁昊的学习笔记</title>
     <link>https://howieyuen.github.io/docs/kubernetes/sig-network/</link>
     <description>Recent content in sig-network on 袁昊的学习笔记</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/docs/kubernetes/sig-network/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://howieyuen.github.io/docs/kubernetes/sig-network/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>深入了解 Service</title>
       <link>https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/</link>

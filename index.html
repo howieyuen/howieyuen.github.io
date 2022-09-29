@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en-us" dir="ltr">
 <head>
-	<meta name="generator" content="Hugo 0.102.2" />
+	<meta name="generator" content="Hugo 0.104.1" />
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="">
+<meta name="description" content=" Introduction # 本站点包括以下几个模块：
+Golang Kubernetes Blogs Translation LeetCode Golang # 此章节主要记录 Go 语言底层实现，包括：
+数据结构： chan、map、slice 等； 语言基础： unsafe、 reflect 等； 内部工具：pprof 等 Kubernetes # 此章节主要记录 Kubernetes 的核心组件的设计与实现，包括
+kube-apiserver 中的认证机制、鉴权机制、垃圾回收等 kube-controller-manager 的源码分析，包括 GC、DaemonSet 和 StatefulSet 等 kube-scheduler 中的调度策略 kubelet 中的拓扑管理器、驱逐管理器等 kube-proxy 中关于 Service 的设计与实现 Blogs # 此章节主要记录的是暂未分类随笔，包括：
+Circle CI 学习笔记 Translation # 此章节主要记录一些优秀的英文文档，包括：
+protobuf 中的基础概念和使用指南 XaC 领域的 Secret as Code 设计 LeetCode # 此章节记录的是 LeetCode 题库中碰到的一些错题和难题，包括：
+No.321 拼接最大数 No.416 分割等和子集 ">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="介绍" />
 <meta property="og:description" content="" />
@@ -14,9 +20,9 @@
 <title>介绍 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
-<link rel="stylesheet" href="/book.min.82c5dbd23447cee0b4c2aa3ed08ce0961faa40e1fa370eee4f8c9f02e0d46b5f.css" integrity="sha256-gsXb0jRHzuC0wqo&#43;0Izglh&#43;qQOH6Nw7uT4yfAuDUa18=" crossorigin="anonymous">
+<link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.80e89632a22591a136c950793d775a0fecdbce8474a9ea2e633465a7d5d81a1b.js" integrity="sha256-gOiWMqIlkaE2yVB5PXdaD&#43;zbzoR0qeouYzRlp9XYGhs=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.814a49be84d14a844e6e7e4ba106fffd2a377994439df71572388d60b06575f0.js" integrity="sha256-gUpJvoTRSoRObn5LoQb//So3eZRDnfcVcjiNYLBldfA=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <link rel="alternate" type="application/rss+xml" href="https://howieyuen.github.io/index.xml" title="袁昊的学习笔记" />
@@ -65,7 +71,7 @@ https://github.com/alex-shpak/hugo-book
   <ul>
     
       
-        <li class="book-section-flat" >
+        <li>
           
   
   
@@ -84,7 +90,10 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>数据结构</span>
+    <input type="checkbox" id="section-aa0ad5dadefefc3354befb0f21b44571" class="toggle"  />
+    <label for="section-aa0ad5dadefefc3354befb0f21b44571" class="flex justify-between">
+      <a role="button" class="">数据结构</a>
+    </label>
   
 
           
@@ -141,7 +150,10 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>语言基础</span>
+    <input type="checkbox" id="section-9730b84098027970ce9876389c401abb" class="toggle"  />
+    <label for="section-9730b84098027970ce9876389c401abb" class="flex justify-between">
+      <a role="button" class="">语言基础</a>
+    </label>
   
 
           
@@ -185,7 +197,10 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>内存管理</span>
+    <input type="checkbox" id="section-84d526a58cfe5a50fb73329d6c7bd14a" class="toggle"  />
+    <label for="section-84d526a58cfe5a50fb73329d6c7bd14a" class="flex justify-between">
+      <a role="button" class="">内存管理</a>
+    </label>
   
 
           
@@ -216,7 +231,10 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>golang 工具</span>
+    <input type="checkbox" id="section-084099e607ed94fee6028accac1c176c" class="toggle"  />
+    <label for="section-084099e607ed94fee6028accac1c176c" class="flex justify-between">
+      <a role="button" class="">golang 工具</a>
+    </label>
   
 
           
@@ -246,7 +264,7 @@ https://github.com/alex-shpak/hugo-book
       
     
       
-        <li class="book-section-flat" >
+        <li>
           
   
   
@@ -265,7 +283,10 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>kube-apisever</span>
+    <input type="checkbox" id="section-103a3040e6af1931bd7a973aa3d5fe12" class="toggle"  />
+    <label for="section-103a3040e6af1931bd7a973aa3d5fe12" class="flex justify-between">
+      <a role="button" class="">kube-apisever</a>
+    </label>
   
 
           
@@ -348,7 +369,10 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>kube-controller-manager</span>
+    <input type="checkbox" id="section-55afec95d17025ab2841fd395bf5e066" class="toggle"  />
+    <label for="section-55afec95d17025ab2841fd395bf5e066" class="flex justify-between">
+      <a role="button" class="">kube-controller-manager</a>
+    </label>
   
 
           
@@ -418,7 +442,10 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>kube-scheduler</span>
+    <input type="checkbox" id="section-6c06d491bb5aface6ab2585a8049b13f" class="toggle"  />
+    <label for="section-6c06d491bb5aface6ab2585a8049b13f" class="flex justify-between">
+      <a role="button" class="">kube-scheduler</a>
+    </label>
   
 
           
@@ -449,7 +476,10 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>kubelet</span>
+    <input type="checkbox" id="section-89eea73f7e04e77c22ade24239d6a83e" class="toggle"  />
+    <label for="section-89eea73f7e04e77c22ade24239d6a83e" class="flex justify-between">
+      <a role="button" class="">kubelet</a>
+    </label>
   
 
           
@@ -493,7 +523,10 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>sig-network</span>
+    <input type="checkbox" id="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="toggle"  />
+    <label for="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="flex justify-between">
+      <a role="button" class="">sig-network</a>
+    </label>
   
 
           
@@ -622,7 +655,7 @@ https://github.com/alex-shpak/hugo-book
       
     
       
-        <li class="book-section-flat" >
+        <li>
           
   
   
@@ -685,19 +718,13 @@ https://github.com/alex-shpak/hugo-book
   
   <li>
     <a href="/posts/" >
-        Blog
+        Blogs
       </a>
   </li>
   
   <li>
     <a href="https://github.com/howieyuen/" target="_blank" rel="noopener">
         Github
-      </a>
-  </li>
-  
-  <li>
-    <a href="https://themes.gohugo.io/hugo-book/" target="_blank" rel="noopener">
-        Hugo Themes
       </a>
   </li>
   
@@ -742,7 +769,19 @@ https://github.com/alex-shpak/hugo-book
   <aside class="hidden clearfix">
     
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#introduction">Introduction</a>
+      <ul>
+        <li><a href="#golang">Golang</a></li>
+        <li><a href="#kubernetes">Kubernetes</a></li>
+        <li><a href="#blogs">Blogs</a></li>
+        <li><a href="#translation">Translation</a></li>
+        <li><a href="#leetcode">LeetCode</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 
 
 
@@ -753,7 +792,75 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"></article>
+  <article class="markdown"><h1 id="introduction">
+  Introduction
+  <a class="anchor" href="#introduction">#</a>
+</h1>
+<p>本站点包括以下几个模块：</p>
+<blockquote class="book-hint info">
+  <ul>
+<li>Golang</li>
+<li>Kubernetes</li>
+<li>Blogs</li>
+<li>Translation</li>
+<li>LeetCode</li>
+</ul>
+
+</blockquote>
+
+<h2 id="golang">
+  Golang
+  <a class="anchor" href="#golang">#</a>
+</h2>
+<p>此章节主要记录 Go 语言底层实现，包括：</p>
+<ul>
+<li>数据结构： <code>chan</code>、<code>map</code>、<code>slice</code> 等；</li>
+<li>语言基础： <code>unsafe</code>、 <code>reflect</code> 等；</li>
+<li>内部工具：<code>pprof</code> 等</li>
+</ul>
+<hr>
+<h2 id="kubernetes">
+  Kubernetes
+  <a class="anchor" href="#kubernetes">#</a>
+</h2>
+<p>此章节主要记录 Kubernetes 的核心组件的设计与实现，包括</p>
+<ul>
+<li>kube-apiserver 中的认证机制、鉴权机制、垃圾回收等</li>
+<li>kube-controller-manager 的源码分析，包括 GC、DaemonSet 和 StatefulSet 等</li>
+<li>kube-scheduler 中的调度策略</li>
+<li>kubelet 中的拓扑管理器、驱逐管理器等</li>
+<li>kube-proxy 中关于 Service 的设计与实现</li>
+</ul>
+<hr>
+<h2 id="blogs">
+  Blogs
+  <a class="anchor" href="#blogs">#</a>
+</h2>
+<p>此章节主要记录的是暂未分类随笔，包括：</p>
+<ul>
+<li>Circle CI 学习笔记</li>
+</ul>
+<hr>
+<h2 id="translation">
+  Translation
+  <a class="anchor" href="#translation">#</a>
+</h2>
+<p>此章节主要记录一些优秀的英文文档，包括：</p>
+<ul>
+<li>protobuf 中的基础概念和使用指南</li>
+<li>XaC 领域的 <code>Secret as Code</code> 设计</li>
+</ul>
+<hr>
+<h2 id="leetcode">
+  LeetCode
+  <a class="anchor" href="#leetcode">#</a>
+</h2>
+<p>此章节记录的是 LeetCode 题库中碰到的一些错题和难题，包括：</p>
+<ul>
+<li>No.321 拼接最大数</li>
+<li>No.416 分割等和子集</li>
+</ul>
+</article>
  
       
 
@@ -762,9 +869,9 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/dcc7dcbf362261f4f2d3831069f641ad673e7b66" title='Last modified by howieyuen | September 1, 2022' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/1535ad5d940570eeed948be0098d8fc362e69564" title='Last modified by howieyuen | September 29, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>September 1, 2022</span>
+      <span>September 29, 2022</span>
     </a>
   </div>
 
@@ -775,7 +882,7 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
 
 
  
@@ -783,6 +890,10 @@ https://github.com/alex-shpak/hugo-book
       </footer>
 
       
+  
+  <div class="book-comments">
+
+</div>
   
  
 
@@ -794,7 +905,19 @@ https://github.com/alex-shpak/hugo-book
       <div class="book-toc-content">
         
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#introduction">Introduction</a>
+      <ul>
+        <li><a href="#golang">Golang</a></li>
+        <li><a href="#kubernetes">Kubernetes</a></li>
+        <li><a href="#blogs">Blogs</a></li>
+        <li><a href="#translation">Translation</a></li>
+        <li><a href="#leetcode">LeetCode</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 
 
  

@@ -4,7 +4,8 @@
     <title>介绍 on 袁昊的学习笔记</title>
     <link>https://howieyuen.github.io/</link>
     <description>Recent content in 介绍 on 袁昊的学习笔记</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://howieyuen.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://howieyuen.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>如何管理 GitOps Secret：详细指南</title>
       <link>https://howieyuen.github.io/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/</link>
