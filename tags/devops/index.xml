@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>devops on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/tags/devops/</link>
+    <description>Recent content in devops on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 15 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/tags/devops/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DevOps VS GitOps</title>
+      <link>https://howieyuen.github.io/posts/devops-vs-gitops/</link>
+      <pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/posts/devops-vs-gitops/</guid>
+      <description>&lt;p&gt;GitOps 和 DevOps 正迅速成为开发团队的黄金标准方法。DevOps 文化代表了从传统软件和技术开发的转变，传统的软件和技术开发涉及从构思和概念到发布的线性路径，并鼓励协作和快速反馈，而不是孤立地工作。在本文中，我们将仔细研究 GitOps 与 DevOps，以帮助确定 GitOps 是否适用于您的软件开发项目。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
