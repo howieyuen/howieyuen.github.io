@@ -77,6 +77,18 @@ This is a reference guide – for a step by step example that uses many of the f
     </item>
     
     <item>
+      <title>Sealed Secrets</title>
+      <link>https://howieyuen.github.io/docs/secret-as-code/sealed-secrets/</link>
+      <pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/docs/secret-as-code/sealed-secrets/</guid>
+      <description>概述 # Sealed Secrets 由两个部分组成：
+集群侧控制器：sealed-secrets-controller 用户侧工具：kubeseal kubeseal 使用非对称加密算法，加密 Secret，加密结果仅有 sealed-secrets-controller 才能解密。 加密后的 Secret 编码在 SealedSecret 资源中，详细结构如下：
+apiVersion: bitnami.com/v1alpha1 kind: SealedSecret metadata: name: mysecret namespace: mynamespace spec: encryptedData: foo: AgBy3i4OJSWK+PiTySYZZA9rO43cGDEq..... 解密后的 Secret 如下：
+apiVersion: v1 kind: Secret metadata: name: mysecret namespace: mynamespace data: foo: YmFy # &amp;lt;- base64 encoded &amp;#34;bar&amp;#34; SealedSecret 和 Secret 的关系类似于 Deployment 和 Pod，SealedSecret 有个 template 字段，是生成的 Secret 的模板； 此二者之间的 labels 和 annotations 并不要求完成一致。 最终生成的 Secret 与 SealedSecret 相对独立，但 SealedSecret 的更新或删除，会连带到生成的 Secret。</description>
+    </item>
+    
+    <item>
       <title>Circle CI 学习笔记</title>
       <link>https://howieyuen.github.io/posts/notes-of-circle-ci/</link>
       <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>

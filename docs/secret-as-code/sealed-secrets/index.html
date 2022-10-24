@@ -3,16 +3,22 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="GitOps 和 DevOps 正迅速成为开发团队的黄金标准方法。DevOps 文化代表了从传统软件和技术开发的转变，传统的软件和技术开发涉及从构思和概念到发布的线性路径，并鼓励协作和快速反馈，而不是孤立地工作。在本文中，我们将仔细研究 GitOps 与 DevOps，以帮助确定 GitOps 是否适用于您的软件开发项目。">
+<meta name="description" content="概述 # Sealed Secrets 由两个部分组成：
+集群侧控制器：sealed-secrets-controller 用户侧工具：kubeseal kubeseal 使用非对称加密算法，加密 Secret，加密结果仅有 sealed-secrets-controller 才能解密。 加密后的 Secret 编码在 SealedSecret 资源中，详细结构如下：
+apiVersion: bitnami.com/v1alpha1 kind: SealedSecret metadata: name: mysecret namespace: mynamespace spec: encryptedData: foo: AgBy3i4OJSWK&#43;PiTySYZZA9rO43cGDEq..... 解密后的 Secret 如下：
+apiVersion: v1 kind: Secret metadata: name: mysecret namespace: mynamespace data: foo: YmFy # &lt;- base64 encoded &#34;bar&#34; SealedSecret 和 Secret 的关系类似于 Deployment 和 Pod，SealedSecret 有个 template 字段，是生成的 Secret 的模板； 此二者之间的 labels 和 annotations 并不要求完成一致。 最终生成的 Secret 与 SealedSecret 相对独立，但 SealedSecret 的更新或删除，会连带到生成的 Secret。">
 <meta name="theme-color" content="#FFFFFF">
-<meta name="color-scheme" content="light dark"><meta property="og:title" content="DevOps VS GitOps" />
-<meta property="og:description" content="GitOps 和 DevOps 正迅速成为开发团队的黄金标准方法。DevOps 文化代表了从传统软件和技术开发的转变，传统的软件和技术开发涉及从构思和概念到发布的线性路径，并鼓励协作和快速反馈，而不是孤立地工作。在本文中，我们将仔细研究 GitOps 与 DevOps，以帮助确定 GitOps 是否适用于您的软件开发项目。" />
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="Sealed Secrets" />
+<meta property="og:description" content="概述 # Sealed Secrets 由两个部分组成：
+集群侧控制器：sealed-secrets-controller 用户侧工具：kubeseal kubeseal 使用非对称加密算法，加密 Secret，加密结果仅有 sealed-secrets-controller 才能解密。 加密后的 Secret 编码在 SealedSecret 资源中，详细结构如下：
+apiVersion: bitnami.com/v1alpha1 kind: SealedSecret metadata: name: mysecret namespace: mynamespace spec: encryptedData: foo: AgBy3i4OJSWK&#43;PiTySYZZA9rO43cGDEq..... 解密后的 Secret 如下：
+apiVersion: v1 kind: Secret metadata: name: mysecret namespace: mynamespace data: foo: YmFy # &lt;- base64 encoded &#34;bar&#34; SealedSecret 和 Secret 的关系类似于 Deployment 和 Pod，SealedSecret 有个 template 字段，是生成的 Secret 的模板； 此二者之间的 labels 和 annotations 并不要求完成一致。 最终生成的 Secret 与 SealedSecret 相对独立，但 SealedSecret 的更新或删除，会连带到生成的 Secret。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://howieyuen.github.io/posts/devops-vs-gitops/" /><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/secret-as-code/sealed-secrets/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2022-10-15T00:00:00+00:00" />
 <meta property="article:modified_time" content="2022-10-24T20:25:06+08:00" />
 
-<title>DevOps VS GitOps | 袁昊的学习笔记</title>
+<title>Sealed Secrets | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
@@ -569,7 +575,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/sealed-secrets/" class="">Sealed Secrets</a>
+    <a href="/docs/secret-as-code/sealed-secrets/" class="active">Sealed Secrets</a>
   
 
         </li>
@@ -780,7 +786,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>DevOps VS GitOps</strong>
+  <strong>Sealed Secrets</strong>
 
   <label for="toc-control">
     
@@ -796,23 +802,20 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#devops">DevOps</a>
+    <li><a href="#概述">概述</a></li>
+    <li><a href="#安装">安装</a>
       <ul>
-        <li><a href="#工作流">工作流</a></li>
+        <li><a href="#kubeseal">kubeseal</a></li>
+        <li><a href="#sealed-secrets-controller">sealed-secrets-controller</a></li>
       </ul>
     </li>
-    <li><a href="#gitops">GitOps</a>
+    <li><a href="#原理">原理</a>
       <ul>
-        <li><a href="#工作流-1">工作流</a></li>
-        <li><a href="#部署策略">部署策略</a>
-          <ul>
-            <li><a href="#基于-push">基于 Push</a></li>
-            <li><a href="#基于-pull">基于 Pull</a></li>
-          </ul>
-        </li>
+        <li><a href="#加密">加密</a></li>
+        <li><a href="#解密">解密</a></li>
       </ul>
     </li>
-    <li><a href="#小结">小结</a></li>
+    <li><a href="#总结">总结</a></li>
     <li><a href="#参考资料">参考资料</a></li>
   </ul>
 </nav>
@@ -826,156 +829,113 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-<article class="markdown">
-  <h1>
-    <a href="/posts/devops-vs-gitops/">DevOps VS GitOps</a>
-  </h1>
-  
-  <h5>October 15, 2022</h5>
-
-
-
-  
-  <div>
-    
-      <a href="/categories/ops/">ops</a>
-  </div>
-  
-
-  
-  <div>
-    
-      <a href="/tags/devops/">devops</a>, 
-      <a href="/tags/gitops/">gitops</a>
-  </div>
-  
-
-
-
-<p>GitOps 和 DevOps 正迅速成为开发团队的黄金标准方法。DevOps 文化代表了从传统软件和技术开发的转变，传统的软件和技术开发涉及从构思和概念到发布的线性路径，并鼓励协作和快速反馈，而不是孤立地工作。在本文中，我们将仔细研究 GitOps 与 DevOps，以帮助确定 GitOps 是否适用于您的软件开发项目。</p>
-<h1 id="devops">
-  DevOps
-  <a class="anchor" href="#devops">#</a>
+  <article class="markdown"><h1 id="概述">
+  概述
+  <a class="anchor" href="#%e6%a6%82%e8%bf%b0">#</a>
 </h1>
-<p>从字面上来看，&ldquo;DevOps&rdquo; 一词是由英文 Development（开发）和 Operations（运维）组合而成，但它所代表的理念和实践要比这广阔的多。DevOps 涵盖了安全、协作方式、数据分析等许多方面。但它是什么呢？
-DevOps 强调通过一系列手段来实现既快又稳的工作流程，使每个想法（比如一个新的软件功能，一个功能增强请求或者一个 bug 修复）在从开发到生产环境部署的整个流程中，都能不断地为用户带来价值。这种方式需要开发团队和运维团队密切交流、高效协作并且彼此体谅。此外，DevOps 还要能够方便扩展，灵活部署。有了 DevOps，需求最迫切的工作就能通过自助服务和自动化得到解决；通常在标准开发环境编写代码的开发人员也可与运维人员紧密合作，加速软件的构建、测试和发布，同时保障开发成果的稳定可靠。
-一句话总结：DevOps 是文化、开发、运营和工具的结合体，可提高组织高速生产应用和服务的能力。</p>
-<h2 id="工作流">
-  工作流
-  <a class="anchor" href="#%e5%b7%a5%e4%bd%9c%e6%b5%81">#</a>
-</h2>
-<p>
-  <img src="/posts/devops-vs-gitops/devops-workflow.png" alt="" /></p>
-<p>图中描述了 Dev 和 Ops 的角色任务是一个循环往复的过程：</p>
+<p>Sealed Secrets 由两个部分组成：</p>
 <ul>
-<li>Dev 开始研发迭代（Plan），开始编写代码（Code），完成开始编译（Build）和测试（Test），最后发布（Release）</li>
-<li>Ops 拿到发布打包开始部署（Deploy），并运维（Operate）和监控（Monitor），并收集新的功能需求，特性增强以及 bug 修复等，形成下一个迭代安排（Plan）</li>
+<li>集群侧控制器：<code>sealed-secrets-controller</code></li>
+<li>用户侧工具：<code>kubeseal</code></li>
 </ul>
-<h1 id="gitops">
-  GitOps
-  <a class="anchor" href="#gitops">#</a>
+<p>kubeseal 使用非对称加密算法，加密 Secret，加密结果仅有 sealed-secrets-controller 才能解密。
+加密后的 <code>Secret</code> 编码在 SealedSecret 资源中，详细结构如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">bitnami.com/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">SealedSecret</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mysecret</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">mynamespace</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">encryptedData</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">foo</span>: <span style="color:#ae81ff">AgBy3i4OJSWK+PiTySYZZA9rO43cGDEq.....</span>
+</span></span></code></pre></div><p>解密后的 <code>Secret</code> 如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Secret</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mysecret</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">mynamespace</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">data</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">foo</span>: <span style="color:#ae81ff">YmFy </span> <span style="color:#75715e"># &lt;- base64 encoded &#34;bar&#34;</span>
+</span></span></code></pre></div><p><code>SealedSecret</code> 和 <code>Secret</code> 的关系类似于 <code>Deployment</code> 和 <code>Pod</code>，<code>SealedSecret</code> 有个 <code>template</code> 字段，是生成的 <code>Secret</code> 的模板；
+此二者之间的 <code>labels</code> 和 <code>annotations</code> 并不要求完成一致。
+最终生成的 <code>Secret</code> 与 <code>SealedSecret</code> 相对独立，但 <code>SealedSecret</code> 的更新或删除，会连带到生成的 <code>Secret</code>。</p>
+<h1 id="安装">
+  安装
+  <a class="anchor" href="#%e5%ae%89%e8%a3%85">#</a>
 </h1>
-<p>GitOps 是一套使用 Git 来管理基础设施和应用配置的实践，而 Git 指的是一个开源版控制系统。GitOps 在运行过程中以 Git 为声明性基础设施和应用的单一事实来源。
-GitOps 使用 Git PR 来自动管理基础设施的置备和部署。Git  Repo 包含系统的全部状态，因此系统状态的修改痕迹既可查看也可审计。
-GitOps 围绕开发者经验而构建，可帮助团队使用与软件开发相同的工具和流程来管理基础架构。除了 Git 以外，GitOps 还可以按照自己的需求选择工具。
-一句话总结：GitOps 就是使用 Git 拉取请求来验证和自动部署系统基础设施变更的实践。</p>
-<h2 id="工作流-1">
-  工作流
-  <a class="anchor" href="#%e5%b7%a5%e4%bd%9c%e6%b5%81-1">#</a>
+<h2 id="kubeseal">
+  kubeseal
+  <a class="anchor" href="#kubeseal">#</a>
 </h2>
-<p>我们可以认为 GitOps 是基础架构即代码（IaC）的一个演变，以 Git 为基础架构配置的版本控制系统。IaC 通常采用声明式方法来管理基础架构，定义系统的期望状态，并跟踪系统的实际状态。
-与 IaC 一样，GitOps 也要求声明式描述系统的期望状态。通过使用声明式工具，所有的配置文件和源代码都可以在 Git 中进行版本控制。</p>
-<ol>
-<li>CI/CD 流程通常由外部事件触发，比如代码被推送到了存储库中。在 GitOps 工作流中，要进行变更，需要通过 PR 来修改 Git 仓库的状态。</li>
-<li>一旦这些 PR 被批准和合并，它们将自动应用于实时基础设施。开发人员可以使用他们的标准工作流以及 CI/CD 流水线。</li>
-<li>同时搭配使用 Kubernetes 与 GitOps 时，Operator 通常为 Kubernetes Operator。</li>
-<li>Operator 会将 Repo 中的期望状态与所部署基础设施的实际状态进行比较。每当注意到实际状态与存储库中的期望状态存在差异时，Operator 便会更新基础设施。Operator 还可以监控容器镜像仓库，并以同样的方式进行更新，从而部署新的镜像。</li>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>brew install kubeseal
+</span></span></code></pre></div><h2 id="sealed-secrets-controller">
+  sealed-secrets-controller
+  <a class="anchor" href="#sealed-secrets-controller">#</a>
+</h2>
+<p>kubeseal 默认尝试连接名为 <code>sealed-secrets-controller</code> 的控制器；在使用时，可以通过 <code>--controller-name</code> 传递名称，也可以在安装控制器时，通过 <code>--fullnameOverride</code> 指定控制器名称：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+</span></span><span style="display:flex;"><span>helm install sealed-secrets -n kube-system --set-string fullnameOverride<span style="color:#f92672">=</span>sealed-secrets-controller sealed-secrets/sealed-secrets 
+</span></span></code></pre></div><h1 id="原理">
+  原理
+  <a class="anchor" href="#%e5%8e%9f%e7%90%86">#</a>
+</h1>
+<p>
+  <img src="/secret-as-code/sealedsecrets.png" alt="" /></p>
+<h2 id="加密">
+  加密
+  <a class="anchor" href="#%e5%8a%a0%e5%af%86">#</a>
+</h2>
+<p>Step 1-5：使用 kubeseal 创建 SealedSecret 到本地</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 创建 JSON 格式的 k8s Secret</span>
+</span></span><span style="display:flex;"><span>echo -n bar | kubectl create secret generic mysecret --dry-run<span style="color:#f92672">=</span>client --from-file<span style="color:#f92672">=</span>foo<span style="color:#f92672">=</span>/dev/stdin -o json &gt;mysecret.json
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># kubeseal 加密 k8s Secret</span>
+</span></span><span style="display:flex;"><span>kubeseal &lt; mysecret.json &gt; mysealedsecret.json
+</span></span></code></pre></div><ol>
+<li>kubeseal 加密 k8s Secret</li>
+<li>kubeseal 请求 sealed-secrets-controller 加密</li>
+<li>sealed-secrets-controller 使用公钥加密</li>
+<li>加密结果返回，写入本地文件 mysealedsecret.json</li>
 </ol>
-<p>GitOps 中还有一个重要概念——可观察性，指可观察的任何系统状态。GitOps 的可观察性有助于确保观察到的状态（或实际状态）与理想状态一致。
-使用 PR 和 Git 之类的版本控制系统让部署过程清晰可见。这样一来，便可查看和跟踪对系统进行的任何变更，提供审计跟踪，并在出现问题时进行回滚变更。
-GitOps 工作流可以提高生产率，加快开发和部署速度，同时提高系统的稳定性和可靠性。</p>
-<h2 id="部署策略">
-  部署策略
-  <a class="anchor" href="#%e9%83%a8%e7%bd%b2%e7%ad%96%e7%95%a5">#</a>
+<blockquote class="book-hint info">
+  公钥/私钥保存在同 Namespace 下的一个 Secret 中，可通过指定 label 为 <code>sealedsecrets.bitnami.com/sealed-secrets-key</code> 查询
+</blockquote>
+
+<h2 id="解密">
+  解密
+  <a class="anchor" href="#%e8%a7%a3%e5%af%86">#</a>
 </h2>
-<p>GitOps 的部署策略有两种实现方式：基于推送（Push）和基于拉取（Pull）的部署。两种部署类型之间的区别在于如何确保部署环境实际上类似于所需的基础架构。在可能的情况下，应该首选基于 Pull 的方法，因为它被认为更安全，因此是实施 GitOps 的更好实践。</p>
-<h3 id="基于-push">
-  基于 Push
-  <a class="anchor" href="#%e5%9f%ba%e4%ba%8e-push">#</a>
-</h3>
-<p>基于 Push 的部署策略由流行的 CI/CD 工具实现，例如 Jenkins、CircleCI 或 Travis CI。应用程序的源代码与部署应用程序所需的配置一起位于应用程序代码库中。每当更新应用程序代码时，都会触发构建管道，构建容器镜像，最后使用新的部署描述符更新环境配置仓库。</p>
-<p>
-  <img src="/posts/devops-vs-gitops/push-based-gitops.png" alt="" /></p>
-<h3 id="基于-pull">
-  基于 Pull
-  <a class="anchor" href="#%e5%9f%ba%e4%ba%8e-pull">#</a>
-</h3>
-<p>基于 Pull 的部署策略使用与基于 Push 的基本相同的概念，但在部署流水线的工作方式上有所不同。传统的 CI/CD 管道由外部事件触发，例如当新代码被推送到应用程序存储库时。使用基于 Pull 的部署方法，引入了 Operator。它通过不断地将环境存储库中的所需状态与已部署基础架构中的实际状态进行比较，接管 Pipeline 的角色。每当发现差异时，Operator 都会更新基础架构以匹配环境存储库。此外，可以监控镜像仓库以查找要部署的镜像版本。</p>
-<p>
-  <img src="/posts/devops-vs-gitops/pull-based-gitops.png" alt="" /></p>
-<h1 id="小结">
-  小结
-  <a class="anchor" href="#%e5%b0%8f%e7%bb%93">#</a>
+<p>Step 5-8：使用 <code>kubectl</code> 创建 <code>SealedSecret</code> 到集群</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl create -f mysealedsecret.json
+</span></span></code></pre></div><ol start="5">
+<li>下发 mysealedsecret.json</li>
+<li><code>sealed-secrets-controller</code> 监听 CRD，发现新对象</li>
+<li><code>sealed-secrets-controller</code> 使用私钥解密</li>
+<li>生成 k8s <code>Secret</code>，并加入集群</li>
+</ol>
+<h1 id="总结">
+  总结
+  <a class="anchor" href="#%e6%80%bb%e7%bb%93">#</a>
 </h1>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>DevOps</th>
-<th>GitOps</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>定位</td>
-<td>文化，专注于 CI/CD 的文化</td>
-<td>技术，使用 Git 管理基础设施配置和软件部署的技术</td>
-</tr>
-<tr>
-<td>依赖</td>
-<td>CI/CD Pipeline</td>
-<td>Git</td>
-</tr>
-<tr>
-<td>协作</td>
-<td>云配置即代码和供应链管理</td>
-<td>Kubernetes、IaC 和各种 CI/CD Pipeline</td>
-</tr>
-<tr>
-<td>目标</td>
-<td>降低错误率，消除团队中的孤岛，减少成本工作等</td>
-<td>速度、准确性、清洁代码、提高生产力</td>
-</tr>
-<tr>
-<td>正确性</td>
-<td>不太关注代码的精度</td>
-<td>高度关注准确和简洁的代码</td>
-</tr>
-<tr>
-<td>灵活性</td>
-<td>不那么严格，更开放</td>
-<td>更严格，更少开放</td>
-</tr>
-</tbody>
-</table>
+<p>每个 SealedSecret 都使用其自己的随机非对称密钥加密，该密钥特定于 SealedSecret 名称和 Namespace。将加密数据复制粘贴到另一个 Secret 或另一个 Namespace 中将不起作用。</p>
+<ul>
+<li>✅ 设置和使用简单</li>
+<li>✅ 正确成熟且维护良好的解决方案</li>
+<li>❎ 常规 Secret 仍然暴露</li>
+<li>❎ 不能在 Secret 之外使用（例如 ConfigMap）</li>
+</ul>
 <h1 id="参考资料">
   参考资料
   <a class="anchor" href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>
 </h1>
 <ul>
 <li>
-  <a href="https://www.bunnyshell.com/blog/what-is-devops">DevOps in a Nutshell – What Is DevOps, Really?</a></li>
+  <a href="https://github.com/bitnami-labs/sealed-secrets">https://github.com/bitnami-labs/sealed-secrets</a></li>
 <li>
-  <a href="https://www.redhat.com/zh/topics/devops">Understanding DevOps</a></li>
+  <a href="https://aws.amazon.com/cn/blogs/china/managing-secrets-deployment-in-kubernetes-using-sealed-secrets/">https://aws.amazon.com/cn/blogs/china/managing-secrets-deployment-in-kubernetes-using-sealed-secrets/</a></li>
 <li>
-  <a href="https://www.redhat.com/zh/topics/devops/what-is-gitops">What is GitOps?</a></li>
-<li>
-  <a href="https://www.weave.works/technologies/gitops/">Guide To GitOps</a></li>
-<li>
-  <a href="https://www.aquasec.com/cloud-native-academy/devsecops/gitops-vs-devops/">GitOps vs DevOps: Differences and Why They are Better Together</a></li>
-<li>
-  <a href="https://eleks.com/blog/gitops-vs-devops/">GitOps vs DevOps – What’s the difference?</a></li>
-</ul></article>
+  <a href="https://learnk8s.io/kubernetes-secrets-in-git">https://learnk8s.io/kubernetes-secrets-in-git</a></li>
+</ul>
+</article>
  
       
 
@@ -1046,23 +1006,20 @@ GitOps 工作流可以提高生产率，加快开发和部署速度，同时提�
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#devops">DevOps</a>
+    <li><a href="#概述">概述</a></li>
+    <li><a href="#安装">安装</a>
       <ul>
-        <li><a href="#工作流">工作流</a></li>
+        <li><a href="#kubeseal">kubeseal</a></li>
+        <li><a href="#sealed-secrets-controller">sealed-secrets-controller</a></li>
       </ul>
     </li>
-    <li><a href="#gitops">GitOps</a>
+    <li><a href="#原理">原理</a>
       <ul>
-        <li><a href="#工作流-1">工作流</a></li>
-        <li><a href="#部署策略">部署策略</a>
-          <ul>
-            <li><a href="#基于-push">基于 Push</a></li>
-            <li><a href="#基于-pull">基于 Pull</a></li>
-          </ul>
-        </li>
+        <li><a href="#加密">加密</a></li>
+        <li><a href="#解密">解密</a></li>
       </ul>
     </li>
-    <li><a href="#小结">小结</a></li>
+    <li><a href="#总结">总结</a></li>
     <li><a href="#参考资料">参考资料</a></li>
   </ul>
 </nav>
