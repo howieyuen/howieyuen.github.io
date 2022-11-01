@@ -39,15 +39,14 @@ type: docs
 
 此章节主要记录的是暂未分类随笔，包括：
 - Circle CI 学习笔记
-
+- 如何管理 GitOps Secret：详细指南
+- DevOps vs GitOps
 ---
 
 ## Translation
 
 此章节主要记录一些优秀的英文文档，包括：
 - protobuf 中的基础概念和使用指南
-- XaC 领域的 `Secret as Code` 设计
-
 ---
 
 ## LeetCode

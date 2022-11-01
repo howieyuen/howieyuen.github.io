@@ -1,5 +1,5 @@
 ---
-title: DevOps VS GitOps
+title: DevOps vs GitOps
 date: 2022-10-15
 tags: [devops, gitops]
 categories: [ops]
