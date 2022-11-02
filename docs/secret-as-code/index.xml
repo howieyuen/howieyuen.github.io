@@ -32,5 +32,17 @@ SecretStore # SecretStore 将身份验证/访问的关注点与工作负载所�
 ExternalSecret # ExternalSecret 声明要获取的数据。它引用了一个知道如何访问该数据的 SecretStore。控制器使用该 ExternalSecret 作为创建 Secret 的蓝本。Namespace 级别。</description>
     </item>
     
+    <item>
+      <title>Secrets Store CSI Driver</title>
+      <link>https://howieyuen.github.io/docs/secret-as-code/secrets-store-csi-driver/</link>
+      <pubDate>Wed, 02 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/docs/secret-as-code/secrets-store-csi-driver/</guid>
+      <description>概述 # Secrets Store CSI Driver 通过 容器存储接口 (CSI) 卷将 Secret 存储与 Kubernetes 集成。
+Secrets Store CSI Driver secrets-store.csi.k8s.io 允许 Kubernetes 将外部机密存储中的多个 Secret、密钥和证书作为卷挂载到其 Pod 中。 附加卷后，其中的数据将被挂载到容器的文件系统中。
+Secrets Store CSI Driver 是一个 DaemonSet，可促进与每个 Kubelet 实例的通信。每个驱动程序 Pod 都有以下容器：
+node-driver-registrar：负责向 Kubelet 注册 CSI 驱动程序，以便它知道在哪个 unix 域套接字上发出 CSI 调用。 此 sidecar 容器由 Kubernetes CSI 团队提供。 secrets-store：实现 CSI 规范中描述的 CSI 节点服务 gRPC 服务。 它负责在 Pod 创建/删除期间挂载/卸载卷。 此组件在 secrets-store-csi-driver 仓库中开发和维护。 liveness-probe：负责监控 CSI 驱动的健康状况并向 Kubernetes 报告。 这使 Kubernetes 能够自动检测驱动程序的问题并重新启动 Pod 以尝试修复问题。 此 sidecar 容器由 Kubernetes CSI 团队提供。 Provider # CSI Driver 使用 gRPC 与 Provider 通信，以从外部 Secrets Store 获取挂载内容。 有关如何为 Driver 实现 Provider 和支的持 Provider 的标准的更多详细信息，请参阅 Providers。</description>
+    </item>
+    
   </channel>
 </rss>
