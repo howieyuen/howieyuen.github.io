@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="概述 # External Secrets Operator（ESO）是一个 Kubernetes Operator，它支持：
+AWS Secrets Manager HashiCorp Vault Google Secrets Manager Azure Key Vault IBM Cloud Secret Manager &hellip; 等外部 Secret 管理系统。Operator 从外部 API 读取信息并自动将值注入 Kubernetes Secret。 ESO 的目标是将来自外部 API 的机密信息同步到 Kubernetes。ESO 是自定义 API 资源的集合：
+SecretStore ExternalSecret ClusterSecretStore ClusterExternalSecret 它们为外部 API 提供了一个用户友好的抽象，帮助用户存储 Secret 并管理它的生命周期。
+SecretStore # SecretStore 将身份验证/访问的关注点与工作负载所需的实际 Secret 和配置分开。ExternalSecret 指定要获取的内容，SecretStore 指定如何访问。Namespace 级别。
+下面的代码示例是以 Vault 作为后端，使用静态 token：
+ExternalSecret # ExternalSecret 声明要获取的数据。它引用了一个知道如何访问该数据的 SecretStore。控制器使用该 ExternalSecret 作为创建 Secret 的蓝本。Namespace 级别。">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="External Secrets Operator" />
+<meta property="og:description" content="概述 # External Secrets Operator（ESO）是一个 Kubernetes Operator，它支持：
+AWS Secrets Manager HashiCorp Vault Google Secrets Manager Azure Key Vault IBM Cloud Secret Manager &hellip; 等外部 Secret 管理系统。Operator 从外部 API 读取信息并自动将值注入 Kubernetes Secret。 ESO 的目标是将来自外部 API 的机密信息同步到 Kubernetes。ESO 是自定义 API 资源的集合：
+SecretStore ExternalSecret ClusterSecretStore ClusterExternalSecret 它们为外部 API 提供了一个用户友好的抽象，帮助用户存储 Secret 并管理它的生命周期。
+SecretStore # SecretStore 将身份验证/访问的关注点与工作负载所需的实际 Secret 和配置分开。ExternalSecret 指定要获取的内容，SecretStore 指定如何访问。Namespace 级别。
+下面的代码示例是以 Vault 作为后端，使用静态 token：
+ExternalSecret # ExternalSecret 声明要获取的数据。它引用了一个知道如何访问该数据的 SecretStore。控制器使用该 ExternalSecret 作为创建 Secret 的蓝本。Namespace 级别。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/secret-as-code/external-secret-operator/" /><meta property="article:section" content="docs" />
+
+<meta property="article:modified_time" content="2022-11-02T21:04:31+08:00" />
+
+<title>External Secrets Operator | 袁昊的学习笔记</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.fecc813a634ad59d82583d3814cf9ca4e1ebcda403cc960c9a7849648995a347.js" integrity="sha256-/syBOmNK1Z2CWD04FM&#43;cpOHrzaQDzJYMmnhJZImVo0c=" crossorigin="anonymous"></script>
+
+  <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Golang</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-aa0ad5dadefefc3354befb0f21b44571" class="toggle"  />
+    <label for="section-aa0ad5dadefefc3354befb0f21b44571" class="flex justify-between">
+      <a role="button" class="">数据结构</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/chan/" class="">chan</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/map/" class="">map</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/slice/" class="">slice</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-9730b84098027970ce9876389c401abb" class="toggle"  />
+    <label for="section-9730b84098027970ce9876389c401abb" class="flex justify-between">
+      <a role="button" class="">语言基础</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/unsafe/" class="">unsafe</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/reflect/" class="">reflect</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-84d526a58cfe5a50fb73329d6c7bd14a" class="toggle"  />
+    <label for="section-84d526a58cfe5a50fb73329d6c7bd14a" class="flex justify-between">
+      <a role="button" class="">内存管理</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-084099e607ed94fee6028accac1c176c" class="toggle"  />
+    <label for="section-084099e607ed94fee6028accac1c176c" class="flex justify-between">
+      <a role="button" class="">golang 工具</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/tools/pprof/" class="">pprof</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Kubernetes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-103a3040e6af1931bd7a973aa3d5fe12" class="toggle"  />
+    <label for="section-103a3040e6af1931bd7a973aa3d5fe12" class="flex justify-between">
+      <a role="button" class="">kube-apisever</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-55afec95d17025ab2841fd395bf5e066" class="toggle"  />
+    <label for="section-55afec95d17025ab2841fd395bf5e066" class="flex justify-between">
+      <a role="button" class="">kube-controller-manager</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-6c06d491bb5aface6ab2585a8049b13f" class="toggle"  />
+    <label for="section-6c06d491bb5aface6ab2585a8049b13f" class="flex justify-between">
+      <a role="button" class="">kube-scheduler</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-89eea73f7e04e77c22ade24239d6a83e" class="toggle"  />
+    <label for="section-89eea73f7e04e77c22ade24239d6a83e" class="flex justify-between">
+      <a role="button" class="">kubelet</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="toggle"  />
+    <label for="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="flex justify-between">
+      <a role="button" class="">sig-network</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Secret as Code</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/secret-as-code/sealed-secrets/" class="">Sealed Secrets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/secret-as-code/external-secret-operator/" class="active">External Secrets Operator</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Translation</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f59f78b27df0d3218be457339234a283" class="toggle"  />
+    <label for="section-f59f78b27df0d3218be457339234a283" class="flex justify-between">
+      <a role="button" class="">Protocol Buffers</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/overview-of-protocal-buffers/" class="">概述</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/language-guideproto3/" class="">语言指南（proto3）</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a role="button" class="">LeetCode</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0321/" class="">321. 拼接最大数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="/posts/" >
+        Blogs
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://github.com/howieyuen/" target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>External Secrets Operator</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#概述">概述</a>
+          <ul>
+            <li><a href="#secretstore">SecretStore</a></li>
+            <li><a href="#externalsecret">ExternalSecret</a></li>
+            <li><a href="#clustersecretstore">ClusterSecretStore</a></li>
+            <li><a href="#clusterexternalsecret">ClusterExternalSecret</a></li>
+          </ul>
+        </li>
+        <li><a href="#原理">原理</a></li>
+        <li><a href="#安装">安装</a></li>
+        <li><a href="#演示">演示</a></li>
+        <li><a href="#参考资料">参考资料</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h2 id="概述">
+  概述
+  <a class="anchor" href="#%e6%a6%82%e8%bf%b0">#</a>
+</h2>
+<p>External Secrets Operator（ESO）是一个 Kubernetes Operator，它支持：</p>
+<ul>
+<li>
+  <a href="https://aws.amazon.com/secrets-manager/">AWS Secrets Manager</a></li>
+<li>
+  <a href="https://www.vaultproject.io/">HashiCorp Vault</a></li>
+<li>
+  <a href="https://cloud.google.com/secret-manager">Google Secrets Manager</a></li>
+<li>
+  <a href="https://azure.microsoft.com/en-us/services/key-vault/">Azure Key Vault</a></li>
+<li>
+  <a href="https://www.ibm.com/cloud/secrets-manager">IBM Cloud Secret Manager</a></li>
+<li>&hellip;</li>
+</ul>
+<p>等外部 Secret 管理系统。Operator 从外部 API 读取信息并自动将值注入 Kubernetes Secret。
+ESO 的目标是将来自外部 API 的机密信息同步到 Kubernetes。ESO 是自定义 API 资源的集合：</p>
+<ul>
+<li>SecretStore</li>
+<li>ExternalSecret</li>
+<li>ClusterSecretStore</li>
+<li>ClusterExternalSecret</li>
+</ul>
+<p>它们为外部 API 提供了一个用户友好的抽象，帮助用户存储 Secret 并管理它的生命周期。</p>
+<h3 id="secretstore">
+  SecretStore
+  <a class="anchor" href="#secretstore">#</a>
+</h3>
+<p><code>SecretStore</code> 将身份验证/访问的关注点与工作负载所需的实际 <code>Secret</code> 和配置分开。<code>ExternalSecret</code> 指定要获取的内容，<code>SecretStore</code> 指定如何访问。Namespace 级别。</p>
+<p>下面的代码示例是以 Vault 作为后端，使用静态 token：</p>
+<h3 id="externalsecret">
+  ExternalSecret
+  <a class="anchor" href="#externalsecret">#</a>
+</h3>
+<p><code>ExternalSecret</code> 声明要获取的数据。它引用了一个知道如何访问该数据的 <code>SecretStore</code>。控制器使用该 <code>ExternalSecret</code> 作为创建 <code>Secret</code> 的蓝本。Namespace 级别。</p>
+<h3 id="clustersecretstore">
+  ClusterSecretStore
+  <a class="anchor" href="#clustersecretstore">#</a>
+</h3>
+<p><code>ClusterSecretStore</code> 是一个全局的、集群范围的 <code>SecretStore</code>，可以从所有命名空间中引用。可以将它作为 Secret Provider 的中央网关。</p>
+<h3 id="clusterexternalsecret">
+  ClusterExternalSecret
+  <a class="anchor" href="#clusterexternalsecret">#</a>
+</h3>
+<p><code>ClusterExternalSecret</code> 是一个集群范围的资源，可用于将 <code>ExternalSecret</code> 推送到特定的命名空间。
+使用 <code>namespaceSelector</code> 可以选择命名空间，并且任何匹配的命名空间都将具有在其中创建的 <code>externalSecretSpec</code> 中指定的 <code>ExternalSecret</code>。</p>
+<h2 id="原理">
+  原理
+  <a class="anchor" href="#%e5%8e%9f%e7%90%86">#</a>
+</h2>
+<p>ESO 按照以下列方式同步 ExternalSecrets：</p>
+<ol>
+<li>ESO 使用 <code>spec.secretStoreRef</code> 来查找合适的 <code>SecretStore</code>。如果不存在或 <code>spec.controller</code> 字段不匹配，将丢弃不再处理。</li>
+<li>ESO 使用 <code>SecretStore.spec</code> 的指定凭据实例化外部 API 客户端。</li>
+<li>ESO 根据 <code>ExternalSecret</code> 的要求获取机密值，如果有必要，将对机密信息解码。</li>
+<li>ESO 根据 <code>ExternalSecret.target.template</code> 提供的模板创建 <code>Kind=Secret</code>。可以使用来自外部 API 的机密值对 <code>Secret.data</code> 进行模板化。</li>
+<li>ESO 确保机密值与外部 API 保持同步。</li>
+</ol>
+<p>
+  <img src="/secret-as-code/eso.png" alt="" /></p>
+<h2 id="安装">
+  安装
+  <a class="anchor" href="#%e5%ae%89%e8%a3%85">#</a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>helm repo add external-secrets https://charts.external-secrets.io
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>helm install external-secrets <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   external-secrets/external-secrets <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -n external-secrets <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --create-namespace <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --set installCRDs<span style="color:#f92672">=</span>true
+</span></span></code></pre></div><h2 id="演示">
+  演示
+  <a class="anchor" href="#%e6%bc%94%e7%a4%ba">#</a>
+</h2>
+<p>1、安装 vault</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>helm repo add hashicorp https://helm.releases.hashicorp.com
+</span></span><span style="display:flex;"><span>helm install vault hashicorp/vault --set <span style="color:#e6db74">&#34;server.dev.enabled=true&#34;</span>
+</span></span></code></pre></div><p>2、准备数据</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl exec -it vault-0 -- /bin/sh
+</span></span><span style="display:flex;"><span>vault kv put secret/foo my-value<span style="color:#f92672">=</span>s3cr3t
+</span></span></code></pre></div><p>3、创建 SecretStore，引用 Vault
+<details open><summary>secretstore-vault.yaml</summary>
+  <div class="markdown-inner">
+    <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">external-secrets.io/v1beta1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">SecretStore</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">vault-backend</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">provider</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">vault</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># vault kv put secret/foo my-value=s3cr3t</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">server</span>: <span style="color:#e6db74">&#34;http://vault.default.svc.cluster.local:8200&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">path</span>: <span style="color:#e6db74">&#34;secret&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">version</span>: <span style="color:#e6db74">&#34;v2&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">auth</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># points to a secret that contains a vault token</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># https://www.vaultproject.io/docs/auth/token</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">tokenSecretRef</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;vault-token&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">key</span>: <span style="color:#e6db74">&#34;token&#34;</span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Secret</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">vault-token</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">data</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">token</span>: <span style="color:#ae81ff">cm9vdA==</span> <span style="color:#75715e"># &#34;root&#34;</span>
+</span></span></code></pre></div>
+  </div>
+</details>
+</p>
+<p>4、创建 ExternalSecret
+<details open><summary>externalsecret-vault.yaml</summary>
+  <div class="markdown-inner">
+    <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">external-secrets.io/v1beta1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ExternalSecret</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">vault-example</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">refreshInterval</span>: <span style="color:#ae81ff">15s</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">secretStoreRef</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">vault-backend</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">SecretStore</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">target</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">example-of-vault-sync</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">data</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">secretKey</span>: <span style="color:#ae81ff">foobar</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">remoteRef</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">key</span>: <span style="color:#ae81ff">secret/foo</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">property</span>: <span style="color:#ae81ff">my-value</span>
+</span></span></code></pre></div>
+  </div>
+</details>
+</p>
+<p>5、验证同步结果</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ kubectl get secret example-of-vault-sync -ojsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.data.foobar}&#39;</span>|base64 -d
+</span></span><span style="display:flex;"><span>s3cr3t
+</span></span></code></pre></div><h2 id="参考资料">
+  参考资料
+  <a class="anchor" href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>
+</h2>
+<ul>
+<li>
+  <a href="https://github.com/external-secrets/external-secrets">https://github.com/external-secrets/external-secrets</a></li>
+<li>
+  <a href="https://external-secrets.io/v0.6.1/">https://external-secrets.io/v0.6.1/</a></li>
+<li>
+  <a href="https://www.infoq.com/articles/k8s-external-secrets-operator/">https://www.infoq.com/articles/k8s-external-secrets-operator/</a></li>
+</ul>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/b72d4d7046d3bd08da967f19567c1d8984d8a951" title='Last modified by howieyuen | November 2, 2022' target="_blank" rel="noopener">
+      <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
+      <span>November 2, 2022</span>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+
+
+<div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script>
+  const gitalk = new Gitalk({
+    clientID: 'b4cc17dbafc8ad637453',
+    clientSecret: '77b4685b4d6da0280eca116a66b6f01244033d35',
+    repo: 'howieyuen.github.io',
+    owner: 'howieyuen',
+    admin: ['howieyuen'],
+    id: location.pathname, 
+    distractionFreeMode: false 
+  });
+  (function() {
+    if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+      document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
+      return;
+    }
+    gitalk.render('gitalk-container');
+  })();
+</script>
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#概述">概述</a>
+          <ul>
+            <li><a href="#secretstore">SecretStore</a></li>
+            <li><a href="#externalsecret">ExternalSecret</a></li>
+            <li><a href="#clustersecretstore">ClusterSecretStore</a></li>
+            <li><a href="#clusterexternalsecret">ClusterExternalSecret</a></li>
+          </ul>
+        </li>
+        <li><a href="#原理">原理</a></li>
+        <li><a href="#安装">安装</a></li>
+        <li><a href="#演示">演示</a></li>
+        <li><a href="#参考资料">参考资料</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

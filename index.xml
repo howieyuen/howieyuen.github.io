@@ -66,6 +66,20 @@ This is a reference guide – for a step by step example that uses many of the f
     </item>
     
     <item>
+      <title>External Secrets Operator</title>
+      <link>https://howieyuen.github.io/docs/secret-as-code/external-secret-operator/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/docs/secret-as-code/external-secret-operator/</guid>
+      <description>概述 # External Secrets Operator（ESO）是一个 Kubernetes Operator，它支持：
+AWS Secrets Manager HashiCorp Vault Google Secrets Manager Azure Key Vault IBM Cloud Secret Manager &amp;hellip; 等外部 Secret 管理系统。Operator 从外部 API 读取信息并自动将值注入 Kubernetes Secret。 ESO 的目标是将来自外部 API 的机密信息同步到 Kubernetes。ESO 是自定义 API 资源的集合：
+SecretStore ExternalSecret ClusterSecretStore ClusterExternalSecret 它们为外部 API 提供了一个用户友好的抽象，帮助用户存储 Secret 并管理它的生命周期。
+SecretStore # SecretStore 将身份验证/访问的关注点与工作负载所需的实际 Secret 和配置分开。ExternalSecret 指定要获取的内容，SecretStore 指定如何访问。Namespace 级别。
+下面的代码示例是以 Vault 作为后端，使用静态 token：
+ExternalSecret # ExternalSecret 声明要获取的数据。它引用了一个知道如何访问该数据的 SecretStore。控制器使用该 ExternalSecret 作为创建 Secret 的蓝本。Namespace 级别。</description>
+    </item>
+    
+    <item>
       <title>Golang 中的 RSA 加解密算法</title>
       <link>https://howieyuen.github.io/posts/rsa-crypto-in-go/</link>
       <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
