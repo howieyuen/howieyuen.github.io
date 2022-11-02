@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en-us" dir="ltr">
 <head>
-	<meta name="generator" content="Hugo 0.104.3" />
+	<meta name="generator" content="Hugo 0.105.0">
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content=" Introduction # 本站点包括以下几个模块：
 Golang Kubernetes Blogs Translation LeetCode Golang # 此章节主要记录 Go 语言底层实现，包括：
 数据结构： chan、map、slice 等； 语言基础： unsafe、 reflect 等； 内部工具：pprof 等 Kubernetes # 此章节主要记录 Kubernetes 的核心组件的设计与实现，包括
 kube-apiserver 中的认证机制、鉴权机制、垃圾回收等 kube-controller-manager 的源码分析，包括 GC、DaemonSet 和 StatefulSet 等 kube-scheduler 中的调度策略 kubelet 中的拓扑管理器、驱逐管理器等 kube-proxy 中关于 Service 的设计与实现 Blogs # 此章节主要记录的是暂未分类随笔，包括：
-Circle CI 学习笔记 Translation # 此章节主要记录一些优秀的英文文档，包括：
-protobuf 中的基础概念和使用指南 XaC 领域的 Secret as Code 设计 LeetCode # 此章节记录的是 LeetCode 题库中碰到的一些错题和难题，包括：
+Circle CI 学习笔记 如何管理 GitOps Secret：详细指南 DevOps vs GitOps Translation # 此章节主要记录一些优秀的英文文档，包括：
+protobuf 中的基础概念和使用指南 LeetCode # 此章节记录的是 LeetCode 题库中碰到的一些错题和难题，包括：
 No.321 拼接最大数 No.416 分割等和子集 ">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="介绍" />
@@ -22,7 +22,7 @@ No.321 拼接最大数 No.416 分割等和子集 ">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.801c951efefcd80b2c70597f1990787f7d261223f103c993ae87f49cb06b9cbb.js" integrity="sha256-gByVHv782AsscFl/GZB4f30mEiPxA8mTrof0nLBrnLs=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.d185a08d939ca931cf8220a0a32c78e83fa1e0f502c11a73fb0b3ddedb364a36.js" integrity="sha256-0YWgjZOcqTHPgiCgoyx46D&#43;h4PUCwRpz&#43;ws93ts2SjY=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <link rel="alternate" type="application/rss+xml" href="https://howieyuen.github.io/index.xml" title="袁昊的学习笔记" />
@@ -646,40 +646,6 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
-      
-        <li>
-          
-  
-  
-
-  
-    <input type="checkbox" id="section-f44f2048d84a295b965240d95f5edc80" class="toggle"  />
-    <label for="section-f44f2048d84a295b965240d95f5edc80" class="flex justify-between">
-      <a role="button" class="">X as Code</a>
-    </label>
-  
-
-          
-  <ul>
-    
-      
-        <li>
-          
-  
-  
-
-  
-    <a href="/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/" class="">如何管理 GitOps Secret：详细指南</a>
-  
-
-        </li>
-      
-    
-  </ul>
-
-        </li>
-      
-    
   </ul>
 
         </li>
@@ -870,6 +836,8 @@ https://github.com/alex-shpak/hugo-book
 <p>此章节主要记录的是暂未分类随笔，包括：</p>
 <ul>
 <li>Circle CI 学习笔记</li>
+<li>如何管理 GitOps Secret：详细指南</li>
+<li>DevOps vs GitOps</li>
 </ul>
 <hr>
 <h2 id="translation">
@@ -879,7 +847,6 @@ https://github.com/alex-shpak/hugo-book
 <p>此章节主要记录一些优秀的英文文档，包括：</p>
 <ul>
 <li>protobuf 中的基础概念和使用指南</li>
-<li>XaC 领域的 <code>Secret as Code</code> 设计</li>
 </ul>
 <hr>
 <h2 id="leetcode">
@@ -900,9 +867,9 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/6af8e968b32d5882883dea4ad04d8f39f27fded9" title='Last modified by howieyuen | October 24, 2022' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/1f7fc5a5a76c5dbefb2bbf2140301cccacf1cf51" title='Last modified by howieyuen | November 2, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>October 24, 2022</span>
+      <span>November 2, 2022</span>
     </a>
   </div>
 

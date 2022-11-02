@@ -7,20 +7,6 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language><atom:link href="https://howieyuen.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>如何管理 GitOps Secret：详细指南</title>
-      <link>https://howieyuen.github.io/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/</link>
-      <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://howieyuen.github.io/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/</guid>
-      <description>原文链接： How to Manage GitOps Secrets: A Detailed Guide
-GitOps 正变得越来越流行。越来越多的公司开始使用 Git 作为其基础设施和应用程序配置的真实来源。然而，伴随其优势而来的是挑战。例如，如果你的所有配置都存储在 Git 中，你如何管理 Secret？你不能简单地将密码和令牌以明文形式提交到 Git 存储库，即使该存储库是私有的并且只有少数人可以访问它。在这篇文章中，你将学习如何安全地管理 GitOps Secret 。敬请关注。
-GitOps vs Secret # 如果你以前从未使用过 GitOps，这里有一个简短的介绍。GitOps 是一种纯粹通过 Git 存储库以声明方式管理基础设施和应用程序配置的方法。它的工作原理如下：你将所有配置存储在 Git 中，然后在某处安装一个 GitOps 工具，该工具会持续监控对该 Git 存储库的更改，并在检测到存储库中发生更改时应用基础架构和应用程序更改。GitOps 的全部意义在于，你的所有基础架构和应用程序配置都拥有一个集中的、单一的事实点。GitOps 最常与 Kubernetes 一起使用。
-但正如本文开头所述，使用 GitOps 时存在一些挑战。而最大的一个是 Secret 管理。你的基础设施将需要许多 Secret。你的应用程序配置可能也充满了 Secret。不用说，以纯文本形式将 Secret 存储在 Git 存储库中是一个安全漏洞。即使该存储库是私有的也是如此。你需要一个不同的解决方案，但理想情况下仍然以 GitOps 方式工作的东西。这意味着最好不要有一个单独的过程来定义 Secret。我会告诉你如何做到这一点。
-GitOps 方式的 Secret # 有两种流行的方法可以解决这个问题。它们的工作方式完全不同，但都实现了相同的结果：将 Secret 或其引用存储在 Git 存储库中的能力。你选择哪一种将取决于你的需求。我们来聊聊此二者。
-SealedSecrets # 我们已经确定你不能在 Git 存储库中以纯文本形式存储 Secret 。但是如何将它们存储在非纯文本版本中呢？这正是 SealedSecrets 工具所做的。它允许你加密你的 Secret，并且只将它们的加密版本存储在你的 Git 存储库中。就那么简单。</description>
-    </item>
-    
-    <item>
       <title>概述</title>
       <link>https://howieyuen.github.io/docs/translation/protobuf/overview-of-protocal-buffers/</link>
       <pubDate>Thu, 05 May 2022 00:00:00 +0000</pubDate>
@@ -68,7 +54,24 @@ This is a reference guide – for a step by step example that uses many of the f
     </item>
     
     <item>
-      <title>DevOps VS GitOps</title>
+      <title>Golang 中的 RSA 加解密算法</title>
+      <link>https://howieyuen.github.io/posts/rsa-crypto-in-go/</link>
+      <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/posts/rsa-crypto-in-go/</guid>
+      <description>&lt;p&gt;本文受到 Gitlab 中 
+  &lt;a href=&#34;https://gitlab.com/rahasak-labs/crypgo&#34;&gt;&lt;code&gt;crypgo&lt;/code&gt;&lt;/a&gt; 项目启发，
+作者在 Medium 中发表了一篇博文，
+  &lt;a href=&#34;https://medium.com/rahasak/golang-rsa-cryptography-1f1897ada311&#34;&gt;RSA cryptography in Golang&lt;/a&gt; 作为说明。
+读完后发现代码中存在一些小问题，因此重整代码实现，使其更加实用。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;仓库地址：
+  &lt;a href=&#34;https://github.com/howieyuen/crypto&#34;&gt;https://github.com/howieyuen/crypto&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;</description>
+    </item>
+    
+    <item>
+      <title>DevOps vs GitOps</title>
       <link>https://howieyuen.github.io/posts/devops-vs-gitops/</link>
       <pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate>
       
@@ -86,6 +89,15 @@ This is a reference guide – for a step by step example that uses many of the f
 集群侧控制器：sealed-secrets-controller 用户侧工具：kubeseal kubeseal 使用非对称加密算法，加密 Secret，加密结果仅有 sealed-secrets-controller 才能解密。 加密后的 Secret 编码在 SealedSecret 资源中，详细结构如下：
 apiVersion: bitnami.com/v1alpha1 kind: SealedSecret metadata: name: mysecret namespace: mynamespace spec: encryptedData: foo: AgBy3i4OJSWK+PiTySYZZA9rO43cGDEq..... 解密后的 Secret 如下：
 apiVersion: v1 kind: Secret metadata: name: mysecret namespace: mynamespace data: foo: YmFy # &amp;lt;- base64 encoded &amp;#34;bar&amp;#34; SealedSecret 和 Secret 的关系类似于 Deployment 和 Pod，SealedSecret 有个 template 字段，是生成的 Secret 的模板； 此二者之间的 labels 和 annotations 并不要求完成一致。 最终生成的 Secret 与 SealedSecret 相对独立，但 SealedSecret 的更新或删除，会连带到生成的 Secret。</description>
+    </item>
+    
+    <item>
+      <title>如何管理 GitOps Secret：详细指南</title>
+      <link>https://howieyuen.github.io/posts/how-to-manage-gitops-secrets-a-detailed-guide/</link>
+      <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/posts/how-to-manage-gitops-secrets-a-detailed-guide/</guid>
+      <description>&lt;p&gt;GitOps 正变得越来越流行。越来越多的公司开始使用 Git 作为其基础设施和应用程序配置的真实来源。然而，伴随其优势而来的是挑战。例如，如果你的所有配置都存储在 Git 中，你如何管理 Secret？你不能简单地将密码和令牌以明文形式提交到 Git 存储库，即使该存储库是私有的并且只有少数人可以访问它。在这篇文章中，你将学习如何安全地管理 GitOps Secret。敬请关注。&lt;/p&gt;</description>
     </item>
     
     <item>

@@ -18,14 +18,14 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2020-10-12T00:00:00+00:00" />
-<meta property="article:modified_time" content="2022-10-24T20:25:06+08:00" />
+<meta property="article:modified_time" content="2022-11-02T20:09:22+08:00" />
 
 <title>无状态应用滚动更新 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.801c951efefcd80b2c70597f1990787f7d261223f103c993ae87f49cb06b9cbb.js" integrity="sha256-gByVHv782AsscFl/GZB4f30mEiPxA8mTrof0nLBrnLs=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.d185a08d939ca931cf8220a0a32c78e83fa1e0f502c11a73fb0b3ddedb364a36.js" integrity="sha256-0YWgjZOcqTHPgiCgoyx46D&#43;h4PUCwRpz&#43;ws93ts2SjY=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -648,40 +648,6 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
-      
-        <li>
-          
-  
-  
-
-  
-    <input type="checkbox" id="section-f44f2048d84a295b965240d95f5edc80" class="toggle"  />
-    <label for="section-f44f2048d84a295b965240d95f5edc80" class="flex justify-between">
-      <a role="button" class="">X as Code</a>
-    </label>
-  
-
-          
-  <ul>
-    
-      
-        <li>
-          
-  
-  
-
-  
-    <a href="/docs/translation/XaC/how-to-manage-gitops-secrets-a-detailed-guide/" class="">如何管理 GitOps Secret：详细指南</a>
-  
-
-        </li>
-      
-    
-  </ul>
-
-        </li>
-      
-    
   </ul>
 
         </li>
@@ -980,7 +946,7 @@ graph LR
 调用 <code>deploymentutil.NewRSNewReplicas()</code> 为 newRS 计算所需要的副本数，
 计算原则遵守 maxSurge 和 maxUnavailable 的约束；</li>
 <li>调用 <code>dc.scaleReplicaSetAndRecordEvent()</code> 更新 newRS 对象，设置
-<code>rs.Spec.Replicas</code>、<code>rs.Annotations[DesiredReplicasAnnotation]</code> 
+<code>rs.Spec.Replicas</code>、<code>rs.Annotations[DesiredReplicasAnnotation]</code>
 以及 <code>rs.Annotations[MaxReplicasAnnotation]</code>；</li>
 </ol>
 <p>其中，计算 newRS 的副本数，是滚动更新核心过程的第一步，
@@ -1153,7 +1119,7 @@ scale down 的数量是通过以下公式得到的：</p>
 </span></span></code></pre></div><p>allPodsCount = 13，minAvailable = 8 ，newRSUnavailablePodCount 此时不确定，但是值在 [0,3] 范围内。
 此时假设 newRS 的 3 个 pod 还处于 containerCreating 状态，则 newRSUnavailablePodCount = 3，
 根据以上公式计算所知 maxScaledDown = 2，则 oldRS 需要缩容 2 个 pod，其 replicas 需要改为 8，此时该 syncLoop 完成。
-下一个 syncLoop 时在 scaleUp 处计算得知 scaleUpCount = 13 - 8 - 3 = 2， 
+下一个 syncLoop 时在 scaleUp 处计算得知 scaleUpCount = 13 - 8 - 3 = 2，
 此时 newRS 需要更新 replicase 增加 2。以此轮询直到 newRS 扩容到 10，oldRS 缩容至 0。</p>
 <p>对于上面的示例，可以使用 kubectl get rs -w 进行观察，以下为输出：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get rs -w
@@ -1180,9 +1146,9 @@ scale down 的数量是通过以下公式得到的：</p>
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/6af8e968b32d5882883dea4ad04d8f39f27fded9" title='Last modified by howieyuen | October 24, 2022' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/1f7fc5a5a76c5dbefb2bbf2140301cccacf1cf51" title='Last modified by howieyuen | November 2, 2022' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>October 24, 2022</span>
+      <span>November 2, 2022</span>
     </a>
   </div>
 
