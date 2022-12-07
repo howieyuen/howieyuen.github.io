@@ -9,9 +9,9 @@ categories: [crypto]
 作者在 Medium 中发表了一篇博文，[RSA cryptography in Golang](https://medium.com/rahasak/golang-rsa-cryptography-1f1897ada311) 作为说明。
 读完后发现代码中存在一些小问题，因此重整代码实现，使其更加实用。
 
-> 仓库地址：[https://github.com/howieyuen/crypto](https://github.com/howieyuen/crypto)
-
 <!--more-->
+
+> 仓库地址：[https://github.com/howieyuen/crypto](https://github.com/howieyuen/crypto)
 
 ## RSA 加解密简介
 
