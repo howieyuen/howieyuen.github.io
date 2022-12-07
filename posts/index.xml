@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language><atom:link href="https://howieyuen.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>令人愉悦的 CLI 的 10 条设计原则</title>
+      <link>https://howieyuen.github.io/posts/10-design-principles-for-delightful-clis/</link>
+      <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/posts/10-design-principles-for-delightful-clis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Golang 中的 RSA 加解密算法</title>
       <link>https://howieyuen.github.io/posts/rsa-crypto-in-go/</link>
       <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
@@ -16,11 +25,7 @@
   &lt;a href=&#34;https://gitlab.com/rahasak-labs/crypgo&#34;&gt;&lt;code&gt;crypgo&lt;/code&gt;&lt;/a&gt; 项目启发，
 作者在 Medium 中发表了一篇博文，
   &lt;a href=&#34;https://medium.com/rahasak/golang-rsa-cryptography-1f1897ada311&#34;&gt;RSA cryptography in Golang&lt;/a&gt; 作为说明。
-读完后发现代码中存在一些小问题，因此重整代码实现，使其更加实用。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;仓库地址：
-  &lt;a href=&#34;https://github.com/howieyuen/crypto&#34;&gt;https://github.com/howieyuen/crypto&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;</description>
+读完后发现代码中存在一些小问题，因此重整代码实现，使其更加实用。&lt;/p&gt;</description>
     </item>
     
     <item>
