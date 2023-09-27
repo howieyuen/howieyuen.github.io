@@ -2,8 +2,7 @@
 author: howieyuen
 date: 2022-11-02
 title: Secrets Store CSI Driver
-tag: [iac, secret, csi]
-weight: 3
+tag: [SaC, secret, csi]
 ---
 
 ## 概述

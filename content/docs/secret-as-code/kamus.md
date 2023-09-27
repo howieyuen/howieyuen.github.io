@@ -1,8 +1,8 @@
 ---
 author: howieyuen
 date: 2023-09-27
-title: Helm Secrets
-tag: [helm, secret, operator]
+title: Kamus
+tag: [SaC, kamus, secret]
 ---
 
 ## 概述

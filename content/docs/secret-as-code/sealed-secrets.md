@@ -2,8 +2,7 @@
 author: howieyuen
 date: 2022-10-15
 title: Sealed Secrets
-tag: [iac, secret]
-weight: 1
+tag: [SaC, secret]
 ---
 
 # 概述

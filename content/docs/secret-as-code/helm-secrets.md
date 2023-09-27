@@ -2,7 +2,7 @@
 author: howieyuen
 date: 2023-09-27
 title: Helm Secrets
-tag: [helm, secret, operator]
+tag: [SaC, helm, secret]
 ---
 
 ## 概述

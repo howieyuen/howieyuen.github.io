@@ -2,8 +2,7 @@
 author: howieyuen
 date: 2022-11-2
 title: External Secrets Operator
-tag: [iac, secret, operator]
-weight: 2
+tag: [sac, secret, operator]
 ---
 
 ## 概述
