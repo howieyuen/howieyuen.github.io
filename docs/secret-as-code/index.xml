@@ -5,7 +5,7 @@
     <link>https://howieyuen.github.io/docs/secret-as-code/</link>
     <description>Recent content in Secret as Code on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://howieyuen.github.io/docs/secret-as-code/index.xml" rel="self" type="application/rss+xml" />
+    <language>en</language><atom:link href="https://howieyuen.github.io/docs/secret-as-code/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Sealed Secrets</title>
       <link>https://howieyuen.github.io/docs/secret-as-code/sealed-secrets/</link>
@@ -42,6 +42,34 @@ ExternalSecret # ExternalSecret 声明要获取的数据。它引用了一个知
 Secrets Store CSI Driver secrets-store.csi.k8s.io 允许 Kubernetes 将外部机密存储中的多个 Secret、密钥和证书作为卷挂载到其 Pod 中。 附加卷后，其中的数据将被挂载到容器的文件系统中。
 Secrets Store CSI Driver 是一个 DaemonSet，可促进与每个 Kubelet 实例的通信。每个驱动程序 Pod 都有以下容器：
 node-driver-registrar：负责向 Kubelet 注册 CSI 驱动程序，以便它知道在哪个 unix 域套接字上发出 CSI 调用。 此 sidecar 容器由 Kubernetes CSI 团队提供。 secrets-store：实现 CSI 规范中描述的 CSI 节点服务 gRPC 服务。 它负责在 Pod 创建/删除期间挂载/卸载卷。 此组件在 secrets-store-csi-driver 仓库中开发和维护。 liveness-probe：负责监控 CSI 驱动的健康状况并向 Kubernetes 报告。 这使 Kubernetes 能够自动检测驱动程序的问题并重新启动 Pod 以尝试修复问题。 此 sidecar 容器由 Kubernetes CSI 团队提供。 Provider # CSI Driver 使用 gRPC 与 Provider 通信，以从外部 Secrets Store 获取挂载内容。 有关如何为 Driver 实现 Provider 和支的持 Provider 的标准的更多详细信息，请参阅 Providers。</description>
+    </item>
+    
+    <item>
+      <title>Helm Secrets</title>
+      <link>https://howieyuen.github.io/docs/secret-as-code/helm-secrets/</link>
+      <pubDate>Wed, 27 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/docs/secret-as-code/helm-secrets/</guid>
+      <description>概述 # Helm Secrets 是 Helm 的一个插件，能够利用 Helm 模板化 Secrets 资源。它使用 SOPS（Mozilla 研发）来加密 Secret。SOPS 是一个加密文件的编辑器，采用的是非对称加密，支持 YAML、JSON、ENV、INI 和二进制格式，并支持 AWS KMS、GCP KMS、Azure Key Vault 和 PGP 进行加密。
+Helm Secrets 还支持其他后端，例如：vals，它是一种用于管理来自各种来源的配置值和秘密的工具。目前已经支持：
+Vault AWS SSM Parameter Store AWS Secrets Manager AWS S3 GCP Secrets Manager Azure Key Vault SOPS-encrypted files Terraform State Plain File 下文以 PGP 方式为例，进行说明。
+安装 # gpg:
+brew install gpg sops:
+brew install sops helm-secrets:
+helm plugin install https://github.com/jkroepke/helm-secrets --version v3.</description>
+    </item>
+    
+    <item>
+      <title>Helm Secrets</title>
+      <link>https://howieyuen.github.io/docs/secret-as-code/kamus/</link>
+      <pubDate>Wed, 27 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://howieyuen.github.io/docs/secret-as-code/kamus/</guid>
+      <description>概述 # Kamus 架构似于 Sealed Secrets 和 Helm Secrets。但是，Kamus 使你可以加密特定应用程序的 Secret，并且只有该应用程序可以解密。细化权限使 Kamus 更适合具有高安全标准的零信任环境。Kamus 通过关联 ServiceAccount 和你的 Secret 工作，仅有使用此服务帐户运行的应用程序对其进行解密。
+Kamus 由三个模块组成：
+加密 API 解密 API 密钥管理系统（KMS） 加密和解密 API 处理加密和解密请求。KMS 是各种加密解决方案的包装器。目前支持：
+AES：对所有 Secret 使用一个密钥 AWS KMS、Azure KeyVault、Google Cloud KMS：为每个服务帐户创建一个密钥。 Kamus 附带 3 个实用程序，使其更易于使用：
+CLI：一个小型 CLI，可简化与 Encrypt API 的交互。 init 容器：一个与 Decrypt API 交互的初始化容器。 CRD 控制器：允许使用 Kamus 创建本集群的 k8s Secret。 原理 # 加密 # 用户加密敏感信息（字符串，不是对象） kamus-cli 请求 kamus-encrytptor 加密 kamus-controller 提供公钥 加密结果返回 解密 # 用户下发 KamusSecret 类型的 CR，包含加密字段（kamus-secret.</description>
     </item>
     
   </channel>

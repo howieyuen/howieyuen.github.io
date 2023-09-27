@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="概述 # Kamus 架构似于 Sealed Secrets 和 Helm Secrets。但是，Kamus 使你可以加密特定应用程序的 Secret，并且只有该应用程序可以解密。细化权限使 Kamus 更适合具有高安全标准的零信任环境。Kamus 通过关联 ServiceAccount 和你的 Secret 工作，仅有使用此服务帐户运行的应用程序对其进行解密。
+Kamus 由三个模块组成：
+加密 API 解密 API 密钥管理系统（KMS） 加密和解密 API 处理加密和解密请求。KMS 是各种加密解决方案的包装器。目前支持：
+AES：对所有 Secret 使用一个密钥 AWS KMS、Azure KeyVault、Google Cloud KMS：为每个服务帐户创建一个密钥。 Kamus 附带 3 个实用程序，使其更易于使用：
+CLI：一个小型 CLI，可简化与 Encrypt API 的交互。 init 容器：一个与 Decrypt API 交互的初始化容器。 CRD 控制器：允许使用 Kamus 创建本集群的 k8s Secret。 原理 # 加密 # 用户加密敏感信息（字符串，不是对象） kamus-cli 请求 kamus-encrytptor 加密 kamus-controller 提供公钥 加密结果返回 解密 # 用户下发 KamusSecret 类型的 CR，包含加密字段（kamus-secret.">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="Helm Secrets" />
+<meta property="og:description" content="概述 # Kamus 架构似于 Sealed Secrets 和 Helm Secrets。但是，Kamus 使你可以加密特定应用程序的 Secret，并且只有该应用程序可以解密。细化权限使 Kamus 更适合具有高安全标准的零信任环境。Kamus 通过关联 ServiceAccount 和你的 Secret 工作，仅有使用此服务帐户运行的应用程序对其进行解密。
+Kamus 由三个模块组成：
+加密 API 解密 API 密钥管理系统（KMS） 加密和解密 API 处理加密和解密请求。KMS 是各种加密解决方案的包装器。目前支持：
+AES：对所有 Secret 使用一个密钥 AWS KMS、Azure KeyVault、Google Cloud KMS：为每个服务帐户创建一个密钥。 Kamus 附带 3 个实用程序，使其更易于使用：
+CLI：一个小型 CLI，可简化与 Encrypt API 的交互。 init 容器：一个与 Decrypt API 交互的初始化容器。 CRD 控制器：允许使用 Kamus 创建本集群的 k8s Secret。 原理 # 加密 # 用户加密敏感信息（字符串，不是对象） kamus-cli 请求 kamus-encrytptor 加密 kamus-controller 提供公钥 加密结果返回 解密 # 用户下发 KamusSecret 类型的 CR，包含加密字段（kamus-secret." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/secret-as-code/kamus/" /><meta property="article:section" content="docs" />
+<meta property="article:published_time" content="2023-09-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-09-27T15:12:12+08:00" />
+<title>Helm Secrets | 袁昊的学习笔记</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.d3d575325d518586a2931e25fe830c9e0c8a3a60eaa036813d598e39310f4faa.js" integrity="sha256-09V1Ml1RhYaikx4l/oMMngyKOmDqoDaBPVmOOTEPT6o=" crossorigin="anonymous"></script>
+
+  <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Golang</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-aa0ad5dadefefc3354befb0f21b44571" class="toggle"  />
+    <label for="section-aa0ad5dadefefc3354befb0f21b44571" class="flex justify-between">
+      <a role="button" class="">数据结构</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/chan/" class="">chan</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/map/" class="">map</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/slice/" class="">slice</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-9730b84098027970ce9876389c401abb" class="toggle"  />
+    <label for="section-9730b84098027970ce9876389c401abb" class="flex justify-between">
+      <a role="button" class="">语言基础</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/unsafe/" class="">unsafe</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/reflect/" class="">reflect</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-84d526a58cfe5a50fb73329d6c7bd14a" class="toggle"  />
+    <label for="section-84d526a58cfe5a50fb73329d6c7bd14a" class="flex justify-between">
+      <a role="button" class="">内存管理</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-084099e607ed94fee6028accac1c176c" class="toggle"  />
+    <label for="section-084099e607ed94fee6028accac1c176c" class="flex justify-between">
+      <a role="button" class="">golang 工具</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/tools/pprof/" class="">pprof</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Kubernetes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-103a3040e6af1931bd7a973aa3d5fe12" class="toggle"  />
+    <label for="section-103a3040e6af1931bd7a973aa3d5fe12" class="flex justify-between">
+      <a role="button" class="">kube-apisever</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-55afec95d17025ab2841fd395bf5e066" class="toggle"  />
+    <label for="section-55afec95d17025ab2841fd395bf5e066" class="flex justify-between">
+      <a role="button" class="">kube-controller-manager</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-6c06d491bb5aface6ab2585a8049b13f" class="toggle"  />
+    <label for="section-6c06d491bb5aface6ab2585a8049b13f" class="flex justify-between">
+      <a role="button" class="">kube-scheduler</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-89eea73f7e04e77c22ade24239d6a83e" class="toggle"  />
+    <label for="section-89eea73f7e04e77c22ade24239d6a83e" class="flex justify-between">
+      <a role="button" class="">kubelet</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="toggle"  />
+    <label for="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="flex justify-between">
+      <a role="button" class="">sig-network</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Secret as Code</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/secret-as-code/sealed-secrets/" class="">Sealed Secrets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/secret-as-code/external-secret-operator/" class="">External Secrets Operator</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/secret-as-code/secrets-store-csi-driver/" class="">Secrets Store CSI Driver</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/secret-as-code/helm-secrets/" class="">Helm Secrets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/secret-as-code/kamus/" class="active">Helm Secrets</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Translation</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f59f78b27df0d3218be457339234a283" class="toggle"  />
+    <label for="section-f59f78b27df0d3218be457339234a283" class="flex justify-between">
+      <a role="button" class="">Protocol Buffers</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/overview-of-protocal-buffers/" class="">概述</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/language-guideproto3/" class="">语言指南（proto3）</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a role="button" class="">LeetCode</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0321/" class="">321. 拼接最大数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="/posts/" >
+        Blogs
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://github.com/howieyuen/" target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Helm Secrets</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#概述">概述</a></li>
+        <li><a href="#原理">原理</a>
+          <ul>
+            <li><a href="#加密">加密</a></li>
+            <li><a href="#解密">解密</a></li>
+          </ul>
+        </li>
+        <li><a href="#安装">安装</a>
+          <ul>
+            <li><a href="#controllerdecryptorencryptor">controller/decryptor/encryptor</a></li>
+            <li><a href="#kamus-cli">kamus-cli</a></li>
+          </ul>
+        </li>
+        <li><a href="#演示">演示</a>
+          <ul>
+            <li><a href="#kamussecret">KamusSecret</a></li>
+            <li><a href="#零信任模式">零信任模式</a></li>
+          </ul>
+        </li>
+        <li><a href="#总结">总结</a></li>
+        <li><a href="#参考资料">参考资料</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h2 id="概述">
+  概述
+  <a class="anchor" href="#%e6%a6%82%e8%bf%b0">#</a>
+</h2>
+<p>Kamus 架构似于 Sealed Secrets 和 Helm Secrets。但是，Kamus 使你可以加密特定应用程序的 Secret，并且只有该应用程序可以解密。细化权限使 Kamus 更适合具有高安全标准的零信任环境。Kamus 通过关联 ServiceAccount 和你的 Secret 工作，仅有使用此服务帐户运行的应用程序对其进行解密。</p>
+<p>Kamus 由三个模块组成：</p>
+<ul>
+<li>加密 API</li>
+<li>解密 API</li>
+<li>密钥管理系统（KMS）</li>
+</ul>
+<p>加密和解密 API 处理加密和解密请求。KMS 是各种加密解决方案的包装器。目前支持：</p>
+<ul>
+<li>AES：对所有 Secret 使用一个密钥</li>
+<li>AWS KMS、Azure KeyVault、Google Cloud KMS：为每个服务帐户创建一个密钥。</li>
+</ul>
+<p>Kamus 附带 3 个实用程序，使其更易于使用：</p>
+<ul>
+<li>CLI：一个小型 CLI，可简化与 Encrypt API 的交互。</li>
+<li>init 容器：一个与 Decrypt API 交互的初始化容器。</li>
+<li>CRD 控制器：允许使用 Kamus 创建本集群的 k8s Secret。</li>
+</ul>
+<h2 id="原理">
+  原理
+  <a class="anchor" href="#%e5%8e%9f%e7%90%86">#</a>
+</h2>
+<p>
+  <img src="/secret-as-code/kamus.png" alt="" /></p>
+<h3 id="加密">
+  加密
+  <a class="anchor" href="#%e5%8a%a0%e5%af%86">#</a>
+</h3>
+<ol>
+<li>用户加密敏感信息（字符串，不是对象）</li>
+<li>kamus-cli 请求 kamus-encrytptor 加密</li>
+<li>kamus-controller 提供公钥</li>
+<li>加密结果返回</li>
+</ol>
+<h3 id="解密">
+  解密
+  <a class="anchor" href="#%e8%a7%a3%e5%af%86">#</a>
+</h3>
+<ol start="5">
+<li>用户下发 KamusSecret 类型的 CR，包含加密字段（kamus-secret.yaml）</li>
+<li>kamus-decryptor 发现新的 KamusSecret 字段，请求 kamus-controller 解密</li>
+<li>kamus-controller 提供私钥</li>
+<li>解密成功，生成 k8s secret</li>
+</ol>
+<h2 id="安装">
+  安装
+  <a class="anchor" href="#%e5%ae%89%e8%a3%85">#</a>
+</h2>
+<h3 id="controllerdecryptorencryptor">
+  controller/decryptor/encryptor
+  <a class="anchor" href="#controllerdecryptorencryptor">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>helm repo add soluto https://charts.soluto.io
+</span></span><span style="display:flex;"><span>helm upgrade --install kamus soluto/kamus
+</span></span></code></pre></div><h3 id="kamus-cli">
+  kamus-cli
+  <a class="anchor" href="#kamus-cli">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>npm install -g @soluto-asurion/kamus-cli
+</span></span></code></pre></div><h2 id="演示">
+  演示
+  <a class="anchor" href="#%e6%bc%94%e7%a4%ba">#</a>
+</h2>
+<h3 id="kamussecret">
+  KamusSecret
+  <a class="anchor" href="#kamussecret">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 端口映射</span>
+</span></span><span style="display:flex;"><span>$ kubectl port-forward svc/kamus-encryptor 9999:80
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 创建 ServiceAccount</span>
+</span></span><span style="display:flex;"><span>$ kubectl create sa howieyuen
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 加密 zhangsan</span>
+</span></span><span style="display:flex;"><span>$ kamus-cli encrypt -s zhangsan -a howieyuen -n default -u http://localhost:9999 --allow-insecure-url
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>info  kamus-cli<span style="color:#f92672">]</span>: Encryption started...
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>info  kamus-cli<span style="color:#f92672">]</span>: service account: howieyuen
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>info  kamus-cli<span style="color:#f92672">]</span>: namespace: default
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>warn  kamus-cli<span style="color:#f92672">]</span>: Auth options were not provided, will try to encrypt without authentication to kamus
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>info  kamus-cli<span style="color:#f92672">]</span>: Successfully encrypted data to howieyuen service account in default namespace
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>info  kamus-cli<span style="color:#f92672">]</span>: Encrypted data:
+</span></span><span style="display:flex;"><span>/QjBaRgthEpEG9z6xO2p2Q<span style="color:#f92672">==</span>:R+wtZ4ljx3ZR6Wzqrz7DGg<span style="color:#f92672">==</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 加密 qwer1234 </span>
+</span></span><span style="display:flex;"><span>$ kamus-cli encrypt -s qwer1234 -a howieyuen -n default --allow-insecure-url -u http://localhost:9999
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>info  kamus-cli<span style="color:#f92672">]</span>: Encryption started...
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>info  kamus-cli<span style="color:#f92672">]</span>: service account: howieyuen
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>info  kamus-cli<span style="color:#f92672">]</span>: namespace: default
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>warn  kamus-cli<span style="color:#f92672">]</span>: Auth options were not provided, will try to encrypt without authentication to kamus
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>info  kamus-cli<span style="color:#f92672">]</span>: Successfully encrypted data to howieyuen service account in default namespace
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>info  kamus-cli<span style="color:#f92672">]</span>: Encrypted data:
+</span></span><span style="display:flex;"><span>YGSgyn2hMbmcuwvc58JJSQ<span style="color:#f92672">==</span>:LCglu6OQ2pMXLiHGUpNdZg<span style="color:#f92672">==</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 创建 kamus-secret.yaml</span>
+</span></span><span style="display:flex;"><span>$ cat &gt; kamus-secret.yaml <span style="color:#e6db74">&lt;&lt; EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: &#34;soluto.com/v1alpha2&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: KamusSecret
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  name: kamus-secret
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">type: Generic
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">stringData:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  username: /QjBaRgthEpEG9z6xO2p2Q==:R+wtZ4ljx3ZR6Wzqrz7DGg==
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  password: YGSgyn2hMbmcuwvc58JJSQ==:LCglu6OQ2pMXLiHGUpNdZg==
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">serviceAccount: howieyuen
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 创建 KamusSecret</span>
+</span></span><span style="display:flex;"><span>$ kubectl apply -f kamus-secret.yaml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 检查解密结果</span>
+</span></span><span style="display:flex;"><span>$ kubectl get secret kamus-secret -ojsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.data.username}&#39;</span> |base64 -d
+</span></span><span style="display:flex;"><span>zhangsan
+</span></span><span style="display:flex;"><span>$ kubectl get secret kamus-secret -ojsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.data.paasowrd}&#39;</span> |base64 -d
+</span></span><span style="display:flex;"><span>qwer1234
+</span></span></code></pre></div><h3 id="零信任模式">
+  零信任模式
+  <a class="anchor" href="#%e9%9b%b6%e4%bf%a1%e4%bb%bb%e6%a8%a1%e5%bc%8f">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 创建包含加密数据的 ConfigMap</span>
+</span></span><span style="display:flex;"><span>$ cat &gt; kamus-configmap.yaml <span style="color:#e6db74">&lt;&lt; EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: ConfigMap
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  name: kamus-configmap
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  namespace: default
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">data:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  username: /QjBaRgthEpEG9z6xO2p2Q==:R+wtZ4ljx3ZR6Wzqrz7DGg==
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  password: YGSgyn2hMbmcuwvc58JJSQ==:LCglu6OQ2pMXLiHGUpNdZg==
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>$ kubectl apply -f kamus-configmap.yaml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 创建引用 ConfigMap 的 Pod</span>
+</span></span><span style="display:flex;"><span>$ cat &gt; kamus-pod.yaml <span style="color:#e6db74">&lt;&lt; EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: Pod
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  name: kamus-zero-trust-example
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">spec:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   serviceAccountName: howieyuen
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   automountServiceAccountToken: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   initContainers:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   - name: &#34;kamus-init&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     image: &#34;soluto/kamus-init-container:latest&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     imagePullPolicy: IfNotPresent
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     env:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     - name: KAMUS_URL
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       value: http://kamus-decryptor.default.svc.cluster.local/ 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     volumeMounts:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     - name: encrypted-secrets
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       mountPath: /encrypted-secrets
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     - name: decrypted-secrets
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       mountPath: /decrypted-secrets
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     args: [&#34;-e&#34;,&#34;/encrypted-secrets&#34;,&#34;-d&#34;,&#34;/decrypted-secrets&#34;, &#34;-n&#34;, &#34;config.json&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   containers:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   - name: app
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     image: busybox
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     imagePullPolicy: IfNotPresent
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     args: [&#34;sleep&#34;, &#34;3600&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     volumeMounts:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     - name: decrypted-secrets
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       mountPath: /secrets
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   volumes:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   - name: encrypted-secrets
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     configMap: 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       name: kamus-configmap
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   - name: decrypted-secrets
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     emptyDir:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       medium: Memory
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>$ kubectl apply -f kamus-pod.yaml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 检查挂载结果</span>
+</span></span><span style="display:flex;"><span>$ kubectl exec kamus-zero-trust-example -c app -- more /secrets/config.json 
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;password&#34;</span>:<span style="color:#e6db74">&#34;qwer1234&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;username&#34;</span>:<span style="color:#e6db74">&#34;zhangsan&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h2 id="总结">
+  总结
+  <a class="anchor" href="#%e6%80%bb%e7%bb%93">#</a>
+</h2>
+<p>对于 KamusSecret（第一种方法），kamus-cli 命令行的 &ndash;service-account 和 &ndash;namespace 参数虽然是强制性的，但纯粹是任意的：使用 KamusSecret 的加密数据不链接到特定 ServiceAccount 和/或 Namespace，并且它们的存在不是加密时的要求。</p>
+<p>相反，在零信任模式（第二种方法）的情况下，使 ServiceAccount 和 Namespace 在加密步骤和 initContainer 内部使用的步骤之间保持一致是必须的。使用另一个 ServiceAccount 或另一个 Namespace 不会触发正确的解密。</p>
+<p>优势：</p>
+<ul>
+<li>多种操作模式</li>
+<li>在零信任环境中工作</li>
+<li>可以使用真正的 KMS 后端</li>
+</ul>
+<p>劣势：</p>
+<ul>
+<li>文档不全</li>
+<li>处于早期阶段</li>
+<li>基于 npm</li>
+</ul>
+<h2 id="参考资料">
+  参考资料
+  <a class="anchor" href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>
+</h2>
+<ul>
+<li>
+  <a href="https://github.com/Soluto/kamus">https://github.com/Soluto/kamus</a></li>
+<li>
+  <a href="https://learnk8s.io/kubernetes-secrets-in-git">https://learnk8s.io/kubernetes-secrets-in-git</a></li>
+<li>
+  <a href="https://en.sokube.ch/post/lightweight-kubernetes-gitops-secrets-1">https://en.sokube.ch/post/lightweight-kubernetes-gitops-secrets-1</a></li>
+</ul>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/dc73bac7b3fd29c040a55e4474256cc1590ff315" title='Last modified by howieyuen | September 27, 2023' target="_blank" rel="noopener">
+      <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
+      <span>September 27, 2023</span>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+
+
+<div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script>
+  const gitalk = new Gitalk({
+    clientID: 'b4cc17dbafc8ad637453',
+    clientSecret: '77b4685b4d6da0280eca116a66b6f01244033d35',
+    repo: 'howieyuen.github.io',
+    owner: 'howieyuen',
+    admin: ['howieyuen'],
+    id: location.pathname, 
+    distractionFreeMode: false 
+  });
+  (function() {
+    if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+      document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
+      return;
+    }
+    gitalk.render('gitalk-container');
+  })();
+</script>
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#概述">概述</a></li>
+        <li><a href="#原理">原理</a>
+          <ul>
+            <li><a href="#加密">加密</a></li>
+            <li><a href="#解密">解密</a></li>
+          </ul>
+        </li>
+        <li><a href="#安装">安装</a>
+          <ul>
+            <li><a href="#controllerdecryptorencryptor">controller/decryptor/encryptor</a></li>
+            <li><a href="#kamus-cli">kamus-cli</a></li>
+          </ul>
+        </li>
+        <li><a href="#演示">演示</a>
+          <ul>
+            <li><a href="#kamussecret">KamusSecret</a></li>
+            <li><a href="#零信任模式">零信任模式</a></li>
+          </ul>
+        </li>
+        <li><a href="#总结">总结</a></li>
+        <li><a href="#参考资料">参考资料</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

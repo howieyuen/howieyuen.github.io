@@ -5,7 +5,7 @@
     <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/</link>
     <description>Recent content in kube-controller-manager on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/index.xml" rel="self" type="application/rss+xml" />
+    <language>en</language><atom:link href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>GC Controller 源码分析</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</link>
