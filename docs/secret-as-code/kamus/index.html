@@ -9,7 +9,7 @@ Kamus 由三个模块组成：
 AES：对所有 Secret 使用一个密钥 AWS KMS、Azure KeyVault、Google Cloud KMS：为每个服务帐户创建一个密钥。 Kamus 附带 3 个实用程序，使其更易于使用：
 CLI：一个小型 CLI，可简化与 Encrypt API 的交互。 init 容器：一个与 Decrypt API 交互的初始化容器。 CRD 控制器：允许使用 Kamus 创建本集群的 k8s Secret。 原理 # 加密 # 用户加密敏感信息（字符串，不是对象） kamus-cli 请求 kamus-encrytptor 加密 kamus-controller 提供公钥 加密结果返回 解密 # 用户下发 KamusSecret 类型的 CR，包含加密字段（kamus-secret.">
 <meta name="theme-color" content="#FFFFFF">
-<meta name="color-scheme" content="light dark"><meta property="og:title" content="Helm Secrets" />
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="Kamus" />
 <meta property="og:description" content="概述 # Kamus 架构似于 Sealed Secrets 和 Helm Secrets。但是，Kamus 使你可以加密特定应用程序的 Secret，并且只有该应用程序可以解密。细化权限使 Kamus 更适合具有高安全标准的零信任环境。Kamus 通过关联 ServiceAccount 和你的 Secret 工作，仅有使用此服务帐户运行的应用程序对其进行解密。
 Kamus 由三个模块组成：
 加密 API 解密 API 密钥管理系统（KMS） 加密和解密 API 处理加密和解密请求。KMS 是各种加密解决方案的包装器。目前支持：
@@ -18,13 +18,13 @@ CLI：一个小型 CLI，可简化与 Encrypt API 的交互。 init 容器：一
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/secret-as-code/kamus/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2023-09-27T00:00:00+00:00" />
-<meta property="article:modified_time" content="2023-09-27T15:12:12+08:00" />
-<title>Helm Secrets | 袁昊的学习笔记</title>
+<meta property="article:modified_time" content="2023-09-27T15:16:24+08:00" />
+<title>Kamus | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.d3d575325d518586a2931e25fe830c9e0c8a3a60eaa036813d598e39310f4faa.js" integrity="sha256-09V1Ml1RhYaikx4l/oMMngyKOmDqoDaBPVmOOTEPT6o=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.2216297aba4e3976f224bd78cae01943faf03248d793240218a6249c427d2402.js" integrity="sha256-IhYperpOOXbyJL14yuAZQ/rwMkjXkyQCGKYknEJ9JAI=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -576,7 +576,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/sealed-secrets/" class="">Sealed Secrets</a>
+    <a href="/docs/secret-as-code/helm-secrets/" class="">Helm Secrets</a>
   
 
         </li>
@@ -589,7 +589,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/external-secret-operator/" class="">External Secrets Operator</a>
+    <a href="/docs/secret-as-code/kamus/" class="active">Kamus</a>
   
 
         </li>
@@ -615,7 +615,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/helm-secrets/" class="">Helm Secrets</a>
+    <a href="/docs/secret-as-code/sealed-secrets/" class="">Sealed Secrets</a>
   
 
         </li>
@@ -628,7 +628,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/kamus/" class="active">Helm Secrets</a>
+    <a href="/docs/secret-as-code/external-secret-operator/" class="">External Secrets Operator</a>
   
 
         </li>
@@ -805,7 +805,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>Helm Secrets</strong>
+  <strong>Kamus</strong>
 
   <label for="toc-control">
     
@@ -1078,7 +1078,7 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/dc73bac7b3fd29c040a55e4474256cc1590ff315" title='Last modified by howieyuen | September 27, 2023' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/7ea9d33ff43854a5f0b8a3e6e2faf37306fb97a7" title='Last modified by howieyuen | September 27, 2023' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
       <span>September 27, 2023</span>
     </a>
