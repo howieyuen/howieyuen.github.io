@@ -1,5 +1,5 @@
 ---
-title: Circle CI 学习笔记
+title: Circle CI
 date: 2021-12-14
 tags: [CircleCI, Orb]
 categories: [CI/CD]
