@@ -5,467 +5,273 @@
     <link>https://howieyuen.github.io/</link>
     <description>Recent content in 介绍 on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language><atom:link href="https://howieyuen.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <language>en</language>
+    <atom:link href="https://howieyuen.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>概述</title>
       <link>https://howieyuen.github.io/docs/translation/protobuf/overview-of-protocal-buffers/</link>
       <pubDate>Thu, 05 May 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/translation/protobuf/overview-of-protocal-buffers/</guid>
-      <description>&lt;blockquote&gt;
-&lt;p&gt;原文链接：
-  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/overview&#34;&gt;Overview | Protocol Buffers | Google Developers&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;协议缓冲区（Protocol Buffers，protobuf）提供了一种语言中立、平台中立、可扩展的机制，用来序列化结构化数据，并且支持向前/向后兼容。
-它类似于 JSON，只是它更小更快，并且能生成本地语言绑定。&lt;/p&gt;
-&lt;p&gt;protobuf 包含以下模块：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;定义语言（在 &lt;code&gt;.proto&lt;/code&gt; 文件中创建）&lt;/li&gt;
-&lt;li&gt;连接数据的代码（ proto 编译器生成）&lt;/li&gt;
-&lt;li&gt;特定语言的运行时库&lt;/li&gt;
-&lt;li&gt;序列化格式的数据（写入文件或者通过网络传输）&lt;/li&gt;
-&lt;/ul&gt;</description>
+      <description>&lt;blockquote&gt;&#xA;&lt;p&gt;原文链接：&#xA;  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/overview&#34;&gt;Overview | Protocol Buffers | Google Developers&lt;/a&gt;&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;协议缓冲区（Protocol Buffers，protobuf）提供了一种语言中立、平台中立、可扩展的机制，用来序列化结构化数据，并且支持向前/向后兼容。&#xA;它类似于 JSON，只是它更小更快，并且能生成本地语言绑定。&lt;/p&gt;&#xA;&lt;p&gt;protobuf 包含以下模块：&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;定义语言（在 &lt;code&gt;.proto&lt;/code&gt; 文件中创建）&lt;/li&gt;&#xA;&lt;li&gt;连接数据的代码（ proto 编译器生成）&lt;/li&gt;&#xA;&lt;li&gt;特定语言的运行时库&lt;/li&gt;&#xA;&lt;li&gt;序列化格式的数据（写入文件或者通过网络传输）&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
     </item>
-    
     <item>
       <title>语言指南（proto3）</title>
       <link>https://howieyuen.github.io/docs/translation/protobuf/language-guideproto3/</link>
       <pubDate>Tue, 10 May 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/translation/protobuf/language-guideproto3/</guid>
-      <description>&lt;blockquote&gt;
-&lt;p&gt;原文链接：
-  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/proto3&#34;&gt;Language Guide(proto3) | Protocol Buffers | Google Developers&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;!-- 
-This guide describes how to use the protocol buffer language to structure your protocol buffer data, including .proto file syntax and how to generate data access classes from your .proto files. It covers the proto3 version of the protocol buffers language: for information on the proto2 syntax, see the Proto2 Language Guide.
-
-This is a reference guide – for a step by step example that uses many of the features described in this document, see the tutorial for your chosen language (currently proto2 only; more proto3 documentation is coming soon).
---&gt;
-&lt;p&gt;本指南描述了如何使用 protobuf 语言结构化你的协议缓冲区数据，
-包括 &lt;code&gt;.proto&lt;/code&gt; 文件语法和如何从你的 &lt;code&gt;.proto&lt;/code&gt; 文件生成数据访问的类（Class）。
-它覆盖了 protobuf 语言的 &lt;strong&gt;proto3&lt;/strong&gt; 版本：对于 &lt;strong&gt;proto2&lt;/strong&gt; 语言的信息，
-请查阅 
-  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/proto&#34;&gt;Proto2 Language Guide&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;这是一篇参考指南——有关使用本文档中描述的许多功能的分步示例，
-请参阅你选择的语言的
-
-  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/tutorials&#34;&gt;教程&lt;/a&gt;（目前仅有 proto2；更多 proto3 文档即将推出）。&lt;/p&gt;</description>
+      <description>&lt;blockquote&gt;&#xA;&lt;p&gt;原文链接：&#xA;  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/proto3&#34;&gt;Language Guide(proto3) | Protocol Buffers | Google Developers&lt;/a&gt;&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;!-- &#xA;This guide describes how to use the protocol buffer language to structure your protocol buffer data, including .proto file syntax and how to generate data access classes from your .proto files. It covers the proto3 version of the protocol buffers language: for information on the proto2 syntax, see the Proto2 Language Guide.&#xA;&#xA;This is a reference guide – for a step by step example that uses many of the features described in this document, see the tutorial for your chosen language (currently proto2 only; more proto3 documentation is coming soon).&#xA;--&gt;&#xA;&lt;p&gt;本指南描述了如何使用 protobuf 语言结构化你的协议缓冲区数据，&#xA;包括 &lt;code&gt;.proto&lt;/code&gt; 文件语法和如何从你的 &lt;code&gt;.proto&lt;/code&gt; 文件生成数据访问的类（Class）。&#xA;它覆盖了 protobuf 语言的 &lt;strong&gt;proto3&lt;/strong&gt; 版本：对于 &lt;strong&gt;proto2&lt;/strong&gt; 语言的信息，&#xA;请查阅 &#xA;  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/proto&#34;&gt;Proto2 Language Guide&lt;/a&gt;。&lt;/p&gt;&#xA;&lt;p&gt;这是一篇参考指南——有关使用本文档中描述的许多功能的分步示例，&#xA;请参阅你选择的语言的&#xA;&#xA;  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/tutorials&#34;&gt;教程&lt;/a&gt;（目前仅有 proto2；更多 proto3 文档即将推出）。&lt;/p&gt;</description>
     </item>
-    
+    <item>
+      <title>MonoRepo</title>
+      <link>https://howieyuen.github.io/docs/getting-started/monorepo/</link>
+      <pubDate>Thu, 18 Jan 2024 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/getting-started/monorepo/</guid>
+      <description>&lt;p&gt;MonoRepo，即单一代码库（Monolithic Repository），是将多个项目或组件的代码存储在同一个版本控制系统仓库中的一种源代码管理策略。大公司如 Google、Facebook、Twitter 等都采用了 MonoRepo 来管理他们庞大的代码库。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Helm Secrets</title>
-      <link>https://howieyuen.github.io/docs/secret-as-code/helm-secrets/</link>
+      <link>https://howieyuen.github.io/docs/XaC/secret-as-code/helm-secrets/</link>
       <pubDate>Wed, 27 Sep 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://howieyuen.github.io/docs/secret-as-code/helm-secrets/</guid>
-      <description>概述 # Helm Secrets 是 Helm 的一个插件，能够利用 Helm 模板化 Secrets 资源。它使用 SOPS（Mozilla 研发）来加密 Secret。SOPS 是一个加密文件的编辑器，采用的是非对称加密，支持 YAML、JSON、ENV、INI 和二进制格式，并支持 AWS KMS、GCP KMS、Azure Key Vault 和 PGP 进行加密。
-Helm Secrets 还支持其他后端，例如：vals，它是一种用于管理来自各种来源的配置值和秘密的工具。目前已经支持：
-Vault AWS SSM Parameter Store AWS Secrets Manager AWS S3 GCP Secrets Manager Azure Key Vault SOPS-encrypted files Terraform State Plain File 下文以 PGP 方式为例，进行说明。
-安装 # gpg:
-brew install gpg sops:
-brew install sops helm-secrets:
-helm plugin install https://github.com/jkroepke/helm-secrets --version v3.</description>
+      <guid>https://howieyuen.github.io/docs/XaC/secret-as-code/helm-secrets/</guid>
+      <description>概述 # Helm Secrets 是 Helm 的一个插件，能够利用 Helm 模板化 Secrets 资源。它使用 SOPS（Mozilla 研发）来加密 Secret。SOPS 是一个加密文件的编辑器，采用的是非对称加密，支持 YAML、JSON、ENV、INI 和二进制格式，并支持 AWS KMS、GCP KMS、Azure Key Vault 和 PGP 进行加密。&#xA;Helm Secrets 还支持其他后端，例如：vals，它是一种用于管理来自各种来源的配置值和秘密的工具。目前已经支持：&#xA;Vault AWS SSM Parameter Store AWS Secrets Manager AWS S3 GCP Secrets Manager Azure Key Vault SOPS-encrypted files Terraform State Plain File 下文以 PGP 方式为例，进行说明。&#xA;安装 # gpg:&#xA;brew install gpg sops:&#xA;brew install sops helm-secrets:&#xA;helm plugin install https://github.com/jkroepke/helm-secrets --version v3.</description>
     </item>
-    
     <item>
       <title>Kamus</title>
-      <link>https://howieyuen.github.io/docs/secret-as-code/kamus/</link>
+      <link>https://howieyuen.github.io/docs/XaC/secret-as-code/kamus/</link>
       <pubDate>Wed, 27 Sep 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://howieyuen.github.io/docs/secret-as-code/kamus/</guid>
-      <description>概述 # Kamus 架构似于 Sealed Secrets 和 Helm Secrets。但是，Kamus 使你可以加密特定应用程序的 Secret，并且只有该应用程序可以解密。细化权限使 Kamus 更适合具有高安全标准的零信任环境。Kamus 通过关联 ServiceAccount 和你的 Secret 工作，仅有使用此服务帐户运行的应用程序对其进行解密。
-Kamus 由三个模块组成：
-加密 API 解密 API 密钥管理系统（KMS） 加密和解密 API 处理加密和解密请求。KMS 是各种加密解决方案的包装器。目前支持：
-AES：对所有 Secret 使用一个密钥 AWS KMS、Azure KeyVault、Google Cloud KMS：为每个服务帐户创建一个密钥。 Kamus 附带 3 个实用程序，使其更易于使用：
-CLI：一个小型 CLI，可简化与 Encrypt API 的交互。 init 容器：一个与 Decrypt API 交互的初始化容器。 CRD 控制器：允许使用 Kamus 创建本集群的 k8s Secret。 原理 # 加密 # 用户加密敏感信息（字符串，不是对象） kamus-cli 请求 kamus-encrytptor 加密 kamus-controller 提供公钥 加密结果返回 解密 # 用户下发 KamusSecret 类型的 CR，包含加密字段（kamus-secret.</description>
+      <guid>https://howieyuen.github.io/docs/XaC/secret-as-code/kamus/</guid>
+      <description>概述 # Kamus 架构似于 Sealed Secrets 和 Helm Secrets。但是，Kamus 使你可以加密特定应用程序的 Secret，并且只有该应用程序可以解密。细化权限使 Kamus 更适合具有高安全标准的零信任环境。Kamus 通过关联 ServiceAccount 和你的 Secret 工作，仅有使用此服务帐户运行的应用程序对其进行解密。&#xA;Kamus 由三个模块组成：&#xA;加密 API 解密 API 密钥管理系统（KMS） 加密和解密 API 处理加密和解密请求。KMS 是各种加密解决方案的包装器。目前支持：&#xA;AES：对所有 Secret 使用一个密钥 AWS KMS、Azure KeyVault、Google Cloud KMS：为每个服务帐户创建一个密钥。 Kamus 附带 3 个实用程序，使其更易于使用：&#xA;CLI：一个小型 CLI，可简化与 Encrypt API 的交互。 init 容器：一个与 Decrypt API 交互的初始化容器。 CRD 控制器：允许使用 Kamus 创建本集群的 k8s Secret。 原理 # 加密 # 用户加密敏感信息（字符串，不是对象） kamus-cli 请求 kamus-encrytptor 加密 kamus-controller 提供公钥 加密结果返回 解密 # 用户下发 KamusSecret 类型的 CR，包含加密字段（kamus-secret.</description>
     </item>
-    
+    <item>
+      <title>Google 在 MonoRepo 上的实践</title>
+      <link>https://howieyuen.github.io/posts/google-on-monorepo/</link>
+      <pubDate>Mon, 29 May 2023 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/posts/google-on-monorepo/</guid>
+      <description>&lt;p&gt;Google 在早期就使用集中式源代码控制系统管理共享代码库。也就是说，在 Google 内部，是先有的 MonoRepo，然后基于 MonoRepo 形成了一套基于主干开发的工作流程，以及支撑此流程的工具。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Acorn：k8s 应用部署框架</title>
+      <link>https://howieyuen.github.io/docs/XaC/infra-as-code/getting-started-of-acorn/</link>
+      <pubDate>Fri, 16 Dec 2022 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/XaC/infra-as-code/getting-started-of-acorn/</guid>
+      <description>概述 # Acorn 是一个应用程序打包和部署框架，可简化在 Kubernetes 上运行的应用程序。 Acorn 能够将应用程序的所有 Docker 镜像、配置和部署规范打包到单个 Acorn 镜像工件中。 此工件可发布到任何 OCI 容器注册表，允许它部署在任何开发、测试或生产环境的 Kubernetes 上。 Acorn 镜像的可移植性使开发人员能够在本地开发应用程序并转移到生产环境，而无需切换工具或技术堆栈。&#xA;开发人员通过在 Acornfile 中描述应用程序配置来创建 Acorn 镜像。 Acornfile 描述了整个应用程序，没有 Kubernetes YAML 文件的所有样板。 Acorn CLI 用于在任何 Kubernetes 集群上构建、部署和操作 Acorn 镜像。&#xA;架构 # acorn：安装在终端用户的机器上，并针对在 Kubernetes 集群中运行的 acorn-apiserver 交互 acorn-apiserver：k8s 风格的 API 服务器，通过 k8s aggregation layer 访问 acorn-controller：负责将 Acorn 应用程序转换为实际的 Kubernetes 资源 buildkit &amp;amp; internal registry：镜像构建服务、Buildkit 和内部镜像注册表作为同级容器部署在单个 pod 中。当 Buildkit 构建新的 Acorn 镜像时，这简化了两个组件之间的通信 工作流 # 下图说明了用户在使用 Acorn 时所采取的步骤：</description>
+    </item>
+    <item>
+      <title>Terraform 执行状态和阶段关系</title>
+      <link>https://howieyuen.github.io/docs/XaC/infra-as-code/terraform-workflow/</link>
+      <pubDate>Fri, 16 Dec 2022 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/XaC/infra-as-code/terraform-workflow/</guid>
+      <description>Terraform 每次运行都经过多个操作阶段（Pending、Plan、Cost Estimation、Policy Check、Apply 和 Completion），Terraform Cloud 将这些阶段的进度显示为运行状态。 在 Terraform Cloud 主页上的工作区列表中，每个工作区都显示了它当前正在处理的运行状态。（或者，如果没有正在进行的运行，则为最近完成的运行的状态。）&#xA;Pending # 阶段状态：&#xA;Pending：Terraform Cloud 尚未开始运行操作。Terraform Cloud 按照排队的顺序处理每个工作区的运行，并且运行在每次运行完成之前一直处于挂起状态。 离开状态：&#xA;Discarded：如果用户在开始前放弃运行，则运行不会继续。 Planning：如果运行在队列中排在首位，它会自动进入 Plan 阶段。 图示：&#xA;Fetching # Terraform Cloud 可能需要在开始计划之前从 VCS 获取配置。当所有运行完成后，Terraform Cloud 会自动存档通过 VCS 创建的配置版本，然后重新获取文件以供后续运行使用。&#xA;阶段状态：&#xA;Fetching：如果 Terraform Cloud 尚未从 VCS 获取配置，则运行将进入此状态，直到配置可用。 离开状态：&#xA;Plan Errored：如果 Terraform Cloud 在从 VCS 获取配置时遇到错误，则运行不会继续。 如果 Terraform 成功获取配置，则运行进入下一阶段。 图示：&#xA;Pre-plan（可选） # 创建 Run Task，并关联 Workspace，选择在 “Pre-plan” 时执行，才有 Pre-plan 阶段。在此阶段，Terraform Cloud 将有关运行的信息发送到已配置的外部系统，并等待 passed 或 failed 响应以确定运行是否可以继续。</description>
+    </item>
     <item>
       <title>令人愉悦的 CLI 的 10 条设计原则</title>
       <link>https://howieyuen.github.io/posts/10-design-principles-for-delightful-clis/</link>
       <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/posts/10-design-principles-for-delightful-clis/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Secrets Store CSI Driver</title>
-      <link>https://howieyuen.github.io/docs/secret-as-code/secrets-store-csi-driver/</link>
+      <link>https://howieyuen.github.io/docs/XaC/secret-as-code/secrets-store-csi-driver/</link>
       <pubDate>Wed, 02 Nov 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://howieyuen.github.io/docs/secret-as-code/secrets-store-csi-driver/</guid>
-      <description>概述 # Secrets Store CSI Driver 通过 容器存储接口 (CSI) 卷将 Secret 存储与 Kubernetes 集成。
-Secrets Store CSI Driver secrets-store.csi.k8s.io 允许 Kubernetes 将外部机密存储中的多个 Secret、密钥和证书作为卷挂载到其 Pod 中。 附加卷后，其中的数据将被挂载到容器的文件系统中。
-Secrets Store CSI Driver 是一个 DaemonSet，可促进与每个 Kubelet 实例的通信。每个驱动程序 Pod 都有以下容器：
-node-driver-registrar：负责向 Kubelet 注册 CSI 驱动程序，以便它知道在哪个 unix 域套接字上发出 CSI 调用。 此 sidecar 容器由 Kubernetes CSI 团队提供。 secrets-store：实现 CSI 规范中描述的 CSI 节点服务 gRPC 服务。 它负责在 Pod 创建/删除期间挂载/卸载卷。 此组件在 secrets-store-csi-driver 仓库中开发和维护。 liveness-probe：负责监控 CSI 驱动的健康状况并向 Kubernetes 报告。 这使 Kubernetes 能够自动检测驱动程序的问题并重新启动 Pod 以尝试修复问题。 此 sidecar 容器由 Kubernetes CSI 团队提供。 Provider # CSI Driver 使用 gRPC 与 Provider 通信，以从外部 Secrets Store 获取挂载内容。 有关如何为 Driver 实现 Provider 和支的持 Provider 的标准的更多详细信息，请参阅 Providers。</description>
+      <guid>https://howieyuen.github.io/docs/XaC/secret-as-code/secrets-store-csi-driver/</guid>
+      <description>概述 # Secrets Store CSI Driver 通过 容器存储接口 (CSI) 卷将 Secret 存储与 Kubernetes 集成。&#xA;Secrets Store CSI Driver secrets-store.csi.k8s.io 允许 Kubernetes 将外部机密存储中的多个 Secret、密钥和证书作为卷挂载到其 Pod 中。 附加卷后，其中的数据将被挂载到容器的文件系统中。&#xA;Secrets Store CSI Driver 是一个 DaemonSet，可促进与每个 Kubelet 实例的通信。每个驱动程序 Pod 都有以下容器：&#xA;node-driver-registrar：负责向 Kubelet 注册 CSI 驱动程序，以便它知道在哪个 unix 域套接字上发出 CSI 调用。 此 sidecar 容器由 Kubernetes CSI 团队提供。 secrets-store：实现 CSI 规范中描述的 CSI 节点服务 gRPC 服务。 它负责在 Pod 创建/删除期间挂载/卸载卷。 此组件在 secrets-store-csi-driver 仓库中开发和维护。 liveness-probe：负责监控 CSI 驱动的健康状况并向 Kubernetes 报告。 这使 Kubernetes 能够自动检测驱动程序的问题并重新启动 Pod 以尝试修复问题。 此 sidecar 容器由 Kubernetes CSI 团队提供。 Provider # CSI Driver 使用 gRPC 与 Provider 通信，以从外部 Secrets Store 获取挂载内容。 有关如何为 Driver 实现 Provider 和支的持 Provider 的标准的更多详细信息，请参阅 Providers。</description>
     </item>
-    
     <item>
       <title>Golang 中的 RSA 加解密算法</title>
       <link>https://howieyuen.github.io/posts/rsa-crypto-in-go/</link>
       <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/posts/rsa-crypto-in-go/</guid>
-      <description>&lt;p&gt;本文受到 Gitlab 中 
-  &lt;a href=&#34;https://gitlab.com/rahasak-labs/crypgo&#34;&gt;&lt;code&gt;crypgo&lt;/code&gt;&lt;/a&gt; 项目启发，
-作者在 Medium 中发表了一篇博文，
-  &lt;a href=&#34;https://medium.com/rahasak/golang-rsa-cryptography-1f1897ada311&#34;&gt;RSA cryptography in Golang&lt;/a&gt; 作为说明。
-读完后发现代码中存在一些小问题，因此重整代码实现，使其更加实用。&lt;/p&gt;</description>
+      <description>&lt;p&gt;本文受到 Gitlab 中 &#xA;  &lt;a href=&#34;https://gitlab.com/rahasak-labs/crypgo&#34;&gt;&lt;code&gt;crypgo&lt;/code&gt;&lt;/a&gt; 项目启发，&#xA;作者在 Medium 中发表了一篇博文，&#xA;  &lt;a href=&#34;https://medium.com/rahasak/golang-rsa-cryptography-1f1897ada311&#34;&gt;RSA cryptography in Golang&lt;/a&gt; 作为说明。&#xA;读完后发现代码中存在一些小问题，因此重整代码实现，使其更加实用。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>DevOps vs GitOps</title>
       <link>https://howieyuen.github.io/posts/devops-vs-gitops/</link>
       <pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/posts/devops-vs-gitops/</guid>
       <description>&lt;p&gt;GitOps 和 DevOps 正迅速成为开发团队的黄金标准方法。DevOps 文化代表了从传统软件和技术开发的转变，传统的软件和技术开发涉及从构思和概念到发布的线性路径，并鼓励协作和快速反馈，而不是孤立地工作。在本文中，我们将仔细研究 GitOps 与 DevOps，以帮助确定 GitOps 是否适用于您的软件开发项目。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Sealed Secrets</title>
-      <link>https://howieyuen.github.io/docs/secret-as-code/sealed-secrets/</link>
+      <link>https://howieyuen.github.io/docs/XaC/secret-as-code/sealed-secrets/</link>
       <pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://howieyuen.github.io/docs/secret-as-code/sealed-secrets/</guid>
-      <description>概述 # Sealed Secrets 由两个部分组成：
-集群侧控制器：sealed-secrets-controller 用户侧工具：kubeseal kubeseal 使用非对称加密算法，加密 Secret，加密结果仅有 sealed-secrets-controller 才能解密。 加密后的 Secret 编码在 SealedSecret 资源中，详细结构如下：
-apiVersion: bitnami.com/v1alpha1 kind: SealedSecret metadata: name: mysecret namespace: mynamespace spec: encryptedData: foo: AgBy3i4OJSWK+PiTySYZZA9rO43cGDEq..... 解密后的 Secret 如下：
-apiVersion: v1 kind: Secret metadata: name: mysecret namespace: mynamespace data: foo: YmFy # &amp;lt;- base64 encoded &amp;#34;bar&amp;#34; SealedSecret 和 Secret 的关系类似于 Deployment 和 Pod，SealedSecret 有个 template 字段，是生成的 Secret 的模板； 此二者之间的 labels 和 annotations 并不要求完成一致。 最终生成的 Secret 与 SealedSecret 相对独立，但 SealedSecret 的更新或删除，会连带到生成的 Secret。</description>
+      <guid>https://howieyuen.github.io/docs/XaC/secret-as-code/sealed-secrets/</guid>
+      <description>概述 # Sealed Secrets 由两个部分组成：&#xA;集群侧控制器：sealed-secrets-controller 用户侧工具：kubeseal kubeseal 使用非对称加密算法，加密 Secret，加密结果仅有 sealed-secrets-controller 才能解密。 加密后的 Secret 编码在 SealedSecret 资源中，详细结构如下：&#xA;apiVersion: bitnami.com/v1alpha1 kind: SealedSecret metadata: name: mysecret namespace: mynamespace spec: encryptedData: foo: AgBy3i4OJSWK+PiTySYZZA9rO43cGDEq..... 解密后的 Secret 如下：&#xA;apiVersion: v1 kind: Secret metadata: name: mysecret namespace: mynamespace data: foo: YmFy # &amp;lt;- base64 encoded &amp;#34;bar&amp;#34; SealedSecret 和 Secret 的关系类似于 Deployment 和 Pod，SealedSecret 有个 template 字段，是生成的 Secret 的模板； 此二者之间的 labels 和 annotations 并不要求完成一致。 最终生成的 Secret 与 SealedSecret 相对独立，但 SealedSecret 的更新或删除，会连带到生成的 Secret。</description>
     </item>
-    
     <item>
       <title>如何管理 GitOps Secret：详细指南</title>
       <link>https://howieyuen.github.io/posts/how-to-manage-gitops-secrets-a-detailed-guide/</link>
       <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/posts/how-to-manage-gitops-secrets-a-detailed-guide/</guid>
       <description>&lt;p&gt;GitOps 正变得越来越流行。越来越多的公司开始使用 Git 作为其基础设施和应用程序配置的真实来源。然而，伴随其优势而来的是挑战。例如，如果你的所有配置都存储在 Git 中，你如何管理 Secret？你不能简单地将密码和令牌以明文形式提交到 Git 存储库，即使该存储库是私有的并且只有少数人可以访问它。在这篇文章中，你将学习如何安全地管理 GitOps Secret。敬请关注。&lt;/p&gt;</description>
     </item>
-    
     <item>
-      <title>Circle CI 学习笔记</title>
-      <link>https://howieyuen.github.io/posts/notes-of-circle-ci/</link>
+      <title>Circle CI</title>
+      <link>https://howieyuen.github.io/docs/getting-started/circle-ci/</link>
       <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://howieyuen.github.io/posts/notes-of-circle-ci/</guid>
-      <description>&lt;p&gt;CircleCI 是基于云的 CI/CD 工具，可自动执行软件构建和交付过程。它提供快速的配置和维护，没有任何复杂性。
-由于它是基于云的 CI/CD 工具，因此消除了专用服务器的困扰，并降低了维护本地服务器的成本。
-此外，基于云的服务器是可扩展的，健壮的，并有助于更快地部署应用程序。&lt;/p&gt;</description>
+      <guid>https://howieyuen.github.io/docs/getting-started/circle-ci/</guid>
+      <description>&lt;p&gt;CircleCI 是基于云的 CI/CD 工具，可自动执行软件构建和交付过程。它提供快速的配置和维护，没有任何复杂性。&#xA;由于它是基于云的 CI/CD 工具，因此消除了专用服务器的困扰，并降低了维护本地服务器的成本。&#xA;此外，基于云的服务器是可扩展的，健壮的，并有助于更快地部署应用程序。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>pprof</title>
       <link>https://howieyuen.github.io/docs/golang/tools/pprof/</link>
       <pubDate>Thu, 21 Jan 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/golang/tools/pprof/</guid>
-      <description>1. 什么是 pprof # Profiling 是指在程序执行过程中，收集能够反映程序执行状态的数据。 在软件工程中，性能分析（performance analysis，也称为 profiling）， 是以收集程序运行时信息为手段研究程序行为的分析方法，是一种动态程序分析的方法。
-Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供可视化的功能。它包含两个相关的库：
-runtime/pprof 对于只跑一次的程序，例如每天只跑一次的离线预处理程序，调用 pprof 包提供的函数，手动开启性能数据采集。 net/http/pprof 对于在线服务，对于一个 HTTP Server，访问 pprof 提供的 HTTP 接口，获得性能数据。 当然，实际上这里底层也是调用的 runtime/pprof 提供的函数，封装成接口对外提供网络访问。 2. pprof 的作用 # 下表来自 golang pprof 实战
-类型 描述 备注 allocs 内存分配情况的采样信息 可以用浏览器打开，但可读性不高 blocks 阻塞操作情况的采样信息 可以用浏览器打开，但可读性不高 cmdline 当前程序的命令行调用 可以用浏览器打开，显示编译文件的临时目录 goroutine 当前所有协程的堆栈信息 可以用浏览器打开，但可读性不高 heap 堆上内存使用情况的采样信息 可以用浏览器打开，但可读性不高 mutex 锁争用情况的采样信息 可以用浏览器打开，但可读性不高 profile CPU 占用情况的采样信息 浏览器打开会下载文件 threadcreate 系统线程创建情况的采样信息 可以用浏览器打开，但可读性不高 trace 程序运行跟踪信息 浏览器打开会下载文件，本文不涉及，可另行参阅 深入浅出 Go trace allocs 和 heap 采样的信息一致，不过前者是所有对象的内存分配，而 heap 则是活跃对象的内存分配。</description>
+      <description>1. 什么是 pprof # Profiling 是指在程序执行过程中，收集能够反映程序执行状态的数据。 在软件工程中，性能分析（performance analysis，也称为 profiling）， 是以收集程序运行时信息为手段研究程序行为的分析方法，是一种动态程序分析的方法。&#xA;Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供可视化的功能。它包含两个相关的库：&#xA;runtime/pprof 对于只跑一次的程序，例如每天只跑一次的离线预处理程序，调用 pprof 包提供的函数，手动开启性能数据采集。 net/http/pprof 对于在线服务，对于一个 HTTP Server，访问 pprof 提供的 HTTP 接口，获得性能数据。 当然，实际上这里底层也是调用的 runtime/pprof 提供的函数，封装成接口对外提供网络访问。 2. pprof 的作用 # 下表来自 golang pprof 实战&#xA;类型 描述 备注 allocs 内存分配情况的采样信息 可以用浏览器打开，但可读性不高 blocks 阻塞操作情况的采样信息 可以用浏览器打开，但可读性不高 cmdline 当前程序的命令行调用 可以用浏览器打开，显示编译文件的临时目录 goroutine 当前所有协程的堆栈信息 可以用浏览器打开，但可读性不高 heap 堆上内存使用情况的采样信息 可以用浏览器打开，但可读性不高 mutex 锁争用情况的采样信息 可以用浏览器打开，但可读性不高 profile CPU 占用情况的采样信息 浏览器打开会下载文件 threadcreate 系统线程创建情况的采样信息 可以用浏览器打开，但可读性不高 trace 程序运行跟踪信息 浏览器打开会下载文件，本文不涉及，可另行参阅 深入浅出 Go trace allocs 和 heap 采样的信息一致，不过前者是所有对象的内存分配，而 heap 则是活跃对象的内存分配。</description>
     </item>
-    
     <item>
       <title>鉴权机制</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</link>
       <pubDate>Tue, 29 Dec 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</guid>
-      <description>1. 鉴权概述 # 在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。 如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。 只要有一个鉴权模块通过，则鉴权成功。
-kube-apiserver 目前提供了 6 种鉴权机制：
-AlwaysAllow：总是允许 AlwaysDeny：总是拒绝 ABAC：基于属性的访问控制（Attribute-Based Access Control） Node：节点鉴权，专门鉴权给 kubelet 发出的 API 请求 RBAC：基于角色额的访问控制（Role-Based Access Control） Webhook：基于 webhook 的一种 HTTP 回调机制，可以进行远程鉴权管理 在学习鉴权之前，有三个概念需要补齐：
-Decision：决策状态 Authorizer：鉴权接口 RuleResolver：规则解析器 1.1 Decision：决策状态 # Decision 决策状态类似于认证中的 true 和 false，用于决定是否鉴权成功。 鉴权支持三种 Decision 决策状态，例如鉴权成功，则返回 DecisionAllow，代码如下：
-// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go type Decision int const ( DecisionDeny Decision = iota DecisionAllow DecisionNoOpinion ) DecisionDeny：拒绝该操作 DecisionAllow：允许该操作 DecisionNoOpinion：表示无明显意见允许或拒绝，继续执行下一个鉴权模块 1.2 Authorizer：鉴权接口 # 每个鉴权模块都要实现该接口的方法，代码如下：
-// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go type Authorizer interface { Authorize(ctx context.</description>
+      <description>1. 鉴权概述 # 在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。 如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。 只要有一个鉴权模块通过，则鉴权成功。&#xA;kube-apiserver 目前提供了 6 种鉴权机制：&#xA;AlwaysAllow：总是允许 AlwaysDeny：总是拒绝 ABAC：基于属性的访问控制（Attribute-Based Access Control） Node：节点鉴权，专门鉴权给 kubelet 发出的 API 请求 RBAC：基于角色额的访问控制（Role-Based Access Control） Webhook：基于 webhook 的一种 HTTP 回调机制，可以进行远程鉴权管理 在学习鉴权之前，有三个概念需要补齐：&#xA;Decision：决策状态 Authorizer：鉴权接口 RuleResolver：规则解析器 1.1 Decision：决策状态 # Decision 决策状态类似于认证中的 true 和 false，用于决定是否鉴权成功。 鉴权支持三种 Decision 决策状态，例如鉴权成功，则返回 DecisionAllow，代码如下：&#xA;// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go type Decision int const ( DecisionDeny Decision = iota DecisionAllow DecisionNoOpinion ) DecisionDeny：拒绝该操作 DecisionAllow：允许该操作 DecisionNoOpinion：表示无明显意见允许或拒绝，继续执行下一个鉴权模块 1.2 Authorizer：鉴权接口 # 每个鉴权模块都要实现该接口的方法，代码如下：&#xA;// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go type Authorizer interface { Authorize(ctx context.</description>
     </item>
-    
     <item>
       <title>unsafe</title>
       <link>https://howieyuen.github.io/docs/golang/language-basics/unsafe/</link>
       <pubDate>Fri, 18 Dec 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/golang/language-basics/unsafe/</guid>
-      <description>本文转自： Go 里面的 unsafe 包详解
-The unsafe Package in Golang # Golang 的 unsafe 包是一个很特殊的包。为什么这样说呢？本文将详细解释。
-来自 go 语言官方文档的警告 # unsafe 包的文档是这么说的：
-导入 unsafe 的软件包可能不可移植，并且不受 Go 1 兼容性指南的保护。 Go 1 兼容性指南这么说：
-导入 unsafe 软件包可能取决于 Go 实现的内部属性。我们保留对可能导致程序崩溃的实现进行更改的权利。 当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。
-Unsafe 包的作用 # 直到现在（Go1.7），unsafe 包含以下资源：
-三个函数： func Alignof(variable ArbitraryType) uintptr func Offsetof(selector ArbitraryType) uintptr func Sizeof(variable ArbitraryType) uintptr 和一种类型： 类型 Pointer *ArbitraryType 这里，ArbitraryType 不是一个真正的类型，它只是一个占位符。
-与 Golang 中的大多数函数不同，上述三个函数的调用将始终在编译时求值，而不是运行时。这意味着它们的返回结果可以分配给常量。
-unsafe 包中的函数中非唯一调用将在编译时求值。 当传递给 len 和 cap 的参数是一个数组值时，内置函数和 cap 函数的调用也可以在编译时被求值。 除了这三个函数和一个类型外，指针在 unsafe 包也为编译器服务。</description>
+      <description>本文转自： Go 里面的 unsafe 包详解&#xA;The unsafe Package in Golang # Golang 的 unsafe 包是一个很特殊的包。为什么这样说呢？本文将详细解释。&#xA;来自 go 语言官方文档的警告 # unsafe 包的文档是这么说的：&#xA;导入 unsafe 的软件包可能不可移植，并且不受 Go 1 兼容性指南的保护。 Go 1 兼容性指南这么说：&#xA;导入 unsafe 软件包可能取决于 Go 实现的内部属性。我们保留对可能导致程序崩溃的实现进行更改的权利。 当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。&#xA;Unsafe 包的作用 # 直到现在（Go1.7），unsafe 包含以下资源：&#xA;三个函数： func Alignof(variable ArbitraryType) uintptr func Offsetof(selector ArbitraryType) uintptr func Sizeof(variable ArbitraryType) uintptr 和一种类型： 类型 Pointer *ArbitraryType 这里，ArbitraryType 不是一个真正的类型，它只是一个占位符。&#xA;与 Golang 中的大多数函数不同，上述三个函数的调用将始终在编译时求值，而不是运行时。这意味着它们的返回结果可以分配给常量。&#xA;unsafe 包中的函数中非唯一调用将在编译时求值。 当传递给 len 和 cap 的参数是一个数组值时，内置函数和 cap 函数的调用也可以在编译时被求值。 除了这三个函数和一个类型外，指针在 unsafe 包也为编译器服务。</description>
     </item>
-    
     <item>
       <title>chan</title>
       <link>https://howieyuen.github.io/docs/golang/data-structure/chan/</link>
       <pubDate>Mon, 14 Dec 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/golang/data-structure/chan/</guid>
-      <description>1. 引言 # Go 语言中最常见的、也是经常被人提及的设计模式就是 —— 不要通过共享内存的方式进行通信，而是应该通过通信的方式共享内存。
-先入先出
-目前的 Channel 收发操作均遵循了先入先出（FIFO）的设计，具体规则如下：
-先从 Channel 读取数据的 Goroutine 会先接收到数据； 先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利； 2. 数据结构 # type hchan struct { qcount uint // 当前队列中剩余元素个数 dataqsiz uint // 环形队列长度，即可以存放的元素个数 buf unsafe.Pointer // 环形队列指针 elemsize uint16 // 每个元素的大小 closed uint32 // 标识关闭状态 elemtype *_type // 元素类型 sendx uint // 发送操作处理到的位置 recvx uint // 接收操作处理到的位置 recvq waitq // 等待读消息的 goroutine 队列 sendq waitq // 等待写消息的 goroutine 队列 lock mutex // 互斥锁，chan 不允许并发读写 } 从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。</description>
+      <description>1. 引言 # Go 语言中最常见的、也是经常被人提及的设计模式就是 —— 不要通过共享内存的方式进行通信，而是应该通过通信的方式共享内存。&#xA;先入先出&#xA;目前的 Channel 收发操作均遵循了先入先出（FIFO）的设计，具体规则如下：&#xA;先从 Channel 读取数据的 Goroutine 会先接收到数据； 先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利； 2. 数据结构 # type hchan struct { qcount uint // 当前队列中剩余元素个数 dataqsiz uint // 环形队列长度，即可以存放的元素个数 buf unsafe.Pointer // 环形队列指针 elemsize uint16 // 每个元素的大小 closed uint32 // 标识关闭状态 elemtype *_type // 元素类型 sendx uint // 发送操作处理到的位置 recvx uint // 接收操作处理到的位置 recvq waitq // 等待读消息的 goroutine 队列 sendq waitq // 等待写消息的 goroutine 队列 lock mutex // 互斥锁，chan 不允许并发读写 } 从数据结构可以看出 channel 由队列、类型信息、goroutine 等待队列组成，下面分别说明其原理。</description>
     </item>
-    
     <item>
       <title>321. 拼接最大数</title>
       <link>https://howieyuen.github.io/docs/leetcode/0321/</link>
       <pubDate>Wed, 02 Dec 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/leetcode/0321/</guid>
-      <description>321. 拼接最大数 # leetcode 链接： https://leetcode-cn.com/problems/create-maximum-number/
-给定长度分别为 m 和 n 的两个数组，其元素由 0-9 构成，表示两个自然数各位上的数字。现在从这两个数组中选出 k (k &amp;lt;= m + n) 个数字拼接成一个新的数，要求从同一个数组中取出的数字保持其在原数组中的相对顺序。
-求满足该条件的最大数。结果返回一个表示该最大数的长度为 k 的数组。
-说明：请尽可能地优化你算法的时间和空间复杂度。
-示例 1:
-输入： nums1 = [3, 4, 6, 5] nums2 = [9, 1, 2, 5, 8, 3] k = 5 输出： [9, 8, 6, 5, 3] 示例 2:
-输入： nums1 = [6, 7] nums2 = [6, 0, 4] k = 5 输出： [6, 7, 6, 0, 4] 示例 3:</description>
+      <description>321. 拼接最大数 # leetcode 链接： https://leetcode-cn.com/problems/create-maximum-number/&#xA;给定长度分别为 m 和 n 的两个数组，其元素由 0-9 构成，表示两个自然数各位上的数字。现在从这两个数组中选出 k (k &amp;lt;= m + n) 个数字拼接成一个新的数，要求从同一个数组中取出的数字保持其在原数组中的相对顺序。&#xA;求满足该条件的最大数。结果返回一个表示该最大数的长度为 k 的数组。&#xA;说明：请尽可能地优化你算法的时间和空间复杂度。&#xA;示例 1:&#xA;输入： nums1 = [3, 4, 6, 5] nums2 = [9, 1, 2, 5, 8, 3] k = 5 输出： [9, 8, 6, 5, 3] 示例 2:&#xA;输入： nums1 = [6, 7] nums2 = [6, 0, 4] k = 5 输出： [6, 7, 6, 0, 4] 示例 3:</description>
     </item>
-    
     <item>
       <title>认证机制</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/</link>
       <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/</guid>
-      <description>1. Kubernetes 中的用户 # 所有 Kubernetes 集群都有两类用户：由 Kubernetes 管理的 ServiceAccount 和普通用户。
-对于与普通用户，Kuernetes 使用以下方式管理：
-负责分发私钥的管理员 类似 Keystone 或者 Google Accounts 这类用户数据库 包含用户名和密码列表的文件 因此，kubernetes 并不提供普通用户的定义，普通用户是无法通过 API 调用写入到集群中的。
-尽管如此，通过集群的证书机构签名的合法证书的用户，kubernetes 依旧可以认为是合法用户。基于此，kubernetes 使用证书中的 subject.CommonName 字段来确定用户名，接下来，通过 RBAC 确认用户对某资源是否存在要求的操作权限。
-与此不同的 ServiceAccount，与 Namespace 绑定，与一组 Secret 所包含的凭据有关。这些凭据会挂载到 Pod 中，从而允许访问 kubernetes 的 API。
-API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他的视为匿名请求。这意味着集群内和集群外的每个进程向 kube-apiserver 发起请求时，都必须通过身份认证，否则会被视为匿名用户。
-2. 认证机制 # 目前 kubernetes 提供的认证机制丰富多样，尤其是身份验证，更是五花八门：
-身份验证 X509 Client Cert Static Token File Bootstrap Tokens Static Password File（deprecated in v1.16） ServiceAccount Token OpenID Connect Token Webhook Token Authentication Proxy 匿名请求 用户伪装 client-go 凭据插件 2.</description>
+      <description>1. Kubernetes 中的用户 # 所有 Kubernetes 集群都有两类用户：由 Kubernetes 管理的 ServiceAccount 和普通用户。&#xA;对于与普通用户，Kuernetes 使用以下方式管理：&#xA;负责分发私钥的管理员 类似 Keystone 或者 Google Accounts 这类用户数据库 包含用户名和密码列表的文件 因此，kubernetes 并不提供普通用户的定义，普通用户是无法通过 API 调用写入到集群中的。&#xA;尽管如此，通过集群的证书机构签名的合法证书的用户，kubernetes 依旧可以认为是合法用户。基于此，kubernetes 使用证书中的 subject.CommonName 字段来确定用户名，接下来，通过 RBAC 确认用户对某资源是否存在要求的操作权限。&#xA;与此不同的 ServiceAccount，与 Namespace 绑定，与一组 Secret 所包含的凭据有关。这些凭据会挂载到 Pod 中，从而允许访问 kubernetes 的 API。&#xA;API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他的视为匿名请求。这意味着集群内和集群外的每个进程向 kube-apiserver 发起请求时，都必须通过身份认证，否则会被视为匿名用户。&#xA;2. 认证机制 # 目前 kubernetes 提供的认证机制丰富多样，尤其是身份验证，更是五花八门：&#xA;身份验证 X509 Client Cert Static Token File Bootstrap Tokens Static Password File（deprecated in v1.16） ServiceAccount Token OpenID Connect Token Webhook Token Authentication Proxy 匿名请求 用户伪装 client-go 凭据插件 2.</description>
     </item>
-    
     <item>
       <title>GC Controller 源码分析</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</link>
       <pubDate>Sun, 25 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</guid>
-      <description>1. 序言 # 垃圾回收相关，可参考 这里
-2. 源码解析 # GarbageCollectorController 负责回收集群中的资源对象，要做到这一点，首先得监控所有资源。gc controller 会监听集群中所有可删除资源的事件，这些事件会放到一个队列中，然后启动多个 worker 协程处理。对于删除事件，则根据删除策略删除对象；其他事件，更新对象之间的依赖关系。
-2.1 startGarbageCollectorController() # 首先来看 gc controller 的入口方法，也就是 kube-controller-manager 是如何启动它的。它的主要逻辑：
-判断是否启用 gc controller，默认是 true 初始化 clientset，使用 discoveryClient 获取集群中所有资源 注册不考虑 gc 的资源，默认为空 调用 garbagecollector.NewGarbageCollector() 方法 初始化 gc controller 对象 调用 garbageCollector.Run() 启动 gc controller，workers 默认是 20 调用 garbageCollector.Sync() 监听集群中的资源，当出现新的资源时，同步到 minitors 中 调用 garbagecollector.NewDebugHandler() 注册 debug 接口，用来提供集群内所有对象的关联关系； cmd/kube-controller-manager/app/core.go:538
-func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool, error) { // 1. 判断是否启用 gc controller，默认是 true if !</description>
+      <description>1. 序言 # 垃圾回收相关，可参考 这里&#xA;2. 源码解析 # GarbageCollectorController 负责回收集群中的资源对象，要做到这一点，首先得监控所有资源。gc controller 会监听集群中所有可删除资源的事件，这些事件会放到一个队列中，然后启动多个 worker 协程处理。对于删除事件，则根据删除策略删除对象；其他事件，更新对象之间的依赖关系。&#xA;2.1 startGarbageCollectorController() # 首先来看 gc controller 的入口方法，也就是 kube-controller-manager 是如何启动它的。它的主要逻辑：&#xA;判断是否启用 gc controller，默认是 true 初始化 clientset，使用 discoveryClient 获取集群中所有资源 注册不考虑 gc 的资源，默认为空 调用 garbagecollector.NewGarbageCollector() 方法 初始化 gc controller 对象 调用 garbageCollector.Run() 启动 gc controller，workers 默认是 20 调用 garbageCollector.Sync() 监听集群中的资源，当出现新的资源时，同步到 minitors 中 调用 garbagecollector.NewDebugHandler() 注册 debug 接口，用来提供集群内所有对象的关联关系； cmd/kube-controller-manager/app/core.go:538&#xA;func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool, error) { // 1. 判断是否启用 gc controller，默认是 true if !</description>
     </item>
-    
     <item>
       <title>DaemonSet Controller 源码分析</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</link>
       <pubDate>Wed, 21 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</guid>
-      <description>1. DaemonSet 简介 # 我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
-这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。
-如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。
-1.1 应用场景 # 在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程 一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。
-1.2 基本功能 # 创建 删除 级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false 更新 RollingUpdate OnDelete 回滚 1.3 示例 # apiVersion: apps/v1 kind: DaemonSet metadata: name: fluentd-elasticsearch namespace: kube-system labels: k8s-app: fluentd-logging spec: selector: matchLabels: name: fluentd-elasticsearch template: metadata: labels: name: fluentd-elasticsearch spec: tolerations: # this toleration is to have the daemonset runnable on master nodes # remove it if your masters can&amp;#39;t run pods - key: node-role.</description>
+      <description>1. DaemonSet 简介 # 我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。&#xA;这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。&#xA;如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。&#xA;1.1 应用场景 # 在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程 一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。&#xA;1.2 基本功能 # 创建 删除 级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false 更新 RollingUpdate OnDelete 回滚 1.3 示例 # apiVersion: apps/v1 kind: DaemonSet metadata: name: fluentd-elasticsearch namespace: kube-system labels: k8s-app: fluentd-logging spec: selector: matchLabels: name: fluentd-elasticsearch template: metadata: labels: name: fluentd-elasticsearch spec: tolerations: # this toleration is to have the daemonset runnable on master nodes # remove it if your masters can&amp;#39;t run pods - key: node-role.</description>
     </item>
-    
     <item>
       <title>416. 分割等和子集</title>
       <link>https://howieyuen.github.io/docs/leetcode/0416/</link>
       <pubDate>Wed, 14 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/leetcode/0416/</guid>
-      <description>416. 分割等和子集 # leetcode 链接： https://leetcode-cn.com/problems/partition-equal-subset-sum/
-给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
-注意：
-每个数组中的元素不会超过 100 数组的大小不会超过 200 示例 1:
-输入：[1, 5, 11, 5] 输出：true 解释：数组可以分割成 [1, 5, 5] 和 [11]. 示例 2:
-输入：[1, 2, 3, 5] 输出：false 解释：数组不能分割成两个元素和相等的子集。 方法一：0-1 背包问题
-// 0-1 背包问题 // dp[i][target] 表示 nums[0, i] 区间内是否能找到和为 target 的组合 // 对于每个 nums[i]，如果 nums[i] &amp;lt;= target，可以选择 or 不选，但只要有一个为 true，dp[i][target]=true // dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]] // 如果 nums[i] &amp;gt; target，只能不选，故： // dp[i][target] = dp[i-1][target] func canPartition(nums []int) bool { n := len(nums) if n &amp;lt; 2 { return false } sum := 0 maxNum := 0 for _, num := range nums { sum += num if num &amp;gt; maxNum { maxNum = num } } // 和为奇数 if sum%2 !</description>
+      <description>416. 分割等和子集 # leetcode 链接： https://leetcode-cn.com/problems/partition-equal-subset-sum/&#xA;给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。&#xA;注意：&#xA;每个数组中的元素不会超过 100 数组的大小不会超过 200 示例 1:&#xA;输入：[1, 5, 11, 5] 输出：true 解释：数组可以分割成 [1, 5, 5] 和 [11]. 示例 2:&#xA;输入：[1, 2, 3, 5] 输出：false 解释：数组不能分割成两个元素和相等的子集。 方法一：0-1 背包问题&#xA;// 0-1 背包问题 // dp[i][target] 表示 nums[0, i] 区间内是否能找到和为 target 的组合 // 对于每个 nums[i]，如果 nums[i] &amp;lt;= target，可以选择 or 不选，但只要有一个为 true，dp[i][target]=true // dp[i][target] = dp[i-1][target] || dp[i][target-nums[i]] // 如果 nums[i] &amp;gt; target，只能不选，故： // dp[i][target] = dp[i-1][target] func canPartition(nums []int) bool { n := len(nums) if n &amp;lt; 2 { return false } sum := 0 maxNum := 0 for _, num := range nums { sum += num if num &amp;gt; maxNum { maxNum = num } } // 和为奇数 if sum%2 !</description>
     </item>
-    
     <item>
       <title>垃圾回收</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/</link>
       <pubDate>Wed, 14 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/</guid>
-      <description>1. 序言 # 1.1 什么是垃圾回收 # 参考 Java 中的概念，垃圾回收（Garbage Collection）是 JVM 垃圾回收器提供的一种用于在空闲时间不定时回收无任何对象引用的对象占据的内存空间的一种机制。 垃圾回收回收的是无任何引用的对象占据的内存空间而不是对象本身。换言之，垃圾回收只会负责释放那些对象占有的内存。 对象是个抽象的词，包括引用和其占据的内存空间。当对象没有任何引用时其占据的内存空间随即被收回备用，此时对象也就被销毁。
-因此，垃圾回收关注的是无任何引用的对象。在 kubernetes 中，对象的引用关系又是怎样的呢？
-1.2 k8s 中的对象引用 # 某些 kubernetes 对象是其他一些对象的属主。例如一个 ReplicaSet 是一组 Pod 的属主；反之这组 Pod 就是此 ReplicaSet 的附属。 每个附属对象具有一个指向属主对象的 metadata.ownerReference 字段。
-Kubernetes 会自动为 ReplicationController、ReplicaSet、StatefulSet、DaemonSet、Deployment、Job 和 CronJob 自动设置 ownerReference 的值。 也可以通过手动设置 ownerReference 的值，来指定属主和附属之间的关系。
-先看一个 Pod 的详细信息，例如下面的配置显示 Pod 的属主是名为 my-replicaset 的 ReplicaSet：
-apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 controller: true blockOwnerDeletion: true kind: ReplicaSet name: my-rs uid: d9607e19-f88f-11e6-a518-42010a800195 .</description>
+      <description>1. 序言 # 1.1 什么是垃圾回收 # 参考 Java 中的概念，垃圾回收（Garbage Collection）是 JVM 垃圾回收器提供的一种用于在空闲时间不定时回收无任何对象引用的对象占据的内存空间的一种机制。 垃圾回收回收的是无任何引用的对象占据的内存空间而不是对象本身。换言之，垃圾回收只会负责释放那些对象占有的内存。 对象是个抽象的词，包括引用和其占据的内存空间。当对象没有任何引用时其占据的内存空间随即被收回备用，此时对象也就被销毁。&#xA;因此，垃圾回收关注的是无任何引用的对象。在 kubernetes 中，对象的引用关系又是怎样的呢？&#xA;1.2 k8s 中的对象引用 # 某些 kubernetes 对象是其他一些对象的属主。例如一个 ReplicaSet 是一组 Pod 的属主；反之这组 Pod 就是此 ReplicaSet 的附属。 每个附属对象具有一个指向属主对象的 metadata.ownerReference 字段。&#xA;Kubernetes 会自动为 ReplicationController、ReplicaSet、StatefulSet、DaemonSet、Deployment、Job 和 CronJob 自动设置 ownerReference 的值。 也可以通过手动设置 ownerReference 的值，来指定属主和附属之间的关系。&#xA;先看一个 Pod 的详细信息，例如下面的配置显示 Pod 的属主是名为 my-replicaset 的 ReplicaSet：&#xA;apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 controller: true blockOwnerDeletion: true kind: ReplicaSet name: my-rs uid: d9607e19-f88f-11e6-a518-42010a800195 .</description>
     </item>
-    
     <item>
       <title>Statefulset Controller 源码分析</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</link>
       <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</guid>
-      <description>1. StatefulSet 简介 # Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
-这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
-是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
-适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。
-1.1 特点 # 稳定、唯一的网络标识符
-如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。</description>
+      <description>1. StatefulSet 简介 # Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。&#xA;这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。&#xA;是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。&#xA;适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。&#xA;1.1 特点 # 稳定、唯一的网络标识符&#xA;如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。</description>
     </item>
-    
     <item>
       <title>无状态应用滚动更新</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</link>
       <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</guid>
-      <description>1. 概念 # 滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
-2. Deployment 滚动更新 # Deployment 更新方式有 2 种：
-RollingUpdate Recreate 其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：
-func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
-func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 newRS, oldRSs, err := dc.</description>
+      <description>1. 概念 # 滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。&#xA;2. Deployment 滚动更新 # Deployment 更新方式有 2 种：&#xA;RollingUpdate Recreate 其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：&#xA;func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：&#xA;func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 newRS, oldRSs, err := dc.</description>
     </item>
-    
     <item>
       <title>watch 关键设计</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</link>
       <pubDate>Thu, 24 Sep 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</guid>
-      <description>注：本文转自 图解 kubernetes 中基于 etcd 的 watch 关键设计
-本文介绍了 kubernetes 针对 etcd 的 watch 场景，k8s 在性能优化上面的一些设计， 逐个介绍缓存、定时器、序列化缓存、bookmark 机制、forget 机制、 针对数据的索引与 ringbuffer 等组件的场景以及解决的问题， 希望能帮助到那些对 apiserver 中的 watch 机制实现感兴趣的朋友。
-1. 事件驱动与控制器 # k8s 中并没有将业务的具体处理逻辑耦合在 rest 接口中，rest 接口只负责数据的存储， 通过控制器模式，分离数据存储与业务逻辑的耦合，保证 apiserver 业务逻辑的简洁。
-控制器通过 watch 接口来感知对应的资源的数据变更，从而根据资源对象中的期望状态与当前状态之间的差异， 来决策业务逻辑的控制，watch 本质上做的事情其实就是将感知到的事件发生给关注该事件的控制器。
-2. Watch 的核心机制 # 这里我们先介绍基于 etcd 实现的基础的 watch 模块。
-2.1 事件类型与 etcd # 一个数据变更本质上无非就是三种类型：新增、更新和删除， 其中新增和删除都比较容易因为都可以通过当前数据获取，而更新则可能需要获取之前的数据， 这里其实就是借助了 etcd 中 revision 和 mvcc 机制来实现，这样就可以获取到之前的状态和更新后的状态， 并且获取后续的通知。
-2.2 事件管道 # 事件管道则是负责事件的传递，在 watch 的实现中通过两级管道来实现消息的分发， 首先通过 watch etcd 中的 key 获取感兴趣的事件，并进行数据的解析， 完成从 bytes 到内部事件的转换并且发送到输入管道 (incomingEventChan) 中， 然后后台会有线程负责输入管道中获取数据，并进行解析发送到输出管道 (resultChan) 中， 后续会从该管道来进行事件的读取发送给对应的客户端。</description>
+      <description>注：本文转自 图解 kubernetes 中基于 etcd 的 watch 关键设计&#xA;本文介绍了 kubernetes 针对 etcd 的 watch 场景，k8s 在性能优化上面的一些设计， 逐个介绍缓存、定时器、序列化缓存、bookmark 机制、forget 机制、 针对数据的索引与 ringbuffer 等组件的场景以及解决的问题， 希望能帮助到那些对 apiserver 中的 watch 机制实现感兴趣的朋友。&#xA;1. 事件驱动与控制器 # k8s 中并没有将业务的具体处理逻辑耦合在 rest 接口中，rest 接口只负责数据的存储， 通过控制器模式，分离数据存储与业务逻辑的耦合，保证 apiserver 业务逻辑的简洁。&#xA;控制器通过 watch 接口来感知对应的资源的数据变更，从而根据资源对象中的期望状态与当前状态之间的差异， 来决策业务逻辑的控制，watch 本质上做的事情其实就是将感知到的事件发生给关注该事件的控制器。&#xA;2. Watch 的核心机制 # 这里我们先介绍基于 etcd 实现的基础的 watch 模块。&#xA;2.1 事件类型与 etcd # 一个数据变更本质上无非就是三种类型：新增、更新和删除， 其中新增和删除都比较容易因为都可以通过当前数据获取，而更新则可能需要获取之前的数据， 这里其实就是借助了 etcd 中 revision 和 mvcc 机制来实现，这样就可以获取到之前的状态和更新后的状态， 并且获取后续的通知。&#xA;2.2 事件管道 # 事件管道则是负责事件的传递，在 watch 的实现中通过两级管道来实现消息的分发， 首先通过 watch etcd 中的 key 获取感兴趣的事件，并进行数据的解析， 完成从 bytes 到内部事件的转换并且发送到输入管道 (incomingEventChan) 中， 然后后台会有线程负责输入管道中获取数据，并进行解析发送到输出管道 (resultChan) 中， 后续会从该管道来进行事件的读取发送给对应的客户端。</description>
     </item>
-    
     <item>
       <title>Topology Manager 设计方案</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/</link>
       <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/</guid>
-      <description>注：本文翻译自 Node Topology Manager
-1. 概要 # 越来越多的系统将 CPU 和硬件加速器组合使用，以支撑高延迟和搞吞吐量的并行计算。 包括电信、科学计算、机器学习、金融服务和数据分析等领域的工作。这种的混血儿构成了一个高性能环境。
-为了达到最优性能，需要对 CPU 隔离、内存和设备的物理位置进行优化。 然而，在 kubernetes 中，这些优化没有一个统一的组件管理。
-本次建议提供一个新机制，可以协同 kubernetes 各个组件，对硬件资源的分配可以有不同的细粒度。
-2. 启发 # 当前，kubelet 中多个组件决定系统拓扑相关的分配：
-CPU 管理器 CPU 管理器限制容器可以使用的 CPU。该能力，在 1.8 只实现了一种策略——静态分配。 该策略不支持在容器的生命周期内，动态上下线 CPU。 设备管理器 设备管理器将某个具体的设备分配给有该设备需求的容器。设备通常是在外围互连线上。 如果设备管理器和 CPU 管理器策略不一致，那么 CPU 和设备之间的所有通信都可能导致处理器互连结构上的额外跳转。 容器运行时（CNI） 网络接口控制器，包括 SR-IOV 虚拟功能（VF）和套接字有亲和关系，socket 不同，性能不同。 相关问题：
-节点层级的硬件拓扑感知（包括 NUMA） 发现节点的 NUMA 架构 绑定特定 CPU 支持虚拟函数 提议：CPU 亲和与 NUMA 拓扑感知 注意，以上所有的关注点都只适用于多套接字系统。 内核能从底层硬件接收精确的拓扑信息（通常是通过 SLIT 表），是正确操作的前提。 更多信息请参考 ACPI 规范的 5.2.16 和 5.2.17 节。</description>
+      <description>注：本文翻译自 Node Topology Manager&#xA;1. 概要 # 越来越多的系统将 CPU 和硬件加速器组合使用，以支撑高延迟和搞吞吐量的并行计算。 包括电信、科学计算、机器学习、金融服务和数据分析等领域的工作。这种的混血儿构成了一个高性能环境。&#xA;为了达到最优性能，需要对 CPU 隔离、内存和设备的物理位置进行优化。 然而，在 kubernetes 中，这些优化没有一个统一的组件管理。&#xA;本次建议提供一个新机制，可以协同 kubernetes 各个组件，对硬件资源的分配可以有不同的细粒度。&#xA;2. 启发 # 当前，kubelet 中多个组件决定系统拓扑相关的分配：&#xA;CPU 管理器 CPU 管理器限制容器可以使用的 CPU。该能力，在 1.8 只实现了一种策略——静态分配。 该策略不支持在容器的生命周期内，动态上下线 CPU。 设备管理器 设备管理器将某个具体的设备分配给有该设备需求的容器。设备通常是在外围互连线上。 如果设备管理器和 CPU 管理器策略不一致，那么 CPU 和设备之间的所有通信都可能导致处理器互连结构上的额外跳转。 容器运行时（CNI） 网络接口控制器，包括 SR-IOV 虚拟功能（VF）和套接字有亲和关系，socket 不同，性能不同。 相关问题：&#xA;节点层级的硬件拓扑感知（包括 NUMA） 发现节点的 NUMA 架构 绑定特定 CPU 支持虚拟函数 提议：CPU 亲和与 NUMA 拓扑感知 注意，以上所有的关注点都只适用于多套接字系统。 内核能从底层硬件接收精确的拓扑信息（通常是通过 SLIT 表），是正确操作的前提。 更多信息请参考 ACPI 规范的 5.2.16 和 5.2.17 节。</description>
     </item>
-    
     <item>
       <title>高级调度</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/</link>
       <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/</guid>
-      <description>1. 使用 taint 和 toleration 阻止节点调度到特定节点 # 1.1 taint 和 toleration # taint，是在不修改已有 Pod 的前提下，通过在节点上添加污点信息，拒绝 Pod 的部署。 只有当一个 Pod 容忍某个节点的 taint 时，才能被调度到此节点上。
-显示节点 taint 信息
-kubectl describe node master.k8s ... Name: master.k8s Role: Labels: beta.kubernetes.io/arch=amd64 beta.kubernetes.io/os=linux kubernetes.io/hostname=master.k8s Annotations: node.alpha.kubernetes.io/ttl=0 Taints: node-role.kubernetes.io/master:NoSchedule ... 主节点上包含一个污点，污点包含一个 key 和 value，以及一个 effect，格式为=:。 上面的污点信息表示，key 为 node-role.kubernetes.io/master，value 是空，effect 是 NoSchedule。
-显示 Pod tolerations
-kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.kubernetes.io/master:=NoSchedule node.alpha.kubernetes.io/notReady=:Exists:NoExecute node.alpha.kubernetes.io/unreachable=:Exists:NoExecute ... 第一个 toleration 匹配了主节点的 taint，表示允许这个 Pod 调度到主节点上。</description>
+      <description>1. 使用 taint 和 toleration 阻止节点调度到特定节点 # 1.1 taint 和 toleration # taint，是在不修改已有 Pod 的前提下，通过在节点上添加污点信息，拒绝 Pod 的部署。 只有当一个 Pod 容忍某个节点的 taint 时，才能被调度到此节点上。&#xA;显示节点 taint 信息&#xA;kubectl describe node master.k8s ... Name: master.k8s Role: Labels: beta.kubernetes.io/arch=amd64 beta.kubernetes.io/os=linux kubernetes.io/hostname=master.k8s Annotations: node.alpha.kubernetes.io/ttl=0 Taints: node-role.kubernetes.io/master:NoSchedule ... 主节点上包含一个污点，污点包含一个 key 和 value，以及一个 effect，格式为=:。 上面的污点信息表示，key 为 node-role.kubernetes.io/master，value 是空，effect 是 NoSchedule。&#xA;显示 Pod tolerations&#xA;kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.kubernetes.io/master:=NoSchedule node.alpha.kubernetes.io/notReady=:Exists:NoExecute node.alpha.kubernetes.io/unreachable=:Exists:NoExecute ... 第一个 toleration 匹配了主节点的 taint，表示允许这个 Pod 调度到主节点上。</description>
     </item>
-    
     <item>
       <title>Eviction Manager 工作机制</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/</link>
       <pubDate>Wed, 26 Feb 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/</guid>
-      <description>1. 概述 # 在可用计算资源较少时，kubelet 为保证节点稳定性，会主动地结束一个或多个 pod 以回收短缺地资源， 这在处理内存和磁盘这种不可压缩资源时，驱逐 pod 回收资源的策略，显得尤为重要。 下面来具体研究下 Kubelet Eviction Policy 的工作机制。
-kubelet 预先监控本节点的资源使用，防止资源被耗尽，保证节点稳定性。 kubelet 会预先 Fail N(&amp;gt;=1) 个 Pod，以回收出现紧缺的资源。 kubelet 在 Fail 一个 pod 时，kill 掉 pod 内所有 container，并设置 pod.status.phase = Failed。 kubelet 按照事先设定好的 Eviction Threshold 来触发驱逐动作，实现资源回收。 1.1 驱逐信号 # 在源码 pkg/kubelet/eviction/api/types.go 中定义了以下及几种 Eviction Signals：
-Eviction Signal Description memory.available := node.status.capacity[memory] - node.stats.memory.workingSet nodefs.available := node.stats.fs.available nodefs.inodesFree := node.stats.fs.inodesFree imagefs.available := node.stats.runtime.imagefs.available imagefs.inodesFree := node.stats.runtime.imagefs.inodesFree allocatableMemory.</description>
+      <description>1. 概述 # 在可用计算资源较少时，kubelet 为保证节点稳定性，会主动地结束一个或多个 pod 以回收短缺地资源， 这在处理内存和磁盘这种不可压缩资源时，驱逐 pod 回收资源的策略，显得尤为重要。 下面来具体研究下 Kubelet Eviction Policy 的工作机制。&#xA;kubelet 预先监控本节点的资源使用，防止资源被耗尽，保证节点稳定性。 kubelet 会预先 Fail N(&amp;gt;=1) 个 Pod，以回收出现紧缺的资源。 kubelet 在 Fail 一个 pod 时，kill 掉 pod 内所有 container，并设置 pod.status.phase = Failed。 kubelet 按照事先设定好的 Eviction Threshold 来触发驱逐动作，实现资源回收。 1.1 驱逐信号 # 在源码 pkg/kubelet/eviction/api/types.go 中定义了以下及几种 Eviction Signals：&#xA;Eviction Signal Description memory.available := node.status.capacity[memory] - node.stats.memory.workingSet nodefs.available := node.stats.fs.available nodefs.inodesFree := node.stats.fs.inodesFree imagefs.available := node.stats.runtime.imagefs.available imagefs.inodesFree := node.stats.runtime.imagefs.inodesFree allocatableMemory.</description>
     </item>
-    
     <item>
       <title>深入了解 Service</title>
       <link>https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/</link>
       <pubDate>Fri, 24 Jan 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/</guid>
-      <description>1. 基本概念 # 1.1 Service 定义详解 # Service 是对一组提供相同功能的 Pods 的抽象，并为它们提供一个统一的入口。借助 Service， 应用可以方便的实现服务发现与负载均衡，并实现应用的零宕机升级。Service 通过标签来选取服务后端， 一般配合 Replication Controller 或者 Deployment 来保证后端容器的正常运行。 这些匹配标签的 Pod IP 和端口列表组成 endpoints， 由 kube-proxy 负责将服务 IP 负载均衡到这些 endpoints 上。
-apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - name: string annotations: - name: string spec: selector: [] # ClusterIP、NodePort、LoadBalancer type: string # type=ClusterIP, 有自动分配的能力；type=LoadBalancer，需指定 clusterIP: string # 是否支持 session，默认为空，可选值 ClutserIP，同一个 client 的 request，都发送到同一个后端 Pod sessionAffinity: string ports: - name: string # tcp、udp，默认 tcp protocol: string port: int targetPort: int nodePort: int # spec.</description>
+      <description>1. 基本概念 # 1.1 Service 定义详解 # Service 是对一组提供相同功能的 Pods 的抽象，并为它们提供一个统一的入口。借助 Service， 应用可以方便的实现服务发现与负载均衡，并实现应用的零宕机升级。Service 通过标签来选取服务后端， 一般配合 Replication Controller 或者 Deployment 来保证后端容器的正常运行。 这些匹配标签的 Pod IP 和端口列表组成 endpoints， 由 kube-proxy 负责将服务 IP 负载均衡到这些 endpoints 上。&#xA;apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - name: string annotations: - name: string spec: selector: [] # ClusterIP、NodePort、LoadBalancer type: string # type=ClusterIP, 有自动分配的能力；type=LoadBalancer，需指定 clusterIP: string # 是否支持 session，默认为空，可选值 ClutserIP，同一个 client 的 request，都发送到同一个后端 Pod sessionAffinity: string ports: - name: string # tcp、udp，默认 tcp protocol: string port: int targetPort: int nodePort: int # spec.</description>
     </item>
-    
     <item>
       <title>CRD 入门和使用</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/</link>
       <pubDate>Mon, 14 Oct 2019 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/</guid>
-      <description>1. Customer Resource # 自定义资源是 Kubernetes API 的扩展，本文将讨什么时候应该向 Kubernetes 集群添加自定义资源以及何时使用独立服务。它描述了添加自定义资源的两种方法以及如何在它们之间进行选择。
-1.1 自定义资源概述 # 资源就是 Kubernetes API 集合中的某个的对象。例如，内置 pods 资源包含 Pod 对象的集合。
-自定义资源是扩展了 Kubernetes API，但在默认的 API 集合中是不可用的，因为没有对应的 controller 处理业务逻辑。使用自定义资源，不仅可以解耦大多数的自研功能，还可用使得 Kubernetes 更加模块化。
-自定义资源可以通过动态注册的方法，于正在 running 的集群中创建、删除和更新，并且与集群本身的资源是相互独立的。当自定义资源被创建，就可以通过 kubectl 创建和访问对象，和对内置资源的操作完全一致。
-1.2 是否需要自定义资源 # 在创建新的 API 时，应该考虑与 Kubernetes 的 API 聚合，还是让 API 独立运行。
-API 聚合 API 独立 声明式 非声明式 kubectl 可读可写 不需要 kubectl 支持 接受 k8s 的 REST 限制 特定 API 路径 可限定为 cluster 或者 namespace 不适用 namespace 重用 k8s API 支持的功能 不需要这些功能 1.</description>
+      <description>1. Customer Resource # 自定义资源是 Kubernetes API 的扩展，本文将讨什么时候应该向 Kubernetes 集群添加自定义资源以及何时使用独立服务。它描述了添加自定义资源的两种方法以及如何在它们之间进行选择。&#xA;1.1 自定义资源概述 # 资源就是 Kubernetes API 集合中的某个的对象。例如，内置 pods 资源包含 Pod 对象的集合。&#xA;自定义资源是扩展了 Kubernetes API，但在默认的 API 集合中是不可用的，因为没有对应的 controller 处理业务逻辑。使用自定义资源，不仅可以解耦大多数的自研功能，还可用使得 Kubernetes 更加模块化。&#xA;自定义资源可以通过动态注册的方法，于正在 running 的集群中创建、删除和更新，并且与集群本身的资源是相互独立的。当自定义资源被创建，就可以通过 kubectl 创建和访问对象，和对内置资源的操作完全一致。&#xA;1.2 是否需要自定义资源 # 在创建新的 API 时，应该考虑与 Kubernetes 的 API 聚合，还是让 API 独立运行。&#xA;API 聚合 API 独立 声明式 非声明式 kubectl 可读可写 不需要 kubectl 支持 接受 k8s 的 REST 限制 特定 API 路径 可限定为 cluster 或者 namespace 不适用 namespace 重用 k8s API 支持的功能 不需要这些功能 1.</description>
     </item>
-    
     <item>
       <title>External Secrets Operator</title>
-      <link>https://howieyuen.github.io/docs/secret-as-code/external-secret-operator/</link>
+      <link>https://howieyuen.github.io/docs/XaC/secret-as-code/external-secret-operator/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://howieyuen.github.io/docs/secret-as-code/external-secret-operator/</guid>
-      <description>概述 # External Secrets Operator（ESO）是一个 Kubernetes Operator，它支持：
-AWS Secrets Manager HashiCorp Vault Google Secrets Manager Azure Key Vault IBM Cloud Secret Manager &amp;hellip; 等外部 Secret 管理系统。Operator 从外部 API 读取信息并自动将值注入 Kubernetes Secret。 ESO 的目标是将来自外部 API 的机密信息同步到 Kubernetes。ESO 是自定义 API 资源的集合：
-SecretStore ExternalSecret ClusterSecretStore ClusterExternalSecret 它们为外部 API 提供了一个用户友好的抽象，帮助用户存储 Secret 并管理它的生命周期。
-SecretStore # SecretStore 将身份验证/访问的关注点与工作负载所需的实际 Secret 和配置分开。ExternalSecret 指定要获取的内容，SecretStore 指定如何访问。Namespace 级别。
-下面的代码示例是以 Vault 作为后端，使用静态 token：
-ExternalSecret # ExternalSecret 声明要获取的数据。它引用了一个知道如何访问该数据的 SecretStore。控制器使用该 ExternalSecret 作为创建 Secret 的蓝本。Namespace 级别。</description>
+      <guid>https://howieyuen.github.io/docs/XaC/secret-as-code/external-secret-operator/</guid>
+      <description>概述 # External Secrets Operator（ESO）是一个 Kubernetes Operator，它支持：&#xA;AWS Secrets Manager HashiCorp Vault Google Secrets Manager Azure Key Vault IBM Cloud Secret Manager &amp;hellip; 等外部 Secret 管理系统。Operator 从外部 API 读取信息并自动将值注入 Kubernetes Secret。 ESO 的目标是将来自外部 API 的机密信息同步到 Kubernetes。ESO 是自定义 API 资源的集合：&#xA;SecretStore ExternalSecret ClusterSecretStore ClusterExternalSecret 它们为外部 API 提供了一个用户友好的抽象，帮助用户存储 Secret 并管理它的生命周期。&#xA;SecretStore # SecretStore 将身份验证/访问的关注点与工作负载所需的实际 Secret 和配置分开。ExternalSecret 指定要获取的内容，SecretStore 指定如何访问。Namespace 级别。&#xA;下面的代码示例是以 Vault 作为后端，使用静态 token：&#xA;ExternalSecret # ExternalSecret 声明要获取的数据。它引用了一个知道如何访问该数据的 SecretStore。控制器使用该 ExternalSecret 作为创建 Secret 的蓝本。Namespace 级别。</description>
     </item>
-    
     <item>
       <title>map</title>
       <link>https://howieyuen.github.io/docs/golang/data-structure/map/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/golang/data-structure/map/</guid>
-      <description>1. 引言 # 粗略的讲，Go 语言中 map 采用的是哈希查找表， 由一个 key 通过哈希函数得到哈希值， 64 位系统中就生成一个 64 bit 的哈希值， 由这个哈希值将 key 对应到不同的桶（bucket）中， 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。
-1.1 hash 函数 # 首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找， 就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个 bucket 的哪个 cell。 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。
-1.2 数据结构 # hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。
-type hmap struct { // map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 count int // map 状态标识，比如是否在被写或者迁移等，因为 map 不是线程安全的所以操作时需要判断 flags flags uint8 // log_2 of buckets （最多可以放 loadFactor * 2^B 个元素即 6.</description>
+      <description>1. 引言 # 粗略的讲，Go 语言中 map 采用的是哈希查找表， 由一个 key 通过哈希函数得到哈希值， 64 位系统中就生成一个 64 bit 的哈希值， 由这个哈希值将 key 对应到不同的桶（bucket）中， 当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。&#xA;1.1 hash 函数 # 首先要知道的就是 map 中哈希函数的作用，go 中 map 使用 hash 作查找， 就是将 key 作哈希运算，得到一个哈希值，根据哈希值确定 key-value 落在哪个 bucket 的哪个 cell。 golang 使用的 hash 算法和 CPU 有关，如果 CPU 支持 aes，那么使用 aes hash，否则使用 memhash。&#xA;1.2 数据结构 # hmap 可以理解为 header of map 的缩写，即 map 数据结构的入口。&#xA;type hmap struct { // map 中的元素个数，必须放在 struct 的第一个位置，因为 内置的 len 函数会从这里读取 count int // map 状态标识，比如是否在被写或者迁移等，因为 map 不是线程安全的所以操作时需要判断 flags flags uint8 // log_2 of buckets （最多可以放 loadFactor * 2^B 个元素即 6.</description>
     </item>
-    
     <item>
       <title>reflect</title>
       <link>https://howieyuen.github.io/docs/golang/language-basics/reflect/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/golang/language-basics/reflect/</guid>
-      <description>1. 引言 # 计算机中提到的反射一般是指，程序借助某种手段检查自己结构的一种能力，通常就是借助编程语言中定义的类型（types）。因此，反射是建立在类型系统上的。
-go 是静态类型化，每个变量都有一个静态类型，也就是说，在编译时，变量的类型就已经确定。不显示地去做强制类型转换，不同类型之间是无法相互赋值的。
-有一种特殊的类型叫做接口（interface），一个接口表示的是一组方法集合。一个接口变量能存储任何具体的值，只要这个值实现了这个接口的方法集合。比如 io 包中的 Reader 和 Writer，io.Reader 接口变量能够保存任意实现了 Read() 方法的类型所定义的值。
-一个特殊接口就是空接口 interface{}，任何值都可以说实现了空接口，因为空接口中没有定义方法，所以空接口可以保存任何值。
-一个接口类型变量存储了一对值：赋值给这个接口变量的具体值 + 这个值的类型描述符。更进一步的讲，这个“值”是实现了这个接口的底层具体数据项（underlying concrete data item)，而这个“类型”是描述了具体数据项（item）的全类型（full type）。
-所以反射是干嘛的呢？反射是一种检查存储在接口变量中的（类型/值）对的机制。reflect 包中提供的 2 个类型 Type 和 Value，提供了访问接口值的 reflect.Type 和 reflect.Value 部分。
-2. 三大法则 # 2.1. Reflection goes from interface value to reflecton object # 从 interface{} 变量可以反射出反射对象
-type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := reflect.TypeOf(x) fmt.Println(&amp;#34;type:&amp;#34;, t) // type: main.</description>
+      <description>1. 引言 # 计算机中提到的反射一般是指，程序借助某种手段检查自己结构的一种能力，通常就是借助编程语言中定义的类型（types）。因此，反射是建立在类型系统上的。&#xA;go 是静态类型化，每个变量都有一个静态类型，也就是说，在编译时，变量的类型就已经确定。不显示地去做强制类型转换，不同类型之间是无法相互赋值的。&#xA;有一种特殊的类型叫做接口（interface），一个接口表示的是一组方法集合。一个接口变量能存储任何具体的值，只要这个值实现了这个接口的方法集合。比如 io 包中的 Reader 和 Writer，io.Reader 接口变量能够保存任意实现了 Read() 方法的类型所定义的值。&#xA;一个特殊接口就是空接口 interface{}，任何值都可以说实现了空接口，因为空接口中没有定义方法，所以空接口可以保存任何值。&#xA;一个接口类型变量存储了一对值：赋值给这个接口变量的具体值 + 这个值的类型描述符。更进一步的讲，这个“值”是实现了这个接口的底层具体数据项（underlying concrete data item)，而这个“类型”是描述了具体数据项（item）的全类型（full type）。&#xA;所以反射是干嘛的呢？反射是一种检查存储在接口变量中的（类型/值）对的机制。reflect 包中提供的 2 个类型 Type 和 Value，提供了访问接口值的 reflect.Type 和 reflect.Value 部分。&#xA;2. 三大法则 # 2.1. Reflection goes from interface value to reflecton object # 从 interface{} 变量可以反射出反射对象&#xA;type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := reflect.TypeOf(x) fmt.Println(&amp;#34;type:&amp;#34;, t) // type: main.</description>
     </item>
-    
     <item>
       <title>slice</title>
       <link>https://howieyuen.github.io/docs/golang/data-structure/slice/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/golang/data-structure/slice/</guid>
-      <description>1. 数据结构 # type slice struct { array unsafe.Pointer len int cap int } slice 的底层数据结构中的 array 是一个指针，指向的是一个 Array len 代表这个 slice 的元素个数 cap 表示 slice 指向的底层数组容量 对 slice 的赋值，以值作为函数参数时，只拷贝 1 个指针和 2 个 int 值。
-2. 操作 # 2.1 创建 # var []T 或 []T{} func make([]T,len,cap) []T 2.2 nil 切片和空切片 # nil 切片被用在很多标准库和内置函数中，描述一个不存在的切片的时候，就需要用到 nil 切片。比如函数在发生异常的时候，返回的切片就是 nil 切片。nil 切片的指针指向 nil. 空切片一般会用来表示一个空集合。比如数据库查询，一条结果也没有查到，那么就可以返回一个空切片。 2.3 扩容 # 2.3.1 计算策略 # 若 Slice cap 大于 doublecap，则扩容后容量大小为 新 Slice 的容量（超了基准值，我就只给你需要的容量大小） 若 Slice len 小于 1024 个，在扩容时，增长因子为 1（也就是 3 个变 6 个） 若 Slice len 大于 1024 个，在扩容时，增长因子为 0.</description>
+      <description>1. 数据结构 # type slice struct { array unsafe.Pointer len int cap int } slice 的底层数据结构中的 array 是一个指针，指向的是一个 Array len 代表这个 slice 的元素个数 cap 表示 slice 指向的底层数组容量 对 slice 的赋值，以值作为函数参数时，只拷贝 1 个指针和 2 个 int 值。&#xA;2. 操作 # 2.1 创建 # var []T 或 []T{} func make([]T,len,cap) []T 2.2 nil 切片和空切片 # nil 切片被用在很多标准库和内置函数中，描述一个不存在的切片的时候，就需要用到 nil 切片。比如函数在发生异常的时候，返回的切片就是 nil 切片。nil 切片的指针指向 nil. 空切片一般会用来表示一个空集合。比如数据库查询，一条结果也没有查到，那么就可以返回一个空切片。 2.3 扩容 # 2.3.1 计算策略 # 若 Slice cap 大于 doublecap，则扩容后容量大小为 新 Slice 的容量（超了基准值，我就只给你需要的容量大小） 若 Slice len 小于 1024 个，在扩容时，增长因子为 1（也就是 3 个变 6 个） 若 Slice len 大于 1024 个，在扩容时，增长因子为 0.</description>
     </item>
-    
     <item>
       <title>内存模型</title>
       <link>https://howieyuen.github.io/docs/golang/memory-manage/memory-model/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/golang/memory-manage/memory-model/</guid>
-      <description>1. 引言 # Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。
-2. 设计原则 # 2.1 happens-before # 假设 A 和 B 表示一个多线程的程序执行的两个操作。如果 A happens-before B，那么 A 操作对内存的影响将对执行 B 的线程（且执行 B 之前）可见。
-单一 goroutine 中当满足下面条件时候，对一个变量的写操作 w1 对读操作 r1 可见：
-读操作 r1 不是发生在写操作 w1 前 在读操作 r1 之前，写操作 w1 之后没有其他的写操作 w2 对变量进行了修改 多 goroutine 下则需要满足下面条件才能保证写操作 w1 对读操作 r1 可见：
-写操作 w1 先于读操作 r1 任何对变量的写操作 w2 要先于写操作 w1 或者晚于读操作 r1 关于 channel 的 happens-before 在 Go 的内存模型中提到了三种情况：</description>
+      <description>1. 引言 # Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。&#xA;2. 设计原则 # 2.1 happens-before # 假设 A 和 B 表示一个多线程的程序执行的两个操作。如果 A happens-before B，那么 A 操作对内存的影响将对执行 B 的线程（且执行 B 之前）可见。&#xA;单一 goroutine 中当满足下面条件时候，对一个变量的写操作 w1 对读操作 r1 可见：&#xA;读操作 r1 不是发生在写操作 w1 前 在读操作 r1 之前，写操作 w1 之后没有其他的写操作 w2 对变量进行了修改 多 goroutine 下则需要满足下面条件才能保证写操作 w1 对读操作 r1 可见：&#xA;写操作 w1 先于读操作 r1 任何对变量的写操作 w2 要先于写操作 w1 或者晚于读操作 r1 关于 channel 的 happens-before 在 Go 的内存模型中提到了三种情况：</description>
     </item>
-    
   </channel>
 </rss>

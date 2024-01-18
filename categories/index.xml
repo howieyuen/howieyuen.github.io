@@ -6,69 +6,63 @@
     <description>Recent content in Categories on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 21 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 18 Jan 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://howieyuen.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MonoRepo</title>
+      <link>https://howieyuen.github.io/categories/MonoRepo/</link>
+      <pubDate>Thu, 18 Jan 2024 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/categories/MonoRepo/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Design Principle</title>
       <link>https://howieyuen.github.io/categories/Design-Principle/</link>
       <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/categories/Design-Principle/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>crypto</title>
       <link>https://howieyuen.github.io/categories/crypto/</link>
       <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/categories/crypto/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>ops</title>
       <link>https://howieyuen.github.io/categories/ops/</link>
       <pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/categories/ops/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>GitOps</title>
       <link>https://howieyuen.github.io/categories/GitOps/</link>
       <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/categories/GitOps/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Secret</title>
       <link>https://howieyuen.github.io/categories/Secret/</link>
       <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/categories/Secret/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>protobuf</title>
       <link>https://howieyuen.github.io/categories/protobuf/</link>
       <pubDate>Tue, 10 May 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/categories/protobuf/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>CI/CD</title>
       <link>https://howieyuen.github.io/categories/CI/CD/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/categories/CI/CD/</guid>
       <description></description>
     </item>
-    
   </channel>
 </rss>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>XaC(Everything as Code) on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/docs/XaC/</link>
+    <description>Recent content in XaC(Everything as Code) on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <atom:link href="https://howieyuen.github.io/docs/XaC/index.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>

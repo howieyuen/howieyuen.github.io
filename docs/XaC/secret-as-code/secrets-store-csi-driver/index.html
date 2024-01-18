@@ -14,15 +14,16 @@ Secrets Store CSI Driver secrets-store.csi.k8s.io 允许 Kubernetes 将外部机
 Secrets Store CSI Driver 是一个 DaemonSet，可促进与每个 Kubelet 实例的通信。每个驱动程序 Pod 都有以下容器：
 node-driver-registrar：负责向 Kubelet 注册 CSI 驱动程序，以便它知道在哪个 unix 域套接字上发出 CSI 调用。 此 sidecar 容器由 Kubernetes CSI 团队提供。 secrets-store：实现 CSI 规范中描述的 CSI 节点服务 gRPC 服务。 它负责在 Pod 创建/删除期间挂载/卸载卷。 此组件在 secrets-store-csi-driver 仓库中开发和维护。 liveness-probe：负责监控 CSI 驱动的健康状况并向 Kubernetes 报告。 这使 Kubernetes 能够自动检测驱动程序的问题并重新启动 Pod 以尝试修复问题。 此 sidecar 容器由 Kubernetes CSI 团队提供。 Provider # CSI Driver 使用 gRPC 与 Provider 通信，以从外部 Secrets Store 获取挂载内容。 有关如何为 Driver 实现 Provider 和支的持 Provider 的标准的更多详细信息，请参阅 Providers。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://howieyuen.github.io/docs/secret-as-code/secrets-store-csi-driver/" /><meta property="article:section" content="docs" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/XaC/secret-as-code/secrets-store-csi-driver/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2022-11-02T00:00:00+00:00" />
-<meta property="article:modified_time" content="2023-09-27T15:28:08+08:00" />
+<meta property="article:modified_time" content="2024-01-19T00:03:22+08:00" />
+
 <title>Secrets Store CSI Driver | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.2216297aba4e3976f224bd78cae01943faf03248d793240218a6249c427d2402.js" integrity="sha256-IhYperpOOXbyJL14yuAZQ/rwMkjXkyQCGKYknEJ9JAI=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.6e6797df9bec208b3e638ec833488ef3ec5f0843523ed69bac74b0f640051235.js" integrity="sha256-bmeX35vsIIs&#43;Y47IM0iO8&#43;xfCENSPtabrHSw9kAFEjU=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -561,7 +562,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>Secret as Code</span>
+    <span>XaC(Everything as Code)</span>
   
 
           
@@ -574,7 +575,23 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/helm-secrets/" class="">Helm Secrets</a>
+    <input type="checkbox" id="section-ad61c1f49e198d237c45c8c43e19ff81" class="toggle"  />
+    <label for="section-ad61c1f49e198d237c45c8c43e19ff81" class="flex justify-between">
+      <a role="button" class="">Infra as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/infra-as-code/getting-started-of-acorn/" class="">Acorn：k8s 应用部署框架</a>
   
 
         </li>
@@ -587,7 +604,41 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/kamus/" class="">Kamus</a>
+    <a href="/docs/XaC/infra-as-code/terraform-workflow/" class="">Terraform 执行状态和阶段关系</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-b38fb26cbaaf667f79df6e01d2ae5fc3" class="toggle" checked />
+    <label for="section-b38fb26cbaaf667f79df6e01d2ae5fc3" class="flex justify-between">
+      <a role="button" class="">Secret as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/helm-secrets/" class="">Helm Secrets</a>
   
 
         </li>
@@ -600,7 +651,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/secrets-store-csi-driver/" class="active">Secrets Store CSI Driver</a>
+    <a href="/docs/XaC/secret-as-code/kamus/" class="">Kamus</a>
   
 
         </li>
@@ -613,7 +664,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/sealed-secrets/" class="">Sealed Secrets</a>
+    <a href="/docs/XaC/secret-as-code/secrets-store-csi-driver/" class="active">Secrets Store CSI Driver</a>
   
 
         </li>
@@ -626,7 +677,69 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/external-secret-operator/" class="">External Secrets Operator</a>
+    <a href="/docs/XaC/secret-as-code/sealed-secrets/" class="">Sealed Secrets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/external-secret-operator/" class="">External Secrets Operator</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Getting-Started</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/getting-started/monorepo/" class="">MonoRepo</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/getting-started/circle-ci/" class="">Circle CI</a>
   
 
         </li>
@@ -1042,9 +1155,9 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/62caf3a125e917df1f20743e232257f3ff456ebb" title='Last modified by howieyuen | September 27, 2023' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/3dd5ff17d93c17351a780fd0abfe15a2bdc95465" title='Last modified by howieyuen | January 18, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>September 27, 2023</span>
+      <span>January 18, 2024</span>
     </a>
   </div>
 

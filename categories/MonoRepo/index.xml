@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>MonoRepo on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/categories/MonoRepo/</link>
+    <description>Recent content in MonoRepo on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 18 Jan 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://howieyuen.github.io/categories/MonoRepo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MonoRepo</title>
+      <link>https://howieyuen.github.io/docs/getting-started/monorepo/</link>
+      <pubDate>Thu, 18 Jan 2024 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/getting-started/monorepo/</guid>
+      <description>&lt;p&gt;MonoRepo，即单一代码库（Monolithic Repository），是将多个项目或组件的代码存储在同一个版本控制系统仓库中的一种源代码管理策略。大公司如 Google、Facebook、Twitter 等都采用了 MonoRepo 来管理他们庞大的代码库。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Google 在 MonoRepo 上的实践</title>
+      <link>https://howieyuen.github.io/posts/google-on-monorepo/</link>
+      <pubDate>Mon, 29 May 2023 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/posts/google-on-monorepo/</guid>
+      <description>&lt;p&gt;Google 在早期就使用集中式源代码控制系统管理共享代码库。也就是说，在 Google 内部，是先有的 MonoRepo，然后基于 MonoRepo 形成了一套基于主干开发的工作流程，以及支撑此流程的工具。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

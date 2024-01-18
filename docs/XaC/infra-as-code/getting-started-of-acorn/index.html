@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="概述 # Acorn 是一个应用程序打包和部署框架，可简化在 Kubernetes 上运行的应用程序。 Acorn 能够将应用程序的所有 Docker 镜像、配置和部署规范打包到单个 Acorn 镜像工件中。 此工件可发布到任何 OCI 容器注册表，允许它部署在任何开发、测试或生产环境的 Kubernetes 上。 Acorn 镜像的可移植性使开发人员能够在本地开发应用程序并转移到生产环境，而无需切换工具或技术堆栈。
+开发人员通过在 Acornfile 中描述应用程序配置来创建 Acorn 镜像。 Acornfile 描述了整个应用程序，没有 Kubernetes YAML 文件的所有样板。 Acorn CLI 用于在任何 Kubernetes 集群上构建、部署和操作 Acorn 镜像。
+架构 # acorn：安装在终端用户的机器上，并针对在 Kubernetes 集群中运行的 acorn-apiserver 交互 acorn-apiserver：k8s 风格的 API 服务器，通过 k8s aggregation layer 访问 acorn-controller：负责将 Acorn 应用程序转换为实际的 Kubernetes 资源 buildkit &amp; internal registry：镜像构建服务、Buildkit 和内部镜像注册表作为同级容器部署在单个 pod 中。当 Buildkit 构建新的 Acorn 镜像时，这简化了两个组件之间的通信 工作流 # 下图说明了用户在使用 Acorn 时所采取的步骤：">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="Acorn：k8s 应用部署框架" />
+<meta property="og:description" content="概述 # Acorn 是一个应用程序打包和部署框架，可简化在 Kubernetes 上运行的应用程序。 Acorn 能够将应用程序的所有 Docker 镜像、配置和部署规范打包到单个 Acorn 镜像工件中。 此工件可发布到任何 OCI 容器注册表，允许它部署在任何开发、测试或生产环境的 Kubernetes 上。 Acorn 镜像的可移植性使开发人员能够在本地开发应用程序并转移到生产环境，而无需切换工具或技术堆栈。
+开发人员通过在 Acornfile 中描述应用程序配置来创建 Acorn 镜像。 Acornfile 描述了整个应用程序，没有 Kubernetes YAML 文件的所有样板。 Acorn CLI 用于在任何 Kubernetes 集群上构建、部署和操作 Acorn 镜像。
+架构 # acorn：安装在终端用户的机器上，并针对在 Kubernetes 集群中运行的 acorn-apiserver 交互 acorn-apiserver：k8s 风格的 API 服务器，通过 k8s aggregation layer 访问 acorn-controller：负责将 Acorn 应用程序转换为实际的 Kubernetes 资源 buildkit &amp; internal registry：镜像构建服务、Buildkit 和内部镜像注册表作为同级容器部署在单个 pod 中。当 Buildkit 构建新的 Acorn 镜像时，这简化了两个组件之间的通信 工作流 # 下图说明了用户在使用 Acorn 时所采取的步骤：" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/XaC/infra-as-code/getting-started-of-acorn/" /><meta property="article:section" content="docs" />
+<meta property="article:published_time" content="2022-12-16T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-01-19T00:03:22+08:00" />
+
+<title>Acorn：k8s 应用部署框架 | 袁昊的学习笔记</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.6e6797df9bec208b3e638ec833488ef3ec5f0843523ed69bac74b0f640051235.js" integrity="sha256-bmeX35vsIIs&#43;Y47IM0iO8&#43;xfCENSPtabrHSw9kAFEjU=" crossorigin="anonymous"></script>
+
+  <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Golang</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-aa0ad5dadefefc3354befb0f21b44571" class="toggle"  />
+    <label for="section-aa0ad5dadefefc3354befb0f21b44571" class="flex justify-between">
+      <a role="button" class="">数据结构</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/chan/" class="">chan</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/map/" class="">map</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/slice/" class="">slice</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-9730b84098027970ce9876389c401abb" class="toggle"  />
+    <label for="section-9730b84098027970ce9876389c401abb" class="flex justify-between">
+      <a role="button" class="">语言基础</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/unsafe/" class="">unsafe</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/reflect/" class="">reflect</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-84d526a58cfe5a50fb73329d6c7bd14a" class="toggle"  />
+    <label for="section-84d526a58cfe5a50fb73329d6c7bd14a" class="flex justify-between">
+      <a role="button" class="">内存管理</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-084099e607ed94fee6028accac1c176c" class="toggle"  />
+    <label for="section-084099e607ed94fee6028accac1c176c" class="flex justify-between">
+      <a role="button" class="">golang 工具</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/tools/pprof/" class="">pprof</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Kubernetes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-103a3040e6af1931bd7a973aa3d5fe12" class="toggle"  />
+    <label for="section-103a3040e6af1931bd7a973aa3d5fe12" class="flex justify-between">
+      <a role="button" class="">kube-apisever</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-55afec95d17025ab2841fd395bf5e066" class="toggle"  />
+    <label for="section-55afec95d17025ab2841fd395bf5e066" class="flex justify-between">
+      <a role="button" class="">kube-controller-manager</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-6c06d491bb5aface6ab2585a8049b13f" class="toggle"  />
+    <label for="section-6c06d491bb5aface6ab2585a8049b13f" class="flex justify-between">
+      <a role="button" class="">kube-scheduler</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-89eea73f7e04e77c22ade24239d6a83e" class="toggle"  />
+    <label for="section-89eea73f7e04e77c22ade24239d6a83e" class="flex justify-between">
+      <a role="button" class="">kubelet</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="toggle"  />
+    <label for="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="flex justify-between">
+      <a role="button" class="">sig-network</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>XaC(Everything as Code)</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-ad61c1f49e198d237c45c8c43e19ff81" class="toggle" checked />
+    <label for="section-ad61c1f49e198d237c45c8c43e19ff81" class="flex justify-between">
+      <a role="button" class="">Infra as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/infra-as-code/getting-started-of-acorn/" class="active">Acorn：k8s 应用部署框架</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/infra-as-code/terraform-workflow/" class="">Terraform 执行状态和阶段关系</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-b38fb26cbaaf667f79df6e01d2ae5fc3" class="toggle"  />
+    <label for="section-b38fb26cbaaf667f79df6e01d2ae5fc3" class="flex justify-between">
+      <a role="button" class="">Secret as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/helm-secrets/" class="">Helm Secrets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/kamus/" class="">Kamus</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/secrets-store-csi-driver/" class="">Secrets Store CSI Driver</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/sealed-secrets/" class="">Sealed Secrets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/external-secret-operator/" class="">External Secrets Operator</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Getting-Started</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/getting-started/monorepo/" class="">MonoRepo</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/getting-started/circle-ci/" class="">Circle CI</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Translation</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f59f78b27df0d3218be457339234a283" class="toggle"  />
+    <label for="section-f59f78b27df0d3218be457339234a283" class="flex justify-between">
+      <a role="button" class="">Protocol Buffers</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/overview-of-protocal-buffers/" class="">概述</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/language-guideproto3/" class="">语言指南（proto3）</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a role="button" class="">LeetCode</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0321/" class="">321. 拼接最大数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="/posts/" >
+        Blogs
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://github.com/howieyuen/" target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Acorn：k8s 应用部署框架</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#概述">概述</a></li>
+        <li><a href="#架构">架构</a></li>
+        <li><a href="#工作流">工作流</a></li>
+        <li><a href="#acron-vs-helm">Acron vs Helm</a></li>
+        <li><a href="#acornfile">Acornfile</a></li>
+        <li><a href="#references">References</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h2 id="概述">
+  概述
+  <a class="anchor" href="#%e6%a6%82%e8%bf%b0">#</a>
+</h2>
+<p>Acorn 是一个应用程序打包和部署框架，可简化在 Kubernetes 上运行的应用程序。 Acorn 能够将应用程序的所有 Docker 镜像、配置和部署规范打包到单个 Acorn 镜像工件中。 此工件可发布到任何 OCI 容器注册表，允许它部署在任何开发、测试或生产环境的 Kubernetes 上。 Acorn 镜像的可移植性使开发人员能够在本地开发应用程序并转移到生产环境，而无需切换工具或技术堆栈。</p>
+<p>开发人员通过在 Acornfile 中描述应用程序配置来创建 Acorn 镜像。 Acornfile 描述了整个应用程序，没有 Kubernetes YAML 文件的所有样板。 Acorn CLI 用于在任何 Kubernetes 集群上构建、部署和操作 Acorn 镜像。</p>
+<h2 id="架构">
+  架构
+  <a class="anchor" href="#%e6%9e%b6%e6%9e%84">#</a>
+</h2>
+<ul>
+<li>acorn：安装在终端用户的机器上，并针对在 Kubernetes 集群中运行的 acorn-apiserver 交互</li>
+<li>acorn-apiserver：k8s 风格的 API 服务器，通过 k8s aggregation layer 访问</li>
+<li>acorn-controller：负责将 Acorn 应用程序转换为实际的 Kubernetes 资源</li>
+<li>buildkit &amp; internal registry：镜像构建服务、Buildkit 和内部镜像注册表作为同级容器部署在单个 pod 中。当 Buildkit 构建新的 Acorn 镜像时，这简化了两个组件之间的通信</li>
+</ul>
+<p>
+  <img src="/iac/acorn.png" alt="" /></p>
+<h2 id="工作流">
+  工作流
+  <a class="anchor" href="#%e5%b7%a5%e4%bd%9c%e6%b5%81">#</a>
+</h2>
+<p>下图说明了用户在使用 Acorn 时所采取的步骤：</p>
+<p>
+  <img src="/iac/workflow.png" alt="" /></p>
+<ol>
+<li>用户创建一个 Acornfile 来描述应用程序。</li>
+<li>用户调用 Acorn CLI 从 Acornfile 构建一个 Acorn 镜像。</li>
+<li>Acorn 镜像被推送到 OCI 注册表。</li>
+<li>用户调用 Acorn CLI 将 Acorn 镜像部署到 Acorn 运行时，它可以安装在任何 Kubernetes 集群上。</li>
+</ol>
+<h2 id="acron-vs-helm">
+  Acron vs Helm
+  <a class="anchor" href="#acron-vs-helm">#</a>
+</h2>
+<ol>
+<li>Helm chart 是 Kubernetes YAML 文件的模板，而 Acornfiles 定义应用程序级结构。Acorn 是 Kubernetes 之上的抽象层。Acorn 用户不直接使用 Kubernetes YAML 文件。按照设计，使用 Acorn 不需要 Kubernetes 知识。</li>
+<li>Helm 用户可以将任何 Kubernetes 工作负载打包到 Helm chart 中，而 Acorn 旨在打包应用程序而不是系统级驱动程序、插件和代理。Acorn 支持任何类型的应用程序，无状态和有状态。应用程序在它们自己的命名空间中运行。应用程序不需要特权容器。应用程序运行在 Kubernetes 上，但不调用底层 Kubernetes API 或通过定义自定义资源将底层 etcd 作为数据库使用。</li>
+<li>Acornfiles 定义应用程序级结构，例如 Docker 容器、应用程序配置和应用程序部署规范。Acorn 为 Kubernetes 上的应用程序部署带来了结构。这与在 Helm chart 中不受限制地使用 Kubernetes YAML 文件形成鲜明对比。</li>
+</ol>
+<h2 id="acornfile">
+  Acornfile
+  <a class="anchor" href="#acornfile">#</a>
+</h2>
+<p>Acornfile 的主要目标是快速轻松地描述如何构建、开发和运行容器化应用程序。该语法与熟悉的 JSON 和 YAML 非常相似。</p>
+<p>由 Acornfile 定义，acorn build 生成的结果是应用程序的完整包。它在单个 OCI 镜像中包含所有容器镜像、机密、数据、嵌套的 Acorns 等，可以通过注册表进行分发。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">args</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Configure your personal welcome text
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">welcome</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Hello Acorn User!!&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">containers</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">app</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">build</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;.&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">env</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;PG_USER&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;postgres&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;PG_PASS&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;secret://quickstart-pg-pass/token&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;WELCOME&#34;</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">args</span>.<span style="color:#a6e22e">welcome</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">args</span>.<span style="color:#a6e22e">dev</span> { <span style="color:#e6db74">&#34;FLASK_ENV&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;development&#34;</span> }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">dependsOn</span><span style="color:#f92672">:</span> [
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;db&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;cache&#34;</span>
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">args</span>.<span style="color:#a6e22e">dev</span> { <span style="color:#a6e22e">dirs</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;/app&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;./&#34;</span> }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ports</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">publish</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;5000/http&#34;</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">cache</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">image</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;redis:alpine&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ports</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;6379/tcp&#34;</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">db</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">image</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;postgres:alpine&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">env</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;POSTGRES_DB&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;acorn&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;POSTGRES_PASSWORD&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;secret://quickstart-pg-pass/token&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">dirs</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">args</span>.<span style="color:#a6e22e">dev</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;/var/lib/postgresql/data&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;volume://pgdata?subpath=data&#34;</span>
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">files</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/docker-entrypoint-initdb.d/00-init.sql&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;CREATE TABLE squirrel_food (food text);&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;/docker-entrypoint-initdb.d/01-food.sql&#34;</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">std</span>.<span style="color:#a6e22e">join</span>([<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">food</span> <span style="color:#66d9ef">in</span> <span style="color:#a6e22e">localData</span>.<span style="color:#a6e22e">food</span> {<span style="color:#e6db74">&#34;INSERT INTO squirrel_food VALUES (&#39;\(food)&#39;);&#34;</span>}], <span style="color:#e6db74">&#34;\n&#34;</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ports</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;5432/tcp&#34;</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">localData</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">food</span><span style="color:#f92672">:</span> [
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;acorns&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;hazelnuts&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;walnuts&#34;</span>
+</span></span><span style="display:flex;"><span>  ]
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">volumes</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">args</span>.<span style="color:#a6e22e">dev</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;pgdata&#34;</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">accessModes</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;readWriteOnce&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">secrets</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;quickstart-pg-pass&#34;</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;token&#34;</span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="references">
+  References
+  <a class="anchor" href="#references">#</a>
+</h2>
+<ul>
+<li>
+  <a href="https://github.com/acorn-io/acorn">https://github.com/acorn-io/acorn</a></li>
+<li>
+  <a href="https://docs.acorn.io/reference/acornfile">https://docs.acorn.io/reference/acornfile</a></li>
+</ul>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/3dd5ff17d93c17351a780fd0abfe15a2bdc95465" title='Last modified by howieyuen | January 18, 2024' target="_blank" rel="noopener">
+      <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
+      <span>January 18, 2024</span>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+
+
+<div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script>
+  const gitalk = new Gitalk({
+    clientID: 'b4cc17dbafc8ad637453',
+    clientSecret: '77b4685b4d6da0280eca116a66b6f01244033d35',
+    repo: 'howieyuen.github.io',
+    owner: 'howieyuen',
+    admin: ['howieyuen'],
+    id: location.pathname, 
+    distractionFreeMode: false 
+  });
+  (function() {
+    if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+      document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
+      return;
+    }
+    gitalk.render('gitalk-container');
+  })();
+</script>
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#概述">概述</a></li>
+        <li><a href="#架构">架构</a></li>
+        <li><a href="#工作流">工作流</a></li>
+        <li><a href="#acron-vs-helm">Acron vs Helm</a></li>
+        <li><a href="#acornfile">Acornfile</a></li>
+        <li><a href="#references">References</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

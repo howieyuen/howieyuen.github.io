@@ -5,59 +5,35 @@
     <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/</link>
     <description>Recent content in kube-controller-manager on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language><atom:link href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/index.xml" rel="self" type="application/rss+xml" />
+    <language>en</language>
+    <atom:link href="https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>GC Controller 源码分析</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</link>
       <pubDate>Sun, 25 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</guid>
-      <description>1. 序言 # 垃圾回收相关，可参考 这里
-2. 源码解析 # GarbageCollectorController 负责回收集群中的资源对象，要做到这一点，首先得监控所有资源。gc controller 会监听集群中所有可删除资源的事件，这些事件会放到一个队列中，然后启动多个 worker 协程处理。对于删除事件，则根据删除策略删除对象；其他事件，更新对象之间的依赖关系。
-2.1 startGarbageCollectorController() # 首先来看 gc controller 的入口方法，也就是 kube-controller-manager 是如何启动它的。它的主要逻辑：
-判断是否启用 gc controller，默认是 true 初始化 clientset，使用 discoveryClient 获取集群中所有资源 注册不考虑 gc 的资源，默认为空 调用 garbagecollector.NewGarbageCollector() 方法 初始化 gc controller 对象 调用 garbageCollector.Run() 启动 gc controller，workers 默认是 20 调用 garbageCollector.Sync() 监听集群中的资源，当出现新的资源时，同步到 minitors 中 调用 garbagecollector.NewDebugHandler() 注册 debug 接口，用来提供集群内所有对象的关联关系； cmd/kube-controller-manager/app/core.go:538
-func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool, error) { // 1. 判断是否启用 gc controller，默认是 true if !</description>
+      <description>1. 序言 # 垃圾回收相关，可参考 这里&#xA;2. 源码解析 # GarbageCollectorController 负责回收集群中的资源对象，要做到这一点，首先得监控所有资源。gc controller 会监听集群中所有可删除资源的事件，这些事件会放到一个队列中，然后启动多个 worker 协程处理。对于删除事件，则根据删除策略删除对象；其他事件，更新对象之间的依赖关系。&#xA;2.1 startGarbageCollectorController() # 首先来看 gc controller 的入口方法，也就是 kube-controller-manager 是如何启动它的。它的主要逻辑：&#xA;判断是否启用 gc controller，默认是 true 初始化 clientset，使用 discoveryClient 获取集群中所有资源 注册不考虑 gc 的资源，默认为空 调用 garbagecollector.NewGarbageCollector() 方法 初始化 gc controller 对象 调用 garbageCollector.Run() 启动 gc controller，workers 默认是 20 调用 garbageCollector.Sync() 监听集群中的资源，当出现新的资源时，同步到 minitors 中 调用 garbagecollector.NewDebugHandler() 注册 debug 接口，用来提供集群内所有对象的关联关系； cmd/kube-controller-manager/app/core.go:538&#xA;func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool, error) { // 1. 判断是否启用 gc controller，默认是 true if !</description>
     </item>
-    
     <item>
       <title>DaemonSet Controller 源码分析</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</link>
       <pubDate>Wed, 21 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</guid>
-      <description>1. DaemonSet 简介 # 我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。
-这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。
-如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。
-1.1 应用场景 # 在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程 一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。
-1.2 基本功能 # 创建 删除 级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false 更新 RollingUpdate OnDelete 回滚 1.3 示例 # apiVersion: apps/v1 kind: DaemonSet metadata: name: fluentd-elasticsearch namespace: kube-system labels: k8s-app: fluentd-logging spec: selector: matchLabels: name: fluentd-elasticsearch template: metadata: labels: name: fluentd-elasticsearch spec: tolerations: # this toleration is to have the daemonset runnable on master nodes # remove it if your masters can&amp;#39;t run pods - key: node-role.</description>
+      <description>1. DaemonSet 简介 # 我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。&#xA;这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。&#xA;如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。&#xA;1.1 应用场景 # 在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程 一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。&#xA;1.2 基本功能 # 创建 删除 级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false 更新 RollingUpdate OnDelete 回滚 1.3 示例 # apiVersion: apps/v1 kind: DaemonSet metadata: name: fluentd-elasticsearch namespace: kube-system labels: k8s-app: fluentd-logging spec: selector: matchLabels: name: fluentd-elasticsearch template: metadata: labels: name: fluentd-elasticsearch spec: tolerations: # this toleration is to have the daemonset runnable on master nodes # remove it if your masters can&amp;#39;t run pods - key: node-role.</description>
     </item>
-    
     <item>
       <title>Statefulset Controller 源码分析</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</link>
       <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</guid>
-      <description>1. StatefulSet 简介 # Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
-这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
-是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
-适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。
-1.1 特点 # 稳定、唯一的网络标识符
-如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。</description>
+      <description>1. StatefulSet 简介 # Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。&#xA;这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。&#xA;是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。&#xA;适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。&#xA;1.1 特点 # 稳定、唯一的网络标识符&#xA;如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。</description>
     </item>
-    
     <item>
       <title>无状态应用滚动更新</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</link>
       <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</guid>
-      <description>1. 概念 # 滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
-2. Deployment 滚动更新 # Deployment 更新方式有 2 种：
-RollingUpdate Recreate 其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：
-func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：
-func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 newRS, oldRSs, err := dc.</description>
+      <description>1. 概念 # 滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。&#xA;2. Deployment 滚动更新 # Deployment 更新方式有 2 种：&#xA;RollingUpdate Recreate 其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：&#xA;func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：&#xA;func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 newRS, oldRSs, err := dc.</description>
     </item>
-    
   </channel>
 </rss>

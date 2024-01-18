@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-	<meta name="generator" content="Hugo 0.119.0">
+	<meta name="generator" content="Hugo 0.121.2">
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content=" Introduction # 本站点包括以下几个模块：
-Golang Kubernetes Blogs Translation LeetCode Golang # 此章节主要记录 Go 语言底层实现，包括：
-数据结构： chan、map、slice 等； 语言基础： unsafe、 reflect 等； 内部工具：pprof 等 Kubernetes # 此章节主要记录 Kubernetes 的核心组件的设计与实现，包括
-kube-apiserver 中的认证机制、鉴权机制、垃圾回收等 kube-controller-manager 的源码分析，包括 GC、DaemonSet 和 StatefulSet 等 kube-scheduler 中的调度策略 kubelet 中的拓扑管理器、驱逐管理器等 kube-proxy 中关于 Service 的设计与实现 Blogs # 此章节主要记录的是暂未分类随笔，包括：
-Circle CI 学习笔记 如何管理 GitOps Secret：详细指南 DevOps vs GitOps Translation # 此章节主要记录一些优秀的英文文档，包括：
-protobuf 中的基础概念和使用指南 LeetCode # 此章节记录的是 LeetCode 题库中碰到的一些错题和难题，包括：
-No.321 拼接最大数 No.416 分割等和子集 ">
+<meta name="description" content="Introduction # 本地址主要保留个人学习记录，主要包括以下几块：
+Golang Kubernetes XaC Getting Started Blogs &hellip; Golang # 此小节主要记录 Go 语言底层实现，包括：
+数据结构： chan、map、slice 等； 语言基础： unsafe、 reflect 等； 内部工具：pprof 等 &hellip; Kubernetes # 此小节主要记录 Kubernetes 的核心组件的设计与实现，包括
+kube-apiserver 中的认证机制、鉴权机制、垃圾回收等 kube-controller-manager 的源码分析，包括 GC、DaemonSet 和 StatefulSet 等 kube-scheduler 中的调度策略 kubelet 中的拓扑管理器、驱逐管理器等 kube-proxy 中关于 Service 的设计与实现 &hellip; XaC # 此小节主要记录 Everything as Code 相关的文章，包括 IaC 和 SaC
+Infra as Code Secret as Code &hellip; Getting Started # 此小节主要记录一些开源项目的上手：
+MonoRepo Circle CI &hellip; Blogs # 此小节主要记录的是暂未分类随笔，包括：">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="介绍" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://howieyuen.github.io/" />
+
 <title>介绍 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.2216297aba4e3976f224bd78cae01943faf03248d793240218a6249c427d2402.js" integrity="sha256-IhYperpOOXbyJL14yuAZQ/rwMkjXkyQCGKYknEJ9JAI=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.6e6797df9bec208b3e638ec833488ef3ec5f0843523ed69bac74b0f640051235.js" integrity="sha256-bmeX35vsIIs&#43;Y47IM0iO8&#43;xfCENSPtabrHSw9kAFEjU=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <link rel="alternate" type="application/rss+xml" href="https://howieyuen.github.io/index.xml" title="袁昊的学习笔记" />
@@ -561,7 +561,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <span>Secret as Code</span>
+    <span>XaC(Everything as Code)</span>
   
 
           
@@ -574,7 +574,23 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/helm-secrets/" class="">Helm Secrets</a>
+    <input type="checkbox" id="section-ad61c1f49e198d237c45c8c43e19ff81" class="toggle"  />
+    <label for="section-ad61c1f49e198d237c45c8c43e19ff81" class="flex justify-between">
+      <a role="button" class="">Infra as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/infra-as-code/getting-started-of-acorn/" class="">Acorn：k8s 应用部署框架</a>
   
 
         </li>
@@ -587,7 +603,41 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/kamus/" class="">Kamus</a>
+    <a href="/docs/XaC/infra-as-code/terraform-workflow/" class="">Terraform 执行状态和阶段关系</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-b38fb26cbaaf667f79df6e01d2ae5fc3" class="toggle"  />
+    <label for="section-b38fb26cbaaf667f79df6e01d2ae5fc3" class="flex justify-between">
+      <a role="button" class="">Secret as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/helm-secrets/" class="">Helm Secrets</a>
   
 
         </li>
@@ -600,7 +650,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/secrets-store-csi-driver/" class="">Secrets Store CSI Driver</a>
+    <a href="/docs/XaC/secret-as-code/kamus/" class="">Kamus</a>
   
 
         </li>
@@ -613,7 +663,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/sealed-secrets/" class="">Sealed Secrets</a>
+    <a href="/docs/XaC/secret-as-code/secrets-store-csi-driver/" class="">Secrets Store CSI Driver</a>
   
 
         </li>
@@ -626,7 +676,69 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/secret-as-code/external-secret-operator/" class="">External Secrets Operator</a>
+    <a href="/docs/XaC/secret-as-code/sealed-secrets/" class="">Sealed Secrets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/external-secret-operator/" class="">External Secrets Operator</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Getting-Started</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/getting-started/monorepo/" class="">MonoRepo</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/getting-started/circle-ci/" class="">Circle CI</a>
   
 
         </li>
@@ -823,6 +935,8 @@ https://github.com/alex-shpak/hugo-book
       <ul>
         <li><a href="#golang">Golang</a></li>
         <li><a href="#kubernetes">Kubernetes</a></li>
+        <li><a href="#xac">XaC</a></li>
+        <li><a href="#getting-started">Getting Started</a></li>
         <li><a href="#blogs">Blogs</a></li>
         <li><a href="#translation">Translation</a></li>
         <li><a href="#leetcode">LeetCode</a></li>
@@ -844,14 +958,15 @@ https://github.com/alex-shpak/hugo-book
   Introduction
   <a class="anchor" href="#introduction">#</a>
 </h1>
-<p>本站点包括以下几个模块：</p>
+<p>本地址主要保留个人学习记录，主要包括以下几块：</p>
 <blockquote class="book-hint info">
   <ul>
 <li>Golang</li>
 <li>Kubernetes</li>
+<li>XaC</li>
+<li>Getting Started</li>
 <li>Blogs</li>
-<li>Translation</li>
-<li>LeetCode</li>
+<li>&hellip;</li>
 </ul>
 
 </blockquote>
@@ -860,54 +975,83 @@ https://github.com/alex-shpak/hugo-book
   Golang
   <a class="anchor" href="#golang">#</a>
 </h2>
-<p>此章节主要记录 Go 语言底层实现，包括：</p>
+<p>此小节主要记录 Go 语言底层实现，包括：</p>
 <ul>
 <li>数据结构： <code>chan</code>、<code>map</code>、<code>slice</code> 等；</li>
 <li>语言基础： <code>unsafe</code>、 <code>reflect</code> 等；</li>
 <li>内部工具：<code>pprof</code> 等</li>
+<li>&hellip;</li>
 </ul>
 <hr>
 <h2 id="kubernetes">
   Kubernetes
   <a class="anchor" href="#kubernetes">#</a>
 </h2>
-<p>此章节主要记录 Kubernetes 的核心组件的设计与实现，包括</p>
+<p>此小节主要记录 Kubernetes 的核心组件的设计与实现，包括</p>
 <ul>
 <li>kube-apiserver 中的认证机制、鉴权机制、垃圾回收等</li>
 <li>kube-controller-manager 的源码分析，包括 GC、DaemonSet 和 StatefulSet 等</li>
 <li>kube-scheduler 中的调度策略</li>
 <li>kubelet 中的拓扑管理器、驱逐管理器等</li>
 <li>kube-proxy 中关于 Service 的设计与实现</li>
+<li>&hellip;</li>
+</ul>
+<hr>
+<h2 id="xac">
+  XaC
+  <a class="anchor" href="#xac">#</a>
+</h2>
+<p>此小节主要记录 Everything as Code 相关的文章，包括 IaC 和 SaC</p>
+<ul>
+<li>Infra as Code</li>
+<li>Secret as Code</li>
+<li>&hellip;</li>
+</ul>
+<hr>
+<h2 id="getting-started">
+  Getting Started
+  <a class="anchor" href="#getting-started">#</a>
+</h2>
+<p>此小节主要记录一些开源项目的上手：</p>
+<ul>
+<li>MonoRepo</li>
+<li>Circle CI</li>
+<li>&hellip;</li>
 </ul>
 <hr>
 <h2 id="blogs">
   Blogs
   <a class="anchor" href="#blogs">#</a>
 </h2>
-<p>此章节主要记录的是暂未分类随笔，包括：</p>
+<p>此小节主要记录的是暂未分类随笔，包括：</p>
 <ul>
-<li>Circle CI 学习笔记</li>
-<li>如何管理 GitOps Secret：详细指南</li>
+<li>Google 在 MonoRepo 上的实践</li>
+<li>令人愉悦的 CLI 的 10 条设计原则</li>
+<li>Golang 中的 RSA 加解密算法</li>
 <li>DevOps vs GitOps</li>
+<li>如何管理 GitOps Secret：详细指南</li>
+<li>&hellip;</li>
 </ul>
 <hr>
 <h2 id="translation">
   Translation
   <a class="anchor" href="#translation">#</a>
 </h2>
-<p>此章节主要记录一些优秀的英文文档，包括：</p>
+<p>此小节主要记录优秀的英文文档的翻译，包括：</p>
 <ul>
-<li>protobuf 中的基础概念和使用指南</li>
+<li>Proto Buffer</li>
+<li>&hellip;</li>
 </ul>
 <hr>
 <h2 id="leetcode">
   LeetCode
   <a class="anchor" href="#leetcode">#</a>
 </h2>
-<p>此章节记录的是 LeetCode 题库中碰到的一些错题和难题，包括：</p>
+<p>此小节记录的是 LeetCode 题库中碰到的一些错题和难题，包括：</p>
 <ul>
 <li>No.321 拼接最大数</li>
 <li>No.416 分割等和子集</li>
+<li>&hellip;</li>
 </ul>
 </article>
  
@@ -918,9 +1062,9 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/62caf3a125e917df1f20743e232257f3ff456ebb" title='Last modified by howieyuen | September 27, 2023' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/3dd5ff17d93c17351a780fd0abfe15a2bdc95465" title='Last modified by howieyuen | January 18, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>September 27, 2023</span>
+      <span>January 18, 2024</span>
     </a>
   </div>
 
@@ -984,6 +1128,8 @@ https://github.com/alex-shpak/hugo-book
       <ul>
         <li><a href="#golang">Golang</a></li>
         <li><a href="#kubernetes">Kubernetes</a></li>
+        <li><a href="#xac">XaC</a></li>
+        <li><a href="#getting-started">Getting Started</a></li>
         <li><a href="#blogs">Blogs</a></li>
         <li><a href="#translation">Translation</a></li>
         <li><a href="#leetcode">LeetCode</a></li>

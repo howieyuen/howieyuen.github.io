@@ -5,57 +5,42 @@
     <link>https://howieyuen.github.io/posts/</link>
     <description>Recent content in Blogs on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language><atom:link href="https://howieyuen.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <language>en</language>
+    <atom:link href="https://howieyuen.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Google 在 MonoRepo 上的实践</title>
+      <link>https://howieyuen.github.io/posts/google-on-monorepo/</link>
+      <pubDate>Mon, 29 May 2023 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/posts/google-on-monorepo/</guid>
+      <description>&lt;p&gt;Google 在早期就使用集中式源代码控制系统管理共享代码库。也就是说，在 Google 内部，是先有的 MonoRepo，然后基于 MonoRepo 形成了一套基于主干开发的工作流程，以及支撑此流程的工具。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>令人愉悦的 CLI 的 10 条设计原则</title>
       <link>https://howieyuen.github.io/posts/10-design-principles-for-delightful-clis/</link>
       <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/posts/10-design-principles-for-delightful-clis/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Golang 中的 RSA 加解密算法</title>
       <link>https://howieyuen.github.io/posts/rsa-crypto-in-go/</link>
       <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/posts/rsa-crypto-in-go/</guid>
-      <description>&lt;p&gt;本文受到 Gitlab 中 
-  &lt;a href=&#34;https://gitlab.com/rahasak-labs/crypgo&#34;&gt;&lt;code&gt;crypgo&lt;/code&gt;&lt;/a&gt; 项目启发，
-作者在 Medium 中发表了一篇博文，
-  &lt;a href=&#34;https://medium.com/rahasak/golang-rsa-cryptography-1f1897ada311&#34;&gt;RSA cryptography in Golang&lt;/a&gt; 作为说明。
-读完后发现代码中存在一些小问题，因此重整代码实现，使其更加实用。&lt;/p&gt;</description>
+      <description>&lt;p&gt;本文受到 Gitlab 中 &#xA;  &lt;a href=&#34;https://gitlab.com/rahasak-labs/crypgo&#34;&gt;&lt;code&gt;crypgo&lt;/code&gt;&lt;/a&gt; 项目启发，&#xA;作者在 Medium 中发表了一篇博文，&#xA;  &lt;a href=&#34;https://medium.com/rahasak/golang-rsa-cryptography-1f1897ada311&#34;&gt;RSA cryptography in Golang&lt;/a&gt; 作为说明。&#xA;读完后发现代码中存在一些小问题，因此重整代码实现，使其更加实用。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>DevOps vs GitOps</title>
       <link>https://howieyuen.github.io/posts/devops-vs-gitops/</link>
       <pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/posts/devops-vs-gitops/</guid>
       <description>&lt;p&gt;GitOps 和 DevOps 正迅速成为开发团队的黄金标准方法。DevOps 文化代表了从传统软件和技术开发的转变，传统的软件和技术开发涉及从构思和概念到发布的线性路径，并鼓励协作和快速反馈，而不是孤立地工作。在本文中，我们将仔细研究 GitOps 与 DevOps，以帮助确定 GitOps 是否适用于您的软件开发项目。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>如何管理 GitOps Secret：详细指南</title>
       <link>https://howieyuen.github.io/posts/how-to-manage-gitops-secrets-a-detailed-guide/</link>
       <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/posts/how-to-manage-gitops-secrets-a-detailed-guide/</guid>
       <description>&lt;p&gt;GitOps 正变得越来越流行。越来越多的公司开始使用 Git 作为其基础设施和应用程序配置的真实来源。然而，伴随其优势而来的是挑战。例如，如果你的所有配置都存储在 Git 中，你如何管理 Secret？你不能简单地将密码和令牌以明文形式提交到 Git 存储库，即使该存储库是私有的并且只有少数人可以访问它。在这篇文章中，你将学习如何安全地管理 GitOps Secret。敬请关注。&lt;/p&gt;</description>
     </item>
-    
-    <item>
-      <title>Circle CI 学习笔记</title>
-      <link>https://howieyuen.github.io/posts/notes-of-circle-ci/</link>
-      <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://howieyuen.github.io/posts/notes-of-circle-ci/</guid>
-      <description>&lt;p&gt;CircleCI 是基于云的 CI/CD 工具，可自动执行软件构建和交付过程。它提供快速的配置和维护，没有任何复杂性。
-由于它是基于云的 CI/CD 工具，因此消除了专用服务器的困扰，并降低了维护本地服务器的成本。
-此外，基于云的服务器是可扩展的，健壮的，并有助于更快地部署应用程序。&lt;/p&gt;</description>
-    </item>
-    
   </channel>
 </rss>

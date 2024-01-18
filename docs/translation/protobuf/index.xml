@@ -5,53 +5,21 @@
     <link>https://howieyuen.github.io/docs/translation/protobuf/</link>
     <description>Recent content in Protocol Buffers on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language><atom:link href="https://howieyuen.github.io/docs/translation/protobuf/index.xml" rel="self" type="application/rss+xml" />
+    <language>en</language>
+    <atom:link href="https://howieyuen.github.io/docs/translation/protobuf/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>概述</title>
       <link>https://howieyuen.github.io/docs/translation/protobuf/overview-of-protocal-buffers/</link>
       <pubDate>Thu, 05 May 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/translation/protobuf/overview-of-protocal-buffers/</guid>
-      <description>&lt;blockquote&gt;
-&lt;p&gt;原文链接：
-  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/overview&#34;&gt;Overview | Protocol Buffers | Google Developers&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;协议缓冲区（Protocol Buffers，protobuf）提供了一种语言中立、平台中立、可扩展的机制，用来序列化结构化数据，并且支持向前/向后兼容。
-它类似于 JSON，只是它更小更快，并且能生成本地语言绑定。&lt;/p&gt;
-&lt;p&gt;protobuf 包含以下模块：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;定义语言（在 &lt;code&gt;.proto&lt;/code&gt; 文件中创建）&lt;/li&gt;
-&lt;li&gt;连接数据的代码（ proto 编译器生成）&lt;/li&gt;
-&lt;li&gt;特定语言的运行时库&lt;/li&gt;
-&lt;li&gt;序列化格式的数据（写入文件或者通过网络传输）&lt;/li&gt;
-&lt;/ul&gt;</description>
+      <description>&lt;blockquote&gt;&#xA;&lt;p&gt;原文链接：&#xA;  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/overview&#34;&gt;Overview | Protocol Buffers | Google Developers&lt;/a&gt;&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;协议缓冲区（Protocol Buffers，protobuf）提供了一种语言中立、平台中立、可扩展的机制，用来序列化结构化数据，并且支持向前/向后兼容。&#xA;它类似于 JSON，只是它更小更快，并且能生成本地语言绑定。&lt;/p&gt;&#xA;&lt;p&gt;protobuf 包含以下模块：&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;定义语言（在 &lt;code&gt;.proto&lt;/code&gt; 文件中创建）&lt;/li&gt;&#xA;&lt;li&gt;连接数据的代码（ proto 编译器生成）&lt;/li&gt;&#xA;&lt;li&gt;特定语言的运行时库&lt;/li&gt;&#xA;&lt;li&gt;序列化格式的数据（写入文件或者通过网络传输）&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
     </item>
-    
     <item>
       <title>语言指南（proto3）</title>
       <link>https://howieyuen.github.io/docs/translation/protobuf/language-guideproto3/</link>
       <pubDate>Tue, 10 May 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/docs/translation/protobuf/language-guideproto3/</guid>
-      <description>&lt;blockquote&gt;
-&lt;p&gt;原文链接：
-  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/proto3&#34;&gt;Language Guide(proto3) | Protocol Buffers | Google Developers&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;!-- 
-This guide describes how to use the protocol buffer language to structure your protocol buffer data, including .proto file syntax and how to generate data access classes from your .proto files. It covers the proto3 version of the protocol buffers language: for information on the proto2 syntax, see the Proto2 Language Guide.
-
-This is a reference guide – for a step by step example that uses many of the features described in this document, see the tutorial for your chosen language (currently proto2 only; more proto3 documentation is coming soon).
---&gt;
-&lt;p&gt;本指南描述了如何使用 protobuf 语言结构化你的协议缓冲区数据，
-包括 &lt;code&gt;.proto&lt;/code&gt; 文件语法和如何从你的 &lt;code&gt;.proto&lt;/code&gt; 文件生成数据访问的类（Class）。
-它覆盖了 protobuf 语言的 &lt;strong&gt;proto3&lt;/strong&gt; 版本：对于 &lt;strong&gt;proto2&lt;/strong&gt; 语言的信息，
-请查阅 
-  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/proto&#34;&gt;Proto2 Language Guide&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;这是一篇参考指南——有关使用本文档中描述的许多功能的分步示例，
-请参阅你选择的语言的
-
-  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/tutorials&#34;&gt;教程&lt;/a&gt;（目前仅有 proto2；更多 proto3 文档即将推出）。&lt;/p&gt;</description>
+      <description>&lt;blockquote&gt;&#xA;&lt;p&gt;原文链接：&#xA;  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/proto3&#34;&gt;Language Guide(proto3) | Protocol Buffers | Google Developers&lt;/a&gt;&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;!-- &#xA;This guide describes how to use the protocol buffer language to structure your protocol buffer data, including .proto file syntax and how to generate data access classes from your .proto files. It covers the proto3 version of the protocol buffers language: for information on the proto2 syntax, see the Proto2 Language Guide.&#xA;&#xA;This is a reference guide – for a step by step example that uses many of the features described in this document, see the tutorial for your chosen language (currently proto2 only; more proto3 documentation is coming soon).&#xA;--&gt;&#xA;&lt;p&gt;本指南描述了如何使用 protobuf 语言结构化你的协议缓冲区数据，&#xA;包括 &lt;code&gt;.proto&lt;/code&gt; 文件语法和如何从你的 &lt;code&gt;.proto&lt;/code&gt; 文件生成数据访问的类（Class）。&#xA;它覆盖了 protobuf 语言的 &lt;strong&gt;proto3&lt;/strong&gt; 版本：对于 &lt;strong&gt;proto2&lt;/strong&gt; 语言的信息，&#xA;请查阅 &#xA;  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/proto&#34;&gt;Proto2 Language Guide&lt;/a&gt;。&lt;/p&gt;&#xA;&lt;p&gt;这是一篇参考指南——有关使用本文档中描述的许多功能的分步示例，&#xA;请参阅你选择的语言的&#xA;&#xA;  &lt;a href=&#34;https://developers.google.com/protocol-buffers/docs/tutorials&#34;&gt;教程&lt;/a&gt;（目前仅有 proto2；更多 proto3 文档即将推出）。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

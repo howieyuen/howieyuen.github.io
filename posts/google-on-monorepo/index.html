@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Google 在早期就使用集中式源代码控制系统管理共享代码库。也就是说，在 Google 内部，是先有的 MonoRepo，然后基于 MonoRepo 形成了一套基于主干开发的工作流程，以及支撑此流程的工具。">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="Google 在 MonoRepo 上的实践" />
+<meta property="og:description" content="Google 在早期就使用集中式源代码控制系统管理共享代码库。也就是说，在 Google 内部，是先有的 MonoRepo，然后基于 MonoRepo 形成了一套基于主干开发的工作流程，以及支撑此流程的工具。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://howieyuen.github.io/posts/google-on-monorepo/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-05-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-01-19T00:03:22+08:00" />
+
+<title>Google 在 MonoRepo 上的实践 | 袁昊的学习笔记</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.6e6797df9bec208b3e638ec833488ef3ec5f0843523ed69bac74b0f640051235.js" integrity="sha256-bmeX35vsIIs&#43;Y47IM0iO8&#43;xfCENSPtabrHSw9kAFEjU=" crossorigin="anonymous"></script>
+
+  <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Golang</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-aa0ad5dadefefc3354befb0f21b44571" class="toggle"  />
+    <label for="section-aa0ad5dadefefc3354befb0f21b44571" class="flex justify-between">
+      <a role="button" class="">数据结构</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/chan/" class="">chan</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/map/" class="">map</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/slice/" class="">slice</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-9730b84098027970ce9876389c401abb" class="toggle"  />
+    <label for="section-9730b84098027970ce9876389c401abb" class="flex justify-between">
+      <a role="button" class="">语言基础</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/unsafe/" class="">unsafe</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/reflect/" class="">reflect</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-84d526a58cfe5a50fb73329d6c7bd14a" class="toggle"  />
+    <label for="section-84d526a58cfe5a50fb73329d6c7bd14a" class="flex justify-between">
+      <a role="button" class="">内存管理</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-084099e607ed94fee6028accac1c176c" class="toggle"  />
+    <label for="section-084099e607ed94fee6028accac1c176c" class="flex justify-between">
+      <a role="button" class="">golang 工具</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/tools/pprof/" class="">pprof</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Kubernetes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-103a3040e6af1931bd7a973aa3d5fe12" class="toggle"  />
+    <label for="section-103a3040e6af1931bd7a973aa3d5fe12" class="flex justify-between">
+      <a role="button" class="">kube-apisever</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-55afec95d17025ab2841fd395bf5e066" class="toggle"  />
+    <label for="section-55afec95d17025ab2841fd395bf5e066" class="flex justify-between">
+      <a role="button" class="">kube-controller-manager</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-6c06d491bb5aface6ab2585a8049b13f" class="toggle"  />
+    <label for="section-6c06d491bb5aface6ab2585a8049b13f" class="flex justify-between">
+      <a role="button" class="">kube-scheduler</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-89eea73f7e04e77c22ade24239d6a83e" class="toggle"  />
+    <label for="section-89eea73f7e04e77c22ade24239d6a83e" class="flex justify-between">
+      <a role="button" class="">kubelet</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="toggle"  />
+    <label for="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="flex justify-between">
+      <a role="button" class="">sig-network</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>XaC(Everything as Code)</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-ad61c1f49e198d237c45c8c43e19ff81" class="toggle"  />
+    <label for="section-ad61c1f49e198d237c45c8c43e19ff81" class="flex justify-between">
+      <a role="button" class="">Infra as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/infra-as-code/getting-started-of-acorn/" class="">Acorn：k8s 应用部署框架</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/infra-as-code/terraform-workflow/" class="">Terraform 执行状态和阶段关系</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-b38fb26cbaaf667f79df6e01d2ae5fc3" class="toggle"  />
+    <label for="section-b38fb26cbaaf667f79df6e01d2ae5fc3" class="flex justify-between">
+      <a role="button" class="">Secret as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/helm-secrets/" class="">Helm Secrets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/kamus/" class="">Kamus</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/secrets-store-csi-driver/" class="">Secrets Store CSI Driver</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/sealed-secrets/" class="">Sealed Secrets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/external-secret-operator/" class="">External Secrets Operator</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Getting-Started</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/getting-started/monorepo/" class="">MonoRepo</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/getting-started/circle-ci/" class="">Circle CI</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Translation</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f59f78b27df0d3218be457339234a283" class="toggle"  />
+    <label for="section-f59f78b27df0d3218be457339234a283" class="flex justify-between">
+      <a role="button" class="">Protocol Buffers</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/overview-of-protocal-buffers/" class="">概述</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/language-guideproto3/" class="">语言指南（proto3）</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a role="button" class="">LeetCode</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0321/" class="">321. 拼接最大数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="/posts/" >
+        Blogs
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://github.com/howieyuen/" target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Google 在 MonoRepo 上的实践</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#工作流">工作流</a>
+          <ul>
+            <li><a href="#piper源代码管理系统">Piper：源代码管理系统</a></li>
+            <li><a href="#citc客户端工具">CitC：客户端工具</a></li>
+            <li><a href="#critique代码审查工具">Critique：代码审查工具</a></li>
+            <li><a href="#tricorder静态分析系统">Tricorder：静态分析系统</a></li>
+            <li><a href="#rosie大规模清理和代码更改工具">Rosie：大规模清理和代码更改工具</a></li>
+          </ul>
+        </li>
+        <li><a href="#成本和权衡">成本和权衡</a></li>
+        <li><a href="#备选方案">备选方案</a></li>
+        <li><a href="#参考">参考</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+<article class="markdown">
+  <h1>
+    <a href="/posts/google-on-monorepo/">Google 在 MonoRepo 上的实践</a>
+  </h1>
+  
+  <h5>May 29, 2023</h5>
+
+
+
+  
+  <div>
+    
+      <a href="/categories/MonoRepo/">MonoRepo</a>
+  </div>
+  
+
+  
+
+
+
+<p>Google 在早期就使用集中式源代码控制系统管理共享代码库。也就是说，在 Google 内部，是先有的 MonoRepo，然后基于 MonoRepo 形成了一套基于主干开发的工作流程，以及支撑此流程的工具。</p>
+<h2 id="工作流">
+  工作流
+  <a class="anchor" href="#%e5%b7%a5%e4%bd%9c%e6%b5%81">#</a>
+</h2>
+<p>下图展示了 Google 的开发人员，在日常研发过程中，例如代码编写、代码评审、代码分析、代码重构等，所使用的工具链，以及工具之间的协作关系。值得注意的是，工具链全都基于云，要求开发人员在线使用。</p>
+<p>
+  <img src="/posts/monorepo/workflow.png" alt="" /></p>
+<p>从上往下看，处于最中间位置的系统 Piper，它是一个源代码管理系统。</p>
+<h3 id="piper源代码管理系统">
+  Piper：源代码管理系统
+  <a class="anchor" href="#piper%e6%ba%90%e4%bb%a3%e7%a0%81%e7%ae%a1%e7%90%86%e7%b3%bb%e7%bb%9f">#</a>
+</h3>
+<p>Piper 基于 Google 标准基础设施实现，分部在全球 10 个数据中心，<strong>依赖 Paxos 算法保证副本间的一致性</strong>。这种架构提供了高水平的冗余能力，加上缓存和异步操作，屏蔽了大部分网络延迟。</p>
+<p>Piper 支持文件级别的访问控制，对于配置文件、算法文件有着更严格的控制。此外，对 Piper 中的文件的读写访问，均有审计日志。对于错误提交的敏感信息，不仅可以清除相关文件，还可以查阅日志判断，是否存在敏感信息泄漏风险。</p>
+<p>在 Piper 工作流中，开发在修改文件之前，在本地创建一份仓库的副本，这些文件保存在开发的工作区内。根据需要，可以将 Piper 的代码的变更合并到工作区，也可以共享工作区给其他人，并请求代码评审。只有评审通过的代码才能合入主库。</p>
+<p>
+  <img src="/posts/monorepo/piper.png" alt="" /></p>
+<p>有了源码管理系统，对于研发来说，首先要做的事情，就是将代码克隆到本地，我们日常使用的是 git，在 Google 的大库体系下，有一个专门对接 Piper 的客户端工具——CitC。</p>
+<h3 id="citc客户端工具">
+  CitC：客户端工具
+  <a class="anchor" href="#citc%e5%ae%a2%e6%88%b7%e7%ab%af%e5%b7%a5%e5%85%b7">#</a>
+</h3>
+<p>CitC，全称是 Clients in the Cloud，类似 Git 的客户端工具。基于云存储和一个仅限 Linux 的 FUSE 文件系统组成。不需要在本地先克隆代码即可浏览代码。开发人员将他们的工作区视为文件系统的目录，只有修改过的文件才会存储在他们的工作区。这种架构，使得工作区占用的磁盘空间很小（平均每个工作区不到 10 个文件），却可以展示完整的 Piper 代码库。</p>
+<p>所有对文件的写入都作为快照存储在 CitC 中，从而可以根据需要恢复先前阶段的工作。快照可以命名、恢复或标记。因此，只要机器连接到云存储，就可以在该机器上使用 CitC 工作区。</p>
+<p>自动化流程利用 CitC 中未提交代码的可见性，提升开发人员的工作效率。例如：变更的代码需要 CR 时，自动发送 CR 请求；CR 被标记为完成，测试自动执行；测试通过，代码自动提交到仓库。在 CR 时，CodeSearch 工具可以对 CitC 工作区进行简单编辑，例如：修复拼写错误或修改评论等。</p>
+<p>Google 是非常重视代码质量，因此严格的 CR 流程需要特定的工具支撑——Critique。</p>
+<h3 id="critique代码审查工具">
+  Critique：代码审查工具
+  <a class="anchor" href="#critique%e4%bb%a3%e7%a0%81%e5%ae%a1%e6%9f%a5%e5%b7%a5%e5%85%b7">#</a>
+</h3>
+<p>代码评审员需求评审代码质量的各个方面，包括设计、功能、复杂性、测试、命名、评论质量和代码风格，如各种特定于语言的 Google 风格指南所记录。代码评审员在查看代码的变更时，可在任意行的更改发表评论。它鼓励代码评审员和代码提交人充分沟通再修改，最终评审人员留下“LGTM”，评审完成。</p>
+<p>如果说 CR 是代码提交前的评审，那么代码合入后的检查也是至关重要的。代码的静态分析，例如测试覆盖率这类计算密集型操作，会经常触发。承担这一职责的工具，就是 Trioder。</p>
+<h3 id="tricorder静态分析系统">
+  Tricorder：静态分析系统
+  <a class="anchor" href="#tricorder%e9%9d%99%e6%80%81%e5%88%86%e6%9e%90%e7%b3%bb%e7%bb%9f">#</a>
+</h3>
+<p>在 Google 的 CR 工具中自动提供有关代码质量、测试覆盖率和测试结果的数据。这些计算密集型检查会定期触发，以及在发送代码更改以供审查时触发。Tricorder 还提供针对许多错误的一键式代码编辑建议修复。这些系统提供重要数据以提高代码审查的有效性并保持 Google 代码库的健康。</p>
+<p>完成了代码编写、代码评审、代码分析，并不代表就万事大吉。项目升级、代码重构、代码清理等操作，也是为了维护代码健康的重要手段。这里，Rosie 工具腾空出世。</p>
+<h3 id="rosie大规模清理和代码更改工具">
+  Rosie：大规模清理和代码更改工具
+  <a class="anchor" href="#rosie%e5%a4%a7%e8%a7%84%e6%a8%a1%e6%b8%85%e7%90%86%e5%92%8c%e4%bb%a3%e7%a0%81%e6%9b%b4%e6%94%b9%e5%b7%a5%e5%85%b7">#</a>
+</h3>
+<p>谷歌开发团队偶尔会进行一系列影响广泛的代码清理和代码重构，以进一步维护代码库的健康。执行这些更改的开发人员通常将它们分为两个阶段。首先进行大的更改：向后兼容；完成后，可以进行第二个较小的更改：删除不再引用的老代码。</p>
+<p>借助 Rosie，开发人员可以通过在整个存储库中进行查找和替换，或通过更复杂的重构工具来构建大型补丁。然后 Rosie 负责将大补丁拆分成小的补丁，单独测试，将它们发送出去进行 CR，并在它们通过测试和 CR 后自动提交。Rosie 沿着项目目录行拆分补丁，基于 Ownership 的层次结构将补丁发送给指定的 Code Reviewer。</p>
+<h2 id="成本和权衡">
+  成本和权衡
+  <a class="anchor" href="#%e6%88%90%e6%9c%ac%e5%92%8c%e6%9d%83%e8%a1%a1">#</a>
+</h2>
+<p>MonoRepo 不仅仅是单体软件设计，而是此模型必须要考虑的成本，以及如何权衡：</p>
+<ol>
+<li>用于开发和执行的工具投资；</li>
+<li>代码库的复杂性，包括不必要的依赖和代码检索的困难；</li>
+<li>在代码健康方面投入的精力。</li>
+</ol>
+<p>那么，大库模式的优点：</p>
+<ul>
+<li>统一版本控制，SSOT；</li>
+<li>代码共享和重用广泛；</li>
+<li>依赖管理简化；</li>
+<li>变更原子化；</li>
+<li>大规模重构；</li>
+<li>跨团队协作；</li>
+<li>灵活的团队边界和代码所有权；</li>
+<li>代码可见性和清晰的树结构提供了隐式团队命名空间。</li>
+</ul>
+<h2 id="备选方案">
+  备选方案
+  <a class="anchor" href="#%e5%a4%87%e9%80%89%e6%96%b9%e6%a1%88">#</a>
+</h2>
+<p>Google 也不是只钟爱大库模式，随着 Git 等分布式版本控制系统（DVCS）的普及和不断增长，Google 也考虑过是否从 Piper 迁移到 Git。例如： Android 和 Chrome 团队。</p>
+<p>Git 社区强烈建议并希望开发人员拥有更多和更小的代码库。Git-clone 操作需要将所有内容复制到本地，这是一个与大库不兼容的过程。要迁移到基于 Git 的源代码托管，必须将 Google 的大库拆分为数千个独立的库，才能达到等同的性能。作为对比，Google 的 Android 代码库，由 Git 托管，被分为 800 多个独立的库。</p>
+<p>考虑到从 Google 构建的现有工具中获得的价值以及整体代码库结构的诸多优势，显然转向更多和更小的库对于 Google 的大库没有意义。迁移到 Git 或任何其他需要拆库的 DVCS 的替代方案对 Google 来说并不具有吸引力。</p>
+<p>Google 源代码团队目前的投资主要集中在内部源代码系统的持续可靠性、可扩展性和安全性上。该团队还在使用 Mercurial 进行实验，这是一个类似于 Git 的开源 DVCS。目标是向 Mercurial 客户端添加可扩展性功能，以便它可以有效地支持 Google 大库。这将为 Google 的开发人员提供另一种选择，即使用流行的 DVCS 工作流与大库结合使用。这项工作是与开源 Mercurial 社区合作进行的，其中包括来自重视大库模型的其他公司的贡献者。</p>
+<h2 id="参考">
+  参考
+  <a class="anchor" href="#%e5%8f%82%e8%80%83">#</a>
+</h2>
+<ul>
+<li>
+  <a href="https://qeunit.com/blog/how-google-does-monorepo/">How Google Does Monorepo</a></li>
+<li>
+  <a href="https://cacm.acm.org/magazines/2016/7/204032-why-google-stores-billions-of-lines-of-code-in-a-single-repository/fulltext">Why Google Stores Billions of Lines of Code in a Single Repository</a></li>
+<li>
+  <a href="https://www.wired.com/2015/09/google-2-billion-lines-codeand-one-place/?spm=ata.21736010.0.0.585834cdpHoTtC">Google Is 2 Billion Lines of Code—And It&rsquo;s All in One Place</a></li>
+</ul></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/3dd5ff17d93c17351a780fd0abfe15a2bdc95465" title='Last modified by howieyuen | January 18, 2024' target="_blank" rel="noopener">
+      <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
+      <span>January 18, 2024</span>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+
+
+<div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script>
+  const gitalk = new Gitalk({
+    clientID: 'b4cc17dbafc8ad637453',
+    clientSecret: '77b4685b4d6da0280eca116a66b6f01244033d35',
+    repo: 'howieyuen.github.io',
+    owner: 'howieyuen',
+    admin: ['howieyuen'],
+    id: location.pathname, 
+    distractionFreeMode: false 
+  });
+  (function() {
+    if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+      document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
+      return;
+    }
+    gitalk.render('gitalk-container');
+  })();
+</script>
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#工作流">工作流</a>
+          <ul>
+            <li><a href="#piper源代码管理系统">Piper：源代码管理系统</a></li>
+            <li><a href="#citc客户端工具">CitC：客户端工具</a></li>
+            <li><a href="#critique代码审查工具">Critique：代码审查工具</a></li>
+            <li><a href="#tricorder静态分析系统">Tricorder：静态分析系统</a></li>
+            <li><a href="#rosie大规模清理和代码更改工具">Rosie：大规模清理和代码更改工具</a></li>
+          </ul>
+        </li>
+        <li><a href="#成本和权衡">成本和权衡</a></li>
+        <li><a href="#备选方案">备选方案</a></li>
+        <li><a href="#参考">参考</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Getting-Started on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/docs/getting-started/</link>
+    <description>Recent content in Getting-Started on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <atom:link href="https://howieyuen.github.io/docs/getting-started/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MonoRepo</title>
+      <link>https://howieyuen.github.io/docs/getting-started/monorepo/</link>
+      <pubDate>Thu, 18 Jan 2024 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/getting-started/monorepo/</guid>
+      <description>&lt;p&gt;MonoRepo，即单一代码库（Monolithic Repository），是将多个项目或组件的代码存储在同一个版本控制系统仓库中的一种源代码管理策略。大公司如 Google、Facebook、Twitter 等都采用了 MonoRepo 来管理他们庞大的代码库。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Circle CI</title>
+      <link>https://howieyuen.github.io/docs/getting-started/circle-ci/</link>
+      <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/getting-started/circle-ci/</guid>
+      <description>&lt;p&gt;CircleCI 是基于云的 CI/CD 工具，可自动执行软件构建和交付过程。它提供快速的配置和维护，没有任何复杂性。&#xA;由于它是基于云的 CI/CD 工具，因此消除了专用服务器的困扰，并降低了维护本地服务器的成本。&#xA;此外，基于云的服务器是可扩展的，健壮的，并有助于更快地部署应用程序。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -6,96 +6,77 @@
     <description>Recent content in Tags on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 21 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://howieyuen.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 21 Nov 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://howieyuen.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>CLI</title>
       <link>https://howieyuen.github.io/tags/CLI/</link>
       <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/tags/CLI/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>crypto</title>
       <link>https://howieyuen.github.io/tags/crypto/</link>
       <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/tags/crypto/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>go</title>
       <link>https://howieyuen.github.io/tags/go/</link>
       <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/tags/go/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>rsa</title>
       <link>https://howieyuen.github.io/tags/rsa/</link>
       <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/tags/rsa/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>devops</title>
       <link>https://howieyuen.github.io/tags/devops/</link>
       <pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/tags/devops/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>gitops</title>
       <link>https://howieyuen.github.io/tags/gitops/</link>
       <pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/tags/gitops/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>CircleCI</title>
       <link>https://howieyuen.github.io/tags/CircleCI/</link>
       <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/tags/CircleCI/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Orb</title>
       <link>https://howieyuen.github.io/tags/Orb/</link>
       <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/tags/Orb/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>动态规划</title>
       <link>https://howieyuen.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</link>
       <pubDate>Wed, 02 Dec 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>贪心算法</title>
       <link>https://howieyuen.github.io/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/</link>
       <pubDate>Wed, 02 Dec 2020 00:00:00 +0000</pubDate>
-      
       <guid>https://howieyuen.github.io/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/</guid>
       <description></description>
     </item>
-    
   </channel>
 </rss>
