@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="本文翻译自 Manage More Clusters with Less Hassle, with Argo CD Application Sets - Jonathan and Kshama
+ApplicationSet # Applicationset 是一种新的Kubernetes自定义资源（CR）和控制器，它与现有的 Argo CD 一起工作。 Applicationset 是 Argo CD 应用程序的工厂：ApplicationSet CR 描述了创建/管理的应用程序，Argo CD 负责部署它们。
+特征：
+将大量 Argo CD 应用程序作为单个单元管理 你集群的 Deployment 可以来自各种数据源的自动化和自定义： 例如，随着新的集群添加到基础架构中，添加了新的 Git Repo，将添加新的 Repo 到 Github/Gitlab 等 对外变更自动作出反应 基于外部事件的一致性是快速且可自定义的：在飞行中创建/更新/删除应用程序 Applicationset 基于 Argo CD 应用，可利用 Argo CD 带来的所有能力 GitOps 介绍 # Git 来源于事实 所需的软件状态在 Git 仓库中以文件形式存储 GitOps 代理将确保所需的软件状态已在运行时环境中部署 Argo CD 介绍 # 基于 GitOps 的 K8S 的持续性传输工具。 使用 Git Repo 作为事实来源。 声明式持续性交付工具。 支持各种配置管理工具（ksonnet、jsonnet、kustomize 和 helm）。 作为 K8S 控制器和 CRD 实现。 提供具有强大的资源管理功能的 Kubernetes 仪表板。 自动同步应用程序的当前实时状态到期望状态。 Argo CD 关键特性 # 强大、实时的网络 UI 支持多个配置管理/模板工具 多集群支持 SSO 集成 资源健康评估 自动配置漂移检测和差异 自动或手动将应用程序同步到其期望状态 自动化 CLI 和 CI 集成 审计活动 Prometheus 度量标准 GnuPG 签名验证 同步的前置/后置钩子 多租户和 RBAC 授权策略 Argo CD Application 自定义资源 # 定义了 Argo CD 做什么的核心实例是 Application 的 CR。">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="使用 Argo CD ApplicationSet 管理多集群" />
+<meta property="og:description" content="本文翻译自 Manage More Clusters with Less Hassle, with Argo CD Application Sets - Jonathan and Kshama
+ApplicationSet # Applicationset 是一种新的Kubernetes自定义资源（CR）和控制器，它与现有的 Argo CD 一起工作。 Applicationset 是 Argo CD 应用程序的工厂：ApplicationSet CR 描述了创建/管理的应用程序，Argo CD 负责部署它们。
+特征：
+将大量 Argo CD 应用程序作为单个单元管理 你集群的 Deployment 可以来自各种数据源的自动化和自定义： 例如，随着新的集群添加到基础架构中，添加了新的 Git Repo，将添加新的 Repo 到 Github/Gitlab 等 对外变更自动作出反应 基于外部事件的一致性是快速且可自定义的：在飞行中创建/更新/删除应用程序 Applicationset 基于 Argo CD 应用，可利用 Argo CD 带来的所有能力 GitOps 介绍 # Git 来源于事实 所需的软件状态在 Git 仓库中以文件形式存储 GitOps 代理将确保所需的软件状态已在运行时环境中部署 Argo CD 介绍 # 基于 GitOps 的 K8S 的持续性传输工具。 使用 Git Repo 作为事实来源。 声明式持续性交付工具。 支持各种配置管理工具（ksonnet、jsonnet、kustomize 和 helm）。 作为 K8S 控制器和 CRD 实现。 提供具有强大的资源管理功能的 Kubernetes 仪表板。 自动同步应用程序的当前实时状态到期望状态。 Argo CD 关键特性 # 强大、实时的网络 UI 支持多个配置管理/模板工具 多集群支持 SSO 集成 资源健康评估 自动配置漂移检测和差异 自动或手动将应用程序同步到其期望状态 自动化 CLI 和 CI 集成 审计活动 Prometheus 度量标准 GnuPG 签名验证 同步的前置/后置钩子 多租户和 RBAC 授权策略 Argo CD Application 自定义资源 # 定义了 Argo CD 做什么的核心实例是 Application 的 CR。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://howieyuen.github.io/docs/XaC/cicd/argocd/" /><meta property="article:section" content="docs" />
+<meta property="article:published_time" content="2021-10-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-01-22T15:25:36+08:00" />
+
+<title>使用 Argo CD ApplicationSet 管理多集群 | 袁昊的学习笔记</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.990f118aee4bd10034c871ddbab39dd9546a83e3c50004e77a3e4fc7715be2da.js" integrity="sha256-mQ8Riu5L0QA0yHHdurOd2VRqg&#43;PFAATnej5Px3Fb4to=" crossorigin="anonymous"></script>
+
+  <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Golang</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-aa0ad5dadefefc3354befb0f21b44571" class="toggle"  />
+    <label for="section-aa0ad5dadefefc3354befb0f21b44571" class="flex justify-between">
+      <a role="button" class="">数据结构</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/chan/" class="">chan</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/map/" class="">map</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/slice/" class="">slice</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-9730b84098027970ce9876389c401abb" class="toggle"  />
+    <label for="section-9730b84098027970ce9876389c401abb" class="flex justify-between">
+      <a role="button" class="">语言基础</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/unsafe/" class="">unsafe</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/reflect/" class="">reflect</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-84d526a58cfe5a50fb73329d6c7bd14a" class="toggle"  />
+    <label for="section-84d526a58cfe5a50fb73329d6c7bd14a" class="flex justify-between">
+      <a role="button" class="">内存管理</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-084099e607ed94fee6028accac1c176c" class="toggle"  />
+    <label for="section-084099e607ed94fee6028accac1c176c" class="flex justify-between">
+      <a role="button" class="">golang 工具</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/tools/pprof/" class="">pprof</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Kubernetes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-103a3040e6af1931bd7a973aa3d5fe12" class="toggle"  />
+    <label for="section-103a3040e6af1931bd7a973aa3d5fe12" class="flex justify-between">
+      <a role="button" class="">kube-apisever</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-55afec95d17025ab2841fd395bf5e066" class="toggle"  />
+    <label for="section-55afec95d17025ab2841fd395bf5e066" class="flex justify-between">
+      <a role="button" class="">kube-controller-manager</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-6c06d491bb5aface6ab2585a8049b13f" class="toggle"  />
+    <label for="section-6c06d491bb5aface6ab2585a8049b13f" class="flex justify-between">
+      <a role="button" class="">kube-scheduler</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-89eea73f7e04e77c22ade24239d6a83e" class="toggle"  />
+    <label for="section-89eea73f7e04e77c22ade24239d6a83e" class="flex justify-between">
+      <a role="button" class="">kubelet</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="toggle"  />
+    <label for="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="flex justify-between">
+      <a role="button" class="">sig-network</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/sig-network/svc-ep-epslice/" class="">Service 与 Endpoints、EndpointSlice 那些事</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>XaC(Everything as Code)</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-ad61c1f49e198d237c45c8c43e19ff81" class="toggle"  />
+    <label for="section-ad61c1f49e198d237c45c8c43e19ff81" class="flex justify-between">
+      <a role="button" class="">Infra as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/infra-as-code/getting-started-of-acorn/" class="">Acorn：k8s 应用部署框架</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/infra-as-code/terraform-workflow/" class="">Terraform 执行状态和阶段关系</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-b38fb26cbaaf667f79df6e01d2ae5fc3" class="toggle"  />
+    <label for="section-b38fb26cbaaf667f79df6e01d2ae5fc3" class="flex justify-between">
+      <a role="button" class="">Secret as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/helm-secrets/" class="">Helm Secrets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/kamus/" class="">Kamus</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/secrets-store-csi-driver/" class="">Secrets Store CSI Driver</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/sealed-secrets/" class="">Sealed Secrets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/external-secret-operator/" class="">External Secrets Operator</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-92481b079017edd0b6e890ca098af79c" class="toggle" checked />
+    <label for="section-92481b079017edd0b6e890ca098af79c" class="flex justify-between">
+      <a role="button" class="">CI/CD Tools</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/cicd/argocd/" class="active">使用 Argo CD ApplicationSet 管理多集群</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Getting-Started</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/getting-started/monorepo/" class="">MonoRepo</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/getting-started/circle-ci/" class="">Circle CI</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Translation</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f59f78b27df0d3218be457339234a283" class="toggle"  />
+    <label for="section-f59f78b27df0d3218be457339234a283" class="flex justify-between">
+      <a role="button" class="">Protocol Buffers</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/overview-of-protocal-buffers/" class="">概述</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/language-guideproto3/" class="">语言指南（proto3）</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a role="button" class="">LeetCode</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0321/" class="">321. 拼接最大数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="/posts/" >
+        Blogs
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://github.com/howieyuen/" target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>使用 Argo CD ApplicationSet 管理多集群</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#applicationset">ApplicationSet</a></li>
+        <li><a href="#gitops-介绍">GitOps 介绍</a></li>
+        <li><a href="#argo-cd-介绍">Argo CD 介绍</a></li>
+        <li><a href="#argo-cd-关键特性">Argo CD 关键特性</a></li>
+        <li><a href="#argo-cd-application-自定义资源">Argo CD Application 自定义资源</a></li>
+        <li><a href="#applicationset-介绍">ApplicationSet 介绍</a></li>
+        <li><a href="#applicationset-自定义资源-cr">ApplicationSet 自定义资源 (CR)</a></li>
+        <li><a href="#list-generator">List Generator</a></li>
+        <li><a href="#generator">Generator</a></li>
+        <li><a href="#template">Template</a></li>
+        <li><a href="#合并">合并</a></li>
+        <li><a href="#cluster-生成器">Cluster 生成器</a></li>
+        <li><a href="#git-directory-generator">Git Directory Generator</a></li>
+        <li><a href="#scm-provider-generator">SCM Provider Generator</a></li>
+        <li><a href="#git-file-generator">Git File Generator</a></li>
+        <li><a href="#matrix-generator">Matrix Generator</a></li>
+        <li><a href="#集群决策资源生成器">集群决策资源生成器</a></li>
+        <li><a href="#applicationset-在-red-hat">ApplicationSet 在 Red Hat</a></li>
+        <li><a href="#applicationset-在-intuit">ApplicationSet 在 Intuit</a></li>
+        <li><a href="#快速链接">快速链接</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><blockquote>
+<p>本文翻译自
+
+  <a href="https://kccncna2021.sched.com/event/lUzj/manage-more-clusters-with-less-hassle-with-argo-cd-application-sets-jonathan-west-red-hat-kshama-jain-independent-contributor?iframe=no&amp;w=&amp;sidebar=yes&amp;bg=no">Manage More Clusters with Less Hassle, with Argo CD Application Sets - Jonathan and Kshama</a></p>
+</blockquote>
+<h2 id="applicationset">
+  ApplicationSet
+  <a class="anchor" href="#applicationset">#</a>
+</h2>
+<p>Applicationset 是一种新的Kubernetes自定义资源（CR）和控制器，它与现有的 Argo CD 一起工作。
+Applicationset 是 Argo CD 应用程序的工厂：<code>ApplicationSet</code> CR 描述了创建/管理的应用程序，Argo CD 负责部署它们。</p>
+<p>特征：</p>
+<ul>
+<li>将大量 Argo CD 应用程序作为单个单元管理</li>
+<li>你集群的 Deployment 可以来自各种数据源的自动化和自定义：
+<ul>
+<li>例如，随着新的集群添加到基础架构中，添加了新的 Git Repo，将添加新的 Repo 到 Github/Gitlab 等</li>
+</ul>
+</li>
+<li>对外变更自动作出反应
+<ul>
+<li>基于外部事件的一致性是快速且可自定义的：在飞行中创建/更新/删除应用程序</li>
+</ul>
+</li>
+<li>Applicationset 基于 Argo CD 应用，可利用 Argo CD 带来的所有能力</li>
+</ul>
+<h2 id="gitops-介绍">
+  GitOps 介绍
+  <a class="anchor" href="#gitops-%e4%bb%8b%e7%bb%8d">#</a>
+</h2>
+<ul>
+<li>Git 来源于事实</li>
+<li>所需的软件状态在 Git 仓库中以文件形式存储</li>
+<li>GitOps 代理将确保所需的软件状态已在运行时环境中部署</li>
+</ul>
+<h2 id="argo-cd-介绍">
+  Argo CD 介绍
+  <a class="anchor" href="#argo-cd-%e4%bb%8b%e7%bb%8d">#</a>
+</h2>
+<ul>
+<li>基于 GitOps 的 K8S 的持续性传输工具。</li>
+<li>使用 Git Repo 作为事实来源。</li>
+<li>声明式持续性交付工具。</li>
+<li>支持各种配置管理工具（ksonnet、jsonnet、kustomize 和 helm）。</li>
+<li>作为 K8S 控制器和 CRD 实现。</li>
+<li>提供具有强大的资源管理功能的 Kubernetes 仪表板。</li>
+<li>自动同步应用程序的当前实时状态到期望状态。</li>
+</ul>
+<h2 id="argo-cd-关键特性">
+  Argo CD 关键特性
+  <a class="anchor" href="#argo-cd-%e5%85%b3%e9%94%ae%e7%89%b9%e6%80%a7">#</a>
+</h2>
+<ul>
+<li>强大、实时的网络 UI</li>
+<li>支持多个配置管理/模板工具</li>
+<li>多集群支持</li>
+<li>SSO 集成</li>
+<li>资源健康评估</li>
+<li>自动配置漂移检测和差异</li>
+<li>自动或手动将应用程序同步到其期望状态</li>
+<li>自动化 CLI 和 CI 集成</li>
+<li>审计活动</li>
+<li>Prometheus 度量标准</li>
+<li>GnuPG 签名验证</li>
+<li>同步的前置/后置钩子</li>
+<li>多租户和 RBAC 授权策略</li>
+</ul>
+<h2 id="argo-cd-application-自定义资源">
+  Argo CD Application 自定义资源
+  <a class="anchor" href="#argo-cd-application-%e8%87%aa%e5%ae%9a%e4%b9%89%e8%b5%84%e6%ba%90">#</a>
+</h2>
+<p>定义了 Argo CD 做什么的核心实例是 Application 的 CR。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">argoproj.io/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Application</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">name</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">argocd</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">project</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">source</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">repoURL</span>: <span style="color:#ae81ff">https://github.com/argoproj/argocd-example-apps.git</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">targetRevision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">path</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">destination</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">server</span>: <span style="color:#ae81ff">https://kubernetes.default.svc</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span></code></pre></div><p>Argo CD 应用程序就像 Kubernetes 集群和 Git 之间的“胶水”：“在 Git 中定义这些 K8S 资源，并将它们应用于我的集群，并保持同步。”
+但请注意，只有一个源（Git 存储库），而且只有一个目标（某个集群的某个命名空间）。</p>
+<h2 id="applicationset-介绍">
+  ApplicationSet 介绍
+  <a class="anchor" href="#applicationset-%e4%bb%8b%e7%bb%8d">#</a>
+</h2>
+<p>与 Argo CD Application 不同，只能将单个 Git 存储库路径连接到单个 Kubernetes 集群命名空间，Applicationset 允许你定义许多这样的连接（作为 Argo CD Application），并将全部管理为单个单元。</p>
+<p>ApplicationSet Controller 是开源的，是 Argo CD 子项目，托管在 Argoproj-Labs 组织中，该项目由许多不同人员的贡献构建，包括来自Red Hat、Snyk、Intuit、MLB、阿里云等个人贡献。</p>
+<p>ApplicationSet Controller 需要现有的 Argo CD 安装，并与其一起工作。</p>
+<h2 id="applicationset-自定义资源-cr">
+  ApplicationSet 自定义资源 (CR)
+  <a class="anchor" href="#applicationset-%e8%87%aa%e5%ae%9a%e4%b9%89%e8%b5%84%e6%ba%90-cr">#</a>
+</h2>
+<p>generator 字段引用指定一个生成器，它负责生成模板参数。
+模板参数是键值对，它将被替换为模板：</p>
+<ul>
+<li>cluster：engineering-dev</li>
+<li>URL：https//kubernetes.default.svc
+参数呈现为模板的相应 <code>{{parameter name}}</code> 字段。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">argoproj.io/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ApplicationSet</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">generators</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">list</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">elements</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">cluster</span>: <span style="color:#ae81ff">engineering-dev</span>
+</span></span><span style="display:flex;"><span>  		<span style="color:#f92672">url</span>: <span style="color:#ae81ff">https://kubernetes.default.svc</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>  	<span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    	<span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;{{cluster}}-guestbook&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">project</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">source</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">repoURL</span>: <span style="color:#ae81ff">https://github.com/argoproj-labs/applicationset.git</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">targetRevision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">path</span>: <span style="color:#ae81ff">examples/list-generator/guestbook/{{cluster}}</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">destination</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">server</span>: <span style="color:#e6db74">&#39;{{url}}&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span></code></pre></div><h2 id="list-generator">
+  List Generator
+  <a class="anchor" href="#list-generator">#</a>
+</h2>
+<ul>
+<li><strong>是什么</strong>：键值的简单列表，可直接替换为模板，生成 Application。</li>
+<li><strong>为什么</strong>：最简单的生成器。 擅长初始化实验应用程序和非常基本的部署方案。</li>
+</ul>
+<p>虽然比同等的 Argo CD Application 的 YAML 要少，但仍然不如其他生成器强大。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">argoproj.io/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ApplicationSet</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">generators</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">list</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">elements</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">cluster</span>: <span style="color:#ae81ff">engineering-dev</span>
+</span></span><span style="display:flex;"><span>  		<span style="color:#f92672">url</span>: <span style="color:#ae81ff">https://kubernetes.default.svc</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">cluster</span>: <span style="color:#ae81ff">engineering-prod</span>
+</span></span><span style="display:flex;"><span>     	<span style="color:#f92672">url</span>: <span style="color:#ae81ff">https://kubernetes.default.svc</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>  	<span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    	<span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;{{cluster}}-guestbook&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">project</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">source</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">repoURL</span>: <span style="color:#ae81ff">https://github.com/argoproj-labs/applicationset.git</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">targetRevision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">path</span>: <span style="color:#ae81ff">examples/list-generator/guestbook/{{cluster}}</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">destination</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">server</span>: <span style="color:#e6db74">&#39;{{url}}&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span></code></pre></div><h2 id="generator">
+  Generator
+  <a class="anchor" href="#generator">#</a>
+</h2>
+<p>生成器负责生成参数，然后将其呈现为模板：ApplicationSet 的字段。
+生成器主要基于它们用于生成模板参数的数据源：</p>
+<ul>
+<li>列表生成器从文字列表中提供了一组参数</li>
+<li>集群生成器使用 Argo CD 集群列表作为数据源</li>
+<li>Git 生成器使用 Git 存储库中的文件/目录</li>
+<li>&hellip;</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">argoproj.io/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ApplicationSet</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">name</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">generators</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">list</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">elements</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">cluster</span>: <span style="color:#ae81ff">engineering-dev</span>
+</span></span><span style="display:flex;"><span>        	<span style="color:#f92672">url</span>: <span style="color:#ae81ff">https://kubernetes.default.svc</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">cluster</span>: <span style="color:#ae81ff">engineering-prod</span>
+</span></span><span style="display:flex;"><span>        	<span style="color:#f92672">url</span>: <span style="color:#ae81ff">https://kubernetes.default.svc</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># (...)</span>
+</span></span></code></pre></div><h2 id="template">
+  Template
+  <a class="anchor" href="#template">#</a>
+</h2>
+<p>ApplicationSet 规约的模板字段用于生成 Argo CD Application 资源。</p>
+<p>通过将来自生成器的参数与模板的字段（通过 <code>{{values}}</code>）组合来创建 Argo CD Application，并且从该具体应用程序资源产生并应用于集群。</p>
+<p>模板子字段直接对应于 
+  <a href="https://argoproj.github.io/argo-cd/operator-manual/declarative-setup/#applications">Argo CD Application 资源</a>的规约（
+  <a href="https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/application.yaml">示例</a>）。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  	<span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;{{cluster}}-guestbook&#39;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">source</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">repoURL</span>: <span style="color:#ae81ff">https://github.com/infra-team/cluster-deployments.git</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">targetRevision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">path</span>: <span style="color:#ae81ff">guestbook/{{cluster}}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">destination</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">server</span>: <span style="color:#e6db74">&#39;{{url}}&#39;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span></code></pre></div><h2 id="合并">
+  合并
+  <a class="anchor" href="#%e5%90%88%e5%b9%b6">#</a>
+</h2>
+<p>对父 ApplicationSet 的更改自动应用所有子 Argo CD Application。</p>
+<ul>
+<li>这允许你从单个 ApplicationSet 管理许多 Application 的内容。</li>
+</ul>
+<p>ApplicationSet Controller 负责重新调整 ApplicationSet。基于应用程序集的模板字段的内容，控制器生成一个或多个 Application。</p>
+<ul>
+<li>这是应用程序控制器的责任结束的位置。</li>
+</ul>
+<p>Argo CD 负责其部署 Application 资源。</p>
+<ul>
+<li>从 Git 读取 kubernetes 资源</li>
+<li>将这些资源应用于目标集群/命名空间</li>
+</ul>
+<h2 id="cluster-生成器">
+  Cluster 生成器
+  <a class="anchor" href="#cluster-%e7%94%9f%e6%88%90%e5%99%a8">#</a>
+</h2>
+<ul>
+<li><strong>是什么</strong>：自动读取使用 Argo CD 的定义的集群列表，并给每个集群创建 Application。</li>
+<li><strong>为什么</strong>：应用添加到 Argo CD 时自动部署 Argo CD Application。</li>
+</ul>
+<p>你同样可以使用 Cluster Annotation 来
+  <a href="https://argocd-applicationset.readthedocs.io/en/stable/Generators-Cluster/">定位集群的子集</a>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">argoproj.io/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ApplicationSet</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">name</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">generators</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">clusters</span>: {}
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>      	<span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;{{name}}-guestbook&#39;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">project</span>: <span style="color:#e6db74">&#34;default&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">source</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">repoURL</span>: <span style="color:#ae81ff">https://github.com/argoproj/argocd-example-apps/</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">targetRevision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">path</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">destination</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">server</span>: <span style="color:#e6db74">&#39;{{server}}&#39;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span></code></pre></div><h2 id="git-directory-generator">
+  Git Directory Generator
+  <a class="anchor" href="#git-directory-generator">#</a>
+</h2>
+<ul>
+<li><strong>是什么</strong>：扫描 Git 仓库的内容，匹配
+  <a href="https://github.com/argoproj-labs/applicationset/tree/master/examples/git-generator-directory">目录</a>，并创建 Argo CD Application。</li>
+<li><strong>为什么</strong>：对于部分小伙伴，偏向于用一个 Git 仓库来定义多个 workload、component 和 microservice 等 k8s 资源，此生成器将会自动定位 Git 仓库。Git 上任何增删操作都会自动检测并映射到 k8s 中。
+对于相反的方式，每个应用程序组件/微服务都有自己的存储库，请参阅 SCM Provider 生成器。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">argoproj.io/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ApplicationSet</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">name</span>: <span style="color:#ae81ff">cluster-addons</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">generators</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">git</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">repoURL</span>: <span style="color:#ae81ff">https://github.com/argoproj-labs/applicationset.git</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">revision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">directories</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">path</span>: <span style="color:#ae81ff">examples/git-generator-directory/cluster-addons/*</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>     <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;{{path.basename}}&#39;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">project</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">source</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">repoURL</span>: <span style="color:#ae81ff">https://github.com/argoproj-labs/applicationset.git</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">targetRevision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">path</span>: <span style="color:#e6db74">&#39;{{path}}&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">destination</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">server</span>: <span style="color:#ae81ff">https://kubernetes.default.svc</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">namespace</span>: <span style="color:#e6db74">&#39;{{path.basename}}&#39;</span>
+</span></span></code></pre></div><h2 id="scm-provider-generator">
+  SCM Provider Generator
+  <a class="anchor" href="#scm-provider-generator">#</a>
+</h2>
+<ul>
+<li><strong>是什么</strong>：扫描 GitHub/GitLab 上某个组织下的仓库列表，给满足匹配的仓库创建 Application。</li>
+<li><strong>为什么</strong>：部分小伙伴偏向于拆分应用和微服务的 Deployment 到同一个 GitHub/GitLab 的组织下不同仓库。此生成器将会自动扫描组织，并将该组织下的所有应用部署到目标位置。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">argoproj.io/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ApplicationSet</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">name</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">generators</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">scmProvider</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">github</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">organization</span>: <span style="color:#ae81ff">argoproj</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">cloneProtocol</span>: <span style="color:#ae81ff">https</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">filters</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">repositoryMatch</span>: <span style="color:#ae81ff">example-apps</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    	<span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;{{ repository }}-guestbook&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">project</span>: <span style="color:#e6db74">&#34;default&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">source</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">repoURL</span>: <span style="color:#e6db74">&#39;{{ url }}&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">targetRevision</span>: <span style="color:#e6db74">&#39;{{ branch }}&#39;</span>
+</span></span><span style="display:flex;"><span>      	<span style="color:#f92672">path</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">destination</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">server</span>: <span style="color:#ae81ff">https://kubernetes.default.svc</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span></code></pre></div><h2 id="git-file-generator">
+  Git File Generator
+  <a class="anchor" href="#git-file-generator">#</a>
+</h2>
+<ul>
+<li><strong>是什么</strong>：扫描 Git 仓库中的内容，并给满足 
+  <a href="https://github.com/argoproj-labs/applicationset/tree/master/examples/git-generator-files-discovery">JSON/YAML</a> 匹配的文件创建 Argo CD Application。</li>
+<li><strong>为什么</strong>：定义一系列配置文件，来描述具体要创建的 Application。通过 Git Commit 提供对单个字段的细粒度控制。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">argoproj.io/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ApplicationSet</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">name</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">generators</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">git</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">repoURL</span>: <span style="color:#ae81ff">https://github.com/argoproj-labs/applicationset.git</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">revision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">files</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">path</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &#34;examples/git-generator-files-discovery/cluster-config/**/config.json&#34;</span>            
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    	<span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;{{cluster.name}}-guestbook&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">project</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">source</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">repoURL</span>: <span style="color:#ae81ff">https://github.com/argoproj-labs/applicationset.git</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">targetRevision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">path</span>: <span style="color:#e6db74">&#34;examples/git-generator-files-discovery/apps/guestbook&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">destination</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">server</span>: <span style="color:#ae81ff">https://kubernetes.default.svc</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">guestbook</span>
+</span></span></code></pre></div><h2 id="matrix-generator">
+  Matrix Generator
+  <a class="anchor" href="#matrix-generator">#</a>
+</h2>
+<ul>
+<li><strong>是什么</strong>：将两个生成器合并，因此也是合并了二者的优点</li>
+<li><strong>为什么</strong>：高灵活性地合并生成器，例如：</li>
+<li>将 Git 中每个应用部署到所有 Argo CD 集群
+<ul>
+<li>Git Repository：Git 仓库中的所有应用</li>
+<li>Cluster：每个 Argo CD 集群</li>
+</ul>
+</li>
+<li>扫描 GitHub 组织并部署仓库到 Git 中的 YAML 文件定义的环境列表。
+<ul>
+<li>Git File：对于 repo 中每个匹配的 YAML 文件，将内容转换为参数</li>
+<li>SCM Provider：扫描整个组织并转换为参数</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">argoproj.io/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ApplicationSet</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">name</span>: <span style="color:#ae81ff">cluster-git</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">generators</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">matrix</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">generators</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">git</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">repoURL</span>: <span style="color:#ae81ff">https://github.com/argoproj-labs/applicationset.git</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">revision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">directories</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">path</span>: <span style="color:#ae81ff">examples/matrix/cluster-addons/*</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">clusters</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>            	<span style="color:#f92672">argocd.argoproj.io/secret-type</span>: <span style="color:#ae81ff">cluster</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    	<span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;{{path.basename}}-{{name}}&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">project</span>: <span style="color:#e6db74">&#39;{{metadata.labels.environment}}&#39;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">source</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">repoURL</span>: <span style="color:#ae81ff">https://github.com/argoproj-labs/applicationset.git</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">targetRevision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">path</span>: <span style="color:#e6db74">&#39;{{path}}&#39;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">destination</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">server</span>: <span style="color:#e6db74">&#39;{{server}}&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">namespace</span>: <span style="color:#e6db74">&#39;{{path.basename}}&#39;</span>
+</span></span></code></pre></div><h2 id="集群决策资源生成器">
+  集群决策资源生成器
+  <a class="anchor" href="#%e9%9b%86%e7%be%a4%e5%86%b3%e7%ad%96%e8%b5%84%e6%ba%90%e7%94%9f%e6%88%90%e5%99%a8">#</a>
+</h2>
+<ul>
+<li><strong>是什么</strong>：&ldquo;外部资源&quot;的逻辑，是用集群外的 CR 存放应用</li>
+<li><strong>为什么</strong>：也许是最复杂的生成器（但也是最强大的）。使用它需要编写你自己的自定义控制器，定义 CRD，并使用你的控制器修改 CR 的状态字段以表明应将 Application 部署到哪些集群。
+支持与 Open Cluster Management 项目的 
+  <a href="https://open-cluster-management.io/concepts/placement/#select-clusters-in-managedclusterset">Placement Rule CR</a> 集成（这些人贡献了生成器）。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">argoproj.io/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ApplicationSet</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">name</span>: <span style="color:#ae81ff">book-import</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">generators</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">clusterDecisionResource</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">configMapRef</span>: <span style="color:#ae81ff">ocm-placement</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">test-placement</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">requeueAfterSeconds</span>: <span style="color:#ae81ff">30</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    	<span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;{{clusterName}}-book-import&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">project</span>: <span style="color:#e6db74">&#34;default&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">source</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">repoURL</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        https://github.com/open-cluster-management/application-samples.git
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        targetRevision: HEAD
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        path: book-import</span>        
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">destination</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;{{clusterName}}&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">bookimport</span>
+</span></span></code></pre></div><h2 id="applicationset-在-red-hat">
+  ApplicationSet 在 Red Hat
+  <a class="anchor" href="#applicationset-%e5%9c%a8-red-hat">#</a>
+</h2>
+<p>ApplicationSet 与 Argo CD 一起编译到 Red Hat OpenShift GitOps。了解更多有关如何在 OpenShift 上使用 Argo CD 部署 ApplicationSet：</p>
+<ul>
+<li>
+  <a href="https://cloud.redhat.com/blog/an-introduction-to-applicationsets-in-openshift-gitops">OpenShift GitOps 的 ApplicationSet 介绍 —— Jonathan West &amp; Dewan Ahmed</a></li>
+<li>
+  <a href="https://cloud.redhat.com/blog/getting-started-with-applicationsets">ApplicationSet 入门 —— Christian Hernandez</a></li>
+</ul>
+<h2 id="applicationset-在-intuit">
+  ApplicationSet 在 Intuit
+  <a class="anchor" href="#applicationset-%e5%9c%a8-intuit">#</a>
+</h2>
+<ul>
+<li>自动化跨多个 kubernetes 集群定制的插件安装。</li>
+<li>用于 Argo 部署安装的 Git File Generator。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">argoproj.io/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ApplicationSet</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">name</span>: <span style="color:#ae81ff">argo-rollouts</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">generators</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">git</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">repoURL</span>: <span style="color:#e6db74">&#39;https://github.com/argoproj-labs/applicationset.git&#39;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">revision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">files</span>:
+</span></span><span style="display:flex;"><span>      	- <span style="color:#f92672">path</span>: <span style="color:#ae81ff">argo-rollouts/env/*/config.json</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    	<span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    		<span style="color:#f92672">appset</span>: <span style="color:#ae81ff">argo-rollouts</span>
+</span></span><span style="display:flex;"><span>    		<span style="color:#f92672">region</span>: <span style="color:#e6db74">&#39;{{region}}&#39;</span>
+</span></span><span style="display:flex;"><span>    	<span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;argo-rollouts.{{name}}&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">destination</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">argo-rollouts</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">server</span>: <span style="color:#e6db74">&#39;{{server}}&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">info</span>:
+</span></span><span style="display:flex;"><span>          - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">cluster-url</span>
+</span></span><span style="display:flex;"><span>          	<span style="color:#f92672">value</span>: <span style="color:#e6db74">&#39;kubernetes.default.svc&#39;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">project</span>: <span style="color:#ae81ff">argo-rollouts</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">source</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">path</span>: <span style="color:#e6db74">&#39;argo-rollouts/env/{{name}}&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">repoURL</span>: <span style="color:#e6db74">&#39;https://github.com/argoproj-labs/applicationset.git&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">targetRevision</span>: <span style="color:#ae81ff">HEAD</span>
+</span></span></code></pre></div><h2 id="快速链接">
+  快速链接
+  <a class="anchor" href="#%e5%bf%ab%e9%80%9f%e9%93%be%e6%8e%a5">#</a>
+</h2>
+<ul>
+<li>入门
+<ul>
+<li>
+  <a href="https://argocd-applicationset.readthedocs.io/en/stable/Geting-Started/">ApplicationSet 入门</a>：介绍和快速入门</li>
+</ul>
+</li>
+<li>了解更多
+<ul>
+<li>
+  <a href="https://argocd-applicationset.readthedocs.io/en/stable/">ApplicationSet 文档</a>：模板、生成器、架构等等</li>
+</ul>
+</li>
+<li>加入我们
+<ul>
+<li>GitHub：
+  <a href="https://github.com/argoproj-labs/applicationset">Argo CD ApplicationSet</a> 项目</li>
+<li>CNCF Slack：
+  <a href="https://argoproj.github.io/community/join-slack/">#argo-cd-appset</a></li>
+</ul>
+</li>
+</ul>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/2d677c77cfa21091f5ec6a38d7315de4914b88c4" title='Last modified by howieyuen | January 22, 2024' target="_blank" rel="noopener">
+      <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
+      <span>January 22, 2024</span>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+
+
+<div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script>
+  const gitalk = new Gitalk({
+    clientID: 'b4cc17dbafc8ad637453',
+    clientSecret: '77b4685b4d6da0280eca116a66b6f01244033d35',
+    repo: 'howieyuen.github.io',
+    owner: 'howieyuen',
+    admin: ['howieyuen'],
+    id: location.pathname, 
+    distractionFreeMode: false 
+  });
+  (function() {
+    if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+      document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
+      return;
+    }
+    gitalk.render('gitalk-container');
+  })();
+</script>
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#applicationset">ApplicationSet</a></li>
+        <li><a href="#gitops-介绍">GitOps 介绍</a></li>
+        <li><a href="#argo-cd-介绍">Argo CD 介绍</a></li>
+        <li><a href="#argo-cd-关键特性">Argo CD 关键特性</a></li>
+        <li><a href="#argo-cd-application-自定义资源">Argo CD Application 自定义资源</a></li>
+        <li><a href="#applicationset-介绍">ApplicationSet 介绍</a></li>
+        <li><a href="#applicationset-自定义资源-cr">ApplicationSet 自定义资源 (CR)</a></li>
+        <li><a href="#list-generator">List Generator</a></li>
+        <li><a href="#generator">Generator</a></li>
+        <li><a href="#template">Template</a></li>
+        <li><a href="#合并">合并</a></li>
+        <li><a href="#cluster-生成器">Cluster 生成器</a></li>
+        <li><a href="#git-directory-generator">Git Directory Generator</a></li>
+        <li><a href="#scm-provider-generator">SCM Provider Generator</a></li>
+        <li><a href="#git-file-generator">Git File Generator</a></li>
+        <li><a href="#matrix-generator">Matrix Generator</a></li>
+        <li><a href="#集群决策资源生成器">集群决策资源生成器</a></li>
+        <li><a href="#applicationset-在-red-hat">ApplicationSet 在 Red Hat</a></li>
+        <li><a href="#applicationset-在-intuit">ApplicationSet 在 Intuit</a></li>
+        <li><a href="#快速链接">快速链接</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
