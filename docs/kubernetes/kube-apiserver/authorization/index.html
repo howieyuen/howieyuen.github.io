@@ -3,31 +3,25 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. 鉴权概述 # 在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。 如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。 只要有一个鉴权模块通过，则鉴权成功。
-kube-apiserver 目前提供了 6 种鉴权机制：
-AlwaysAllow：总是允许 AlwaysDeny：总是拒绝 ABAC：基于属性的访问控制（Attribute-Based Access Control） Node：节点鉴权，专门鉴权给 kubelet 发出的 API 请求 RBAC：基于角色额的访问控制（Role-Based Access Control） Webhook：基于 webhook 的一种 HTTP 回调机制，可以进行远程鉴权管理 在学习鉴权之前，有三个概念需要补齐：
-Decision：决策状态 Authorizer：鉴权接口 RuleResolver：规则解析器 1.1 Decision：决策状态 # Decision 决策状态类似于认证中的 true 和 false，用于决定是否鉴权成功。 鉴权支持三种 Decision 决策状态，例如鉴权成功，则返回 DecisionAllow，代码如下：
-// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go type Decision int const ( DecisionDeny Decision = iota DecisionAllow DecisionNoOpinion ) DecisionDeny：拒绝该操作 DecisionAllow：允许该操作 DecisionNoOpinion：表示无明显意见允许或拒绝，继续执行下一个鉴权模块 1.2 Authorizer：鉴权接口 # 每个鉴权模块都要实现该接口的方法，代码如下：
-// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go type Authorizer interface { Authorize(ctx context.">
+<meta name="description" content="在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。
+如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。
+只要有一个鉴权模块通过，则鉴权成功。">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="鉴权机制" />
-<meta property="og:description" content="1. 鉴权概述 # 在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。 如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。 只要有一个鉴权模块通过，则鉴权成功。
-kube-apiserver 目前提供了 6 种鉴权机制：
-AlwaysAllow：总是允许 AlwaysDeny：总是拒绝 ABAC：基于属性的访问控制（Attribute-Based Access Control） Node：节点鉴权，专门鉴权给 kubelet 发出的 API 请求 RBAC：基于角色额的访问控制（Role-Based Access Control） Webhook：基于 webhook 的一种 HTTP 回调机制，可以进行远程鉴权管理 在学习鉴权之前，有三个概念需要补齐：
-Decision：决策状态 Authorizer：鉴权接口 RuleResolver：规则解析器 1.1 Decision：决策状态 # Decision 决策状态类似于认证中的 true 和 false，用于决定是否鉴权成功。 鉴权支持三种 Decision 决策状态，例如鉴权成功，则返回 DecisionAllow，代码如下：
-// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go type Decision int const ( DecisionDeny Decision = iota DecisionAllow DecisionNoOpinion ) DecisionDeny：拒绝该操作 DecisionAllow：允许该操作 DecisionNoOpinion：表示无明显意见允许或拒绝，继续执行下一个鉴权模块 1.2 Authorizer：鉴权接口 # 每个鉴权模块都要实现该接口的方法，代码如下：
-// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go type Authorizer interface { Authorize(ctx context." />
+<meta property="og:description" content="在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。
+如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。
+只要有一个鉴权模块通过，则鉴权成功。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2020-12-29T00:00:00+00:00" />
-<meta property="article:modified_time" content="2024-01-22T15:25:36+08:00" />
+<meta property="article:modified_time" content="2024-01-23T14:18:15+08:00" />
 
 <title>鉴权机制 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.990f118aee4bd10034c871ddbab39dd9546a83e3c50004e77a3e4fc7715be2da.js" integrity="sha256-mQ8Riu5L0QA0yHHdurOd2VRqg&#43;PFAATnej5Px3Fb4to=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.24bfea92d3f22f77dd53e4a7567161e20b00ded6783b4375a6921c31f40d2d62.js" integrity="sha256-JL/qktPyL3fdU&#43;SnVnFh4gsA3tZ4O0N1ppIcMfQNLWI=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -983,47 +977,43 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-鉴权概述">1. 鉴权概述</a>
+    <li><a href="#鉴权概述">鉴权概述</a>
       <ul>
-        <li><a href="#11-decision决策状态">1.1 Decision：决策状态</a></li>
-        <li><a href="#12-authorizer鉴权接口">1.2 Authorizer：鉴权接口</a></li>
-        <li><a href="#13-ruleresolver规则解析器">1.3 RuleResolver：规则解析器</a></li>
+        <li><a href="#decision决策状态">Decision：决策状态</a></li>
+        <li><a href="#authorizer鉴权接口">Authorizer：鉴权接口</a></li>
+        <li><a href="#ruleresolver规则解析器">RuleResolver：规则解析器</a></li>
       </ul>
     </li>
-    <li><a href="#2-abac-鉴权">2. ABAC 鉴权</a>
+    <li><a href="#abac-鉴权">ABAC 鉴权</a>
       <ul>
-        <li><a href="#21-概述">2.1 概述</a></li>
-        <li><a href="#22-启用">2.2 启用</a></li>
-        <li><a href="#23-实现">2.3 实现</a></li>
+        <li><a href="#概述">概述</a></li>
+        <li><a href="#启用">启用</a></li>
+        <li><a href="#实现">实现</a></li>
       </ul>
     </li>
-    <li><a href="#3-rbac-鉴权">3. RBAC 鉴权</a>
+    <li><a href="#rbac-鉴权">RBAC 鉴权</a>
       <ul>
-        <li><a href="#31-概述">3.1 概述</a>
-          <ul>
-            <li></li>
-          </ul>
-        </li>
-        <li><a href="#32-启用">3.2 启用</a></li>
-        <li><a href="#33-实现">3.3 实现</a></li>
-        <li><a href="#34-内置-clusterrole">3.4 内置 ClusterRole</a></li>
+        <li><a href="#概述-1">概述</a></li>
+        <li><a href="#启用-1">启用</a></li>
+        <li><a href="#实现-1">实现</a></li>
+        <li><a href="#内置-clusterrole">内置 ClusterRole</a></li>
       </ul>
     </li>
-    <li><a href="#4-node-鉴权">4. Node 鉴权</a>
+    <li><a href="#node-鉴权">Node 鉴权</a>
       <ul>
-        <li><a href="#41-概述">4.1 概述</a></li>
-        <li><a href="#42-启用">4.2 启用</a></li>
-        <li><a href="#43-实现">4.3 实现</a></li>
+        <li><a href="#概述-2">概述</a></li>
+        <li><a href="#启用-2">启用</a></li>
+        <li><a href="#实现-2">实现</a></li>
       </ul>
     </li>
-    <li><a href="#5-webhook">5. Webhook</a>
+    <li><a href="#webhook">Webhook</a>
       <ul>
-        <li><a href="#51-概述">5.1 概述</a></li>
-        <li><a href="#52-启用">5.2 启用</a></li>
-        <li><a href="#53-实现">5.3 实现</a></li>
+        <li><a href="#概述-3">概述</a></li>
+        <li><a href="#启用-3">启用</a></li>
+        <li><a href="#实现-3">实现</a></li>
       </ul>
     </li>
-    <li><a href="#6-参考资料">6. 参考资料</a></li>
+    <li><a href="#参考资料">参考资料</a></li>
   </ul>
 </nav>
 
@@ -1036,13 +1026,13 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="1-鉴权概述">
-  1. 鉴权概述
-  <a class="anchor" href="#1-%e9%89%b4%e6%9d%83%e6%a6%82%e8%bf%b0">#</a>
-</h1>
-<p>在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。
+  <article class="markdown"><p>在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。
 如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。
 只要有一个鉴权模块通过，则鉴权成功。</p>
+<h1 id="鉴权概述">
+  鉴权概述
+  <a class="anchor" href="#%e9%89%b4%e6%9d%83%e6%a6%82%e8%bf%b0">#</a>
+</h1>
 <p>kube-apiserver 目前提供了 6 种鉴权机制：</p>
 <ul>
 <li>AlwaysAllow：总是允许</li>
@@ -1058,9 +1048,9 @@ https://github.com/alex-shpak/hugo-book
 <li>Authorizer：鉴权接口</li>
 <li>RuleResolver：规则解析器</li>
 </ul>
-<h2 id="11-decision决策状态">
-  1.1 Decision：决策状态
-  <a class="anchor" href="#11-decision%e5%86%b3%e7%ad%96%e7%8a%b6%e6%80%81">#</a>
+<h2 id="decision决策状态">
+  Decision：决策状态
+  <a class="anchor" href="#decision%e5%86%b3%e7%ad%96%e7%8a%b6%e6%80%81">#</a>
 </h2>
 <p>Decision 决策状态类似于认证中的 true 和 false，用于决定是否鉴权成功。
 鉴权支持三种 Decision 决策状态，例如鉴权成功，则返回 DecisionAllow，代码如下：</p>
@@ -1077,9 +1067,9 @@ https://github.com/alex-shpak/hugo-book
 <li>DecisionAllow：允许该操作</li>
 <li>DecisionNoOpinion：表示无明显意见允许或拒绝，继续执行下一个鉴权模块</li>
 </ul>
-<h2 id="12-authorizer鉴权接口">
-  1.2 Authorizer：鉴权接口
-  <a class="anchor" href="#12-authorizer%e9%89%b4%e6%9d%83%e6%8e%a5%e5%8f%a3">#</a>
+<h2 id="authorizer鉴权接口">
+  Authorizer：鉴权接口
+  <a class="anchor" href="#authorizer%e9%89%b4%e6%9d%83%e6%8e%a5%e5%8f%a3">#</a>
 </h2>
 <p>每个鉴权模块都要实现该接口的方法，代码如下：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go
@@ -1116,9 +1106,9 @@ Attributes 是决定鉴权模块从 HTTP 请求中获取鉴权信息方法的参
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">GetPath</span>() <span style="color:#66d9ef">string</span>
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h2 id="13-ruleresolver规则解析器">
-  1.3 RuleResolver：规则解析器
-  <a class="anchor" href="#13-ruleresolver%e8%a7%84%e5%88%99%e8%a7%a3%e6%9e%90%e5%99%a8">#</a>
+</span></span></code></pre></div><h2 id="ruleresolver规则解析器">
+  RuleResolver：规则解析器
+  <a class="anchor" href="#ruleresolver%e8%a7%84%e5%88%99%e8%a7%a3%e6%9e%90%e5%99%a8">#</a>
 </h2>
 <p>鉴权模块通过 RuleResolver 解析规则，定义如下：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// staging/src/k8s.io/apiserver/pkg/authorization/authorizer/interfaces.go
@@ -1179,19 +1169,19 @@ RulesFor 方法接受 user 用户信息和 namespace 命名空间参数，解析
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">DecisionNoOpinion</span>, <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Join</span>(<span style="color:#a6e22e">reasonlist</span>, <span style="color:#e6db74">&#34;\n&#34;</span>), <span style="color:#a6e22e">utilerrors</span>.<span style="color:#a6e22e">NewAggregate</span>(<span style="color:#a6e22e">errlist</span>)
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h1 id="2-abac-鉴权">
-  2. ABAC 鉴权
-  <a class="anchor" href="#2-abac-%e9%89%b4%e6%9d%83">#</a>
+</span></span></code></pre></div><h1 id="abac-鉴权">
+  ABAC 鉴权
+  <a class="anchor" href="#abac-%e9%89%b4%e6%9d%83">#</a>
 </h1>
-<h2 id="21-概述">
-  2.1 概述
-  <a class="anchor" href="#21-%e6%a6%82%e8%bf%b0">#</a>
+<h2 id="概述">
+  概述
+  <a class="anchor" href="#%e6%a6%82%e8%bf%b0">#</a>
 </h2>
 <p>ABAC 授权器是基于属性的访问控制（Attributed-Based Access Control，ABAC）定义了访问控制范例，
 其中通过属性组合在一起的策略来向用户授予操作权限。</p>
-<h2 id="22-启用">
-  2.2 启用
-  <a class="anchor" href="#22-%e5%90%af%e7%94%a8">#</a>
+<h2 id="启用">
+  启用
+  <a class="anchor" href="#%e5%90%af%e7%94%a8">#</a>
 </h2>
 <ul>
 <li><code>--authorization-mode=ABAC</code>：启用 ABAC 授权器</li>
@@ -1202,9 +1192,9 @@ RulesFor 方法接受 user 用户信息和 namespace 命名空间参数，解析
 <p>ABAC 模式策略文件定义：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{<span style="color:#f92672">&#34;apiVersion&#34;</span>: <span style="color:#e6db74">&#34;abac.authorization.kubernetes.io/v1beta1&#34;</span>, <span style="color:#f92672">&#34;kind&#34;</span>: <span style="color:#e6db74">&#34;Policy&#34;</span>, <span style="color:#f92672">&#34;spec&#34;</span>: {<span style="color:#f92672">&#34;user&#34;</span>: <span style="color:#e6db74">&#34;Deck&#34;</span>, <span style="color:#f92672">&#34;namespace&#34;</span>: <span style="color:#e6db74">&#34;*&#34;</span>, <span style="color:#f92672">&#34;resource&#34;</span>: <span style="color:#e6db74">&#34;*&#34;</span>, <span style="color:#f92672">&#34;apiGroup&#34;</span>: <span style="color:#e6db74">&#34;*&#34;</span>}}
 </span></span></code></pre></div><p>上面的策略，Deck 用户可以对所有资源做任何操作。</p>
-<h2 id="23-实现">
-  2.3 实现
-  <a class="anchor" href="#23-%e5%ae%9e%e7%8e%b0">#</a>
+<h2 id="实现">
+  实现
+  <a class="anchor" href="#%e5%ae%9e%e7%8e%b0">#</a>
 </h2>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// pkg/auth/authorizer/abac/abac.go
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">pl</span> <span style="color:#a6e22e">PolicyList</span>) <span style="color:#a6e22e">Authorize</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Attributes</span>) (<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Decision</span>, <span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
@@ -1251,13 +1241,13 @@ RulesFor 方法接受 user 用户信息和 namespace 命名空间参数，解析
 </span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">resourceRules</span>, <span style="color:#a6e22e">nonResourceRules</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h1 id="3-rbac-鉴权">
-  3. RBAC 鉴权
-  <a class="anchor" href="#3-rbac-%e9%89%b4%e6%9d%83">#</a>
+</span></span></code></pre></div><h1 id="rbac-鉴权">
+  RBAC 鉴权
+  <a class="anchor" href="#rbac-%e9%89%b4%e6%9d%83">#</a>
 </h1>
-<h2 id="31-概述">
-  3.1 概述
-  <a class="anchor" href="#31-%e6%a6%82%e8%bf%b0">#</a>
+<h2 id="概述-1">
+  概述
+  <a class="anchor" href="#%e6%a6%82%e8%bf%b0-1">#</a>
 </h2>
 <p>RBAC 是基于角色的访问控制（Role-Based Access Control），是根据组织中用户的角色来控制对计算机或者网络资源访问的方法。
 也是目前使用最为广泛的鉴权模型。在 RBAC 鉴权模块中，权限与角色相关联，形成了用户——角色——权限的鉴权模型。
@@ -1320,10 +1310,7 @@ ClusterRole "1"-->"n" PolicyRule
 <li>ClusterRole：是集群作用域的资源。</li>
 <li>Rule：规则相当于操作权限，控制资源的操作方法（即 Verbs）</li>
 </ul>
-<h4 id="rolebinding-和-clusterrolebinding">
-  RoleBinding 和 ClusterRoleBinding
-  <a class="anchor" href="#rolebinding-%e5%92%8c-clusterrolebinding">#</a>
-</h4>
+<p><strong>RoleBinding 和 ClusterRoleBinding</strong></p>
 <p>数据结构如下：
 
 
@@ -1369,17 +1356,17 @@ ClusterRoleBinding "1"-->"1" RoleRef
 <li>RoleBinding：将角色中定义的权限授予一个或者一组用户，只能用于某一个命名空间的权限</li>
 <li>clusterRoleBinding：将集群角色的中定义的权限首页一个或者一组用户没，可用于集群范围的权限</li>
 </ul>
-<h2 id="32-启用">
-  3.2 启用
-  <a class="anchor" href="#32-%e5%90%af%e7%94%a8">#</a>
+<h2 id="启用-1">
+  启用
+  <a class="anchor" href="#%e5%90%af%e7%94%a8-1">#</a>
 </h2>
 <p>kube-apiserver 通过指定以下参数启用 Node 鉴权</p>
 <ul>
 <li><code>--authorization-mode=RBAC</code></li>
 </ul>
-<h2 id="33-实现">
-  3.3 实现
-  <a class="anchor" href="#33-%e5%ae%9e%e7%8e%b0">#</a>
+<h2 id="实现-1">
+  实现
+  <a class="anchor" href="#%e5%ae%9e%e7%8e%b0-1">#</a>
 </h2>
 <p>kube-apiserver 通过表示用户、操作、角色、角色绑定来描述 RBAC 的关系。模型图如下：</p>
 <pre tabindex="0"><code>+--------+        +-------------+         +--------+         +-------------+
@@ -1421,9 +1408,9 @@ A -->|No| F[VerbMatchs]
 F --> G[NonResourceMacthes] 
 </p>
 
-<h2 id="34-内置-clusterrole">
-  3.4 内置 ClusterRole
-  <a class="anchor" href="#34-%e5%86%85%e7%bd%ae-clusterrole">#</a>
+<h2 id="内置-clusterrole">
+  内置 ClusterRole
+  <a class="anchor" href="#%e5%86%85%e7%bd%ae-clusterrole">#</a>
 </h2>
 <p>介绍内置角色之前，先了解下 kube-apiserver 的内置权限，内置的角色会引用内置权限，代码示例如下：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// plugin/pkg/auth/authorizer/rbac/bootstrappolicy/policy.go
@@ -1646,13 +1633,13 @@ kube-controller-manager 使用单独的服务账号来启动每个控制器。
 <li><code>system:controller:statefulset-controller</code></li>
 <li><code>system:controller:ttl-controller</code></li>
 </ul>
-<h1 id="4-node-鉴权">
-  4. Node 鉴权
-  <a class="anchor" href="#4-node-%e9%89%b4%e6%9d%83">#</a>
+<h1 id="node-鉴权">
+  Node 鉴权
+  <a class="anchor" href="#node-%e9%89%b4%e6%9d%83">#</a>
 </h1>
-<h2 id="41-概述">
-  4.1 概述
-  <a class="anchor" href="#41-%e6%a6%82%e8%bf%b0">#</a>
+<h2 id="概述-2">
+  概述
+  <a class="anchor" href="#%e6%a6%82%e8%bf%b0-2">#</a>
 </h2>
 <p>Node 鉴权，也成为节点鉴权，是一种专门针对 kubelet 发出的请求进行鉴权。
 Node 鉴权机制基于 RBAC 授权机制实现，对 kubelet 组件进行基于 <code>system:node</code> 内置角色的权限控制。
@@ -1687,17 +1674,17 @@ Node 鉴权机制基于 RBAC 授权机制实现，对 kubelet 组件进行基于
 <li>对于基于 TLS 的启动引导过程时使用的 certificationsigningrequests API 的读写权限</li>
 <li>为委派的身份验证/鉴权检查创建 tokenreviews 和 subjectaccessreviews 的能力</li>
 </ul>
-<h2 id="42-启用">
-  4.2 启用
-  <a class="anchor" href="#42-%e5%90%af%e7%94%a8">#</a>
+<h2 id="启用-2">
+  启用
+  <a class="anchor" href="#%e5%90%af%e7%94%a8-2">#</a>
 </h2>
 <p>kube-apiserver 通过指定以下参数启用 Node 鉴权</p>
 <ul>
 <li><code>--authorization-mode = Node,RBAC</code></li>
 </ul>
-<h2 id="43-实现">
-  4.3 实现
-  <a class="anchor" href="#43-%e5%ae%9e%e7%8e%b0">#</a>
+<h2 id="实现-2">
+  实现
+  <a class="anchor" href="#%e5%ae%9e%e7%8e%b0-2">#</a>
 </h2>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// plugin/pkg/auth/authorizer/node/node_authorizer.go
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">NodeAuthorizer</span>) <span style="color:#a6e22e">Authorize</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">attrs</span> <span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Attributes</span>) (<span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Decision</span>, <span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
@@ -1754,21 +1741,21 @@ Node 鉴权机制基于 RBAC 授权机制实现，对 kubelet 组件进行基于
 nodeName 的格式为 <code>system:node&lt;nodeName&gt;</code> 。
 资源类型请求，取出资源对象，内置了允许操作资源和操作方法。
 非资源类型请求，走 <code>rbac.RulesAllow</code> 进行 RBAC 授权。</p>
-<h1 id="5-webhook">
-  5. Webhook
-  <a class="anchor" href="#5-webhook">#</a>
+<h1 id="webhook">
+  Webhook
+  <a class="anchor" href="#webhook">#</a>
 </h1>
-<h2 id="51-概述">
-  5.1 概述
-  <a class="anchor" href="#51-%e6%a6%82%e8%bf%b0">#</a>
+<h2 id="概述-3">
+  概述
+  <a class="anchor" href="#%e6%a6%82%e8%bf%b0-3">#</a>
 </h2>
 <p>webhook 是一种 HTTP 回调：当用户鉴权时，kube-apiserver 组件会查询外部的 webhook 服务。
 该过程与 webhookTokenAuth 认证相似，但其中确认用户身份的机制不一样。
 当客户端发送的认证请求到达 kube-apiserver 时，kube-apiserver 回调钩子方法，
 将鉴权信息发给远程的 webhook 服务器进行认证，根据 webhook 服务返回的状态判断是否授权成功。</p>
-<h2 id="52-启用">
-  5.2 启用
-  <a class="anchor" href="#52-%e5%90%af%e7%94%a8">#</a>
+<h2 id="启用-3">
+  启用
+  <a class="anchor" href="#%e5%90%af%e7%94%a8-3">#</a>
 </h2>
 <ul>
 <li><code>--authorization-mode=Webhook</code>：启用 webhook 授权器</li>
@@ -1801,9 +1788,9 @@ nodeName 的格式为 <code>system:node&lt;nodeName&gt;</code> 。
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">user</span>: <span style="color:#ae81ff">name-of-api-server</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">webhook</span>
 </span></span></code></pre></div><p>如上所示，users 指的是 kube-apiserver 本身，cluster 指的是远程 webhook 服务。</p>
-<h2 id="53-实现">
-  5.3 实现
-  <a class="anchor" href="#53-%e5%ae%9e%e7%8e%b0">#</a>
+<h2 id="实现-3">
+  实现
+  <a class="anchor" href="#%e5%ae%9e%e7%8e%b0-3">#</a>
 </h2>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// staging/src/k8s.io/apiserver/plugin/pkg/authorizer/webhook/webhook.go
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">w</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">WebhookAuthorizer</span>) <span style="color:#a6e22e">Authorize</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">attr</span> <span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Attributes</span>) (<span style="color:#a6e22e">decision</span> <span style="color:#a6e22e">authorizer</span>.<span style="color:#a6e22e">Decision</span>, <span style="color:#a6e22e">reason</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
@@ -1857,9 +1844,9 @@ body 体中携带鉴权信息，r.Status.Allowed 为 true，表示鉴权成功�
 </span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">incomplete</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">true</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">resourceRules</span>, <span style="color:#a6e22e">nonResourceRules</span>, <span style="color:#a6e22e">incomplete</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;webhook authorizer does not support user rule resolution&#34;</span>)
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h1 id="6-参考资料">
-  6. 参考资料
-  <a class="anchor" href="#6-%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>
+</span></span></code></pre></div><h1 id="参考资料">
+  参考资料
+  <a class="anchor" href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>
 </h1>
 <ul>
 <li>
@@ -1872,8 +1859,7 @@ body 体中携带鉴权信息，r.Status.Allowed 为 true，表示鉴权成功�
   <a href="https://kubernetes.io/zh/docs/reference/access-authn-authz/node/">Node 鉴权</a></li>
 <li>
   <a href="https://kubernetes.io/zh/docs/reference/access-authn-authz/webhook/">webhook 模式</a></li>
-</ul>
-</article>
+</ul></article>
  
       
 
@@ -1882,9 +1868,9 @@ body 体中携带鉴权信息，r.Status.Allowed 为 true，表示鉴权成功�
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/2d677c77cfa21091f5ec6a38d7315de4914b88c4" title='Last modified by howieyuen | January 22, 2024' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/8170fbc7cf90437629b14d4ade72a3e39a5e79be" title='Last modified by howieyuen | January 23, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>January 22, 2024</span>
+      <span>January 23, 2024</span>
     </a>
   </div>
 
@@ -1944,47 +1930,43 @@ body 体中携带鉴权信息，r.Status.Allowed 为 true，表示鉴权成功�
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-鉴权概述">1. 鉴权概述</a>
+    <li><a href="#鉴权概述">鉴权概述</a>
       <ul>
-        <li><a href="#11-decision决策状态">1.1 Decision：决策状态</a></li>
-        <li><a href="#12-authorizer鉴权接口">1.2 Authorizer：鉴权接口</a></li>
-        <li><a href="#13-ruleresolver规则解析器">1.3 RuleResolver：规则解析器</a></li>
+        <li><a href="#decision决策状态">Decision：决策状态</a></li>
+        <li><a href="#authorizer鉴权接口">Authorizer：鉴权接口</a></li>
+        <li><a href="#ruleresolver规则解析器">RuleResolver：规则解析器</a></li>
       </ul>
     </li>
-    <li><a href="#2-abac-鉴权">2. ABAC 鉴权</a>
+    <li><a href="#abac-鉴权">ABAC 鉴权</a>
       <ul>
-        <li><a href="#21-概述">2.1 概述</a></li>
-        <li><a href="#22-启用">2.2 启用</a></li>
-        <li><a href="#23-实现">2.3 实现</a></li>
+        <li><a href="#概述">概述</a></li>
+        <li><a href="#启用">启用</a></li>
+        <li><a href="#实现">实现</a></li>
       </ul>
     </li>
-    <li><a href="#3-rbac-鉴权">3. RBAC 鉴权</a>
+    <li><a href="#rbac-鉴权">RBAC 鉴权</a>
       <ul>
-        <li><a href="#31-概述">3.1 概述</a>
-          <ul>
-            <li></li>
-          </ul>
-        </li>
-        <li><a href="#32-启用">3.2 启用</a></li>
-        <li><a href="#33-实现">3.3 实现</a></li>
-        <li><a href="#34-内置-clusterrole">3.4 内置 ClusterRole</a></li>
+        <li><a href="#概述-1">概述</a></li>
+        <li><a href="#启用-1">启用</a></li>
+        <li><a href="#实现-1">实现</a></li>
+        <li><a href="#内置-clusterrole">内置 ClusterRole</a></li>
       </ul>
     </li>
-    <li><a href="#4-node-鉴权">4. Node 鉴权</a>
+    <li><a href="#node-鉴权">Node 鉴权</a>
       <ul>
-        <li><a href="#41-概述">4.1 概述</a></li>
-        <li><a href="#42-启用">4.2 启用</a></li>
-        <li><a href="#43-实现">4.3 实现</a></li>
+        <li><a href="#概述-2">概述</a></li>
+        <li><a href="#启用-2">启用</a></li>
+        <li><a href="#实现-2">实现</a></li>
       </ul>
     </li>
-    <li><a href="#5-webhook">5. Webhook</a>
+    <li><a href="#webhook">Webhook</a>
       <ul>
-        <li><a href="#51-概述">5.1 概述</a></li>
-        <li><a href="#52-启用">5.2 启用</a></li>
-        <li><a href="#53-实现">5.3 实现</a></li>
+        <li><a href="#概述-3">概述</a></li>
+        <li><a href="#启用-3">启用</a></li>
+        <li><a href="#实现-3">实现</a></li>
       </ul>
     </li>
-    <li><a href="#6-参考资料">6. 参考资料</a></li>
+    <li><a href="#参考资料">参考资料</a></li>
   </ul>
 </nav>
 

@@ -3,35 +3,21 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. 引言 # 计算机中提到的反射一般是指，程序借助某种手段检查自己结构的一种能力，通常就是借助编程语言中定义的类型（types）。因此，反射是建立在类型系统上的。
-go 是静态类型化，每个变量都有一个静态类型，也就是说，在编译时，变量的类型就已经确定。不显示地去做强制类型转换，不同类型之间是无法相互赋值的。
-有一种特殊的类型叫做接口（interface），一个接口表示的是一组方法集合。一个接口变量能存储任何具体的值，只要这个值实现了这个接口的方法集合。比如 io 包中的 Reader 和 Writer，io.Reader 接口变量能够保存任意实现了 Read() 方法的类型所定义的值。
-一个特殊接口就是空接口 interface{}，任何值都可以说实现了空接口，因为空接口中没有定义方法，所以空接口可以保存任何值。
-一个接口类型变量存储了一对值：赋值给这个接口变量的具体值 &#43; 这个值的类型描述符。更进一步的讲，这个“值”是实现了这个接口的底层具体数据项（underlying concrete data item)，而这个“类型”是描述了具体数据项（item）的全类型（full type）。
-所以反射是干嘛的呢？反射是一种检查存储在接口变量中的（类型/值）对的机制。reflect 包中提供的 2 个类型 Type 和 Value，提供了访问接口值的 reflect.Type 和 reflect.Value 部分。
-2. 三大法则 # 2.1. Reflection goes from interface value to reflecton object # 从 interface{} 变量可以反射出反射对象
-type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := reflect.TypeOf(x) fmt.Println(&#34;type:&#34;, t) // type: main.">
+<meta name="description" content="计算机中提到的反射一般是指，程序借助某种手段检查自己结构的一种能力，通常就是借助编程语言中定义的类型（types）。因此，反射是建立在类型系统上的。">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="reflect" />
-<meta property="og:description" content="1. 引言 # 计算机中提到的反射一般是指，程序借助某种手段检查自己结构的一种能力，通常就是借助编程语言中定义的类型（types）。因此，反射是建立在类型系统上的。
-go 是静态类型化，每个变量都有一个静态类型，也就是说，在编译时，变量的类型就已经确定。不显示地去做强制类型转换，不同类型之间是无法相互赋值的。
-有一种特殊的类型叫做接口（interface），一个接口表示的是一组方法集合。一个接口变量能存储任何具体的值，只要这个值实现了这个接口的方法集合。比如 io 包中的 Reader 和 Writer，io.Reader 接口变量能够保存任意实现了 Read() 方法的类型所定义的值。
-一个特殊接口就是空接口 interface{}，任何值都可以说实现了空接口，因为空接口中没有定义方法，所以空接口可以保存任何值。
-一个接口类型变量存储了一对值：赋值给这个接口变量的具体值 &#43; 这个值的类型描述符。更进一步的讲，这个“值”是实现了这个接口的底层具体数据项（underlying concrete data item)，而这个“类型”是描述了具体数据项（item）的全类型（full type）。
-所以反射是干嘛的呢？反射是一种检查存储在接口变量中的（类型/值）对的机制。reflect 包中提供的 2 个类型 Type 和 Value，提供了访问接口值的 reflect.Type 和 reflect.Value 部分。
-2. 三大法则 # 2.1. Reflection goes from interface value to reflecton object # 从 interface{} 变量可以反射出反射对象
-type MyInt int32 func main() { var x MyInt = 7 v := reflect.ValueOf(x) t := reflect.TypeOf(x) fmt.Println(&#34;type:&#34;, t) // type: main." />
+<meta property="og:description" content="计算机中提到的反射一般是指，程序借助某种手段检查自己结构的一种能力，通常就是借助编程语言中定义的类型（types）。因此，反射是建立在类型系统上的。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/language-basics/reflect/" /><meta property="article:section" content="docs" />
 
-<meta property="article:modified_time" content="2024-01-22T15:25:36+08:00" />
+<meta property="article:modified_time" content="2024-01-23T14:18:15+08:00" />
 
 <title>reflect | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.990f118aee4bd10034c871ddbab39dd9546a83e3c50004e77a3e4fc7715be2da.js" integrity="sha256-mQ8Riu5L0QA0yHHdurOd2VRqg&#43;PFAATnej5Px3Fb4to=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.24bfea92d3f22f77dd53e4a7567161e20b00ded6783b4375a6921c31f40d2d62.js" integrity="sha256-JL/qktPyL3fdU&#43;SnVnFh4gsA3tZ4O0N1ppIcMfQNLWI=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -987,15 +973,19 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-引言">1. 引言</a></li>
-    <li><a href="#2-三大法则">2. 三大法则</a>
+    <li>
       <ul>
-        <li><a href="#21-reflection-goes-from-interface-value-to-reflecton-object">2.1. Reflection goes from interface value to reflecton object</a></li>
-        <li><a href="#22-reflection-goes-from-reflection-object-to-interface-value">2.2 Reflection goes from reflection object to interface value</a></li>
-        <li><a href="#23-to-modify-a-reflection-object-the-value-must-be-settable">2.3 To modify a reflection object, the value must be settable</a></li>
+        <li><a href="#引言">引言</a></li>
+        <li><a href="#三大法则">三大法则</a>
+          <ul>
+            <li><a href="#法则一">法则一</a></li>
+            <li><a href="#法则二">法则二</a></li>
+            <li><a href="#法则三">法则三</a></li>
+          </ul>
+        </li>
+        <li><a href="#相关资料">相关资料</a></li>
       </ul>
     </li>
-    <li><a href="#3-相关资料">3. 相关资料</a></li>
   </ul>
 </nav>
 
@@ -1008,24 +998,28 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="1-引言">
-  1. 引言
-  <a class="anchor" href="#1-%e5%bc%95%e8%a8%80">#</a>
-</h1>
-<p>计算机中提到的反射一般是指，<strong>程序借助某种手段检查自己结构的一种能力</strong>，通常就是借助编程语言中定义的类型（<code>types</code>）。因此，反射是建立在类型系统上的。</p>
+  <article class="markdown"><p>计算机中提到的反射一般是指，<strong>程序借助某种手段检查自己结构的一种能力</strong>，通常就是借助编程语言中定义的类型（<code>types</code>）。因此，反射是建立在类型系统上的。</p>
+<h2 id="引言">
+  引言
+  <a class="anchor" href="#%e5%bc%95%e8%a8%80">#</a>
+</h2>
 <p><strong>go 是静态类型化</strong>，每个变量都有一个静态类型，也就是说，在编译时，变量的类型就已经确定。不显示地去做强制类型转换，不同类型之间是无法相互赋值的。</p>
 <p>有一种特殊的类型叫做接口（<code>interface</code>），一个接口表示的是一组方法集合。<strong>一个接口变量能存储任何具体的值，只要这个值实现了这个接口的方法集合</strong>。比如 io 包中的 <code>Reader</code> 和 <code>Writer</code>，<code>io.Reader</code> 接口变量能够保存任意实现了 <code>Read()</code> 方法的类型所定义的值。</p>
 <p>一个特殊接口就是空接口 <code>interface{}</code>，任何值都可以说实现了空接口，因为空接口中没有定义方法，所以<strong>空接口可以保存任何值</strong>。</p>
 <p><strong>一个接口类型变量存储了一对值：赋值给这个接口变量的具体值 + 这个值的类型描述符</strong>。更进一步的讲，这个“值”是实现了这个接口的底层具体数据项（underlying concrete data item)，而这个“类型”是描述了具体数据项（item）的全类型（full type）。</p>
 <p>所以反射是干嘛的呢？<strong>反射是一种检查存储在接口变量中的（类型/值）对的机制</strong>。reflect 包中提供的 2 个类型 <code>Type</code> 和 <code>Value</code>，提供了访问接口值的 <code>reflect.Type</code> 和 <code>reflect.Value</code> 部分。</p>
-<h1 id="2-三大法则">
-  2. 三大法则
-  <a class="anchor" href="#2-%e4%b8%89%e5%a4%a7%e6%b3%95%e5%88%99">#</a>
-</h1>
-<h2 id="21-reflection-goes-from-interface-value-to-reflecton-object">
-  2.1. Reflection goes from interface value to reflecton object
-  <a class="anchor" href="#21-reflection-goes-from-interface-value-to-reflecton-object">#</a>
+<h2 id="三大法则">
+  三大法则
+  <a class="anchor" href="#%e4%b8%89%e5%a4%a7%e6%b3%95%e5%88%99">#</a>
 </h2>
+<h3 id="法则一">
+  法则一
+  <a class="anchor" href="#%e6%b3%95%e5%88%99%e4%b8%80">#</a>
+</h3>
+<blockquote class="book-hint info">
+  Reflection goes from interface value to reflecton object
+</blockquote>
+
 <p>从 <code>interface{}</code> 变量可以反射出反射对象</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">MyInt</span> <span style="color:#66d9ef">int32</span>
 </span></span><span style="display:flex;"><span>
@@ -1040,10 +1034,14 @@ https://github.com/alex-shpak/hugo-book
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">x</span> = <span style="color:#a6e22e">MyInt</span>(int32(<span style="color:#a6e22e">v</span>.<span style="color:#a6e22e">Int</span>))        <span style="color:#75715e">// v.Int returns a int64
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
 </span></span></code></pre></div><p><code>reflect.Value 的 Type</code> 返回的是静态类型 <code>MyInt</code>，而 <code>kind()</code> 方法返回的是底层类型 <code>int32</code>；为了保持 API 简单，value 的 <code>Setter</code> 和 <code>Getter</code> 类型方法操作，是包含某个值的最大类型，<code>v.Int()</code> 返回的是 <code>int64</code>，必要时转化成实际类型。</p>
-<h2 id="22-reflection-goes-from-reflection-object-to-interface-value">
-  2.2 Reflection goes from reflection object to interface value
-  <a class="anchor" href="#22-reflection-goes-from-reflection-object-to-interface-value">#</a>
-</h2>
+<h3 id="法则二">
+  法则二
+  <a class="anchor" href="#%e6%b3%95%e5%88%99%e4%ba%8c">#</a>
+</h3>
+<blockquote class="book-hint info">
+  Reflection goes from reflection object to interface value
+</blockquote>
+
 <p>从反射对象可以获取 <code>interface{}</code> 变量；</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">MyInt</span> <span style="color:#66d9ef">int32</span>
 </span></span><span style="display:flex;"><span>
@@ -1054,10 +1052,14 @@ https://github.com/alex-shpak/hugo-book
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">y</span>) <span style="color:#75715e">// 7
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
 </span></span></code></pre></div><p>对于一个 <code>reflect.Value</code>，可以用 <code>Interface()</code> 方法恢复成一个接口值，效果就是包类型和值打包成接口，并返回结果。</p>
-<h2 id="23-to-modify-a-reflection-object-the-value-must-be-settable">
-  2.3 To modify a reflection object, the value must be settable
-  <a class="anchor" href="#23-to-modify-a-reflection-object-the-value-must-be-settable">#</a>
-</h2>
+<h3 id="法则三">
+  法则三
+  <a class="anchor" href="#%e6%b3%95%e5%88%99%e4%b8%89">#</a>
+</h3>
+<blockquote class="book-hint info">
+  To modify a reflection object, the value must be settable
+</blockquote>
+
 <p>要修改反射对象，其值必须可设置；</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">x</span> <span style="color:#66d9ef">float64</span> = <span style="color:#ae81ff">3.4</span>
@@ -1080,17 +1082,16 @@ https://github.com/alex-shpak/hugo-book
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span><span style="color:#a6e22e">v</span> = <span style="color:#ae81ff">10</span>
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>如果不能直接操作 <code>i</code> 变量修改其持有的值，我们就只能获取 <code>i</code> 变量所在地址并使用 <code>*v</code> 修改所在地址中存储的整数。</p>
-<h1 id="3-相关资料">
-  3. 相关资料
-  <a class="anchor" href="#3-%e7%9b%b8%e5%85%b3%e8%b5%84%e6%96%99">#</a>
-</h1>
+<h2 id="相关资料">
+  相关资料
+  <a class="anchor" href="#%e7%9b%b8%e5%85%b3%e8%b5%84%e6%96%99">#</a>
+</h2>
 <ul>
 <li>
   <a href="https://studygolang.com/articles/2157">Go 语言中反射包的实现原理</a></li>
 <li>
   <a href="https://draveness.me/golang/docs/part2-foundation/ch04-basic/golang-reflect/">4.3 反射</a></li>
-</ul>
-</article>
+</ul></article>
  
       
 
@@ -1099,9 +1100,9 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/2d677c77cfa21091f5ec6a38d7315de4914b88c4" title='Last modified by howieyuen | January 22, 2024' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/8170fbc7cf90437629b14d4ade72a3e39a5e79be" title='Last modified by howieyuen | January 23, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>January 22, 2024</span>
+      <span>January 23, 2024</span>
     </a>
   </div>
 
@@ -1161,15 +1162,19 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-引言">1. 引言</a></li>
-    <li><a href="#2-三大法则">2. 三大法则</a>
+    <li>
       <ul>
-        <li><a href="#21-reflection-goes-from-interface-value-to-reflecton-object">2.1. Reflection goes from interface value to reflecton object</a></li>
-        <li><a href="#22-reflection-goes-from-reflection-object-to-interface-value">2.2 Reflection goes from reflection object to interface value</a></li>
-        <li><a href="#23-to-modify-a-reflection-object-the-value-must-be-settable">2.3 To modify a reflection object, the value must be settable</a></li>
+        <li><a href="#引言">引言</a></li>
+        <li><a href="#三大法则">三大法则</a>
+          <ul>
+            <li><a href="#法则一">法则一</a></li>
+            <li><a href="#法则二">法则二</a></li>
+            <li><a href="#法则三">法则三</a></li>
+          </ul>
+        </li>
+        <li><a href="#相关资料">相关资料</a></li>
       </ul>
     </li>
-    <li><a href="#3-相关资料">3. 相关资料</a></li>
   </ul>
 </nav>
 

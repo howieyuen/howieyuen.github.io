@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CRD on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/tags/CRD/</link>
+    <description>Recent content in CRD on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 14 Oct 2019 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://howieyuen.github.io/tags/CRD/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CRD 入门和使用</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/</link>
+      <pubDate>Mon, 14 Oct 2019 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/</guid>
+      <description>&lt;p&gt;自定义资源是 Kubernetes API 的扩展，本文将讨什么时候应该向 Kubernetes 集群添加自定义资源以及何时使用独立服务。它描述了添加自定义资源的两种方法以及如何在它们之间进行选择。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

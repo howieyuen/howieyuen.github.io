@@ -3,37 +3,23 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="本文转自： Go 里面的 unsafe 包详解
-The unsafe Package in Golang # Golang 的 unsafe 包是一个很特殊的包。为什么这样说呢？本文将详细解释。
-来自 go 语言官方文档的警告 # unsafe 包的文档是这么说的：
-导入 unsafe 的软件包可能不可移植，并且不受 Go 1 兼容性指南的保护。 Go 1 兼容性指南这么说：
-导入 unsafe 软件包可能取决于 Go 实现的内部属性。我们保留对可能导致程序崩溃的实现进行更改的权利。 当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。
-Unsafe 包的作用 # 直到现在（Go1.7），unsafe 包含以下资源：
-三个函数： func Alignof(variable ArbitraryType) uintptr func Offsetof(selector ArbitraryType) uintptr func Sizeof(variable ArbitraryType) uintptr 和一种类型： 类型 Pointer *ArbitraryType 这里，ArbitraryType 不是一个真正的类型，它只是一个占位符。
-与 Golang 中的大多数函数不同，上述三个函数的调用将始终在编译时求值，而不是运行时。这意味着它们的返回结果可以分配给常量。
-unsafe 包中的函数中非唯一调用将在编译时求值。 当传递给 len 和 cap 的参数是一个数组值时，内置函数和 cap 函数的调用也可以在编译时被求值。 除了这三个函数和一个类型外，指针在 unsafe 包也为编译器服务。">
+<meta name="description" content="本文转自：
+  Go 里面的 unsafe 包详解">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="unsafe" />
-<meta property="og:description" content="本文转自： Go 里面的 unsafe 包详解
-The unsafe Package in Golang # Golang 的 unsafe 包是一个很特殊的包。为什么这样说呢？本文将详细解释。
-来自 go 语言官方文档的警告 # unsafe 包的文档是这么说的：
-导入 unsafe 的软件包可能不可移植，并且不受 Go 1 兼容性指南的保护。 Go 1 兼容性指南这么说：
-导入 unsafe 软件包可能取决于 Go 实现的内部属性。我们保留对可能导致程序崩溃的实现进行更改的权利。 当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。
-Unsafe 包的作用 # 直到现在（Go1.7），unsafe 包含以下资源：
-三个函数： func Alignof(variable ArbitraryType) uintptr func Offsetof(selector ArbitraryType) uintptr func Sizeof(variable ArbitraryType) uintptr 和一种类型： 类型 Pointer *ArbitraryType 这里，ArbitraryType 不是一个真正的类型，它只是一个占位符。
-与 Golang 中的大多数函数不同，上述三个函数的调用将始终在编译时求值，而不是运行时。这意味着它们的返回结果可以分配给常量。
-unsafe 包中的函数中非唯一调用将在编译时求值。 当传递给 len 和 cap 的参数是一个数组值时，内置函数和 cap 函数的调用也可以在编译时被求值。 除了这三个函数和一个类型外，指针在 unsafe 包也为编译器服务。" />
+<meta property="og:description" content="本文转自：
+  Go 里面的 unsafe 包详解" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/language-basics/unsafe/" /><meta property="article:section" content="docs" />
 <meta property="article:published_time" content="2020-12-18T00:00:00+00:00" />
-<meta property="article:modified_time" content="2024-01-22T15:25:36+08:00" />
+<meta property="article:modified_time" content="2024-01-23T14:18:15+08:00" />
 
 <title>unsafe | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.990f118aee4bd10034c871ddbab39dd9546a83e3c50004e77a3e4fc7715be2da.js" integrity="sha256-mQ8Riu5L0QA0yHHdurOd2VRqg&#43;PFAATnej5Px3Fb4to=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.24bfea92d3f22f77dd53e4a7567161e20b00ded6783b4375a6921c31f40d2d62.js" integrity="sha256-JL/qktPyL3fdU&#43;SnVnFh4gsA3tZ4O0N1ppIcMfQNLWI=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -989,18 +975,22 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#the-unsafe-package-in-golang">The unsafe Package in Golang</a></li>
-    <li><a href="#来自-go-语言官方文档的警告">来自 go 语言官方文档的警告</a></li>
-    <li><a href="#unsafe-包的作用">Unsafe 包的作用</a></li>
-    <li><a href="#unsafepointer-和-uintptr">unsafe.Pointer 和 uintptr</a></li>
-    <li><a href="#unsafe-包有多危险">unsafe 包有多危险</a></li>
-    <li><a href="#转换-t1-为-t2">转换 T1 为 T2</a>
+    <li>
       <ul>
-        <li><a href="#合法用例-1在-t-和-myt-之间转换">合法用例 1：在 <code>[]T</code> 和 <code>[]MyT</code> 之间转换</a></li>
-        <li><a href="#合法用例-2调用-syncatomic-包中指针相关的函数">合法用例 2：调用 sync/atomic 包中指针相关的函数</a></li>
+        <li><a href="#the-unsafe-package-in-golang">The unsafe Package in Golang</a></li>
+        <li><a href="#来自-go-语言官方文档的警告">来自 go 语言官方文档的警告</a></li>
+        <li><a href="#unsafe-包的作用">Unsafe 包的作用</a></li>
+        <li><a href="#unsafepointer-和-uintptr">unsafe.Pointer 和 uintptr</a></li>
+        <li><a href="#unsafe-包有多危险">unsafe 包有多危险</a></li>
+        <li><a href="#转换-t1-为-t2">转换 T1 为 T2</a></li>
+        <li><a href="#合法用例-1在-t-和-myt-之间转换">合法用例 1：在 <code>[]T</code> 和 <code>[]MyT</code> 之间转换</a>
+          <ul>
+            <li><a href="#合法用例-2调用-syncatomic-包中指针相关的函数">合法用例 2：调用 sync/atomic 包中指针相关的函数</a></li>
+          </ul>
+        </li>
+        <li><a href="#结论">结论</a></li>
       </ul>
     </li>
-    <li><a href="#结论">结论</a></li>
   </ul>
 </nav>
 
@@ -1013,19 +1003,17 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><blockquote>
-<p>本文转自：
+  <article class="markdown"><p>本文转自：
   <a href="https://gocn.vip/topics/371">Go 里面的 unsafe 包详解</a></p>
-</blockquote>
-<h1 id="the-unsafe-package-in-golang">
+<h2 id="the-unsafe-package-in-golang">
   The unsafe Package in Golang
   <a class="anchor" href="#the-unsafe-package-in-golang">#</a>
-</h1>
+</h2>
 <p>Golang 的 unsafe 包是一个很特殊的包。为什么这样说呢？本文将详细解释。</p>
-<h1 id="来自-go-语言官方文档的警告">
+<h2 id="来自-go-语言官方文档的警告">
   来自 go 语言官方文档的警告
   <a class="anchor" href="#%e6%9d%a5%e8%87%aa-go-%e8%af%ad%e8%a8%80%e5%ae%98%e6%96%b9%e6%96%87%e6%a1%a3%e7%9a%84%e8%ad%a6%e5%91%8a">#</a>
-</h1>
+</h2>
 <p>unsafe 包的文档是这么说的：</p>
 <blockquote class="book-hint danger">
   导入 unsafe 的软件包可能不可移植，并且不受 Go 1 兼容性指南的保护。
@@ -1037,10 +1025,10 @@ https://github.com/alex-shpak/hugo-book
 </blockquote>
 
 <p>当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。</p>
-<h1 id="unsafe-包的作用">
+<h2 id="unsafe-包的作用">
   Unsafe 包的作用
   <a class="anchor" href="#unsafe-%e5%8c%85%e7%9a%84%e4%bd%9c%e7%94%a8">#</a>
-</h1>
+</h2>
 <p>直到现在（Go1.7），unsafe 包含以下资源：</p>
 <ul>
 <li>三个函数：
@@ -1107,10 +1095,10 @@ https://github.com/alex-shpak/hugo-book
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
 </span></span></code></pre></div><p>在这个例子中的转换可能是无意义的，但它是安全和合法的（为什么它是安全的？）。</p>
 <p>因此，资源在 unsafe 包中的作用是为 Go 编译器服务，<code>unsafe.Pointer</code> 类型的作用是绕过 Go 类型系统和内存安全。</p>
-<h1 id="unsafepointer-和-uintptr">
+<h2 id="unsafepointer-和-uintptr">
   unsafe.Pointer 和 uintptr
   <a class="anchor" href="#unsafepointer-%e5%92%8c-uintptr">#</a>
-</h1>
+</h2>
 <p>这里有一些关于 <code>unsafe.Pointer</code> 和 <code>uintptr</code> 的事实：</p>
 <ul>
 <li><code>uintptr</code> 是一个整数类型。
@@ -1160,10 +1148,10 @@ https://github.com/alex-shpak/hugo-book
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">*</span><span style="color:#a6e22e">pgender</span> = <span style="color:#66d9ef">false</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">who</span>) <span style="color:#75715e">// {Alice 28 false}
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
-</span></span></code></pre></div><h1 id="unsafe-包有多危险">
+</span></span></code></pre></div><h2 id="unsafe-包有多危险">
   unsafe 包有多危险
   <a class="anchor" href="#unsafe-%e5%8c%85%e6%9c%89%e5%a4%9a%e5%8d%b1%e9%99%a9">#</a>
-</h1>
+</h2>
 <p>关于 unsafe 包，Ian，Go 团队的核心成员之一，已经确认：</p>
 <ul>
 <li>在 unsafe 包中的函数的签名将不会在以后的 Go 版本中更改，</li>
@@ -1247,10 +1235,10 @@ unsafe 包 docs 列出了一些使用 <code>unsafe.Pointer</code> 合法或非�
 同样是 Go 运行时，也不能检测所有的非法使用。
 非法 <code>unsafe.Pointer</code> 使用可能会使程序崩溃或表现得怪异（有时是正常的，有时是异常的）。
 这就是为什么使用不安全的包是危险的。</p>
-<h1 id="转换-t1-为-t2">
+<h2 id="转换-t1-为-t2">
   转换 T1 为 T2
   <a class="anchor" href="#%e8%bd%ac%e6%8d%a2-t1-%e4%b8%ba-t2">#</a>
-</h1>
+</h2>
 <p>对于将 T1 转换为 <code>unsafe.Pointer</code>，然后转换为 T2，unsafe 包 docs 说：</p>
 <blockquote class="book-hint info">
   如果 T2 比 T1 大，并且两者共享等效内存布局，则该转换允许将一种类型的数据重新解释为另一类型的数据。
@@ -1290,10 +1278,10 @@ unsafe 包 docs 列出了一些使用 <code>unsafe.Pointer</code> 合法或非�
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;a =&#34;</span>, <span style="color:#a6e22e">a</span>) <span style="color:#75715e">// a = [3 1 9]
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;b =&#34;</span>, <span style="color:#a6e22e">b</span>) <span style="color:#75715e">// b = [3 1 9]
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
-</span></span></code></pre></div><h2 id="合法用例-2调用-syncatomic-包中指针相关的函数">
+</span></span></code></pre></div><h3 id="合法用例-2调用-syncatomic-包中指针相关的函数">
   合法用例 2：调用 sync/atomic 包中指针相关的函数
   <a class="anchor" href="#%e5%90%88%e6%b3%95%e7%94%a8%e4%be%8b-2%e8%b0%83%e7%94%a8-syncatomic-%e5%8c%85%e4%b8%ad%e6%8c%87%e9%92%88%e7%9b%b8%e5%85%b3%e7%9a%84%e5%87%bd%e6%95%b0">#</a>
-</h2>
+</h3>
 <p>sync/atomic 包中的以下函数的大多数参数和结果类型都是 <code>unsafe.Pointer</code> 或 <code>*unsafe.Pointer</code>：</p>
 <ul>
 <li><code>func CompareAndSwapPointer(addr *unsafe.Pointer, old，new unsafe.Pointer) (swapped bool)</code></li>
@@ -1302,9 +1290,10 @@ unsafe 包 docs 列出了一些使用 <code>unsafe.Pointer</code> 合法或非�
 <li><code>func SwapPointer(addr *unsafe.Pointer, new unsafe.Pointer) (old unsafe.Pointer)</code></li>
 </ul>
 <p>要使用这些功能，必须导入 unsafe 包。</p>
-<blockquote>
-<p>注意： <code>unsafe.Pointer</code> 是一般类型，因此 <code>unsafe.Pointer</code> 的值可以转换为 <code>unsafe.Pointer</code>，反之亦然。</p>
+<blockquote class="book-hint warning">
+  <code>unsafe.Pointer</code> 是一般类型，因此 <code>unsafe.Pointer</code> 的值可以转换为 <code>unsafe.Pointer</code>，反之亦然。
 </blockquote>
+
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
@@ -1367,10 +1356,10 @@ unsafe 包 docs 列出了一些使用 <code>unsafe.Pointer</code> 合法或非�
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;final data = &#34;</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">data</span>)
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h1 id="结论">
+</span></span></code></pre></div><h2 id="结论">
   结论
   <a class="anchor" href="#%e7%bb%93%e8%ae%ba">#</a>
-</h1>
+</h2>
 <ul>
 <li>unsafe 包用于 Go 编译器，而不是 Go 运行时。</li>
 <li>使用 unsafe 作为程序包名称只是让你在使用此包是更加小心。</li>
@@ -1380,8 +1369,7 @@ unsafe 包 docs 列出了一些使用 <code>unsafe.Pointer</code> 合法或非�
 通常 Go 是高效的，但有时安全真的会导致 Go 程序效率低下。
 unsafe 包用于有经验的程序员通过安全地绕过 Go 类型系统的安全性来消除这些低效。</li>
 <li>unsafe 包可能被滥用并且是危险的。</li>
-</ul>
-</article>
+</ul></article>
  
       
 
@@ -1390,9 +1378,9 @@ unsafe 包用于有经验的程序员通过安全地绕过 Go 类型系统的安
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/2d677c77cfa21091f5ec6a38d7315de4914b88c4" title='Last modified by howieyuen | January 22, 2024' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/8170fbc7cf90437629b14d4ade72a3e39a5e79be" title='Last modified by howieyuen | January 23, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>January 22, 2024</span>
+      <span>January 23, 2024</span>
     </a>
   </div>
 
@@ -1452,18 +1440,22 @@ unsafe 包用于有经验的程序员通过安全地绕过 Go 类型系统的安
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#the-unsafe-package-in-golang">The unsafe Package in Golang</a></li>
-    <li><a href="#来自-go-语言官方文档的警告">来自 go 语言官方文档的警告</a></li>
-    <li><a href="#unsafe-包的作用">Unsafe 包的作用</a></li>
-    <li><a href="#unsafepointer-和-uintptr">unsafe.Pointer 和 uintptr</a></li>
-    <li><a href="#unsafe-包有多危险">unsafe 包有多危险</a></li>
-    <li><a href="#转换-t1-为-t2">转换 T1 为 T2</a>
+    <li>
       <ul>
-        <li><a href="#合法用例-1在-t-和-myt-之间转换">合法用例 1：在 <code>[]T</code> 和 <code>[]MyT</code> 之间转换</a></li>
-        <li><a href="#合法用例-2调用-syncatomic-包中指针相关的函数">合法用例 2：调用 sync/atomic 包中指针相关的函数</a></li>
+        <li><a href="#the-unsafe-package-in-golang">The unsafe Package in Golang</a></li>
+        <li><a href="#来自-go-语言官方文档的警告">来自 go 语言官方文档的警告</a></li>
+        <li><a href="#unsafe-包的作用">Unsafe 包的作用</a></li>
+        <li><a href="#unsafepointer-和-uintptr">unsafe.Pointer 和 uintptr</a></li>
+        <li><a href="#unsafe-包有多危险">unsafe 包有多危险</a></li>
+        <li><a href="#转换-t1-为-t2">转换 T1 为 T2</a></li>
+        <li><a href="#合法用例-1在-t-和-myt-之间转换">合法用例 1：在 <code>[]T</code> 和 <code>[]MyT</code> 之间转换</a>
+          <ul>
+            <li><a href="#合法用例-2调用-syncatomic-包中指针相关的函数">合法用例 2：调用 sync/atomic 包中指针相关的函数</a></li>
+          </ul>
+        </li>
+        <li><a href="#结论">结论</a></li>
       </ul>
     </li>
-    <li><a href="#结论">结论</a></li>
   </ul>
 </nav>
 

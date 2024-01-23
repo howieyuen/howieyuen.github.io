@@ -19,7 +19,7 @@
       <link>https://howieyuen.github.io/docs/XaC/infra-as-code/terraform-workflow/</link>
       <pubDate>Fri, 16 Dec 2022 00:00:00 +0000</pubDate>
       <guid>https://howieyuen.github.io/docs/XaC/infra-as-code/terraform-workflow/</guid>
-      <description>Terraform 每次运行都经过多个操作阶段（Pending、Plan、Cost Estimation、Policy Check、Apply 和 Completion），Terraform Cloud 将这些阶段的进度显示为运行状态。 在 Terraform Cloud 主页上的工作区列表中，每个工作区都显示了它当前正在处理的运行状态。（或者，如果没有正在进行的运行，则为最近完成的运行的状态。）&#xA;Pending # 阶段状态：&#xA;Pending：Terraform Cloud 尚未开始运行操作。Terraform Cloud 按照排队的顺序处理每个工作区的运行，并且运行在每次运行完成之前一直处于挂起状态。 离开状态：&#xA;Discarded：如果用户在开始前放弃运行，则运行不会继续。 Planning：如果运行在队列中排在首位，它会自动进入 Plan 阶段。 图示：&#xA;Fetching # Terraform Cloud 可能需要在开始计划之前从 VCS 获取配置。当所有运行完成后，Terraform Cloud 会自动存档通过 VCS 创建的配置版本，然后重新获取文件以供后续运行使用。&#xA;阶段状态：&#xA;Fetching：如果 Terraform Cloud 尚未从 VCS 获取配置，则运行将进入此状态，直到配置可用。 离开状态：&#xA;Plan Errored：如果 Terraform Cloud 在从 VCS 获取配置时遇到错误，则运行不会继续。 如果 Terraform 成功获取配置，则运行进入下一阶段。 图示：&#xA;Pre-plan（可选） # 创建 Run Task，并关联 Workspace，选择在 “Pre-plan” 时执行，才有 Pre-plan 阶段。在此阶段，Terraform Cloud 将有关运行的信息发送到已配置的外部系统，并等待 passed 或 failed 响应以确定运行是否可以继续。</description>
+      <description>&lt;p&gt;Terraform 每次运行都经过多个操作阶段（Pending、Plan、Cost Estimation、Policy Check、Apply 和 Completion），Terraform Cloud 将这些阶段的进度显示为运行状态。&#xA;在 Terraform Cloud 主页上的工作区列表中，每个工作区都显示了它当前正在处理的运行状态。（或者，如果没有正在进行的运行，则为最近完成的运行的状态。）&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

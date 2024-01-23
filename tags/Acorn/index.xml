@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Acorn on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/tags/Acorn/</link>
+    <description>Recent content in Acorn on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 16 Dec 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://howieyuen.github.io/tags/Acorn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Acorn：k8s 应用部署框架</title>
+      <link>https://howieyuen.github.io/docs/XaC/infra-as-code/getting-started-of-acorn/</link>
+      <pubDate>Fri, 16 Dec 2022 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/XaC/infra-as-code/getting-started-of-acorn/</guid>
+      <description>概述 # Acorn 是一个应用程序打包和部署框架，可简化在 Kubernetes 上运行的应用程序。 Acorn 能够将应用程序的所有 Docker 镜像、配置和部署规范打包到单个 Acorn 镜像工件中。 此工件可发布到任何 OCI 容器注册表，允许它部署在任何开发、测试或生产环境的 Kubernetes 上。 Acorn 镜像的可移植性使开发人员能够在本地开发应用程序并转移到生产环境，而无需切换工具或技术堆栈。&#xA;开发人员通过在 Acornfile 中描述应用程序配置来创建 Acorn 镜像。 Acornfile 描述了整个应用程序，没有 Kubernetes YAML 文件的所有样板。 Acorn CLI 用于在任何 Kubernetes 集群上构建、部署和操作 Acorn 镜像。&#xA;架构 # acorn：安装在终端用户的机器上，并针对在 Kubernetes 集群中运行的 acorn-apiserver 交互 acorn-apiserver：k8s 风格的 API 服务器，通过 k8s aggregation layer 访问 acorn-controller：负责将 Acorn 应用程序转换为实际的 Kubernetes 资源 buildkit &amp;amp; internal registry：镜像构建服务、Buildkit 和内部镜像注册表作为同级容器部署在单个 pod 中。当 Buildkit 构建新的 Acorn 镜像时，这简化了两个组件之间的通信 工作流 # 下图说明了用户在使用 Acorn 时所采取的步骤：</description>
+    </item>
+  </channel>
+</rss>

@@ -3,29 +3,27 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1. 引言 # Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。
-2. 设计原则 # 2.1 happens-before # 假设 A 和 B 表示一个多线程的程序执行的两个操作。如果 A happens-before B，那么 A 操作对内存的影响将对执行 B 的线程（且执行 B 之前）可见。
-单一 goroutine 中当满足下面条件时候，对一个变量的写操作 w1 对读操作 r1 可见：
-读操作 r1 不是发生在写操作 w1 前 在读操作 r1 之前，写操作 w1 之后没有其他的写操作 w2 对变量进行了修改 多 goroutine 下则需要满足下面条件才能保证写操作 w1 对读操作 r1 可见：
-写操作 w1 先于读操作 r1 任何对变量的写操作 w2 要先于写操作 w1 或者晚于读操作 r1 关于 channel 的 happens-before 在 Go 的内存模型中提到了三种情况：">
+<meta name="description" content="Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，
+这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，
+在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、
+读写锁（RWMutex）或者和 sync/atomic 中的原子操作。">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="内存模型" />
-<meta property="og:description" content="1. 引言 # Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。
-2. 设计原则 # 2.1 happens-before # 假设 A 和 B 表示一个多线程的程序执行的两个操作。如果 A happens-before B，那么 A 操作对内存的影响将对执行 B 的线程（且执行 B 之前）可见。
-单一 goroutine 中当满足下面条件时候，对一个变量的写操作 w1 对读操作 r1 可见：
-读操作 r1 不是发生在写操作 w1 前 在读操作 r1 之前，写操作 w1 之后没有其他的写操作 w2 对变量进行了修改 多 goroutine 下则需要满足下面条件才能保证写操作 w1 对读操作 r1 可见：
-写操作 w1 先于读操作 r1 任何对变量的写操作 w2 要先于写操作 w1 或者晚于读操作 r1 关于 channel 的 happens-before 在 Go 的内存模型中提到了三种情况：" />
+<meta property="og:description" content="Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，
+这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，
+在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、
+读写锁（RWMutex）或者和 sync/atomic 中的原子操作。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://howieyuen.github.io/docs/golang/memory-manage/memory-model/" /><meta property="article:section" content="docs" />
 
-<meta property="article:modified_time" content="2024-01-22T15:25:36+08:00" />
+<meta property="article:modified_time" content="2024-01-23T14:18:15+08:00" />
 
 <title>内存模型 | 袁昊的学习笔记</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.990f118aee4bd10034c871ddbab39dd9546a83e3c50004e77a3e4fc7715be2da.js" integrity="sha256-mQ8Riu5L0QA0yHHdurOd2VRqg&#43;PFAATnej5Px3Fb4to=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.24bfea92d3f22f77dd53e4a7567161e20b00ded6783b4375a6921c31f40d2d62.js" integrity="sha256-JL/qktPyL3fdU&#43;SnVnFh4gsA3tZ4O0N1ppIcMfQNLWI=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <!--
@@ -981,23 +979,19 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-引言">1. 引言</a></li>
-    <li><a href="#2-设计原则">2. 设计原则</a>
+    <li>
       <ul>
-        <li><a href="#21-happens-before">2.1 happens-before</a></li>
-        <li><a href="#22-synchronization">2.2 Synchronization</a>
+        <li><a href="#设计原则">设计原则</a>
           <ul>
-            <li><a href="#221-初始化">2.2.1 初始化</a></li>
-            <li><a href="#222-创建-goroutine">2.2.2 创建 goroutine</a></li>
-            <li><a href="#223-销毁-goroutine">2.2.3 销毁 goroutine</a></li>
-            <li><a href="#224-通道通信">2.2.4 通道通信</a></li>
+            <li><a href="#happens-before">happens-before</a></li>
+            <li><a href="#synchronization">Synchronization</a></li>
+            <li><a href="#locks">Locks</a></li>
+            <li><a href="#once">Once</a></li>
           </ul>
         </li>
-        <li><a href="#23-locks">2.3 Locks</a></li>
-        <li><a href="#24-once">2.4 Once</a></li>
+        <li><a href="#参考资料">参考资料</a></li>
       </ul>
     </li>
-    <li><a href="#3-参考资料">3. 参考资料</a></li>
   </ul>
 </nav>
 
@@ -1010,19 +1004,18 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="1-引言">
-  1. 引言
-  <a class="anchor" href="#1-%e5%bc%95%e8%a8%80">#</a>
-</h1>
-<p>Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、读写锁（RWMutex）或者和 sync/atomic 中的原子操作。</p>
-<h1 id="2-设计原则">
-  2. 设计原则
-  <a class="anchor" href="#2-%e8%ae%be%e8%ae%a1%e5%8e%9f%e5%88%99">#</a>
-</h1>
-<h2 id="21-happens-before">
-  2.1 happens-before
-  <a class="anchor" href="#21-happens-before">#</a>
+  <article class="markdown"><p>Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，
+这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，
+在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、
+读写锁（RWMutex）或者和 sync/atomic 中的原子操作。</p>
+<h2 id="设计原则">
+  设计原则
+  <a class="anchor" href="#%e8%ae%be%e8%ae%a1%e5%8e%9f%e5%88%99">#</a>
 </h2>
+<h3 id="happens-before">
+  happens-before
+  <a class="anchor" href="#happens-before">#</a>
+</h3>
 <p>假设 A 和 B 表示一个多线程的程序执行的两个操作。<strong>如果 A happens-before B，那么 A 操作对内存的影响将对执行 B 的线程（且执行 B 之前）可见</strong>。</p>
 <p>单一 goroutine 中当满足下面条件时候，对一个变量的写操作 w1 对读操作 r1 可见：</p>
 <ul>
@@ -1040,59 +1033,58 @@ https://github.com/alex-shpak/hugo-book
 <li><strong>不带缓冲</strong>的 channel 的<strong>接收操作</strong> happens-before 相应 channel 的<strong>发送操作</strong>完成</li>
 <li><strong>关闭一个 channel</strong> happens-before 从该 channel <strong>接收到最后的返回值 0</strong></li>
 </ol>
-<h2 id="22-synchronization">
-  2.2 Synchronization
-  <a class="anchor" href="#22-synchronization">#</a>
-</h2>
-<h3 id="221-初始化">
-  2.2.1 初始化
-  <a class="anchor" href="#221-%e5%88%9d%e5%a7%8b%e5%8c%96">#</a>
+<h3 id="synchronization">
+  Synchronization
+  <a class="anchor" href="#synchronization">#</a>
 </h3>
+<h4 id="初始化">
+  初始化
+  <a class="anchor" href="#%e5%88%9d%e5%a7%8b%e5%8c%96">#</a>
+</h4>
 <p>如果在一个 goroutine 所在的源码包 p 里面通过 import 命令导入了包 q，那么 q 包里面 go 文件的初始化方法的执行会 happens before 于包 p 里面的初始化方法执行。</p>
-<h3 id="222-创建-goroutine">
-  2.2.2 创建 goroutine
-  <a class="anchor" href="#222-%e5%88%9b%e5%bb%ba-goroutine">#</a>
-</h3>
+<h4 id="创建-goroutine">
+  创建 goroutine
+  <a class="anchor" href="#%e5%88%9b%e5%bb%ba-goroutine">#</a>
+</h4>
 <p>go 语句启动一个新的 goroutine 的动作 happen before 该新 goroutine 的运行。</p>
-<h3 id="223-销毁-goroutine">
-  2.2.3 销毁 goroutine
-  <a class="anchor" href="#223-%e9%94%80%e6%af%81-goroutine">#</a>
-</h3>
+<h4 id="销毁-goroutine">
+  销毁 goroutine
+  <a class="anchor" href="#%e9%94%80%e6%af%81-goroutine">#</a>
+</h4>
 <p>一个 goroutine 的销毁操作并不能确保 happen before 程序中的任何事件。</p>
-<h3 id="224-通道通信">
-  2.2.4 通道通信
-  <a class="anchor" href="#224-%e9%80%9a%e9%81%93%e9%80%9a%e4%bf%a1">#</a>
-</h3>
+<h4 id="通道通信">
+  通道通信
+  <a class="anchor" href="#%e9%80%9a%e9%81%93%e9%80%9a%e4%bf%a1">#</a>
+</h4>
 <p>在 go 中通道是用来解决多个 goroutines 之间进行同步的主要措施，在多个 goroutines 中，每个对通道进行写操作的 goroutine 都对应着一个从通道读操作的 goroutine。</p>
 <ul>
 <li>在有缓冲的通道时候向通道写入一个数据总是 happen  before 这个数据被从通道中读取完成。</li>
 <li>对应无缓冲的通道来说从通道接受（获取叫做读取）元素 happen before 向通道发送（写入）数据完成。</li>
 <li>从容量为 C 的通道接受第 K 个元素 happen before 向通道第 k+C 次写入完成，比如从容量为 1 的通道接受第 3 个元素 happen before 向通道第 3+1 次写入完成。</li>
 </ul>
-<h2 id="23-locks">
-  2.3 Locks
-  <a class="anchor" href="#23-locks">#</a>
-</h2>
+<h3 id="locks">
+  Locks
+  <a class="anchor" href="#locks">#</a>
+</h3>
 <ol>
 <li>对应任何 <code>sync.Mutex</code> 或 <code>sync.RWMutex</code> 类型的变量 I 来说，调用 n 次 <code>l.Unlock()</code> 操作 happen before 调用 m 次 <code>l.Lock()</code> 操作返回，其中 n&lt;m。</li>
 <li>对任何一个 <code>sync.RWMutex</code> 类型的变量 l 来说，存在一个次数 n，调用 <code>l.RLock()</code>（读锁）操作 happens after 调用 n 次 <code>l.Unlock()</code>（释放写锁）并且相应的 <code>l.RUnlock()</code>（释放读锁） happen before 调用 n+1 次 <code>l.Lock()</code>（写锁）。</li>
 </ol>
-<h2 id="24-once">
-  2.4 Once
-  <a class="anchor" href="#24-once">#</a>
-</h2>
+<h3 id="once">
+  Once
+  <a class="anchor" href="#once">#</a>
+</h3>
 <p>多 goroutine 下同时调用 <code>once.Do(f)</code> 时，真正执行 <code>f()</code> 函数的 goroutine， happen before 任何其他由于调用 <code>once.Do(f)</code> 而被阻塞的 goroutine 返回。</p>
-<h1 id="3-参考资料">
-  3. 参考资料
-  <a class="anchor" href="#3-%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>
-</h1>
+<h2 id="参考资料">
+  参考资料
+  <a class="anchor" href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">#</a>
+</h2>
 <ul>
 <li>
   <a href="http://ifeve.com/golang-mem/">Golang 内存模型</a></li>
 <li>
   <a href="https://golang.org/ref/mem">The Go Memory Model</a></li>
-</ul>
-</article>
+</ul></article>
  
       
 
@@ -1101,9 +1093,9 @@ https://github.com/alex-shpak/hugo-book
   <div class="flex flex-wrap justify-between">
 
 
-  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/2d677c77cfa21091f5ec6a38d7315de4914b88c4" title='Last modified by howieyuen | January 22, 2024' target="_blank" rel="noopener">
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/8170fbc7cf90437629b14d4ade72a3e39a5e79be" title='Last modified by howieyuen | January 23, 2024' target="_blank" rel="noopener">
       <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
-      <span>January 22, 2024</span>
+      <span>January 23, 2024</span>
     </a>
   </div>
 
@@ -1163,23 +1155,19 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-引言">1. 引言</a></li>
-    <li><a href="#2-设计原则">2. 设计原则</a>
+    <li>
       <ul>
-        <li><a href="#21-happens-before">2.1 happens-before</a></li>
-        <li><a href="#22-synchronization">2.2 Synchronization</a>
+        <li><a href="#设计原则">设计原则</a>
           <ul>
-            <li><a href="#221-初始化">2.2.1 初始化</a></li>
-            <li><a href="#222-创建-goroutine">2.2.2 创建 goroutine</a></li>
-            <li><a href="#223-销毁-goroutine">2.2.3 销毁 goroutine</a></li>
-            <li><a href="#224-通道通信">2.2.4 通道通信</a></li>
+            <li><a href="#happens-before">happens-before</a></li>
+            <li><a href="#synchronization">Synchronization</a></li>
+            <li><a href="#locks">Locks</a></li>
+            <li><a href="#once">Once</a></li>
           </ul>
         </li>
-        <li><a href="#23-locks">2.3 Locks</a></li>
-        <li><a href="#24-once">2.4 Once</a></li>
+        <li><a href="#参考资料">参考资料</a></li>
       </ul>
     </li>
-    <li><a href="#3-参考资料">3. 参考资料</a></li>
   </ul>
 </nav>
 

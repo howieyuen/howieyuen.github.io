@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>topology manager on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/tags/topology-manager/</link>
+    <description>Recent content in topology manager on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://howieyuen.github.io/tags/topology-manager/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Topology Manager 设计方案</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/</link>
+      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/</guid>
+      <description>注：本文翻译自 Node Topology Manager&#xA;概要 # 越来越多的系统将 CPU 和硬件加速器组合使用，以支撑高延迟和搞吞吐量的并行计算。 包括电信、科学计算、机器学习、金融服务和数据分析等领域的工作。这种的混血儿构成了一个高性能环境。&#xA;为了达到最优性能，需要对 CPU 隔离、内存和设备的物理位置进行优化。 然而，在 kubernetes 中，这些优化没有一个统一的组件管理。&#xA;本次建议提供一个新机制，可以协同 kubernetes 各个组件，对硬件资源的分配可以有不同的细粒度。&#xA;启发 # 当前，kubelet 中多个组件决定系统拓扑相关的分配：&#xA;CPU 管理器 CPU 管理器限制容器可以使用的 CPU。该能力，在 1.8 只实现了一种策略——静态分配。 该策略不支持在容器的生命周期内，动态上下线 CPU。 设备管理器 设备管理器将某个具体的设备分配给有该设备需求的容器。设备通常是在外围互连线上。 如果设备管理器和 CPU 管理器策略不一致，那么 CPU 和设备之间的所有通信都可能导致处理器互连结构上的额外跳转。 容器运行时（CNI） 网络接口控制器，包括 SR-IOV 虚拟功能（VF）和套接字有亲和关系，socket 不同，性能不同。 相关问题：&#xA;节点层级的硬件拓扑感知（包括 NUMA） 发现节点的 NUMA 架构 绑定特定 CPU 支持虚拟函数 提议：CPU 亲和与 NUMA 拓扑感知 注意，以上所有的关注点都只适用于多套接字系统。 内核能从底层硬件接收精确的拓扑信息（通常是通过 SLIT 表），是正确操作的前提。 更多信息请参考 ACPI 规范的 5.2.16 和 5.2.17 节。&#xA;目标 # 根据 CPU 管理器和设备管理器的输入，给容器选择最优的 NUMA 亲和节点。 集成 kubelet 中其他支持拓扑感知的组件，提供一个统一的内部接口。 非目标 # 设备间连接：根据直接设备互连来决定设备分配。此问题不同于套接字局部性。设备间的拓扑关系， 可以都在设备管理器中考虑，可以做到套接字的亲和性。实现这一策略，可以从逐渐支持任何设备之间的拓扑关系。 大页：本次提议有 2 个前提，一是集群中的节点已经预分配了大页； 二是操作系统能给容器做好本地页分配（只需要本地内存节点上有空闲的大页即可）。 容器网络接口：本次提议不包含修改 CNI。但是，如果 CNI 后续支持拓扑管理， 此次提出的方案应该具有良好的扩展性，以适配网络接口的局部性。对于特殊的网络需求， 可以使用设备插件 API 作为临时方案，以减少网络接口的局限性。 用户故事 # 故事 1: 快速虚拟化的网络功能</description>
+    </item>
+  </channel>
+</rss>

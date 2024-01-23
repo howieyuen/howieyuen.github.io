@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>watch on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/tags/watch/</link>
+    <description>Recent content in watch on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 24 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://howieyuen.github.io/tags/watch/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>watch 关键设计</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</link>
+      <pubDate>Thu, 24 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</guid>
+      <description>&lt;blockquote&gt;&#xA;&lt;p&gt;注：本文转自 &#xA;  &lt;a href=&#34;https://www.kubernetes.org.cn/6889.html&#34;&gt;图解 kubernetes 中基于 etcd 的 watch 关键设计&lt;/a&gt;&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;本文介绍了 kubernetes 针对 etcd 的 watch 场景，k8s 在性能优化上面的一些设计，&#xA;逐个介绍缓存、定时器、序列化缓存、bookmark 机制、forget 机制、&#xA;针对数据的索引与 ringbuffer 等组件的场景以及解决的问题，&#xA;希望能帮助到那些对 apiserver 中的 watch 机制实现感兴趣的朋友。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

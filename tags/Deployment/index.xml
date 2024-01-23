@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Deployment on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/tags/Deployment/</link>
+    <description>Recent content in Deployment on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 12 Oct 2020 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://howieyuen.github.io/tags/Deployment/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>无状态应用滚动更新</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</link>
+      <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</guid>
+      <description>概念 # 滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。&#xA;Deployment 滚动更新 # Deployment 更新方式有 2 种：&#xA;RollingUpdate Recreate 其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：&#xA;func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：&#xA;func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 newRS, oldRSs, err := dc.getAllReplicaSetsAndSyncRevision(d, rsList, true) if err !</description>
+    </item>
+  </channel>
+</rss>

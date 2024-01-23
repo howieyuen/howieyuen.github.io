@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>authorization on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/tags/authorization/</link>
+    <description>Recent content in authorization on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 29 Dec 2020 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://howieyuen.github.io/tags/authorization/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>鉴权机制</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</link>
+      <pubDate>Tue, 29 Dec 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</guid>
+      <description>&lt;p&gt;在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。&#xA;如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。&#xA;只要有一个鉴权模块通过，则鉴权成功。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

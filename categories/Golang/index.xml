@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Golang on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/categories/Golang/</link>
+    <description>Recent content in Golang on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 01 Nov 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://howieyuen.github.io/categories/Golang/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Golang 中的 RSA 加解密算法</title>
+      <link>https://howieyuen.github.io/posts/rsa-crypto-in-go/</link>
+      <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/posts/rsa-crypto-in-go/</guid>
+      <description>&lt;p&gt;本文受到 Gitlab 中 &#xA;  &lt;a href=&#34;https://gitlab.com/rahasak-labs/crypgo&#34;&gt;&lt;code&gt;crypgo&lt;/code&gt;&lt;/a&gt; 项目启发，&#xA;作者在 Medium 中发表了一篇博文，&#xA;  &lt;a href=&#34;https://medium.com/rahasak/golang-rsa-cryptography-1f1897ada311&#34;&gt;RSA cryptography in Golang&lt;/a&gt; 作为说明。&#xA;读完后发现代码中存在一些小问题，因此重整代码实现，使其更加实用。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>pprof</title>
+      <link>https://howieyuen.github.io/docs/golang/tools/pprof/</link>
+      <pubDate>Thu, 21 Jan 2021 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/golang/tools/pprof/</guid>
+      <description>&lt;p&gt;Profiling 是指在程序执行过程中，收集能够反映程序执行状态的数据。&#xA;在软件工程中，性能分析（performance analysis，也称为 profiling），&#xA;是以收集程序运行时信息为手段研究程序行为的分析方法，是一种动态程序分析的方法。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>unsafe</title>
+      <link>https://howieyuen.github.io/docs/golang/language-basics/unsafe/</link>
+      <pubDate>Fri, 18 Dec 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/golang/language-basics/unsafe/</guid>
+      <description>&lt;p&gt;本文转自：&#xA;  &lt;a href=&#34;https://gocn.vip/topics/371&#34;&gt;Go 里面的 unsafe 包详解&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>chan</title>
+      <link>https://howieyuen.github.io/docs/golang/data-structure/chan/</link>
+      <pubDate>Mon, 14 Dec 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/golang/data-structure/chan/</guid>
+      <description>&lt;p&gt;Go 语言中最常见的、也是经常被人提及的设计模式就是 —— 不要通过共享内存的方式进行通信，而是应该通过通信的方式共享内存。&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;先入先出&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;目前的 Channel 收发操作均遵循了先入先出（FIFO）的设计，具体规则如下：&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;先从 Channel 读取数据的 Goroutine 会先接收到数据；&lt;/li&gt;&#xA;&lt;li&gt;先向 Channel 发送数据的 Goroutine 会得到先发送数据的权利；&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>map</title>
+      <link>https://howieyuen.github.io/docs/golang/data-structure/map/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/golang/data-structure/map/</guid>
+      <description>&lt;p&gt;粗略的讲，Go 语言中 map 采用的是哈希查找表，&#xA;由一个 key 通过哈希函数得到哈希值，&#xA;64 位系统中就生成一个 64 bit 的哈希值，&#xA;由这个哈希值将 key 对应到不同的桶（bucket）中，&#xA;当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>reflect</title>
+      <link>https://howieyuen.github.io/docs/golang/language-basics/reflect/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/golang/language-basics/reflect/</guid>
+      <description>&lt;p&gt;计算机中提到的反射一般是指，&lt;strong&gt;程序借助某种手段检查自己结构的一种能力&lt;/strong&gt;，通常就是借助编程语言中定义的类型（&lt;code&gt;types&lt;/code&gt;）。因此，反射是建立在类型系统上的。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>slice</title>
+      <link>https://howieyuen.github.io/docs/golang/data-structure/slice/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/golang/data-structure/slice/</guid>
+      <description>&lt;p&gt;slice 的底层数据是数组，slice 是对数组的封装，它描述一个数组的片段。两者都可以通过下标来访问单个元素。&#xA;数组是定长的，长度定义好之后，不能再更改。在 Go 中，数组是不常见的，因为其长度是类型的一部分，&#xA;限制了它的表达能力，比如 &lt;code&gt;[3]int&lt;/code&gt; 和 &lt;code&gt;[4]int&lt;/code&gt; 就是不同的类型。&#xA;而切片则非常灵活，它可以动态地扩容。切片的类型和长度无关。&#xA;数组就是一片连续的内存， slice 实际上是一个结构体，包含三个字段：长度、容量、底层数组。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>内存模型</title>
+      <link>https://howieyuen.github.io/docs/golang/memory-manage/memory-model/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/golang/memory-manage/memory-model/</guid>
+      <description>&lt;p&gt;Go 语言的内存模型规定了一个 goroutine 可以看到另外一个 goroutine 修改同一个变量的值的条件，&#xA;这类似 java 内存模型中内存可见性问题。当多个 goroutine 并发同时存取同一个数据时候必须把并发的存取的操作顺序化，&#xA;在 go 中可以实现操作顺序化的工具有高级的通道（channel）通信和同步原语比如 sync 包中的互斥锁（Mutex）、&#xA;读写锁（RWMutex）或者和 sync/atomic 中的原子操作。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

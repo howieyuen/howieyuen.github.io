@@ -42,5 +42,12 @@
       <guid>https://howieyuen.github.io/posts/how-to-manage-gitops-secrets-a-detailed-guide/</guid>
       <description>&lt;p&gt;GitOps 正变得越来越流行。越来越多的公司开始使用 Git 作为其基础设施和应用程序配置的真实来源。然而，伴随其优势而来的是挑战。例如，如果你的所有配置都存储在 Git 中，你如何管理 Secret？你不能简单地将密码和令牌以明文形式提交到 Git 存储库，即使该存储库是私有的并且只有少数人可以访问它。在这篇文章中，你将学习如何安全地管理 GitOps Secret。敬请关注。&lt;/p&gt;</description>
     </item>
+    <item>
+      <title>Prometheus Operator 设计文档</title>
+      <link>https://howieyuen.github.io/posts/prometheus/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/posts/prometheus/</guid>
+      <description>&lt;blockquote&gt;&#xA;&lt;p&gt;原文链接：&#xA;  &lt;a href=&#34;https://prometheus-operator.dev/docs/operator/design/&#34;&gt;https://prometheus-operator.dev/docs/operator/design/&lt;/a&gt;&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;本文将阐述 Prometheus Operator 管理的 CRD 之间的设计和交互。由 Prometheus Operator 管理的 CRD 有：&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&#xA;  &lt;a href=&#34;https://prometheus-operator.dev/docs/operator/design/#prometheus&#34;&gt;Prometheus&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;  &lt;a href=&#34;https://prometheus-operator.dev/docs/operator/design/#alertmanager&#34;&gt;Alertmanager&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;  &lt;a href=&#34;https://prometheus-operator.dev/docs/operator/design/#thanosruler&#34;&gt;ThanosRuler&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;  &lt;a href=&#34;https://prometheus-operator.dev/docs/operator/design/#servicemonitor&#34;&gt;ServiceMonitor&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;  &lt;a href=&#34;https://prometheus-operator.dev/docs/operator/design/#podmonitor&#34;&gt;PodMonitor&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;  &lt;a href=&#34;https://prometheus-operator.dev/docs/operator/design/#probe&#34;&gt;Probe&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;  &lt;a href=&#34;https://prometheus-operator.dev/docs/operator/design/#prometheusrule&#34;&gt;PrometheusRule&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;  &lt;a href=&#34;https://prometheus-operator.dev/docs/operator/design/#alertmanagerconfig&#34;&gt;AlertmanagerConfig&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
   </channel>
 </rss>

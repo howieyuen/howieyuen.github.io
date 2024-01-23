@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>map on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/tags/map/</link>
+    <description>Recent content in map on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <atom:link href="https://howieyuen.github.io/tags/map/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>map</title>
+      <link>https://howieyuen.github.io/docs/golang/data-structure/map/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/golang/data-structure/map/</guid>
+      <description>&lt;p&gt;粗略的讲，Go 语言中 map 采用的是哈希查找表，&#xA;由一个 key 通过哈希函数得到哈希值，&#xA;64 位系统中就生成一个 64 bit 的哈希值，&#xA;由这个哈希值将 key 对应到不同的桶（bucket）中，&#xA;当有多个哈希映射到相同的的桶中时，使用链表解决哈希冲突。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

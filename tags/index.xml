@@ -6,8 +6,15 @@
     <description>Recent content in Tags on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 21 Nov 2022 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 16 Dec 2022 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://howieyuen.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Acorn</title>
+      <link>https://howieyuen.github.io/tags/Acorn/</link>
+      <pubDate>Fri, 16 Dec 2022 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/Acorn/</guid>
+      <description></description>
+    </item>
     <item>
       <title>CLI</title>
       <link>https://howieyuen.github.io/tags/CLI/</link>
@@ -16,38 +23,45 @@
       <description></description>
     </item>
     <item>
-      <title>crypto</title>
-      <link>https://howieyuen.github.io/tags/crypto/</link>
+      <title>Crypto</title>
+      <link>https://howieyuen.github.io/tags/Crypto/</link>
       <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
-      <guid>https://howieyuen.github.io/tags/crypto/</guid>
+      <guid>https://howieyuen.github.io/tags/Crypto/</guid>
       <description></description>
     </item>
     <item>
-      <title>go</title>
-      <link>https://howieyuen.github.io/tags/go/</link>
+      <title>RSA</title>
+      <link>https://howieyuen.github.io/tags/RSA/</link>
       <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
-      <guid>https://howieyuen.github.io/tags/go/</guid>
+      <guid>https://howieyuen.github.io/tags/RSA/</guid>
       <description></description>
     </item>
     <item>
-      <title>rsa</title>
-      <link>https://howieyuen.github.io/tags/rsa/</link>
-      <pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate>
-      <guid>https://howieyuen.github.io/tags/rsa/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>devops</title>
-      <link>https://howieyuen.github.io/tags/devops/</link>
+      <title>DevOps</title>
+      <link>https://howieyuen.github.io/tags/DevOps/</link>
       <pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate>
-      <guid>https://howieyuen.github.io/tags/devops/</guid>
+      <guid>https://howieyuen.github.io/tags/DevOps/</guid>
       <description></description>
     </item>
     <item>
-      <title>gitops</title>
-      <link>https://howieyuen.github.io/tags/gitops/</link>
+      <title>GitOps</title>
+      <link>https://howieyuen.github.io/tags/GitOps/</link>
       <pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate>
-      <guid>https://howieyuen.github.io/tags/gitops/</guid>
+      <guid>https://howieyuen.github.io/tags/GitOps/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>SealedSecret</title>
+      <link>https://howieyuen.github.io/tags/SealedSecret/</link>
+      <pubDate>Sat, 15 Oct 2022 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/SealedSecret/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Secret</title>
+      <link>https://howieyuen.github.io/tags/Secret/</link>
+      <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/Secret/</guid>
       <description></description>
     </item>
     <item>
@@ -58,10 +72,38 @@
       <description></description>
     </item>
     <item>
-      <title>Orb</title>
-      <link>https://howieyuen.github.io/tags/Orb/</link>
-      <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
-      <guid>https://howieyuen.github.io/tags/Orb/</guid>
+      <title>ArgoCD</title>
+      <link>https://howieyuen.github.io/tags/ArgoCD/</link>
+      <pubDate>Thu, 21 Oct 2021 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/ArgoCD/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>authorization</title>
+      <link>https://howieyuen.github.io/tags/authorization/</link>
+      <pubDate>Tue, 29 Dec 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/authorization/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>kube-apiserver</title>
+      <link>https://howieyuen.github.io/tags/kube-apiserver/</link>
+      <pubDate>Tue, 29 Dec 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/kube-apiserver/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>unsafe</title>
+      <link>https://howieyuen.github.io/tags/unsafe/</link>
+      <pubDate>Fri, 18 Dec 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/unsafe/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>chan</title>
+      <link>https://howieyuen.github.io/tags/chan/</link>
+      <pubDate>Mon, 14 Dec 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/chan/</guid>
       <description></description>
     </item>
     <item>
@@ -76,6 +118,125 @@
       <link>https://howieyuen.github.io/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/</link>
       <pubDate>Wed, 02 Dec 2020 00:00:00 +0000</pubDate>
       <guid>https://howieyuen.github.io/tags/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>authentication</title>
+      <link>https://howieyuen.github.io/tags/authentication/</link>
+      <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/authentication/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Controller</title>
+      <link>https://howieyuen.github.io/tags/Controller/</link>
+      <pubDate>Wed, 21 Oct 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/Controller/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>DaemonSet</title>
+      <link>https://howieyuen.github.io/tags/DaemonSet/</link>
+      <pubDate>Wed, 21 Oct 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/DaemonSet/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>GC</title>
+      <link>https://howieyuen.github.io/tags/GC/</link>
+      <pubDate>Wed, 14 Oct 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/GC/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Deployment</title>
+      <link>https://howieyuen.github.io/tags/Deployment/</link>
+      <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/Deployment/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>watch</title>
+      <link>https://howieyuen.github.io/tags/watch/</link>
+      <pubDate>Thu, 24 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/watch/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>kubelet</title>
+      <link>https://howieyuen.github.io/tags/kubelet/</link>
+      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/kubelet/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>topology manager</title>
+      <link>https://howieyuen.github.io/tags/topology-manager/</link>
+      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/topology-manager/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>scheduling</title>
+      <link>https://howieyuen.github.io/tags/scheduling/</link>
+      <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/scheduling/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>taint</title>
+      <link>https://howieyuen.github.io/tags/taint/</link>
+      <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/taint/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>toleration</title>
+      <link>https://howieyuen.github.io/tags/toleration/</link>
+      <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/toleration/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>eviction manager</title>
+      <link>https://howieyuen.github.io/tags/eviction-manager/</link>
+      <pubDate>Wed, 26 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/eviction-manager/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>CRD</title>
+      <link>https://howieyuen.github.io/tags/CRD/</link>
+      <pubDate>Mon, 14 Oct 2019 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/CRD/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>ExternalSecret</title>
+      <link>https://howieyuen.github.io/tags/ExternalSecret/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/ExternalSecret/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>map</title>
+      <link>https://howieyuen.github.io/tags/map/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/map/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Prometheus</title>
+      <link>https://howieyuen.github.io/tags/Prometheus/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/Prometheus/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>reflect</title>
+      <link>https://howieyuen.github.io/tags/reflect/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/tags/reflect/</guid>
       <description></description>
     </item>
   </channel>

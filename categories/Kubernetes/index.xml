@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kubernetes on 袁昊的学习笔记</title>
+    <link>https://howieyuen.github.io/categories/Kubernetes/</link>
+    <description>Recent content in Kubernetes on 袁昊的学习笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 31 Jan 2023 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://howieyuen.github.io/categories/Kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Service 与 Endpoints、EndpointSlice 那些事</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/sig-network/svc-ep-epslice/</link>
+      <pubDate>Tue, 31 Jan 2023 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/sig-network/svc-ep-epslice/</guid>
+      <description>Service 与 Endpoints、EndpointSlice 那些事 # Service 资源 # k8s Service 定义了这样一种抽象：逻辑上的一组 Pod，一种可以访问它们的策略 —— 通常称为微服务。 Service 所针对的 Pod 集合通常是通过 LabelSelector 来确定的。 LabelSelector 选中的 Pod，将会自动创建与 Service 同名且同 Namespace 的 Endpoint 对象，将 Pod 的 IP 写入其中。&#xA;如果没有 LabelSelector，用户可能是希望 Service 关联的后端是集群外的服务，或者是其他 Namespace； 如果用户还想要使用负载均衡服务，需要自行创建与 Service 同名的 Endpoints 对象。&#xA;Service 类型 # k8s Service 分为 4 种类型（svc.spec.type）：&#xA;ClusterIP：通过集群的内部 IP 暴露服务，选择该值时服务只能够在集群内部访问。 这也是默认的 ServiceType。 NodePort：通过每个节点上的 IP 和静态端口（NodePort）暴露服务。 NodePort 服务会路由到自动创建的 ClusterIP 服务。 通过请求 &amp;lt;node ip&amp;gt;:&amp;lt;node port&amp;gt;，你可以从集群的外部访问一个 NodePort 服务。 LoadBalance：使用云提供商的负载均衡器向外部暴露服务。 外部负载均衡器可以将流量路由到自动创建的 NodePort 服务和 ClusterIP 服务上。 ExternalName：通过返回 CNAME 和对应值，可以将服务映射到 externalName 字段的内容； 例如，foo.</description>
+    </item>
+    <item>
+      <title>鉴权机制</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</link>
+      <pubDate>Tue, 29 Dec 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</guid>
+      <description>&lt;p&gt;在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。&#xA;如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。&#xA;只要有一个鉴权模块通过，则鉴权成功。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>认证机制</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/</link>
+      <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/</guid>
+      <description>所有 Kubernetes 集群都有两类用户：由 Kubernetes 管理的 ServiceAccount 和普通用户。&#xA;Kubernetes 中的用户 # 对于与普通用户，Kuernetes 使用以下方式管理：&#xA;负责分发私钥的管理员 类似 Keystone 或者 Google Accounts 这类用户数据库 包含用户名和密码列表的文件 因此，kubernetes 并不提供普通用户的定义，普通用户是无法通过 API 调用写入到集群中的。&#xA;尽管如此，通过集群的证书机构签名的合法证书的用户，kubernetes 依旧可以认为是合法用户。基于此，kubernetes 使用证书中的 subject.CommonName 字段来确定用户名，接下来，通过 RBAC 确认用户对某资源是否存在要求的操作权限。&#xA;与此不同的 ServiceAccount，与 Namespace 绑定，与一组 Secret 所包含的凭据有关。这些凭据会挂载到 Pod 中，从而允许访问 kubernetes 的 API。&#xA;API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他的视为匿名请求。这意味着集群内和集群外的每个进程向 kube-apiserver 发起请求时，都必须通过身份认证，否则会被视为匿名用户。&#xA;认证机制 # 目前 kubernetes 提供的认证机制丰富多样，尤其是身份验证，更是五花八门：&#xA;身份验证 X509 Client Cert Static Token File Bootstrap Tokens Static Password File（deprecated in v1.16） ServiceAccount Token OpenID Connect Token Webhook Token Authentication Proxy 匿名请求 用户伪装 client-go 凭据插件 身份验证策略 # X509 Client Cert # X509 客户端证书认证，也被称为 TLS 双向认证，即为服务端和客户端互相验证证书的正确性。使用此认证方式，只要是 CA 签名过的证书都能通过认证。</description>
+    </item>
+    <item>
+      <title>GC Controller 源码分析</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</link>
+      <pubDate>Sun, 25 Oct 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/</guid>
+      <description>序言 # 垃圾回收相关，可参考 这里&#xA;源码解析 # GarbageCollectorController 负责回收集群中的资源对象，要做到这一点，首先得监控所有资源。 gc controller 会监听集群中所有可删除资源的事件，这些事件会放到一个队列中，然后启动多个 worker 协程处理。 对于删除事件，则根据删除策略删除对象；其他事件，更新对象之间的依赖关系。&#xA;startGarbageCollectorController() # 首先来看 gc controller 的入口方法，也就是 kube-controller-manager 是如何启动它的。它的主要逻辑：&#xA;判断是否启用 gc controller，默认是 true 初始化 clientset，使用 discoveryClient 获取集群中所有资源 注册不考虑 gc 的资源，默认为空 调用 garbagecollector.NewGarbageCollector() 方法 初始化 gc controller 对象 调用 garbageCollector.Run() 启动 gc controller，workers 默认是 20 调用 garbageCollector.Sync() 监听集群中的资源，当出现新的资源时，同步到 minitors 中 调用 garbagecollector.NewDebugHandler() 注册 debug 接口，用来提供集群内所有对象的关联关系； // cmd/kube-controller-manager/app/core.go:538 func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool, error) { // 1. 判断是否启用 gc controller，默认是 true if !</description>
+    </item>
+    <item>
+      <title>DaemonSet Controller 源码分析</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</link>
+      <pubDate>Wed, 21 Oct 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/</guid>
+      <description>DaemonSet 简介 # 我们知道，Deployment 是用来部署一定数量的 Pod。但是，当你希望 Pod 在集群中的每个节点上运行，并且每个节点上都需要一个 Pod 实例时，Deployment 就无法满足需求。&#xA;这类需求包括 Pod 执行系统级别与基础结构相关的操作，比如：希望在每个节点上运行日志收集器和资源监控组件。另一个典型的例子，就是 Kubernetes 自己的 kube-proxy 进程，它需要在所有节点上都运行，才能使得 Service 正常工作。&#xA;如此，DaemonSet 应运而生。它能确保集群中每个节点或者是满足某些特性的一组节点都运行一个 Pod 副本。当有新节点加入时，也会立即为它部署一个 Pod；当有节点从集群中删除时，Pod 也会被回收。删除 DaemonSet，也会删除所有关联的 Pod。&#xA;应用场景 # 在每个节点上运行集群存守护进程 在每个节点上运行日志收集守护进程 在每个节点上运行监控守护进程 一种简单的用法是为每种类型的守护进程在所有的节点上都启动一个 DaemonSet。 一个稍微复杂的用法是为同一种守护进程部署多个 DaemonSet；每个具有不同的标志，并且对不同硬件类型具有不同的内存、CPU 等要求。&#xA;基本功能 # 创建 删除 级联删除：kubectl delete ds/nginx-ds 非级联删除：kubectl delete ds/nginx-ds --cascade=false 更新 RollingUpdate OnDelete 回滚 示例 # apiVersion: apps/v1 kind: DaemonSet metadata: name: fluentd-elasticsearch namespace: kube-system labels: k8s-app: fluentd-logging spec: selector: matchLabels: name: fluentd-elasticsearch template: metadata: labels: name: fluentd-elasticsearch spec: tolerations: # this toleration is to have the daemonset runnable on master nodes # remove it if your masters can&amp;#39;t run pods - key: node-role.</description>
+    </item>
+    <item>
+      <title>垃圾回收</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/</link>
+      <pubDate>Wed, 14 Oct 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/garbage-collector/</guid>
+      <description>序言 # 什么是垃圾回收 # 参考 Java 中的概念，垃圾回收（Garbage Collection）是 JVM 垃圾回收器提供的一种用于在空闲时间不定时回收无任何对象引用的对象占据的内存空间的一种机制。 垃圾回收回收的是无任何引用的对象占据的内存空间而不是对象本身。换言之，垃圾回收只会负责释放那些对象占有的内存。 对象是个抽象的词，包括引用和其占据的内存空间。当对象没有任何引用时其占据的内存空间随即被收回备用，此时对象也就被销毁。&#xA;因此，垃圾回收关注的是无任何引用的对象。在 kubernetes 中，对象的引用关系又是怎样的呢？&#xA;k8s 中的对象引用 # 某些 kubernetes 对象是其他一些对象的属主。例如一个 ReplicaSet 是一组 Pod 的属主；反之这组 Pod 就是此 ReplicaSet 的附属。 每个附属对象具有一个指向属主对象的 metadata.ownerReference 字段。&#xA;Kubernetes 会自动为 ReplicationController、ReplicaSet、StatefulSet、DaemonSet、Deployment、Job 和 CronJob 自动设置 ownerReference 的值。 也可以通过手动设置 ownerReference 的值，来指定属主和附属之间的关系。&#xA;先看一个 Pod 的详细信息，例如下面的配置显示 Pod 的属主是名为 my-replicaset 的 ReplicaSet：&#xA;apiVersion: v1 kind: Pod metadata: ... ownerReferences: - apiVersion: apps/v1 controller: true blockOwnerDeletion: true kind: ReplicaSet name: my-rs uid: d9607e19-f88f-11e6-a518-42010a800195 .</description>
+    </item>
+    <item>
+      <title>Statefulset Controller 源码分析</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</link>
+      <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/</guid>
+      <description>StatefulSet 简介 # Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。&#xA;这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型， MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。&#xA;是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。 但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景， 因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动， 从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的， 而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间， 正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。&#xA;适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。&#xA;特点 # 稳定、唯一的网络标识符&#xA;如：Redis 集群，在 Redis 集群中，它是通过槽位来存储数据的，假如：第一个节点是 0~1000，第二个节点是 1001~2000，第三个节点 2001~3000……，这就使得 Redis 集群中每个节点要通过 ID 来标识自己，如：第二个节点宕机了，重建后它必须还叫第二个节点，或者说第二个节点叫 R2，它必须还叫 R2，这样在获取 1001~2000 槽位的数据时，才能找到数据，否则 Redis 集群将无法找到这段数据。</description>
+    </item>
+    <item>
+      <title>无状态应用滚动更新</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</link>
+      <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/</guid>
+      <description>概念 # 滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于： 滚动更新不但提供了更新服务，而且通常还提供了滚动进度查询，滚动历史记录， 以及最重要的回滚等能力。通俗地说，就是具有系统或是软件的主动降级的能力。&#xA;Deployment 滚动更新 # Deployment 更新方式有 2 种：&#xA;RollingUpdate Recreate 其中，滚动更新是最常见的，阅读代码 pkg/controller/deployment/deployment_controller.go:648， 可以看到 2 种方式分别对应的业务逻辑：&#xA;func (dc *DeploymentController) syncDeployment(key string) error { ... switch d.Spec.Strategy.Type { case apps.RecreateDeploymentStrategyType: return dc.rolloutRecreate(d, rsList, podMap) case apps.RollingUpdateDeploymentStrategyType: return dc.rolloutRolling(d, rsList) } ... } 根据 d.Spec.Strategy.Type，若更新策略为 RollingUpdate， 则执行 dc.rolloutRecreate() 方法，具体逻辑如下：&#xA;func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error { // 1、获取所有的 rs，若没有 newRS 则创建 newRS, oldRSs, err := dc.getAllReplicaSetsAndSyncRevision(d, rsList, true) if err !</description>
+    </item>
+    <item>
+      <title>watch 关键设计</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</link>
+      <pubDate>Thu, 24 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/</guid>
+      <description>&lt;blockquote&gt;&#xA;&lt;p&gt;注：本文转自 &#xA;  &lt;a href=&#34;https://www.kubernetes.org.cn/6889.html&#34;&gt;图解 kubernetes 中基于 etcd 的 watch 关键设计&lt;/a&gt;&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;本文介绍了 kubernetes 针对 etcd 的 watch 场景，k8s 在性能优化上面的一些设计，&#xA;逐个介绍缓存、定时器、序列化缓存、bookmark 机制、forget 机制、&#xA;针对数据的索引与 ringbuffer 等组件的场景以及解决的问题，&#xA;希望能帮助到那些对 apiserver 中的 watch 机制实现感兴趣的朋友。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Topology Manager 设计方案</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/</link>
+      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-topology-manager/</guid>
+      <description>注：本文翻译自 Node Topology Manager&#xA;概要 # 越来越多的系统将 CPU 和硬件加速器组合使用，以支撑高延迟和搞吞吐量的并行计算。 包括电信、科学计算、机器学习、金融服务和数据分析等领域的工作。这种的混血儿构成了一个高性能环境。&#xA;为了达到最优性能，需要对 CPU 隔离、内存和设备的物理位置进行优化。 然而，在 kubernetes 中，这些优化没有一个统一的组件管理。&#xA;本次建议提供一个新机制，可以协同 kubernetes 各个组件，对硬件资源的分配可以有不同的细粒度。&#xA;启发 # 当前，kubelet 中多个组件决定系统拓扑相关的分配：&#xA;CPU 管理器 CPU 管理器限制容器可以使用的 CPU。该能力，在 1.8 只实现了一种策略——静态分配。 该策略不支持在容器的生命周期内，动态上下线 CPU。 设备管理器 设备管理器将某个具体的设备分配给有该设备需求的容器。设备通常是在外围互连线上。 如果设备管理器和 CPU 管理器策略不一致，那么 CPU 和设备之间的所有通信都可能导致处理器互连结构上的额外跳转。 容器运行时（CNI） 网络接口控制器，包括 SR-IOV 虚拟功能（VF）和套接字有亲和关系，socket 不同，性能不同。 相关问题：&#xA;节点层级的硬件拓扑感知（包括 NUMA） 发现节点的 NUMA 架构 绑定特定 CPU 支持虚拟函数 提议：CPU 亲和与 NUMA 拓扑感知 注意，以上所有的关注点都只适用于多套接字系统。 内核能从底层硬件接收精确的拓扑信息（通常是通过 SLIT 表），是正确操作的前提。 更多信息请参考 ACPI 规范的 5.2.16 和 5.2.17 节。&#xA;目标 # 根据 CPU 管理器和设备管理器的输入，给容器选择最优的 NUMA 亲和节点。 集成 kubelet 中其他支持拓扑感知的组件，提供一个统一的内部接口。 非目标 # 设备间连接：根据直接设备互连来决定设备分配。此问题不同于套接字局部性。设备间的拓扑关系， 可以都在设备管理器中考虑，可以做到套接字的亲和性。实现这一策略，可以从逐渐支持任何设备之间的拓扑关系。 大页：本次提议有 2 个前提，一是集群中的节点已经预分配了大页； 二是操作系统能给容器做好本地页分配（只需要本地内存节点上有空闲的大页即可）。 容器网络接口：本次提议不包含修改 CNI。但是，如果 CNI 后续支持拓扑管理， 此次提出的方案应该具有良好的扩展性，以适配网络接口的局部性。对于特殊的网络需求， 可以使用设备插件 API 作为临时方案，以减少网络接口的局限性。 用户故事 # 故事 1: 快速虚拟化的网络功能</description>
+    </item>
+    <item>
+      <title>高级调度</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/</link>
+      <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-scheduler/advanced-scheduling/</guid>
+      <description>使用 taint 和 toleration 阻止节点调度到特定节点 # taint 和 toleration # taint，是在不修改已有 Pod 的前提下，通过在节点上添加污点信息，拒绝 Pod 的部署。 只有当一个 Pod 容忍某个节点的 taint 时，才能被调度到此节点上。&#xA;显示节点 taint 信息&#xA;kubectl describe node master.k8s ... Name: master.k8s Role: Labels: beta.kubernetes.io/arch=amd64 beta.kubernetes.io/os=linux kubernetes.io/hostname=master.k8s Annotations: node.alpha.kubernetes.io/ttl=0 Taints: node-role.kubernetes.io/master:NoSchedule ... 主节点上包含一个污点，污点包含一个 key 和 value，以及一个 effect，格式为=:。 上面的污点信息表示，key 为 node-role.kubernetes.io/master，value 是空，effect 是 NoSchedule。&#xA;显示 Pod tolerations&#xA;kubectl describe Pod kube-proxy-as92 -n kube-system ... Tolerations: node-role.kubernetes.io/master:=NoSchedule node.alpha.kubernetes.io/notReady=:Exists:NoExecute node.alpha.kubernetes.io/unreachable=:Exists:NoExecute ... 第一个 toleration 匹配了主节点的 taint，表示允许这个 Pod 调度到主节点上。</description>
+    </item>
+    <item>
+      <title>Eviction Manager 工作机制</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/</link>
+      <pubDate>Wed, 26 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kubelet/kubelet-eviction-manager/</guid>
+      <description>概述 # 在可用计算资源较少时，kubelet 为保证节点稳定性，会主动地结束一个或多个 pod 以回收短缺地资源， 这在处理内存和磁盘这种不可压缩资源时，驱逐 pod 回收资源的策略，显得尤为重要。 下面来具体研究下 Kubelet Eviction Policy 的工作机制。&#xA;kubelet 预先监控本节点的资源使用，防止资源被耗尽，保证节点稳定性。 kubelet 会预先 Fail N(&amp;gt;=1) 个 Pod，以回收出现紧缺的资源。 kubelet 在 Fail 一个 pod 时，kill 掉 pod 内所有 container，并设置 pod.status.phase = Failed。 kubelet 按照事先设定好的 Eviction Threshold 来触发驱逐动作，实现资源回收。 驱逐信号 # 在源码 pkg/kubelet/eviction/api/types.go 中定义了以下及几种 Eviction Signals：&#xA;Eviction Signal Description memory.available := node.status.capacity[memory] - node.stats.memory.workingSet nodefs.available := node.stats.fs.available nodefs.inodesFree := node.stats.fs.inodesFree imagefs.available := node.stats.runtime.imagefs.available imagefs.inodesFree := node.stats.runtime.imagefs.inodesFree allocatableMemory.available := pod.</description>
+    </item>
+    <item>
+      <title>深入了解 Service</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/</link>
+      <pubDate>Fri, 24 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/sig-network/learn-about-Service/</guid>
+      <description>基本概念 # Service 定义详解 # Service 是对一组提供相同功能的 Pods 的抽象，并为它们提供一个统一的入口。借助 Service， 应用可以方便的实现服务发现与负载均衡，并实现应用的零宕机升级。Service 通过标签来选取服务后端， 一般配合 Replication Controller 或者 Deployment 来保证后端容器的正常运行。 这些匹配标签的 Pod IP 和端口列表组成 endpoints， 由 kube-proxy 负责将服务 IP 负载均衡到这些 endpoints 上。&#xA;apiVersion: v1 kind: Service metadata: name: string namespace: string labels: - name: string annotations: - name: string spec: selector: [] # ClusterIP、NodePort、LoadBalancer type: string # type=ClusterIP, 有自动分配的能力；type=LoadBalancer，需指定 clusterIP: string # 是否支持 session，默认为空，可选值 ClutserIP，同一个 client 的 request，都发送到同一个后端 Pod sessionAffinity: string ports: - name: string # tcp、udp，默认 tcp protocol: string port: int targetPort: int nodePort: int # spec.</description>
+    </item>
+    <item>
+      <title>CRD 入门和使用</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/</link>
+      <pubDate>Mon, 14 Oct 2019 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/crd/</guid>
+      <description>&lt;p&gt;自定义资源是 Kubernetes API 的扩展，本文将讨什么时候应该向 Kubernetes 集群添加自定义资源以及何时使用独立服务。它描述了添加自定义资源的两种方法以及如何在它们之间进行选择。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="
+原文链接：
+  https://prometheus-operator.dev/docs/operator/design/
+
+本文将阐述 Prometheus Operator 管理的 CRD 之间的设计和交互。由 Prometheus Operator 管理的 CRD 有：
+
+
+  Prometheus
+
+  Alertmanager
+
+  ThanosRuler
+
+  ServiceMonitor
+
+  PodMonitor
+
+  Probe
+
+  PrometheusRule
+
+  AlertmanagerConfig
+">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="Prometheus Operator 设计文档" />
+<meta property="og:description" content="
+原文链接：
+  https://prometheus-operator.dev/docs/operator/design/
+
+本文将阐述 Prometheus Operator 管理的 CRD 之间的设计和交互。由 Prometheus Operator 管理的 CRD 有：
+
+
+  Prometheus
+
+  Alertmanager
+
+  ThanosRuler
+
+  ServiceMonitor
+
+  PodMonitor
+
+  Probe
+
+  PrometheusRule
+
+  AlertmanagerConfig
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://howieyuen.github.io/posts/prometheus/" /><meta property="article:section" content="posts" />
+
+<meta property="article:modified_time" content="2024-01-23T14:18:15+08:00" />
+
+<title>Prometheus Operator 设计文档 | 袁昊的学习笔记</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.24bfea92d3f22f77dd53e4a7567161e20b00ded6783b4375a6921c31f40d2d62.js" integrity="sha256-JL/qktPyL3fdU&#43;SnVnFh4gsA3tZ4O0N1ppIcMfQNLWI=" crossorigin="anonymous"></script>
+
+  <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><img src="/logo.jpeg" alt="Logo" /><span>袁昊的学习笔记</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Golang</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-aa0ad5dadefefc3354befb0f21b44571" class="toggle"  />
+    <label for="section-aa0ad5dadefefc3354befb0f21b44571" class="flex justify-between">
+      <a role="button" class="">数据结构</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/chan/" class="">chan</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/map/" class="">map</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/data-structure/slice/" class="">slice</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-9730b84098027970ce9876389c401abb" class="toggle"  />
+    <label for="section-9730b84098027970ce9876389c401abb" class="flex justify-between">
+      <a role="button" class="">语言基础</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/unsafe/" class="">unsafe</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/language-basics/reflect/" class="">reflect</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-84d526a58cfe5a50fb73329d6c7bd14a" class="toggle"  />
+    <label for="section-84d526a58cfe5a50fb73329d6c7bd14a" class="flex justify-between">
+      <a role="button" class="">内存管理</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/memory-manage/memory-model/" class="">内存模型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-084099e607ed94fee6028accac1c176c" class="toggle"  />
+    <label for="section-084099e607ed94fee6028accac1c176c" class="flex justify-between">
+      <a role="button" class="">golang 工具</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/golang/tools/pprof/" class="">pprof</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Kubernetes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-103a3040e6af1931bd7a973aa3d5fe12" class="toggle"  />
+    <label for="section-103a3040e6af1931bd7a973aa3d5fe12" class="flex justify-between">
+      <a role="button" class="">kube-apisever</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/garbage-collector/" class="">垃圾回收</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/key-design-of-etcd-watch/" class="">watch 关键设计</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-apiserver/crd/" class="">CRD 入门和使用</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-55afec95d17025ab2841fd395bf5e066" class="toggle"  />
+    <label for="section-55afec95d17025ab2841fd395bf5e066" class="flex justify-between">
+      <a role="button" class="">kube-controller-manager</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-garbagecollector-controller/" class="">GC Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-daemonset-controller/" class="">DaemonSet Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/code-analysis-of-statefulset-controller/" class="">Statefulset Controller 源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-controller-manager/k8s-apps-rolling-update/" class="">无状态应用滚动更新</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-6c06d491bb5aface6ab2585a8049b13f" class="toggle"  />
+    <label for="section-6c06d491bb5aface6ab2585a8049b13f" class="flex justify-between">
+      <a role="button" class="">kube-scheduler</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kube-scheduler/advanced-scheduling/" class="">高级调度</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-89eea73f7e04e77c22ade24239d6a83e" class="toggle"  />
+    <label for="section-89eea73f7e04e77c22ade24239d6a83e" class="flex justify-between">
+      <a role="button" class="">kubelet</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-topology-manager/" class="">Topology Manager 设计方案</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/kubelet/kubelet-eviction-manager/" class="">Eviction Manager 工作机制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="toggle"  />
+    <label for="section-f0e31a9428c0c5fa066c9ad36b1ae0b6" class="flex justify-between">
+      <a role="button" class="">sig-network</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/sig-network/svc-ep-epslice/" class="">Service 与 Endpoints、EndpointSlice 那些事</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/kubernetes/sig-network/learn-about-Service/" class="">深入了解 Service</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>XaC(Everything as Code)</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-ad61c1f49e198d237c45c8c43e19ff81" class="toggle"  />
+    <label for="section-ad61c1f49e198d237c45c8c43e19ff81" class="flex justify-between">
+      <a role="button" class="">Infra as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/infra-as-code/getting-started-of-acorn/" class="">Acorn：k8s 应用部署框架</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/infra-as-code/terraform-workflow/" class="">Terraform 执行状态和阶段关系</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-b38fb26cbaaf667f79df6e01d2ae5fc3" class="toggle"  />
+    <label for="section-b38fb26cbaaf667f79df6e01d2ae5fc3" class="flex justify-between">
+      <a role="button" class="">Secret as Code</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/helm-secrets/" class="">Helm Secrets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/kamus/" class="">Kamus</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/secrets-store-csi-driver/" class="">Secrets Store CSI Driver</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/sealed-secrets/" class="">Sealed Secrets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/secret-as-code/external-secret-operator/" class="">External Secrets Operator</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-92481b079017edd0b6e890ca098af79c" class="toggle"  />
+    <label for="section-92481b079017edd0b6e890ca098af79c" class="flex justify-between">
+      <a role="button" class="">CI/CD Tools</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/XaC/cicd/argocd/" class="">使用 Argo CD ApplicationSet 管理多集群</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Getting-Started</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/getting-started/monorepo/" class="">MonoRepo</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/getting-started/circle-ci/" class="">Circle CI</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <span>Translation</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f59f78b27df0d3218be457339234a283" class="toggle"  />
+    <label for="section-f59f78b27df0d3218be457339234a283" class="flex justify-between">
+      <a role="button" class="">Protocol Buffers</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/overview-of-protocal-buffers/" class="">概述</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/translation/protobuf/language-guideproto3/" class="">语言指南（proto3）</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-20038bcc21ca3d914920842c4a32533d" class="toggle"  />
+    <label for="section-20038bcc21ca3d914920842c4a32533d" class="flex justify-between">
+      <a role="button" class="">LeetCode</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0321/" class="">321. 拼接最大数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/leetcode/0416/" class="">416. 分割等和子集</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="/posts/" >
+        Blogs
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://github.com/howieyuen/" target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Prometheus Operator 设计文档</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#prometheus">Prometheus</a></li>
+        <li><a href="#alertmanager">Alertmanager</a></li>
+        <li><a href="#thanosruler">ThanosRuler</a></li>
+        <li><a href="#servicemonitor">ServiceMonitor</a></li>
+        <li><a href="#podmonitor">PodMonitor</a></li>
+        <li><a href="#probe">Probe</a></li>
+        <li><a href="#prometheusrule">PrometheusRule</a></li>
+        <li><a href="#alertmanagerconfig">AlertmanagerConfig</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+<article class="markdown">
+  <h1>
+    <a href="/posts/prometheus/">Prometheus Operator 设计文档</a>
+  </h1>
+  
+
+
+  
+  <div>
+    
+      <a href="/categories/design-doc/">design doc</a>
+  </div>
+  
+
+  
+  <div>
+    
+      <a href="/tags/Prometheus/">Prometheus</a>
+  </div>
+  
+
+
+
+<blockquote>
+<p>原文链接：
+  <a href="https://prometheus-operator.dev/docs/operator/design/">https://prometheus-operator.dev/docs/operator/design/</a></p>
+</blockquote>
+<p>本文将阐述 Prometheus Operator 管理的 CRD 之间的设计和交互。由 Prometheus Operator 管理的 CRD 有：</p>
+<ul>
+<li>
+  <a href="https://prometheus-operator.dev/docs/operator/design/#prometheus">Prometheus</a></li>
+<li>
+  <a href="https://prometheus-operator.dev/docs/operator/design/#alertmanager">Alertmanager</a></li>
+<li>
+  <a href="https://prometheus-operator.dev/docs/operator/design/#thanosruler">ThanosRuler</a></li>
+<li>
+  <a href="https://prometheus-operator.dev/docs/operator/design/#servicemonitor">ServiceMonitor</a></li>
+<li>
+  <a href="https://prometheus-operator.dev/docs/operator/design/#podmonitor">PodMonitor</a></li>
+<li>
+  <a href="https://prometheus-operator.dev/docs/operator/design/#probe">Probe</a></li>
+<li>
+  <a href="https://prometheus-operator.dev/docs/operator/design/#prometheusrule">PrometheusRule</a></li>
+<li>
+  <a href="https://prometheus-operator.dev/docs/operator/design/#alertmanagerconfig">AlertmanagerConfig</a></li>
+</ul>
+<h2 id="prometheus">
+  Prometheus
+  <a class="anchor" href="#prometheus">#</a>
+</h2>
+<p><code>Prometheus</code>(CRD) 以声明方式定义所需的 
+  <a href="https://prometheus.io/docs/prometheus">Prometheus</a>，设置在 Kubernetes 集群中运行。
+它提供了选项来配置已部署的 Prometheus 实例的副本数量、持久存储和向其发送警报的 Alertmanagers。</p>
+<p>对于每个 <code>Prometheus</code> 资源，Operator 在同一个命名空间中部署一个或多个 <code>StatefulSet</code> 对象（statefulset 的数量等于 shard 的数量，但默认为 1）。
+CRD 通过标签和命名空间选择器定义哪些 <code>ServiceMonitor</code>、<code>PodMonitor</code> 和 <code>Probe</code> 对象应该与部署的 Prometheus 实例相关联。</p>
+<p>CRD 还定义了应该调和哪些 <code>PrometheusRules</code> 对象。Operator 不断地协调 CR 并生成一个或多个包含 Prometheus 配置的 <code>Secret</code> 对象。
+在 Prometheus Pod 中作为 sidecar 运行的 config-reloader 容器检测到配置的任何更改，并在需要时重新加载 <code>Prometheus</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">monitoring.coreos.com/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Prometheus</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">prometheus</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">serviceAccountName</span>: <span style="color:#ae81ff">prometheus</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">serviceMonitorSelector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">team</span>: <span style="color:#ae81ff">frontend</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">resources</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">requests</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">400Mi</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">enableAdminAPI</span>: <span style="color:#66d9ef">true</span> <span style="color:#75715e"># Expose the Prometheus Admin API</span>
+</span></span></code></pre></div><h2 id="alertmanager">
+  Alertmanager
+  <a class="anchor" href="#alertmanager">#</a>
+</h2>
+<p><code>Alertmanager</code>(CRD) 以声明方式定义所需的 
+  <a href="https://prometheus.io/docs/alerting">Alertmanager</a>
+设置以在 Kubernetes 集群中运行。它提供了配置副本数量和持久化存储的选项。</p>
+<p>对于每个 <code>Alertmanager</code> 资源，Operator 在同一个命名空间中部署一个 <code>StatefulSet</code>。
+Alertmanager Pod 被配置为挂载一个名为 <code>alertmanager-&lt;alertmanager-name&gt;</code> 的 <code>Secret</code>，
+该 <code>Secret</code> 在 key 为 <code>alertmanager.yaml</code> 下保存 Alertmanager 配置。</p>
+<p>当有两个或更多配置的副本时，Operator 以高可用模式运行 Alertmanager 实例。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">monitoring.coreos.com/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Alertmanager</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">main</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">resources</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">requests</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">400Mi</span>
+</span></span></code></pre></div><h2 id="thanosruler">
+  ThanosRuler
+  <a class="anchor" href="#thanosruler">#</a>
+</h2>
+<p><code>ThanosRuler</code> (CRD) 以声明方式定义了所需的 
+  <a href="https://github.com/thanos-io/thanos/blob/main/docs/components/rule.md">Thanos Ruler</a>
+设置以在 Kubernetes 集群中运行。借助 ThanosRuler，可以跨多个 Prometheus 实例处理记录和警报规则。</p>
+<p>一个 ThanosRuler 实例至少需要一个查询端点，该端点指向 Thanos Queriers 或 Prometheus 实例的位置。
+更多信息详见 
+  <a href="https://prometheus-operator.dev/docs/operator/thanos/">Thanos</a> 小节 。</p>
+<h2 id="servicemonitor">
+  ServiceMonitor
+  <a class="anchor" href="#servicemonitor">#</a>
+</h2>
+<p><code>ServiceMonitor</code>(CRD) 以声明方式定义应如何监视一组动态服务。
+使用标签选择器来定义哪些 <code>Service</code> 被选择以使用所需的配置进行监视。
+这允许组织引入关于如何公开指标的约定，然后按照这些约定自动发现新服务，而无需重新配置系统。</p>
+<p>为了让 Prometheus 监控 Kubernetes 中的任何应用程序，需要 <code>Endpoints</code> 对象。
+<code>Endpoints</code> 本质上是 IP 地址列表。通常，<code>Endpoints</code> 由 <code>Service</code> 填充。
+<code>Service</code> 通过标签选择器发现 <code>Pod</code> 并将其添加到 <code>Endpoints</code> 中。</p>
+<p>一个 <code>Service</code> 可能会暴露一个或多个服务端口，这些端口通常由指向 <code>Pod</code> 的多个端点列表支持。
+这也反映在各自的 <code>Endpoints</code> 对象中。Prometheus Operator 引入的 <code>ServiceMonitor</code>
+对象依次发现那些 <code>Endpoints</code> 对象并配置 <code>Prometheus</code> 来监控这些 <code>Pod</code>。</p>
+<p><code>ServiceMonitorSpec</code> 的 <code>endpoints</code> 部分，用于配置这些端点的哪些端口将被抓取以获取指标，以及使用哪些参数。
+对于高级用例，可能需要监控不直接属于 <code>Service</code> 的 <code>Endpoints</code> 所支持 <code>Pod</code> 的端口。
+因此，在 <code>endpoints</code> 部分中指定端点时，严格使用它们。</p>
+<blockquote class="book-hint info">
+  注意：<code>endpoints</code>（小写）是 <code>ServiceMonitor</code> CRD 中的字段，而 <code>Endpoints</code>（大写）是 Kubernetes 对象类型。
+</blockquote>
+
+<p><code>ServiceMonitors</code> 和发现的目标都可能来自任何命名空间。这对于允许跨命名空间监控用例很重要，例如，用于元监控。
+使用 <code>PrometheusSpec</code> 的 <code>ServiceMonitorNamespaceSelector</code>，
+可以限制各个 Prometheus 服务器从中选择 <code>ServiceMonitor</code> 的命名空间。
+使用 <code>ServiceMonitorSpec</code> 的 <code>namespaceSelector</code>，可以限制允许从中发现 <code>Endpoints</code> 对象的命名空间。</p>
+<p>可以像这样在所有命名空间中发现目标：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">monitoring.coreos.com/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ServiceMonitor</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">example-app</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">app</span>: <span style="color:#ae81ff">example-app</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">endpoints</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">web</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespaceSelector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">any</span>: <span style="color:#66d9ef">true</span>
+</span></span></code></pre></div><h2 id="podmonitor">
+  PodMonitor
+  <a class="anchor" href="#podmonitor">#</a>
+</h2>
+<p><code>PodMonitor</code> (CRD) 允许以声明方式定义应如何监视一组动态 <code>Pod</code>。使用标签选择来定义选择要使用所需配置监视哪些 <code>Pod</code>。
+这允许组织引入关于如何公开指标的约定，然后按照这些约定自动发现新的 <code>Pod</code>，而无需重新配置系统。</p>
+<p><code>Pod</code> 是一个或多个容器的集合，可以在多个端口上公开 Prometheus 指标。</p>
+<p>Prometheus Operator 引入的 <code>PodMonitor</code> 对象会发现这些 <code>Pod</code>，并为 Prometheus 服务器生成相关配置，以便对其进行监控。</p>
+<p><code>PodMonitorSpec</code> 的 <code>PodMetricsEndpoints</code> 部分用于配置 <code>Pod</code> 的哪些端口将被抓取以获取指标，以及使用哪些参数。</p>
+<p><code>PodMonitor</code> 和发现的目标都可能来自任何命名空间。这对于允许跨命名空间监控用例很重要，例如用于元监控。
+使用 <code>PodMonitorSpec</code> 的 <code>namespaceSelector</code>，可以限制允许发现 <code>Pod</code> 的命名空间。</p>
+<p>一旦可以像这样发现所有命名空间中的目标：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">monitoring.coreos.com/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">PodMonitor</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">example-app</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">app</span>: <span style="color:#ae81ff">example-app</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">podMetricsEndpoints</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">web</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespaceSelector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">any</span>: <span style="color:#66d9ef">true</span>
+</span></span></code></pre></div><h2 id="probe">
+  Probe
+  <a class="anchor" href="#probe">#</a>
+</h2>
+<p><code>Probe</code> (CRD) 允许以声明方式定义应如何监视 <code>Ingress</code> 和静态目标。
+除了目标之外，<code>Probe</code> 对象还需要一个探测器，它监控目标并为 Prometheus 提供指标以进行抓取的服务。
+通常，这是使用 
+  <a href="https://github.com/prometheus/blackbox_exporter">black exporter</a> 实现的。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">monitoring.coreos.com/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Probe</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">group</span>: <span style="color:#ae81ff">group1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">testprobe</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">module</span>: <span style="color:#ae81ff">http_2xx</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">prober</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/probe</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">scheme</span>: <span style="color:#ae81ff">http</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">url</span>: <span style="color:#ae81ff">blackbox.exporter.io</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">targets</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ingress</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">relabelingConfigs</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">action</span>: <span style="color:#ae81ff">replace</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">replacement</span>: <span style="color:#ae81ff">bar</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">targetLabel</span>: <span style="color:#ae81ff">foo</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">namespaceSelector</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">any</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">prometheus.io/probe</span>: <span style="color:#e6db74">&#39;true&#39;</span>
+</span></span></code></pre></div><h2 id="prometheusrule">
+  PrometheusRule
+  <a class="anchor" href="#prometheusrule">#</a>
+</h2>
+<p><code>PrometheusRule</code>(CRD) 以声明方式定义 Prometheus 或 Thanos Ruler 实例使用的所需 Prometheus 规则。
+警报和记录规则由 Operator 协调并动态加载，无需重新启动 Prometheus/Thanos Ruler。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">monitoring.coreos.com/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">PrometheusRule</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">prometheus</span>: <span style="color:#ae81ff">k8s</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">role</span>: <span style="color:#ae81ff">alert-rules</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">etcd-rules</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">monitoring</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">groups</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">etcd</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">alert</span>: <span style="color:#ae81ff">EtcdClusterUnavailable</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">summary</span>: <span style="color:#ae81ff">etcd cluster small</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">description</span>: <span style="color:#ae81ff">If one more etcd peer goes down the cluster will be unavailable</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">expr</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        count(up{job=&#34;etcd&#34;} == 0) &gt; (count(up{job=&#34;etcd&#34;}) / 2 - 1)</span>        
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">for</span>: <span style="color:#ae81ff">3m</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">severity</span>: <span style="color:#ae81ff">critical</span>
+</span></span></code></pre></div><h2 id="alertmanagerconfig">
+  AlertmanagerConfig
+  <a class="anchor" href="#alertmanagerconfig">#</a>
+</h2>
+<p><code>AlertmanagerConfig</code> (CRD) 以声明方式指定 Alertmanager 配置的子部分，允许将警报路由到自定义接收器，并设置禁止规则。
+<code>AlertmanagerConfig</code> 可以在命名空间级别上定义，为 Alertmanager 提供聚合配置。下面提供了如何使用它的示例。请注意，这个 CRD 还不稳定。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">monitoring.coreos.com/v1alpha1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">AlertmanagerConfig</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">config-example</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">alertmanagerConfig</span>: <span style="color:#ae81ff">example</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">route</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">groupBy</span>: [<span style="color:#e6db74">&#39;job&#39;</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">groupWait</span>: <span style="color:#ae81ff">30s</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">groupInterval</span>: <span style="color:#ae81ff">5m</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">repeatInterval</span>: <span style="color:#ae81ff">12h</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">receiver</span>: <span style="color:#e6db74">&#39;wechat-example&#39;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">receivers</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;wechat-example&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">wechatConfigs</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">apiURL</span>: <span style="color:#e6db74">&#39;http://wechatserver:8080/&#39;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">corpID</span>: <span style="color:#e6db74">&#39;wechat-corpid&#39;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">apiSecret</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;wechat-config&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">key</span>: <span style="color:#e6db74">&#39;apiSecret&#39;</span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Secret</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">type</span>: <span style="color:#ae81ff">Opaque</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">wechat-config</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">data</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiSecret</span>: <span style="color:#ae81ff">d2VjaGF0LXNlY3JldAo=</span>
+</span></span></code></pre></div></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+  <div><a class="flex align-center" href="https://github.com/howieyuen/howieyuen.github.io/commit/8170fbc7cf90437629b14d4ade72a3e39a5e79be" title='Last modified by howieyuen | January 23, 2024' target="_blank" rel="noopener">
+      <img src="/svg/calendar.svg" class="book-icon" alt="Calendar" />
+      <span>January 23, 2024</span>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+
+
+<div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script>
+  const gitalk = new Gitalk({
+    clientID: 'b4cc17dbafc8ad637453',
+    clientSecret: '77b4685b4d6da0280eca116a66b6f01244033d35',
+    repo: 'howieyuen.github.io',
+    owner: 'howieyuen',
+    admin: ['howieyuen'],
+    id: location.pathname, 
+    distractionFreeMode: false 
+  });
+  (function() {
+    if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+      document.getElementById('gitalk-container').innerHTML = 'Gitalk comments not available by default when the website is previewed locally.';
+      return;
+    }
+    gitalk.render('gitalk-container');
+  })();
+</script>
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#prometheus">Prometheus</a></li>
+        <li><a href="#alertmanager">Alertmanager</a></li>
+        <li><a href="#thanosruler">ThanosRuler</a></li>
+        <li><a href="#servicemonitor">ServiceMonitor</a></li>
+        <li><a href="#podmonitor">PodMonitor</a></li>
+        <li><a href="#probe">Probe</a></li>
+        <li><a href="#prometheusrule">PrometheusRule</a></li>
+        <li><a href="#alertmanagerconfig">AlertmanagerConfig</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
