@@ -2,14 +2,17 @@
 author: Yuan Hao
 date: 2021-01-21
 title: pprof
-tag: [golang, pprof]
+tag: [pprof]
+categories: [Golang]
 ---
-
-# 1. 什么是 pprof
 
 Profiling 是指在程序执行过程中，收集能够反映程序执行状态的数据。
 在软件工程中，性能分析（performance analysis，也称为 profiling），
 是以收集程序运行时信息为手段研究程序行为的分析方法，是一种动态程序分析的方法。
+
+<!--more-->
+
+## 什么是 pprof
 
 Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供可视化的功能。它包含两个相关的库：
 - runtime/pprof
@@ -18,7 +21,7 @@ Go 语言自带的 pprof 库就可以分析程序的运行情况，并且提供�
   对于在线服务，对于一个 HTTP Server，访问 pprof 提供的 HTTP 接口，获得性能数据。
   当然，实际上这里底层也是调用的 runtime/pprof 提供的函数，封装成接口对外提供网络访问。
 
-# 2. pprof 的作用
+## pprof 的作用
 
 > 下表来自 [golang pprof 实战](https://blog.wolfogre.com/posts/go-ppof-practice)
 
@@ -36,11 +39,11 @@ trace	     | 程序运行跟踪信息	       | 浏览器打开会下载文件，
 
 allocs 和 heap 采样的信息一致，不过前者是所有对象的内存分配，而 heap 则是活跃对象的内存分配。
 
-# 3. pprof 如何使用
+## pprof 如何使用
 
 我们可以通过报告生成、Web 可视化界面、交互式终端三种方式来使用 pprof。
 
-## 3.1 runtime/pprof
+### runtime/pprof
 
 拿 CPU profiling 举例，增加两行代码，调用 `pprof.StartCPUProfile` 启动 cpu profiling，
 调用 `pprof.StopCPUProfile()` 将数据刷到文件里：
@@ -62,7 +65,7 @@ func main() {
 }
 ```
 
-## 3.2 net/http/pprof
+### net/http/pprof
 
 启动一个端口（和正常提供业务服务的端口不同）监听 pprof 请求：
 
@@ -123,7 +126,7 @@ frameborder="1">
 后者则可以看到每一个 goroutine 的状态。
 页面具体内容的解读可以参考大彬的文章 [实战 Go 内存泄露](https://segmentfault.com/a/1190000019222661)。
 
-# 4. 采样分析
+## 采样分析
 
 开始采样之前，需要模拟服务访问，这里用到的是压力测试管径 [wrk](https://github.com/wg/wrk)。
 
@@ -132,7 +135,7 @@ frameborder="1">
 wrk -c500 -t30 -d1m http://localhost:8888/zzz@foo.bar
 ```
 
-## 4.1 报告生成
+### 报告生成
 
 报告生成有 2 种方式：
 - runtime/pprof 写入本地文件
@@ -167,7 +170,7 @@ frameborder="1">
 
 它和一般的火焰图相比刚好倒过来了，调用关系的展现是从上到下。形状越长，表示执行时间越长。
 
-## 4.2 交互式命令
+### 交互式命令
 
 除了使用内置的页面采样分析，也直接使用如下命令，不需要通过浏览器直接进入~
 
@@ -278,7 +281,7 @@ width="35%"
 图示与之前看到的调用链图基本一致，聚焦业务代码 `main.handler`，
 可以发现`regexp.Compile` 耗时明显，因为每次请求过来，都要重新编译正则表达式。
 
-# 5. 参考资料
+## 参考资料
 
 - [深度解密 Go 语言之 pprof](https://qcrao.com/2019/11/10/dive-into-go-pprof/)
 - [曹大 pprof](https://xargin.com/pprof-and-flamegraph/)

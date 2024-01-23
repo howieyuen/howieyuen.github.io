@@ -1,7 +1,7 @@
 ---
 title: Circle CI
 date: 2021-12-14
-tags: [CircleCI, Orb]
+tags: [CircleCI]
 categories: [CI/CD]
 ---
 

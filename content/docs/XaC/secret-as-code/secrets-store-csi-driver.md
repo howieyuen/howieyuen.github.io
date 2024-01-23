@@ -2,7 +2,8 @@
 author: howieyuen
 date: 2022-11-02
 title: Secrets Store CSI Driver
-tag: [SaC, secret, csi]
+tag: [SecretProviderClass]
+categories: [SaC]
 ---
 
 ## 概述

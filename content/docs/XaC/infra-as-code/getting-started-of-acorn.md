@@ -1,7 +1,8 @@
 ---
 date: 2022-12-16
 title: Acorn：k8s 应用部署框架
-tag: [acorn, iac]
+tags: [Acorn]
+categories: [IaC]
 ---
 
 ## 概述

@@ -2,12 +2,15 @@
 author: Yuan Hao
 date: 2020-5-14
 title: reflect
-tag: [golang, reflect]
+tags: [reflect]
+categories: [Golang]
 ---
 
-# 1. 引言
-
 计算机中提到的反射一般是指，**程序借助某种手段检查自己结构的一种能力**，通常就是借助编程语言中定义的类型（`types`）。因此，反射是建立在类型系统上的。
+
+<!--more-->
+
+## 引言
 
 **go 是静态类型化**，每个变量都有一个静态类型，也就是说，在编译时，变量的类型就已经确定。不显示地去做强制类型转换，不同类型之间是无法相互赋值的。
 
@@ -19,9 +22,13 @@ tag: [golang, reflect]
 
 所以反射是干嘛的呢？**反射是一种检查存储在接口变量中的（类型/值）对的机制**。reflect 包中提供的 2 个类型 `Type` 和 `Value`，提供了访问接口值的 `reflect.Type` 和 `reflect.Value` 部分。
 
-# 2. 三大法则
+## 三大法则
 
-## 2.1. Reflection goes from interface value to reflecton object
+### 法则一
+
+{{<hint info>}}
+Reflection goes from interface value to reflecton object
+{{</hint>}}
 
 从 `interface{}` 变量可以反射出反射对象
 
@@ -42,7 +49,11 @@ func main() {
 
 `reflect.Value 的 Type` 返回的是静态类型 `MyInt`，而 `kind()` 方法返回的是底层类型 `int32`；为了保持 API 简单，value 的 `Setter` 和 `Getter` 类型方法操作，是包含某个值的最大类型，`v.Int()` 返回的是 `int64`，必要时转化成实际类型。
 
-## 2.2 Reflection goes from reflection object to interface value
+### 法则二
+
+{{<hint info>}}
+Reflection goes from reflection object to interface value
+{{</hint>}}
 
 从反射对象可以获取 `interface{}` 变量；
 
@@ -59,7 +70,11 @@ func main() {
 
 对于一个 `reflect.Value`，可以用 `Interface()` 方法恢复成一个接口值，效果就是包类型和值打包成接口，并返回结果。
 
-## 2.3 To modify a reflection object, the value must be settable
+### 法则三
+
+{{<hint info>}}
+To modify a reflection object, the value must be settable
+{{</hint>}}
 
 要修改反射对象，其值必须可设置；
 
@@ -92,7 +107,7 @@ func main() {
 
 如果不能直接操作 `i` 变量修改其持有的值，我们就只能获取 `i` 变量所在地址并使用 `*v` 修改所在地址中存储的整数。
 
-# 3. 相关资料
+## 相关资料
 
 - [Go 语言中反射包的实现原理](https://studygolang.com/articles/2157)
 - [4.3 反射](https://draveness.me/golang/docs/part2-foundation/ch04-basic/golang-reflect/)

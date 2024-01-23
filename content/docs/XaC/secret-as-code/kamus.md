@@ -2,7 +2,8 @@
 author: howieyuen
 date: 2023-09-27
 title: Kamus
-tag: [SaC, kamus, secret]
+tag: [KamusSecret]
+categories: [SaC]
 ---
 
 ## 概述

@@ -1,11 +1,14 @@
 ---
 date: 2022-12-16
 title: Terraform 执行状态和阶段关系
-tag: [terraform, iac]
+tag: [Terraform]
+categories: [IaC]
 ---
 
 Terraform 每次运行都经过多个操作阶段（Pending、Plan、Cost Estimation、Policy Check、Apply 和 Completion），Terraform Cloud 将这些阶段的进度显示为运行状态。
 在 Terraform Cloud 主页上的工作区列表中，每个工作区都显示了它当前正在处理的运行状态。（或者，如果没有正在进行的运行，则为最近完成的运行的状态。）
+
+<!--more-->
 
 ## Pending
 

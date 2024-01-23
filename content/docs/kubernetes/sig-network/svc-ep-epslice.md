@@ -2,7 +2,8 @@
 author: howieyuen
 date: 2023-01-31
 title: Service 与 Endpoints、EndpointSlice 那些事
-tag: [k8s, svc, ep, endpointslice]
+tag: [Service, Endpoints, EndpointSlice]
+categories: [Kubernetes]
 ---
 
 # Service 与 Endpoints、EndpointSlice 那些事

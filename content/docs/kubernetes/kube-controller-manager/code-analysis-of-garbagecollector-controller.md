@@ -2,18 +2,21 @@
 author: Yuan Hao
 date: 2020-10-25
 title: GC Controller 源码分析
-tag: [garbage collector, controller]
+tag: [GC, controller]
+categories: [Kubernetes]
 ---
 
-# 1. 序言 
+# 序言 
 
 垃圾回收相关，可参考 [这里]({{< relref "/docs/kubernetes/kube-apiserver/garbage-collector.md" >}})
 
-# 2. 源码解析
+# 源码解析
 
-GarbageCollectorController 负责回收集群中的资源对象，要做到这一点，首先得监控所有资源。gc controller 会监听集群中所有可删除资源的事件，这些事件会放到一个队列中，然后启动多个 worker 协程处理。对于删除事件，则根据删除策略删除对象；其他事件，更新对象之间的依赖关系。
+GarbageCollectorController 负责回收集群中的资源对象，要做到这一点，首先得监控所有资源。
+gc controller 会监听集群中所有可删除资源的事件，这些事件会放到一个队列中，然后启动多个 worker 协程处理。
+对于删除事件，则根据删除策略删除对象；其他事件，更新对象之间的依赖关系。
 
-## 2.1 startGarbageCollectorController()
+## startGarbageCollectorController()
 
 首先来看 gc controller 的入口方法，也就是 kube-controller-manager 是如何启动它的。它的主要逻辑：
 1. 判断是否启用 gc controller，默认是 true
@@ -24,8 +27,8 @@ GarbageCollectorController 负责回收集群中的资源对象，要做到这�
 6. 调用 `garbageCollector.Sync()` 监听集群中的资源，当出现新的资源时，同步到 minitors 中
 7. 调用 `garbagecollector.NewDebugHandler()` 注册 debug 接口，用来提供集群内所有对象的关联关系；
 
-`cmd/kube-controller-manager/app/core.go:538`
 ```go
+// cmd/kube-controller-manager/app/core.go:538
 func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool, error) {
 	// 1. 判断是否启用 gc controller，默认是 true
 	if !ctx.ComponentConfig.GarbageCollectorController.EnableGarbageCollector {
@@ -75,14 +78,18 @@ func startGarbageCollectorController(ctx ControllerContext) (http.Handler, bool,
 - `garbageCollector.Run()`
 - `garbageCollector.Sync()`
 - `garbagecollector.NewDebugHandler()`
-其中 `garbagecollector.NewGarbageCollector()` 只是初始化 GarbageCollector 和 GraphBuilder 对象，核心逻辑都在 Run() 和 Sync() 中，下面分别来看这几个方法分别做了那些事。
+其中 `garbagecollector.NewGarbageCollector()` 只是初始化 GarbageCollector 和 GraphBuilder 对象，
+核心逻辑都在 Run() 和 Sync() 中，下面分别来看这几个方法分别做了那些事。
 
-### 2.1.1 garbageCollector.Run()
+### garbageCollector.Run()
 
-`garbageCollector.Run()` 方法主要作用是启动生产者和消费者。生产者就是 monitors，监听集群中的资源对象，将产生的新事件分别放入 `attemptToDelete` 和 `attemptToOrphan` 两个队列中。消费者就是处理这 2 个队列中的事件，要么删除对象，要么更新对象依赖关系。该方法的核心在于 `gc.dependencyGraphBuilder.Run()` 启动生产者和 for 循环启动消费者。
+`garbageCollector.Run()` 方法主要作用是启动生产者和消费者。生产者就是 monitors，监听集群中的资源对象，
+将产生的新事件分别放入 `attemptToDelete` 和 `attemptToOrphan` 两个队列中。
+消费者就是处理这 2 个队列中的事件，要么删除对象，要么更新对象依赖关系。
+该方法的核心在于 `gc.dependencyGraphBuilder.Run()` 启动生产者和 for 循环启动消费者。
 
-`pkg/controller/garbagecollector/garbagecollector.go:122`
 ```go
+// pkg/controller/garbagecollector/garbagecollector.go:122
 func (gc *GarbageCollector) Run(workers int, stopCh <-chan struct{}) {
 	...
 
@@ -113,8 +120,8 @@ func (gc *GarbageCollector) Run(workers int, stopCh <-chan struct{}) {
 **GraphBuilder**
 GraphBuilder 在整个垃圾收集的过程中，起到了承上启下的作用。首先看下它的结构：
 
-`pkg/controller/garbagecollector/graph_builder.go:73`
 ```go
+// pkg/controller/garbagecollector/graph_builder.go:73
 type GraphBuilder struct {
 	restMapper meta.RESTMapper
 
@@ -150,10 +157,13 @@ type GraphBuilder struct {
 	ignoredResources map[schema.GroupResource]struct{}
 }
 ```
-其中 `uidToNode` 字段作为维护对象之间依赖关系，比如创建一个 Deployment 时，会创建 ReplicaSet，ReplicaSet 才会创建 Pod。那么 Pod 的 owner 是 ReplicaSet，ReplicaSet 的 owner 是 Deployment。`uidToNode` 字段的结构定义如下：
 
-`pkg/controller/garbagecollector/graph.go:162`
+其中 `uidToNode` 字段作为维护对象之间依赖关系，比如创建一个 Deployment 时，会创建 ReplicaSet，
+ReplicaSet 才会创建 Pod。那么 Pod 的 owner 是 ReplicaSet，
+ReplicaSet 的 owner 是 Deployment。`uidToNode` 字段的结构定义如下：
+
 ```go
+// pkg/controller/garbagecollector/graph.go:162
 type concurrentUIDToNode struct {
 	uidToNodeLock sync.RWMutex
 	uidToNode     map[types.UID]*node
@@ -182,7 +192,8 @@ type node struct {
 	owners []metav1.OwnerReference
 }
 ```
-`GraphBuilder` 主要有三个功能：
+
+GraphBuilder` 主要有三个功能：
 1. 监控集群中所有的可删除资源；
 2. 基于 informers 中的资源在 `uidToNode` 数据结构中维护着所有对象的依赖关系；
 3. 处理 graphChanges 中的事件并放到 `attemptToDelete` 和 `attemptToOrphan` 两个队列中；
@@ -190,9 +201,8 @@ type node struct {
 **gc.dependencyGraphBuilder.Run()**
 继续回到 `gc.dependencyGraphBuilder.Run()` 方法，它的功能上文已经提到，就是启动生产者。代码如下：
 
-`pkg/controller/garbagecollector/graph_builder.go:290`
-
 ```go
+// pkg/controller/garbagecollector/graph_builder.go:290
 func (gb *GraphBuilder) Run(stopCh <-chan struct{}) {
 	klog.Infof("GraphBuilder running")
 	defer klog.Infof("GraphBuilder stopping")
@@ -232,26 +242,44 @@ func (gb *GraphBuilder) Run(stopCh <-chan struct{}) {
 2. 获取 event 的 accessor，accessor 是一个 object 的 meta.Interface，里面包含访问 object meta 中所有字段的方法；
 3. 通过 accessor 获取 UID 判断 `uidToNode` 中是否存在该 object；
 
-根据对象是否存在以及事件类型，分成三种情况
+根据对象是否存在以及事件类型，分成三种情况：
 - 若 `uidToNode` 中不存在该 node 且该事件是 addEvent 或 updateEvent
 
-则为该 object 创建对应的 node，并调用 `gb.insertNode()` 将该 node 加到 `uidToNode` 中，然后将该 node 添加到其 owner 的 dependents 中，执行完 `gb.insertNode()` 中的操作后再调用 `gb.processTransitions()` 方法判断该对象是否处于删除状态，若处于删除状态会判断该对象是以 orphan 模式删除还是以 foreground 模式删除，若以 orphan 模式删除，则将该 node 加入到 `attemptToOrphan` 队列中，若以 foreground 模式删除则将该对象以及其所有 dependents 都加入到 `attemptToDelete` 队列中；
+则为该 object 创建对应的 node，并调用 `gb.insertNode()` 将该 node 加到 `uidToNode` 中，
+然后将该 node 添加到其 owner 的 dependents 中，执行完 `gb.insertNode()`
+中的操作后再调用 `gb.processTransitions()` 方法判断该对象是否处于删除状态，
+若处于删除状态会判断该对象是以 orphan 模式删除还是以 foreground 模式删除，
+若以 orphan 模式删除，则将该 node 加入到 `attemptToOrphan` 队列中，
+若以 foreground 模式删除则将该对象以及其所有 dependents 都加入到 `attemptToDelete` 队列中；
 
 - 若 `uidToNode` 中存在该 node 且该事件是 addEvent 或 updateEvent 
 
-此时可能是一个 update 操作，调用 `referencesDiffs()` 方法检查该对象的 OwnerReferences 字段是否有变化，若有变化
-1. 调用 `gb.addUnblockedOwnersToDeleteQueue()` 将被删除以及更新的 owner 对应的 node 加入到 `attemptToDelete` 中，因为此时该 node 中已被删除或更新的 owner 可能处于删除状态且阻塞在该 node 处，此时有三种方式避免该 node 的 owner 处于删除阻塞状态，一是等待该 node 被删除，二是将该 node 自身对应 owner 的 `OwnerReferences `字段删除，三是将该 node 的 `OwnerReferences` 字段中对应 owner 的 `BlockOwnerDeletion` 设置为 false；
+此时可能是一个 update 操作，调用 `referencesDiffs()` 方法检查该对象的 OwnerReferences 字段是否有变化，若有变化：
+1. 调用 `gb.addUnblockedOwnersToDeleteQueue()` 将被删除以及更新的 owner 对应的 node 加入到 `attemptToDelete` 中，
+   因为此时该 node 中已被删除或更新的 owner 可能处于删除状态且阻塞在该 node 处，
+   此时有三种方式避免该 node 的 owner 处于删除阻塞状态，一是等待该 node 被删除，
+   二是将该 node 自身对应 owner 的 `OwnerReferences `字段删除，
+   三是将该 node 的 `OwnerReferences` 字段中对应 owner 的 `BlockOwnerDeletion` 设置为 false；
 2. 更新该 node 的 owners 列表；
 3. 若有新增的 owner，将该 node 加入到新 owner 的 dependents 中；
-4. 若有被删除的 owner，将该 node 从已删除 owner 的 dependents 中删除；以上操作完成后，检查该 node 是否处于删除状态并进行标记，最后调用 `gb.processTransitions()` 方法检查该 node 是否要被删除；
+4. 若有被删除的 owner，将该 node 从已删除 owner 的 dependents 中删除；
+   以上操作完成后，检查该 node 是否处于删除状态并进行标记，
+   最后调用 `gb.processTransitions()` 方法检查该 node 是否要被删除；
 
-举个例子，若以 foreground 模式删除 deployment 时，deployment 的 dependents 列表中有对应的 rs，那么 deployment 的删除会阻塞住等待其依赖 rs 的删除，此时 rs 有三种方法不阻塞 deployment 的删除操作，一是 rs 对象被删除，二是删除 rs 对象 OwnerReferences 字段中对应的 deployment，三是将 rs 对象 OwnerReferences 字段中对应的 deployment 配置 BlockOwnerDeletion 设置为 false，文末会有示例演示该操作。
+举个例子，若以 foreground 模式删除 deployment 时，deployment 的 dependents 列表中有对应的 rs，
+那么 deployment 的删除会阻塞住等待其依赖 rs 的删除，此时 rs 有三种方法不阻塞 deployment 的删除操作，
+一是 rs 对象被删除，二是删除 rs 对象 OwnerReferences 字段中对应的 deployment，
+三是将 rs 对象 OwnerReferences 字段中对应的 deployment 配置 BlockOwnerDeletion 设置为 false，
+文末会有示例演示该操作。
 
 - 若该事件为 deleteEvent
-首先从 `uidToNode` 中删除该对象，然后从该 node 所有 owners 的 dependents 中删除该对象，将该 node 所有的 dependents 加入到 `attemptToDelete` 队列中，最后检查该 node 的所有 owners，若有处于删除状态的 owner，此时该 owner 可能处于删除阻塞状态正在等待该 node 的删除，将该 owner 加入到 `attemptToDelete` 中；
+首先从 `uidToNode` 中删除该对象，然后从该 node 所有 owners 的 dependents 中删除该对象，
+将该 node 所有的 dependents 加入到 `attemptToDelete` 队列中，最后检查该 node 的所有 owners，
+若有处于删除状态的 owner，此时该 owner 可能处于删除阻塞状态正在等待该 node 的删除，
+将该 owner 加入到 `attemptToDelete` 中；
 
-`pkg/controller/garbagecollector/graph_builder.go:530`
 ```go
+// pkg/controller/garbagecollector/graph_builder.go:530
 func (gb *GraphBuilder) runProcessGraphChanges() {
 	for gb.processGraphChanges() {
 	}
@@ -354,12 +382,12 @@ func (gb *GraphBuilder) processGraphChanges() bool {
 }
 ```
 
-### 2.1.2 gc.runAttemptToDeleteWorker()
+### gc.runAttemptToDeleteWorker()
 
 `gc.runAttemptToDeleteWorker()` 方法就是将 `attemptToDelete` 队列中的对象取出，并删除，如果删除失败则重进队列重试。
 
-`pkg/controller/garbagecollector/garbagecollector.go:285`
 ```go
+// pkg/controller/garbagecollector/garbagecollector.go:285
 func (gc *GarbageCollector) runAttemptToDeleteWorker() {
 	for gc.attemptToDeleteWorker() {
 	}
@@ -397,19 +425,39 @@ func (gc *GarbageCollector) attemptToDeleteWorker() bool {
 	return true
 }
 ```
-`gc.runAttemptToDeleteWorker()` 中调用了 `gc.attemptToDeleteItem()` 执行实际的删除操作。下面继续来看 `gc.attemptToDeleteItem()` 的实现细节：
+
+`gc.runAttemptToDeleteWorker()` 中调用了 `gc.attemptToDeleteItem()` 执行实际的删除操作。
+下面继续来看 `gc.attemptToDeleteItem()` 的实现细节：
 
 1. 判断 node 是否处于删除状态；
-2. 从 apiserver 获取该 node 最新的状态，该 node 可能为 virtual node，若为 virtual node 则从 apiserver 中获取不到该 node 的对象，此时会将该 node 重新加入到 graphChanges 队列中，再次处理该 node 时会将其从 uidToNode 中删除；
-3. 判断该 node 最新状态的 uid 是否等于本地缓存中的 uid，若不匹配说明该 node 已更新过此时将其设置为 virtual node 并重新加入到 graphChanges 队列中，再次处理该 node 时会将其从 uidToNode 中删除；
-4. 通过 node 的 deletingDependents 字段判断该 node 当前是否处于删除 dependents 的状态，若该 node 处于删除 dependents 的状态则调用 processDeletingDependentsItem 方法检查 node 的 blockingDependents 是否被完全删除，若 blockingDependents 已完全被删除则删除该 node 对应的 finalizer，若 blockingDependents 还未删除完，将未删除的 blockingDependents 加入到 attemptToDelete 中；上文中在 GraphBuilder 处理 graphChanges 中的事件时，若发现 node 处于删除状态，会将 node 的 dependents 加入到 attemptToDelete 中并标记 node 的 deletingDependents 为 true；
-5. 调用 gc.classifyReferences 将 node 的 ownerReferences 分类为 solid, dangling, waitingForDependentsDeletion 三类：dangling(owner 不存在）、waitingForDependentsDeletion(owner 存在，owner 处于删除状态且正在等待其 dependents 被删除）、solid（至少有一个 owner 存在且不处于删除状态）；对以上分类进行不同的处理：
-    1. 第一种情况是若 solid 不为 0 即当前 node 至少存在一个 owner，该对象还不能被回收，此时需要将 dangling 和 waitingForDependentsDeletion 列表中的 owner 从 node 的 ownerReferences 删除，即已经被删除或等待删除的引用从对象中删掉；
-    2. 第二种情况是该 node 的 owner 处于 waitingForDependentsDeletion 状态并且 node 的 dependents 未被完全删除，该 node 需要等待删除完所有的 dependents 后才能被删除；
-    3. 第三种情况就是该 node 已经没有任何 dependents 了，此时按照 node 中声明的删除策略调用 apiserver 的接口删除即可；
+2. 从 apiserver 获取该 node 最新的状态，该 node 可能为 virtual node，
+   若为 virtual node 则从 apiserver 中获取不到该 node 的对象，
+   此时会将该 node 重新加入到 graphChanges 队列中，
+   再次处理该 node 时会将其从 uidToNode 中删除；
+3. 判断该 node 最新状态的 uid 是否等于本地缓存中的 uid，
+   若不匹配说明该 node 已更新过此时将其设置为
+   virtual node 并重新加入到 graphChanges 队列中，
+   再次处理该 node 时会将其从 uidToNode 中删除；
+4. 通过 node 的 deletingDependents 字段判断该 node 当前是否处于删除 dependents 的状态，
+   若该 node 处于删除 dependents 的状态则调用 processDeletingDependentsItem 方法检查 node 的 blockingDependents 是否被完全删除，
+   若 blockingDependents 已完全被删除则删除该 node 对应的 finalizer，
+   若 blockingDependents 还未删除完，将未删除的 blockingDependents 加入到 attemptToDelete 中；
+   上文中在 GraphBuilder 处理 graphChanges 中的事件时，若发现 node 处于删除状态，
+   会将 node 的 dependents 加入到 attemptToDelete 中并标记 node 的 deletingDependents 为 true；
+5. 调用 gc.classifyReferences 将 node 的 ownerReferences 分类为 solid, dangling, waitingForDependentsDeletion 三类：
+   dangling(owner 不存在）、
+   waitingForDependentsDeletion(owner 存在，owner 处于删除状态且正在等待其 dependents 被删除）、
+   solid（至少有一个 owner 存在且不处于删除状态）；
+   对以上分类进行不同的处理：
+   1. 第一种情况是若 solid 不为 0 即当前 node 至少存在一个 owner，
+   	  该对象还不能被回收，此时需要将 dangling 和 waitingForDependentsDeletion 列表中的 owner 从 node 的 ownerReferences 删除，
+	  即已经被删除或等待删除的引用从对象中删掉；
+   2. 第二种情况是该 node 的 owner 处于 waitingForDependentsDeletion 状态并且 node 的 dependents 未被完全删除，
+   	  该 node 需要等待删除完所有的 dependents 后才能被删除；
+   3. 第三种情况就是该 node 已经没有任何 dependents 了，此时按照 node 中声明的删除策略调用 apiserver 的接口删除即可；
 
-`pkg/controller/garbagecollector/garbagecollector.go:409`
 ```go
+// pkg/controller/garbagecollector/garbagecollector.go:409
 func (gc *GarbageCollector) attemptToDeleteItem(item *node) error {
 	klog.V(2).InfoS("Processing object", "object", klog.KRef(item.identity.Namespace, item.identity.Name),
 		"objectUID", item.identity.UID, "kind", item.identity.Kind)
@@ -512,7 +560,7 @@ func (gc *GarbageCollector) attemptToDeleteItem(item *node) error {
 }
 ```
 
-### 2.1.3 gc.runAttemptToOrphanWorker()
+### gc.runAttemptToOrphanWorker()
 
 `gc.runAttemptToOrphanWorker()` 是处理以 Orphan 模式删除的 node，主要逻辑为：
 
@@ -520,8 +568,8 @@ func (gc *GarbageCollector) attemptToDeleteItem(item *node) error {
 2. 调用 `gc.removeFinalizer()` 删除 owner 的 orphan Finalizer；
 3. 以上两步中若有失败的会进行重试；
 
-`pkg/controller/garbagecollector/garbagecollector.go:602`
 ```go   
+// pkg/controller/garbagecollector/garbagecollector.go:602
 func (gc *GarbageCollector) attemptToOrphanWorker() bool {
 	item, quit := gc.attemptToOrphan.Get()
 	gc.workerLock.RLock()
@@ -559,7 +607,7 @@ func (gc *GarbageCollector) attemptToOrphanWorker() bool {
 }
 ```
 
-### 2.1.4 小结
+### 小结
 
 上面的业务逻辑不算复杂，但是方法嵌套有点多，整理一下方法的调用链：
 
@@ -589,18 +637,22 @@ p13 --> p131(gc.orphanDependents)
 p13 --> p132(gc.removeFinalizer)
 {{< /mermaid >}}
 
-## 2.2 garbageCollector.Sync()
+## garbageCollector.Sync()
 
-`garbageCollector.Sync()` 方法主要是周期性地查询集群中的所有资源，过滤出 deletableResource，然后对比已经监控的 deletableResource 是否一致，如果不一致，则更新 GraphBuilder 的 monitors，并重启 monitors 监控新拿到的 deletableResource。主要逻辑：
-1. 通过调用 `GetDeletableResources()` 获取集群内所有的 deletableResources 作为 newResources，deletableResources 指支持 “delete”, “list”, “watch” 三种操作的 resource，包括自定义资源
+`garbageCollector.Sync()` 方法主要是周期性地查询集群中的所有资源，
+过滤出 deletableResource，然后对比已经监控的 deletableResource 是否一致，
+如果不一致，则更新 GraphBuilder 的 monitors，并重启 monitors 监控新拿到的 deletableResource。
+主要逻辑：
+1. 通过调用 `GetDeletableResources()` 获取集群内所有的 deletableResources 作为 newResources，
+   deletableResources 指支持 “delete”, “list”, “watch” 三种操作的 resource，包括自定义资源
 2. 检查 oldResources, newResources 是否一致，不一致则需要同步；
-3. 调用 `gc.resyncMonitors()` 同步 newResources，在 `gc.resyncMonitors()` 中会重新调用 GraphBuilder 的 `syncMonitors()` 和 `startMonitors()` 两个方法完成 monitors 的刷新；
+3. 调用 `gc.resyncMonitors()` 同步 newResources，
+   在 `gc.resyncMonitors()` 中会重新调用 GraphBuilder 的 `syncMonitors()` 和 `startMonitors()` 两个方法完成 monitors 的刷新；
 4. 等待 newResources informer 中的 cache 同步完成；
 5. 将 newResources 作为 oldResources，继续进行下一轮的同步； 
 
-`pkg/controller/garbagecollector/garbagecollector.go:168`
-
 ```go
+// pkg/controller/garbagecollector/garbagecollector.go:168
 func (gc *GarbageCollector) Sync(discoveryClient discovery.ServerResourcesInterface, period time.Duration, stopCh <-chan struct{}) {
 	oldResources := make(map[schema.GroupVersionResource]struct{})
 	wait.Until(func() {
@@ -667,12 +719,13 @@ func (gc *GarbageCollector) Sync(discoveryClient discovery.ServerResourcesInterf
 
 方法主要调用了 `GetDeletableResources()` 和 `gc.resyncMonitors()` 两个方法。前者获取集群中可删除资源，后者更新 monitors。
 
-### 2.2.1 GetDeletableResources()
+### GetDeletableResources()
 
-`GetDeletableResources()` 中首先通过调用 `discoveryClient.ServerPreferredResources()` 方法获取集群内所有的 resource 信息，然后通过调用 `discovery.FilteredBy()` 过滤出支持 “delete”, “list”, “watch” 三种方法的 resource 作为 deletableResources。
+`GetDeletableResources()` 中首先通过调用 `discoveryClient.ServerPreferredResources()` 方法获取集群内所有的 resource 信息，
+然后通过调用 `discovery.FilteredBy()` 过滤出支持 “delete”, “list”, “watch” 三种方法的 resource 作为 deletableResources。
 
-`pkg/controller/garbagecollector/garbagecollector.go:658`
 ```go
+// pkg/controller/garbagecollector/garbagecollector.go:658
 func GetDeletableResources(discoveryClient discovery.ServerResourcesInterface) map[schema.GroupVersionResource]struct{} {
 	// 获取集群内所有的 resource 信息
 	preferredResources, err := discoveryClient.ServerPreferredResources()
@@ -699,12 +752,14 @@ func GetDeletableResources(discoveryClient discovery.ServerResourcesInterface) m
 }
 ```
 
-### 2.2.2 gc.resyncMonitors()
+### gc.resyncMonitors()
 
-`gc.resyncMonitors()` 的功能主要是更新 GraphBuilder 的 monitors 并重新启动 monitors 监控所有的 deletableResources，GraphBuilder 的 `startMonitors()` 方法在前面的流程中已经分析过，此处不再详细说明。`syncMonitors()` 只不过是拿最新的 deletableResources，把老的 monitors 字段值更新，该删的删，该加的加而已。
+`gc.resyncMonitors()` 的功能主要是更新 GraphBuilder 的 monitors 并重新启动 monitors 监控所有的 deletableResources，
+GraphBuilder 的 `startMonitors()` 方法在前面的流程中已经分析过，此处不再详细说明。
+`syncMonitors()` 只不过是拿最新的 deletableResources，把老的 monitors 字段值更新，该删的删，该加的加而已。
 
-`pkg/controller/garbagecollector/garbagecollector.go:113`
 ```go
+// pkg/controller/garbagecollector/garbagecollector.go:113
 func (gc *GarbageCollector) resyncMonitors(deletableResources map[schema.GroupVersionResource]struct{}) error {
 	if err := gc.dependencyGraphBuilder.syncMonitors(deletableResources); err != nil {
 		return err
@@ -714,7 +769,7 @@ func (gc *GarbageCollector) resyncMonitors(deletableResources map[schema.GroupVe
 }
 ```
 
-## 2.3 garbagecollector.NewDebugHandler()
+## garbagecollector.NewDebugHandler()
 
 `garbagecollector.NewDebugHandler()` 主要功能是对外提供一个接口供用户查询当前集群中所有资源的依赖关系，依赖关系可以以图表的形式展示。
 
@@ -754,6 +809,7 @@ func (h *debugHTTPHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 ```
 
 使用该服务的方法如下：
+
 ```s
 curl http://192.168.199.100:10252/debug/controllers/garbagecollector/graph  > tmp.dot
 
@@ -769,9 +825,17 @@ $ dot -Tsvg -o graph.svg tmp.dot
 
 [![tmp.jpg](/kubernetes/kube-apiserver/gc/tmp.jpg)](/kubernetes/kube-apiserver/gc/graph.svg)
 
-## 2.4 总结
+## 总结
 
-`GarbageCollectorController` 是一种典型的生产者消费者模型，所有 deletableResources 的 informer 都是生产者，每种资源的 informer 监听到变化后都会将对应的事件 push 到 `graphChanges` 中，`graphChanges` 是 `GraphBuilder` 对象中的一个数据结构，`GraphBuilder` 会启动另外的 goroutine 对 graphChanges 中的事件进行分类并放在其 `attemptToDelete` 和 `attemptToOrphan` 两个队列中，garbageCollector 会启动多个 goroutine 对 `attemptToDelete` 和 `attemptToOrphan` 两个队列中的事件进行处理，处理的结果就是回收一些需要被删除的对象。最后，再用一个流程图总结一下 `GarbageCollectorController` 的主要流程：
+`GarbageCollectorController` 是一种典型的生产者消费者模型，
+所有 deletableResources 的 informer 都是生产者，
+每种资源的 informer 监听到变化后都会将对应的事件 push 到 `graphChanges` 中，
+`graphChanges` 是 `GraphBuilder` 对象中的一个数据结构，
+`GraphBuilder` 会启动另外的 goroutine 对 graphChanges 中的事件进行分类并放在其 `attemptToDelete` 和 `attemptToOrphan` 两个队列中，
+garbageCollector 会启动多个 goroutine 对 `attemptToDelete` 和 `attemptToOrphan` 两个队列中的事件进行处理，
+处理的结果就是回收一些需要被删除的对象。
+最后，再用一个流程图总结一下 `GarbageCollectorController` 的主要流程：
+
 {{< mermaid >}}
 graph LR
 a[mirrors] -->|produce| b(graphChanges)
@@ -782,7 +846,7 @@ d -->|consume| f[AttemptToDeleteWorker]
 e -->|consume| g[AttemptToOrphanWorker]
 {{< /mermaid >}}
 
-# 3. 参考资料
+# 参考资料
 
 - [垃圾收集](https://kubernetes.io/zh/docs/concepts/workloads/controllers/garbage-collection)
 - [garbage collector controller 源码分析](https://cloud.tencent.com/developer/article/1562130)

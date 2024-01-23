@@ -2,20 +2,27 @@
 author: Yuan Hao
 date: 2020-10-12
 title: Statefulset Controller 源码分析
-tag: [statefulset, controller]
+tag: [Statefulset, controller]
+categories: [Kubernetes]
 ---
 
-# 1. StatefulSet 简介
+# StatefulSet 简介
 
 Statefulset 是为了解决有状态服务的问题，而产生的一种资源类型（Deployment 和 ReplicaSet 是解决无状态服务而设计的）。
 
-这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
+这里可能有人说，MySQL 是有状态服务吧，但我使用的是 Deploment 资源类型，
+MySQL 的数据通过 PV 的方式存储在第三方文件系统中，也能解决 MySQL 数据存储问题。
 
-是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
+是的，如果你的 MySQL 是单节点，使用 Deployment 类型确实可以解决数据存储问题。
+但是如果你的有状态服务是集群，且每个节点分片存储的情况下，Deployment 则不适用这种场景，
+因为 Deployment 不会保证 Pod 的有序性，集群通常需要主节点先启动，
+从节点在加入集群，Statefulset 则可以保证，其次 Deployment 资源的 Pod 内的 PVC 是共享存储的，
+而 Statefulset 下的 Pod 内 PVC 是不共享存储的，每个 Pod 拥有自己的独立存储空间，
+正好满足了分片的需求，实现分片的需求的前提是 Statefulset 可以保证 Pod 重新调度后还是能访问到相同的持久化数据。
 
 适用 Statefulset 常用的服务有 Elasticsearch 集群，Mogodb 集群，Redis 集群等等。
 
-## 1.1 特点
+## 特点
 
 - 稳定、唯一的网络标识符
 
@@ -37,14 +44,15 @@ Statefulset 是为了解决有状态服务的问题，而产生的一种资源�
 
     MySQL 在更新时，应该先更新从节点，全部的从节点都更新完了，最后在更新主节点，因为新版本一般可兼容老版本，但是一定要注意，若新版本不兼容老版本就很很麻烦
 
-## 1.2 限制
+## 限制
 
 - Pod 的存储必须使用 PersistVolume
 - 删除或者缩容时，不会删除关联的卷
 - 使用 headless service 关联 Pod，需要手动创建
 - Pod 的管理策略为 `OrderedReady` 时使用滚动更新能力，可能需要人工干预
 
-## 1.3 基本功能
+## 基本功能
+
 - 创建
 - 删除
     - 级联删除
@@ -57,7 +65,7 @@ Statefulset 是为了解决有状态服务的问题，而产生的一种资源�
     - `OrderedReady`
     - `Parallel`：允许 StatefulSet Controller 并行终止所有 Pod，不必按顺序启动或删除 Pod
 
-## 1.4 示例
+## 示例
 
 ```yaml
 apiVersion: v1
@@ -109,15 +117,21 @@ spec:
           storage: 1Gi
 ```
 
-# 2. 源码解析
+# 源码解析
 
-> kubernetes version: v1.19
+{{<hint info>}}
+kubernetes version: v1.19
+{{</hint>}}
 
-## 2.1 startStatefulSetController()
+## startStatefulSetController()
 
-`startStatefulSetController()` 是 StatefulSet Controller 的启动方法，其中调用 `statefulset.NewStatefulSetController()` 方法进行初始化，然后调用对象的 `Run()` 方法启动 Controller。其中 `ConcurrentStatefulSetSyncs` 默认是 5，即默认启动 5 个协程处理 StatefulSet 相关业务。
+`startStatefulSetController()` 是 StatefulSet Controller 的启动方法，
+其中调用 `statefulset.NewStatefulSetController()` 方法进行初始化，
+然后调用对象的 `Run()` 方法启动 Controller。
+其中 `ConcurrentStatefulSetSyncs` 默认是 5，即默认启动 5 个协程处理 StatefulSet 相关业务。
 
-可以看到 StatefulSetController 初始化时直接相关的对象类型分别是 Pod、StatefulSet、PVC 和 ControllerRevision。印证了之前提到的 StatefulSet 的特殊之处：使用 PV 作为存储；ControllerRevision 表示升级/回滚记录。
+可以看到 StatefulSetController 初始化时直接相关的对象类型分别是 Pod、StatefulSet、PVC 和 ControllerRevision。
+印证了之前提到的 StatefulSet 的特殊之处：使用 PV 作为存储；ControllerRevision 表示升级/回滚记录。
 
 ```go
 func startStatefulSetController(ctx ControllerContext) (http.Handler, bool, error) {
@@ -135,9 +149,10 @@ func startStatefulSetController(ctx ControllerContext) (http.Handler, bool, erro
 }
 ```
 
-## 2.2 ssc.sync()
+## ssc.sync()
 
-`run()` 方法会通过 informer 同步 cache 并监听 pod、statefulset、pvc 和 controllerrevision 对象的变更事件，然后启动 5 个 worker 协程，每个 worker 调用 `sync()` 方法，正式进入业务逻辑处理。
+`run()` 方法会通过 informer 同步 cache 并监听 pod、statefulset、pvc 和 controllerrevision 对象的变更事件，
+然后启动 5 个 worker 协程，每个 worker 调用 `sync()` 方法，正式进入业务逻辑处理。
 
 ```go
 func (ssc *StatefulSetController) sync(key string) error {
@@ -179,13 +194,18 @@ func (ssc *StatefulSetController) sync(key string) error {
 则，`sync()` 的主要逻辑为：
 1. 根据 ns/name 获取 sts 对象；
 2. 获取 sts 的 `selector`；
-3. 调用 `ssc.adoptOrphanRevisions()` 检查是否有孤儿 controllerrevisions 对象，若有且能匹配 selector 的则添加 ownerReferences 进行关联；
-4. 调用 `ssc.getPodsForStatefulSet` 通过 selector 获取 sts 关联的 pod，若有孤儿 pod 的 label 与 sts 的能匹配则进行关联，若已关联的 pod label 有变化则解除与 sts 的关联关系；
+3. 调用 `ssc.adoptOrphanRevisions()` 检查是否有孤儿 controllerrevisions 对象，
+   若有且能匹配 selector 的则添加 ownerReferences 进行关联；
+4. 调用 `ssc.getPodsForStatefulSet` 通过 selector 获取 sts 关联的 pod，
+   若有孤儿 pod 的 label 与 sts 的能匹配则进行关联，
+   若已关联的 pod label 有变化则解除与 sts 的关联关系；
 5. 最后调用 ssc.syncStatefulSet 执行真正的 sync 操作；
 
-## 2.3 ssc.syncStatefulSet()
+## ssc.syncStatefulSet()
 
-在 `syncStatefulSet()` 中仅仅是调用了 `ssc.control.UpdateStatefulSet()` 方法进行处理。`ssc.control.UpdateStatefulSet()` 会调用 `ssc.performUpdate()` 方法，最终走到更新逻辑 `ssc.updateStatefulSet()` 和 `ssc.updateStatefulSetStatus()`。
+在 `syncStatefulSet()` 中仅仅是调用了 `ssc.control.UpdateStatefulSet()` 方法进行处理。
+`ssc.control.UpdateStatefulSet()` 会调用 `ssc.performUpdate()` 方法，
+最终走到更新逻辑 `ssc.updateStatefulSet()` 和 `ssc.updateStatefulSetStatus()`。
 
 ```go
 func (ssc *StatefulSetController) syncStatefulSet(set *apps.StatefulSet, pods []*v1.Pod) error {
@@ -250,8 +270,10 @@ func (ssc *defaultStatefulSetControl) performUpdate(
 4. 调用 `ssc.updateStatefulSetStatus()` 更新 status 子资源；
 5. 根据 sts 的 spec.revisionHistoryLimit 字段清理过期的 controllerrevision； 
 
-## 2.4 ssc.updateStatefulSet()
-sts 通过 controllerrevision 保存历史版本，类似于 deployment 的 replicaset，与 replicaset 不同的是 controllerrevision 仅用于回滚阶段，在 sts 的滚动升级过程中是通过 currentRevision 和 updateRevision 进行控制并不会用到 controllerrevision。
+## ssc.updateStatefulSet()
+sts 通过 controllerrevision 保存历史版本，
+类似于 deployment 的 replicaset，与 replicaset 不同的是 controllerrevision 仅用于回滚阶段，
+在 sts 的滚动升级过程中是通过 currentRevision 和 updateRevision 进行控制并不会用到 controllerrevision。
 
 ```go
 func (ssc *defaultStatefulSetControl) updateStatefulSet(...) (*apps.StatefulSetStatus, error) {
@@ -528,21 +550,38 @@ func (ssc *defaultStatefulSetControl) updateStatefulSet(...) (*apps.StatefulSetS
 综上，`updateStatefulSet()` 把 statefulset 的创建、删除、更新、扩缩容的操作都包含在内。主要逻辑为：
 1. 分别获取 `currentRevision` 和 `updateRevision` 所对应的 sts 对象
 2. 取出 `sts.status` 并设置相关新值，用于更新
-3. 将 sts 关联的 Pod，按照序号分到 `replicas` 和 `condemned` 两个切片中，replicas 保存的是序号在 [0, spec.replicas) 之间的 Pod，表示可用，condemned 保存序号大于 `spec.replicas` 的 Pod，表示待删除；
+3. 将 sts 关联的 Pod，按照序号分到 `replicas` 和 `condemned` 两个切片中，
+   replicas 保存的是序号在 [0, spec.replicas) 之间的 Pod，表示可用，
+   condemned 保存序号大于 `spec.replicas` 的 Pod，表示待删除；
 4. 找出 `replicas` 和 `condemned` 组中的 unhealthy pod，healthy pod 指 running & ready 并且不处于删除状态；
 5. 判断 sts 是否处于删除状态；
-6. 遍历 `replicas`，确保其中的 Pod 处于 running & ready 状态，其中处于 Failed 状态的 Pod 删除重建；未创建的容器则直接创建；处于删除中的，等待优雅删除结束，即下一轮循环再处理；最后检查 pod 的信息是否与 statefulset 的匹配，若不匹配则更新 pod。在此过程中每一步操作都会检查 `.Spec.podManagementPolicy` 是否为 `Parallel`，若设置了则循环处理 replicas 中的所有 pod，否则每次处理一个 pod，剩余 pod 则在下一个 syncLoop 继续进行处理；
-7. 按 pod 名称逆序删除 condemned 数组中的 pod，删除前也要确保 pod 处于 running & ready 状态，在此过程中也会检查 `.Spec.podManagementPolicy` 是否为 `Parallel`，以此来判断是顺序删除还是在下一个 syncLoop 中继续进行处理；
+6. 遍历 `replicas`，确保其中的 Pod 处于 running & ready 状态，其中处于 Failed 状态的 Pod 删除重建；
+   未创建的容器则直接创建；处于删除中的，等待优雅删除结束，即下一轮循环再处理；
+	最后检查 pod 的信息是否与 statefulset 的匹配，若不匹配则更新 pod。
+	在此过程中每一步操作都会检查 `.Spec.podManagementPolicy` 是否为 `Parallel`，
+	若设置了则循环处理 replicas 中的所有 pod，否则每次处理一个 pod，
+	剩余 pod 则在下一个 syncLoop 继续进行处理；
+7. 按 pod 名称逆序删除 condemned 数组中的 pod，
+   删除前也要确保 pod 处于 running & ready 状态，
+   在此过程中也会检查 `.Spec.podManagementPolicy` 是否为 `Parallel`，
+   以此来判断是顺序删除还是在下一个 syncLoop 中继续进行处理；
 8. 判断 sts 的更新策略 `.Spec.UpdateStrategy.Type`，若为 OnDelete 则直接返回；
-9. 此时更新策略为 `RollingUpdate`，更新序号大于等于 `.Spec.UpdateStrategy.RollingUpdate.Partition` 的 pod；更新策略为 `RollingUpdate`，并不会关注 `.Spec.podManagementPolicy`，都是顺序进行处理，且等待当前 pod 删除成功后才继续逆序删除一下 pod，所以 Parallel 的策略在滚动更新时无法使用。
+9.  此时更新策略为 `RollingUpdate`，更新序号大于等于 `.Spec.UpdateStrategy.RollingUpdate.Partition` 的 pod；
+    更新策略为 `RollingUpdate`，并不会关注 `.Spec.podManagementPolicy`，都是顺序进行处理，
+	且等待当前 pod 删除成功后才继续逆序删除一下 pod，所以 Parallel 的策略在滚动更新时无法使用。
 
-`updateStatefulSet()` 这个方法中包含了 statefulset 的创建、删除、扩缩容、更新等操作，在源码层面对于各个功能无法看出明显的界定，没有 deployment sync 方法中写的那么清晰，下面按 statefulset 的功能再分析一下具体的操作：
+`updateStatefulSet()` 这个方法中包含了 statefulset 的创建、删除、扩缩容、更新等操作，
+在源码层面对于各个功能无法看出明显的界定，没有 deployment sync 方法中写的那么清晰，
+下面按 statefulset 的功能再分析一下具体的操作：
 - 创建：在创建 sts 后，sts 对象已被保存至 etcd 中，此时 sync 操作仅仅是创建出需要的 pod，即执行到第 6 步就会结束；
-- 扩缩容：对于扩若容操作仅仅是创建或者删除对应的 pod，在操作前也会判断所有 pod 是否处于 running & ready 状态，然后进行对应的创建/删除操作，在上面的步骤中也会执行到第 6 步就结束；
-- 更新：可以看出在第 6 步之后的所有操作就是与更新相关，所以更新操作会执行完整个方法，在更新过程中通过 pod 的 currentRevision 和 updateRevision 来计算 currentReplicas、updatedReplicas 的值，最终完成所有 pod 的更新；
+- 扩缩容：对于扩若容操作仅仅是创建或者删除对应的 pod，在操作前也会判断所有 pod 是否处于 running & ready 状态，
+  然后进行对应的创建/删除操作，在上面的步骤中也会执行到第 6 步就结束；
+- 更新：可以看出在第 6 步之后的所有操作就是与更新相关，所以更新操作会执行完整个方法，
+  在更新过程中通过 pod 的 currentRevision 和 updateRevision 来计算 currentReplicas、updatedReplicas 的值，
+  最终完成所有 pod 的更新；
 - 删除：删除操作就比较明显，会止于第 5 步，但是在此之前检查 pod 状态以及分组的操作确实是多余的；
 
-# 3. 参考链接
+#参考链接
 
 - [StatefulSet 概念](https://kubernetes.io/zh/docs/concepts/workloads/controllers/statefulset/)
 - [StatefulSet 基础](https://kubernetes.io/zh/docs/tutorials/stateful-application/basic-stateful-set/)

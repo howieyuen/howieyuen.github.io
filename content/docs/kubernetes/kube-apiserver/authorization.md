@@ -2,14 +2,17 @@
 author: Yuan Hao
 date: 2020-12-29
 title: 鉴权机制
-tag: [kube-apiserver, authorization]
+tags: [kube-apiserver, authorization]
+categories: [Kubernetes]
 ---
-
-# 1. 鉴权概述
 
 在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。
 如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。
 只要有一个鉴权模块通过，则鉴权成功。
+
+<!--more-->
+
+# 鉴权概述
 
 kube-apiserver 目前提供了 6 种鉴权机制：
 - AlwaysAllow：总是允许
@@ -24,7 +27,7 @@ kube-apiserver 目前提供了 6 种鉴权机制：
 - Authorizer：鉴权接口
 - RuleResolver：规则解析器
 
-## 1.1 Decision：决策状态
+## Decision：决策状态
 
 Decision 决策状态类似于认证中的 true 和 false，用于决定是否鉴权成功。
 鉴权支持三种 Decision 决策状态，例如鉴权成功，则返回 DecisionAllow，代码如下：
@@ -43,7 +46,7 @@ const (
 - DecisionAllow：允许该操作
 - DecisionNoOpinion：表示无明显意见允许或拒绝，继续执行下一个鉴权模块
 
-## 1.2 Authorizer：鉴权接口
+## Authorizer：鉴权接口
 
 每个鉴权模块都要实现该接口的方法，代码如下：
 
@@ -53,6 +56,7 @@ type Authorizer interface {
 	Authorize(ctx context.Context, a Attributes) (authorized Decision, reason string, err error)
 }
 ```
+
 Authorizer 接口定义了 Authorize 方法，该方法接收一个 Attribute 参数。
 Attributes 是决定鉴权模块从 HTTP 请求中获取鉴权信息方法的参数，它是一个方法集合的接口，
 例如 GetUser、GetVerb、GetNamespace、GetResource 等鉴权信息方法。
@@ -88,7 +92,7 @@ type Attributes interface {
 }
 ```
 
-## 1.3 RuleResolver：规则解析器
+## RuleResolver：规则解析器
 
 鉴权模块通过 RuleResolver 解析规则，定义如下：
 
@@ -116,8 +120,10 @@ type DefaultResourceRuleInfo struct {
 	ResourceNames []string
 }
 ```
+
 Pod 资源规则列表示例如下，其中通配符（*）表示匹配所有，该规则表示用户对所有资源版本的 Pod 拥有所有操作权限，
 即：get、list、watch、create、update、patch、delete、deletecollection。
+
 ```go
 resourcesRules: []authorizer.ResourceRuleInfo {
     &authorizer.DefaultResourceRuleInfo {
@@ -162,14 +168,14 @@ func (authzHandler unionAuthzHandler) Authorize(ctx context.Context, a authorize
 }
 ```
 
-# 2. ABAC 鉴权
+# ABAC 鉴权
 
-## 2.1 概述
+## 概述
 
 ABAC 授权器是基于属性的访问控制（Attributed-Based Access Control，ABAC）定义了访问控制范例，
 其中通过属性组合在一起的策略来向用户授予操作权限。
 
-## 2.2 启用
+## 启用
 
 - `--authorization-mode=ABAC`：启用 ABAC 授权器
 - `--authorization-policy-file`：基于 ABAC 模式，指定策略文件，
@@ -183,7 +189,7 @@ ABAC 模式策略文件定义：
 
 上面的策略，Deck 用户可以对所有资源做任何操作。
 
-## 2.3 实现
+## 实现
 
 ```go
 // pkg/auth/authorizer/abac/abac.go
@@ -238,9 +244,9 @@ func (pl PolicyList) RulesFor(user user.Info, namespace string) ([]authorizer.Re
 }
 ```
 
-# 3. RBAC 鉴权
+# RBAC 鉴权
 
-## 3.1 概述
+## 概述
 
 RBAC 是基于角色的访问控制（Role-Based Access Control），是根据组织中用户的角色来控制对计算机或者网络资源访问的方法。
 也是目前使用最为广泛的鉴权模型。在 RBAC 鉴权模块中，权限与角色相关联，形成了用户——角色——权限的鉴权模型。
@@ -290,7 +296,7 @@ ClusterRole "1"-->"n" PolicyRule
 - ClusterRole：是集群作用域的资源。
 - Rule：规则相当于操作权限，控制资源的操作方法（即 Verbs）
 
-#### RoleBinding 和 ClusterRoleBinding
+**RoleBinding 和 ClusterRoleBinding**
 
 数据结构如下：
 {{< mermaid class="text-center" >}}
@@ -334,12 +340,12 @@ ClusterRoleBinding "1"-->"1" RoleRef
 - RoleBinding：将角色中定义的权限授予一个或者一组用户，只能用于某一个命名空间的权限
 - clusterRoleBinding：将集群角色的中定义的权限首页一个或者一组用户没，可用于集群范围的权限
 
-## 3.2 启用
+## 启用
 
 kube-apiserver 通过指定以下参数启用 Node 鉴权
 - `--authorization-mode=RBAC`
 
-## 3.3 实现
+## 实现
 
 kube-apiserver 通过表示用户、操作、角色、角色绑定来描述 RBAC 的关系。模型图如下：
 
@@ -388,7 +394,7 @@ A -->|No| F[VerbMatchs]
 F --> G[NonResourceMacthes] 
 {{< /mermaid >}}
 
-## 3.4 内置 ClusterRole
+## 内置 ClusterRole
 
 介绍内置角色之前，先了解下 kube-apiserver 的内置权限，内置的角色会引用内置权限，代码示例如下：
 
@@ -482,6 +488,7 @@ kube-controller-manager 使用单独的服务账号来启动每个控制器。
 如果控制管理器启动时未设置 `--use-service-account-credentials`，
 它使用自己的身份凭据来运行所有的控制器，该身份必须被授予所有相关的角色。
 这些角色包括：
+
 * `system:controller:attachdetach-controller`
 * `system:controller:certificate-controller`
 * `system:controller:clusterrole-aggregation-controller`
@@ -510,9 +517,9 @@ kube-controller-manager 使用单独的服务账号来启动每个控制器。
 * `system:controller:statefulset-controller`
 * `system:controller:ttl-controller`
 
-# 4. Node 鉴权
+# Node 鉴权
 
-## 4.1 概述
+## 概述
 
 Node 鉴权，也成为节点鉴权，是一种专门针对 kubelet 发出的请求进行鉴权。
 Node 鉴权机制基于 RBAC 授权机制实现，对 kubelet 组件进行基于 `system:node` 内置角色的权限控制。
@@ -548,12 +555,12 @@ func NodeRules() []rbacv1.PolicyRule {
 - 对于基于 TLS 的启动引导过程时使用的 certificationsigningrequests API 的读写权限
 - 为委派的身份验证/鉴权检查创建 tokenreviews 和 subjectaccessreviews 的能力
  
-## 4.2 启用
+## 启用
 
 kube-apiserver 通过指定以下参数启用 Node 鉴权
 - `--authorization-mode = Node,RBAC`
 
-## 4.3 实现
+## 实现
 
 ```go
 // plugin/pkg/auth/authorizer/node/node_authorizer.go
@@ -614,21 +621,22 @@ nodeName 的格式为 `system:node<nodeName>` 。
 资源类型请求，取出资源对象，内置了允许操作资源和操作方法。
 非资源类型请求，走 `rbac.RulesAllow` 进行 RBAC 授权。
 
-# 5. Webhook
+# Webhook
 
-## 5.1 概述
+## 概述
 
 webhook 是一种 HTTP 回调：当用户鉴权时，kube-apiserver 组件会查询外部的 webhook 服务。
 该过程与 webhookTokenAuth 认证相似，但其中确认用户身份的机制不一样。
 当客户端发送的认证请求到达 kube-apiserver 时，kube-apiserver 回调钩子方法，
 将鉴权信息发给远程的 webhook 服务器进行认证，根据 webhook 服务返回的状态判断是否授权成功。
 
-## 5.2 启用
+## 启用
 
 - `--authorization-mode=Webhook`：启用 webhook 授权器
 - `--authorization-webhook-config-file`：使用 kubeconfig 格式的 webhook 配置文件。
 
 webhook 的配置文件如下：
+
 ```yaml
 # Kubernetes API 版本
 apiVersion: v1
@@ -659,7 +667,7 @@ contexts:
 
 如上所示，users 指的是 kube-apiserver 本身，cluster 指的是远程 webhook 服务。
 
-## 5.3 实现
+## 实现
 
 ```go
 // staging/src/k8s.io/apiserver/plugin/pkg/authorizer/webhook/webhook.go
@@ -721,7 +729,7 @@ func (w *WebhookAuthorizer) RulesFor(user user.Info, namespace string) ([]author
 }
 ```
 
-# 6. 参考资料
+# 参考资料
 
 - [鉴权概述](https://kubernetes.io/zh/docs/reference/access-authn-authz/authorization/)
 - [ABAC 鉴权](https://kubernetes.io/zh/docs/reference/access-authn-authz/abac/)

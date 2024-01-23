@@ -1,7 +1,8 @@
 ---
 title: 如何管理 GitOps Secret：详细指南
 date: 2022-09-01
-categories: [GitOps, Secret]
+tags: [GitOps, Secret]
+categories: [Ops]
 ---
 
 GitOps 正变得越来越流行。越来越多的公司开始使用 Git 作为其基础设施和应用程序配置的真实来源。然而，伴随其优势而来的是挑战。例如，如果你的所有配置都存储在 Git 中，你如何管理 Secret？你不能简单地将密码和令牌以明文形式提交到 Git 存储库，即使该存储库是私有的并且只有少数人可以访问它。在这篇文章中，你将学习如何安全地管理 GitOps Secret。敬请关注。
@@ -11,6 +12,7 @@ GitOps 正变得越来越流行。越来越多的公司开始使用 Git 作为�
 {{< hint info>}}
 原文链接：[How to Manage GitOps Secrets: A Detailed Guide](https://releasehub.com/blog/how-to-manage-gitops-secrets-a-detailed-guide)
 {{< /hint >}}
+
 ## GitOps vs Secret
 
 如果你以前从未使用过 GitOps，这里有一个简短的介绍。GitOps 是一种纯粹通过 Git 存储库以声明方式管理基础设施和应用程序配置的方法。它的工作原理如下：你将所有配置存储在 Git 中，然后在某处安装一个 GitOps 工具，该工具会持续监控对该 Git 存储库的更改，并在检测到存储库中发生更改时应用基础架构和应用程序更改。GitOps 的全部意义在于，你的所有基础架构和应用程序配置都拥有一个集中的、单一的事实点。GitOps 最常与 Kubernetes 一起使用。

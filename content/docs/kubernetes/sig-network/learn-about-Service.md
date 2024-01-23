@@ -3,17 +3,19 @@ author: Yuan Hao
 date: 2020-01-24
 title: 深入了解 Service
 tag: [Service]
+categories: [Kubernetes]
 ---
 
-# 1. 基本概念
+# 基本概念
 
-## 1.1 Service 定义详解
+## Service 定义详解
 
 Service 是对一组提供相同功能的 Pods 的抽象，并为它们提供一个统一的入口。借助 Service，
 应用可以方便的实现服务发现与负载均衡，并实现应用的零宕机升级。Service 通过标签来选取服务后端，
 一般配合 Replication Controller 或者 Deployment 来保证后端容器的正常运行。
 这些匹配标签的 Pod IP 和端口列表组成 endpoints，
 由 kube-proxy 负责将服务 IP 负载均衡到这些 endpoints 上。
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -47,7 +49,7 @@ status:
         hostname: string
 ```
 
-## 1.2 Service 分类
+## Service 分类
 
 - ClusterIP：默认类型，自动分配一个仅 cluster 内部可以访问的虚拟 IP
 - NodePort：在 ClusterIP 基础上为 Service 在每台机器上绑定一个端口，
@@ -59,7 +61,7 @@ status:
 - ExternalName：将服务通过 DNS CNAME 记录方式转发到指定的域名（通过 `spec.externlName` 设定）。
   需要 kube-dns 版本在 1.7 以上。
 
-# 2. Service 基本用法
+# Service 基本用法
 
 一般来说，对外提供服务的应用程序需要通过某种机制来实现，
 对于容器应用最简便的方式就是通过 TCP/IP 机制及监听 IP 和端口号来实现。
@@ -84,7 +86,7 @@ RoundRobin 和 SessionAffinity，具体说明如下：
 但我们也可以通过设置 `service.spec.sessionAffinity=ClientIP` 来启用 SessionAffinity 策略。
 这样，同一个客户端 IP 发来的请求就会被转发到后端固定的某个 Pod 上了。
 
-## 2.1 集群内访问集群外服务
+## 集群内访问集群外服务
 
 到现在为止，我们己经讨论了后端是集群中运行的一个或多个 Pod 的服务。
 但也存在希望通过 Kubernetes 服务特性暴露外部服务的情况。
@@ -97,9 +99,10 @@ service 根据 selector 找到后端 Pod，用 Pod IP 和端口创建与 service
 记录 Pod IP。当 Pod 异常被删除重建后，获得的新地址，只需要更新 endpoint 中记录的 Pod I P 即可。
 因此，想要访问集群外部的服务，可手动配置 service 的 endpoint。
 
-### 2.1.1 创建没有 selector 的 Service
+### 创建没有 selector 的 Service
 
 1. 创建没有 selector 的 Service
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -111,6 +114,7 @@ spec:
 ```
 
 2. 为没有选择器的服务创建 Endpoint 资源
+
 ```yaml
 apiVersion: v1
 kind: Endpoint
@@ -131,7 +135,7 @@ Endpoint 对象需要与服务具有相同的名称，并包含该服务的目�
 服务和 Endpoint 资源都发布到服务器后，这样服务就可以像具有 Pod 选择器那样的服务正常使用。
 在服务创建后创建的容器将包含服务的环境变量，并且与其 IP:Port 对的所有连接都将在服务端点之间进行负载均衡。
 
-### 2.1.2 创建 ExternalName 的 service
+### 创建 ExternalName 的 service
 
 除了手动配置服务的 Endpoint 来代替公开外部服务方法，有一种更简单的方法，
 就是通过其完全限定域名 (FQDN) 访问外部服务。
@@ -139,6 +143,7 @@ Endpoint 对象需要与服务具有相同的名称，并包含该服务的目�
 要创建一个具有别名的外部服务的服务时，要将创建服务资源的一个 type 字段设置为 ExternalName。
 例如，设想一下在 api.somecompany.com 上有公共可用的 API 可以定义一个指向它的服务，
 如下面的代码清单所示：
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -162,14 +167,15 @@ ExternalName 服务仅在 DNS 级别实施——为服务创建了简单的 CNAM
 因此，连接到服务的客户端将直接连接到外部服务，完全绕过服务代理。
 出于这个原因，这些类型的服务甚至不会获得集群 IP。
 
-## 2.2 集群外访问集群内服务
+## 集群外访问集群内服务
 
-### 2.2.1 NodePort 服务
+### NodePort 服务
 
 将服务的类型设置成 `NodePort`：每个集群节点都会在节点上打开一个端口，对于 NodePort 服务，
 每个集群节点在节点本身（因此得名叫 NodePort) 上打开一个端口，
 并将在该端口上接收到的流量重定向到基础服务。该服务仅在内部集群 IP 和端口上才可访间，
 但也可通过所有节点上的专用端口访问。
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -185,7 +191,7 @@ spec:
     app: kubia
 ```
 
-### 2.2.2 LoadBalancer 服务
+### LoadBalancer 服务
 
 在云提供商上运行的 Kubernetes 集群通常支持从云基础架构自动提供负载平衡器。
 所有需要做的就是设置服务的类型为 LoadBadancer 而不是 NodePort。
@@ -194,6 +200,7 @@ spec:
 
 如果 Kubemetes 在不支持 LoadBadancer 服务的环境中运行，则不会调配负载平衡器，
 但该服务仍将表现得像一个 NodePort 服务。这是因为 LoadBadancer 服务是 NodePort 服务的扩展。
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -214,7 +221,7 @@ status:
     - ip: 146.148.47.155
 ```
 
-# 3. 通过 Ingress 暴露服务
+# 通过 Ingress 暴露服务
 
 - 为什么需要 Ingress？
 
@@ -222,7 +229,7 @@ status:
 而 Ingress 只需要一个公网 IP 就能为许多服务提供访问。当客户端向 Ingress 发送 HTTP 请求时，
 Ingress 会根据请求的主机名和路径决定请求转发到的服务。
 
-## 3.1 创建 Ingress Controller 和默认的 backend 服务
+## 创建 Ingress Controller 和默认的 backend 服务
 
 在定义 Ingress 策略之前，需要先部署 Ingress Controller，
 以实现为所有后端 Service 都提供一个统一的入口。
@@ -246,14 +253,15 @@ Ingress Controller 需要实现基于不同 HTTP URL 向后转发的负载分发
 另外，由于 Nginx 通过 default-backend-service 的服务名称（Service Name）去访问它，
 所以需要 DNS 服务正确运行。
 
-## 3.2 创建 Ingress 资源
+## 创建 Ingress 资源
 
-### 3.2.1 转发到单个后端服务上
+### 转发到单个后端服务上
 
 基于这种设置，客户端到 Ingress Controller 的访问请求都将被转发到后端的唯一 Service 上，
 在这种情况下 Ingress 无须定义任何 rule。
 
 通过如下所示的设置，对 Ingress Controller 的访问请求都将被转发到“myweb:8080”这个服务上。
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -265,7 +273,7 @@ spec:
     servicePort: 8080
 ```
 
-### 3.2.2 将不同的服务映射到相同主机的不同路径
+### 将不同的服务映射到相同主机的不同路径
 
 这种配置常用于一个网站通过不同的路径提供不同的服务的场景，
 例如 /web 表示访问 Web 页面，/api 表示访问 API 接口，对应到后端的两个服务，
@@ -273,6 +281,7 @@ spec:
 
 通过如下所示的设置，对 mywebsite.com/web 的访问请求将被转发到 web-service:80 服务上；
 对 mywebsite.com/api 的访问请求将被转发到 api-service:80 服务上：
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -293,13 +302,14 @@ spec
           servicePort: 80
 ```
 
-### 3.2.3 不同的域名（虚拟主机名）被转发到不同的服务上
+### 不同的域名（虚拟主机名）被转发到不同的服务上
 
 这种配置常用于一个网站通过不同的域名或虚拟主机名提供不同服务的场景，
 例如 foo.example.com 域名由 foo 提供服务，bar.example.com 域名由 bar 提供服务。
 
 通过如下所示的设置，对“foo.example.com”的访问请求将被转发到“foo:80”服务上，
 对“bar.example.com”的访问请求将被转发到“bar:80”服务上：
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -323,12 +333,13 @@ spec:
             servicePort: 80
 ```
 
-### 3.2.4 不使用域名的转发规则
+### 不使用域名的转发规则
 
 这种配置用于一个网站不使用域名直接提供服务的场景，
 此时通过任意一台运行 ingress-controller 的 Node 都能访问到后端的服务。
 
 下面的配置为将“<ingresscontroller-ip>/demo”的访问请求转发到“webapp:8080/demo”服务上：
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -347,6 +358,7 @@ spec:
 注意，使用无域名的 Ingress 转发规则时，将默认禁用非安全 HTTP，强制启用 HTTPS。
 可以在 Ingress 的定义中设置一个 annotation[ingress.kubernetes.io/ssl-redirect: "false"]
 来关闭强制启用 HTTPS 的设置：
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -364,7 +376,7 @@ spec:
           servicePort: 8080
 ```
 
-## 3.3 Ingress 的 TLS 安全设置
+## Ingress 的 TLS 安全设置
 
 当客户端创建到 Ingress 控制器的 TLS 连接时，控制器将终止 TLS 连接。
 客户端和控制器之间的通信是加密的，而控制器和后端 Pod 之间的通信则不是运行在 Pod 上的应用程序不需要支持 TLS。
@@ -375,16 +387,20 @@ spec:
 为了 Ingress 提供 HTTPS 的安全访问，可以为 Ingress 中的域名进行 TLS 安全证书的设置。设置的步骤如下。
 
 1. 创建自签名的密钥和 SSL 证书文件
+
 ```bash
 openssl genrsa -out tls.key 2048
 openssl req -new - x509 -key tls.key -out tls.cert -days 360 -subject/CN=kubia.example.com
 ```
+
 2. 将证书保存到 Kubernetes 中的一个 Secret 资源对象上
+
 ```bash
 kubectl create secret tls mywebsite-tls-secret --cert=tls.cert --key=tls.key
 ```
 
 3. 将该 Secret 对象设置到 Ingress 中
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress

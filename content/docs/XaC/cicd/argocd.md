@@ -2,7 +2,8 @@
 author: howieyuen
 date: 2021-10-21
 title: 使用 Argo CD ApplicationSet 管理多集群
-tag: [argocd]
+tags: [ArgoCD]
+categories: [CI/CD]
 ---
 
 > 本文翻译自

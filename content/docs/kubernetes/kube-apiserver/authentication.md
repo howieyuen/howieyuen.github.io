@@ -2,12 +2,16 @@
 author: Yuan Hao
 date: 2020-11-22
 title: 认证机制
-tag: [kube-apiserver, authentication]
+tags: [kube-apiserver, authentication]
+categories: [Kubernetes]
 ---
 
-# 1. Kubernetes 中的用户
+
 
 所有 Kubernetes 集群都有两类用户：由 Kubernetes 管理的 ServiceAccount 和普通用户。
+
+
+# Kubernetes 中的用户
 
 对于与普通用户，Kuernetes 使用以下方式管理：
 
@@ -23,7 +27,7 @@ tag: [kube-apiserver, authentication]
 
 API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他的视为匿名请求。这意味着集群内和集群外的每个进程向 kube-apiserver 发起请求时，都必须通过身份认证，否则会被视为匿名用户。
 
-# 2. 认证机制
+# 认证机制
 
 目前 kubernetes 提供的认证机制丰富多样，尤其是身份验证，更是五花八门：
 
@@ -40,9 +44,9 @@ API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他
 - 用户伪装
 - client-go 凭据插件
 
-## 2.1 身份验证策略
+## 身份验证策略
 
-### 2.1.1 X509 Client Cert
+### X509 Client Cert
 
 X509 客户端证书认证，也被称为 TLS 双向认证，即为服务端和客户端互相验证证书的正确性。使用此认证方式，只要是 CA 签名过的证书都能通过认证。
 
@@ -109,7 +113,7 @@ X509 客户端证书认证，也被称为 TLS 双向认证，即为服务端和�
 
    
 
-### 2.1.2 Static Token File
+### Static Token File
 
 Token 也被称为令牌，服务端为了验证客户端身份，需要客户端向服务端提供一个可靠的验证信息，这个验证信息就是 Token。目前，令牌会长期有效，并且在不重启 API 服务器的情况下 无法更改令牌列表。
 
@@ -144,7 +148,7 @@ Token 也被称为令牌，服务端为了验证客户端身份，需要客户�
 
    该认证方式相对简单，a.tokens 保存了服务端 Token 列表，通过 map 查询客户端提供的 Token 是否存在，存在即认证成功，反之则认证失败。
 
-### 2.1.3 Bootstrap Tokens
+### Bootstrap Tokens
 
 Bootstrap Token 是一种简单的 Bearer Token，这种令牌是在新建集群或者在现在集群中加入节点时使用。一般是由 kubeadm 管理，以 secret 形式保存在 kube-system 命名空间，可以动态地创建删除，并且 kube-controller-manager 中 TokenCleaner 会在 Token 过期时删除。该能力目前依旧是 alpha 阶段，但官方预期也不会有大的突破性变化。
 
@@ -236,7 +240,7 @@ Bootstrap Token 是一种简单的 Bearer Token，这种令牌是在新建集群
    }
    ```
 
-### 2.1.4  ServiceAccount Token
+###  ServiceAccount Token
 
 其他认证方式都是从 kubernetes 集群外部访问 kube-apiserver 组件，而 ServiceAccount 是从 Pod 内部访问，提供给 Pod 中的进程使用。ServiceAccount 包含了 3 个部分的内容：
 
@@ -306,7 +310,7 @@ Bootstrap Token 是一种简单的 Bearer Token，这种令牌是在新建集群
 
    服务账号被身份认证后，所确定的用户名为 `system:serviceaccount:<NAMESPACE>:<SERVICEACCOUNT>`， 并被分配到用户组 `system:serviceaccounts` 和 `system:serviceaccounts:<NAMESPACE>`。
 
-### 2.1.5 OpenID Connect Token
+### OpenID Connect Token
 OpenID Connect Token(OIDC) 是一套基于 OAuth2.0 协议的轻量级认证规范，其提供了通过 API 进行身份交互的框架。OIDC 认证除了认证请求外，还会标明请求的用户身份（ID Token）。其中 Token 被称为 ID Token，此 ID Token 是 JWT，具有服务器签名的相关字段。认证流程如下：
 1. 用户想要访问 kube-apiserver，先通过认证服务（Auth Service，例如 Google Accounts 服务）认证自己，得到 access_token、id_token 和 refresh_token。
 2. 用户把 access_token、id_token 和 refresh_token 配置到客户端应用程序，例如：kubectl 或者 dashboard 工具
@@ -379,7 +383,7 @@ func (a *Authenticator) AuthenticateToken(ctx context.Context, token string) (*a
 
 整个认证逻辑，大体上是解析 id_token，把其中的 user、group 信息取出，组成 User 对象返回。在返回之前，要对针对 kube-apiserver 的各个 reqiured_claims 入参校验，看看从 id_token 中的值是否匹配。
 
-### 2.1.6 Webhook Token
+### Webhook Token
 
 webhook 也被称为钩子，是一种基于 HTTP 协议的回调机制，当客户端发送的认证请求到达 kube-apiserver 时，kubbe-apiserver 回调钩子方法，将验证信息发送给远程的 webhook 服务器进行验证，让根据返回的状态码判断是否认证通过。
 
@@ -422,6 +426,7 @@ contexts:
 要注意的是，Webhook API 对象和其他 Kubernetes API 对象一样，也要受到同一 版本兼容规则约束。 实现者要了解对 Beta 阶段对象的兼容性承诺，并检查请求的 apiVersion 字段， 以确保数据结构能够正常反序列化解析。此外，API 服务器必须启用 `authentication.k8s.io/v1beta1` API 扩展组 （`--runtime-config=authentication.k8s.io/v1beta1=true`）。
 
 2. 认证实现
+
 ```go
 // staging/src/k8s.io/apiserver/pkg/authentication/token/cache/cached_token_authenticator.go
 func (a *cachedTokenAuthenticator) AuthenticateToken(ctx context.Context, token string) (*authenticator.Response, bool, error) {
@@ -435,7 +440,9 @@ func (a *cachedTokenAuthenticator) AuthenticateToken(ctx context.Context, token 
 	return record.resp, true, nil
 }
 ```
+
 `a.doAuthenticateToken(ctx, token)` 是认证过程的核心，首先从缓存中查找是否已认证，有则直接返回，没有调用远程 webhook 服务验证。
+
 ```go
 // staging/src/k8s.io/apiserver/plugin/pkg/authenticator/token/webhook/webhook.go
 func (w *WebhookTokenAuthenticator) AuthenticateToken(ctx context.Context, token string) (*authenticator.Response, bool, error) {
@@ -472,7 +479,7 @@ func (w *WebhookTokenAuthenticator) AuthenticateToken(ctx context.Context, token
 
 通过 w.tokenReview.Create 发送 POST 请求到远程 webhook 服务，并在 body 体中携带认真信息，根据返回值 Status.Authenticated 判断是否认证通过。
 
-### 2.1.7 Authentication Proxy
+### Authentication Proxy
 
 API 服务器可以配置成从请求的头部字段值（如 X-Remote-User）中辩识用户。这一设计是用来与某身份认证代理一起使用 API 服务器，代理负责设置请求的头部字段值。
 
@@ -514,8 +521,9 @@ func (a *requestHeaderAuthRequestHandler) AuthenticateRequest(req *http.Request)
 	}, true, nil
 }
 ```
+
 在进行认证代理认证时，requestHeader 就是实现方式，分别从 HTTP Header 读出用户、组和额外信息，返回给客户端。
 
-## 2.2 其他
+## 其他策略
 
-> 有关匿名请求、用户伪装和 client-go 插件代理，请移步官网：[用户认证](http://kubernetes.io/zh/docs/reference/access-authn-authz/authentication/#anonymous-requests)
+有关匿名请求、用户伪装和 client-go 插件代理，请移步官网：[用户认证](http://kubernetes.io/zh/docs/reference/access-authn-authz/authentication/#anonymous-requests)。

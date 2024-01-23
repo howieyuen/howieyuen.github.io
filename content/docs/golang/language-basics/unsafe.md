@@ -2,16 +2,19 @@
 author: Yuan Hao
 date: 2020-12-18
 title: unsafe
-tag: [golang, unsafe]
+tags: [unsafe]
+categories: [Golang]
 ---
 
-> 本文转自：[Go 里面的 unsafe 包详解](https://gocn.vip/topics/371)
+本文转自：[Go 里面的 unsafe 包详解](https://gocn.vip/topics/371)
 
-# The unsafe Package in Golang
+<!--more-->
+
+## The unsafe Package in Golang
 
 Golang 的 unsafe 包是一个很特殊的包。为什么这样说呢？本文将详细解释。
 
-# 来自 go 语言官方文档的警告
+## 来自 go 语言官方文档的警告
 
 unsafe 包的文档是这么说的：
 
@@ -27,7 +30,7 @@ Go 1 兼容性指南这么说：
 
 当然包名称暗示 unsafe 包是不安全的。但这个包有多危险呢？让我们先看看 unsafe 包的作用。
 
-# Unsafe 包的作用
+## Unsafe 包的作用
 
 直到现在（Go1.7），unsafe 包含以下资源：
 
@@ -96,7 +99,7 @@ func main() {
 
 因此，资源在 unsafe 包中的作用是为 Go 编译器服务，`unsafe.Pointer` 类型的作用是绕过 Go 类型系统和内存安全。
 
-# unsafe.Pointer 和 uintptr
+## unsafe.Pointer 和 uintptr
 
 这里有一些关于 `unsafe.Pointer` 和 `uintptr` 的事实：
 - `uintptr` 是一个整数类型。
@@ -144,7 +147,7 @@ func main() {
 }
 ```
 
-# unsafe 包有多危险
+## unsafe 包有多危险
 
 关于 unsafe 包，Ian，Go 团队的核心成员之一，已经确认：
 - 在 unsafe 包中的函数的签名将不会在以后的 Go 版本中更改，
@@ -234,7 +237,7 @@ func main() {
 非法 `unsafe.Pointer` 使用可能会使程序崩溃或表现得怪异（有时是正常的，有时是异常的）。
 这就是为什么使用不安全的包是危险的。
 
-# 转换 T1 为 T2
+## 转换 T1 为 T2
 对于将 T1 转换为 `unsafe.Pointer`，然后转换为 T2，unsafe 包 docs 说：
 
 {{< hint info >}}
@@ -283,7 +286,7 @@ func main() {
 }
 ```
 
-## 合法用例 2：调用 sync/atomic 包中指针相关的函数
+### 合法用例 2：调用 sync/atomic 包中指针相关的函数
 
 sync/atomic 包中的以下函数的大多数参数和结果类型都是 `unsafe.Pointer` 或 `*unsafe.Pointer`：
 
@@ -294,7 +297,9 @@ sync/atomic 包中的以下函数的大多数参数和结果类型都是 `unsafe
 
 要使用这些功能，必须导入 unsafe 包。
 
-> 注意： `unsafe.Pointer` 是一般类型，因此 `unsafe.Pointer` 的值可以转换为 `unsafe.Pointer`，反之亦然。
+{{<hint warning>}}
+`unsafe.Pointer` 是一般类型，因此 `unsafe.Pointer` 的值可以转换为 `unsafe.Pointer`，反之亦然。
+{{</hint>}}
 
 ```go
 package main
@@ -361,7 +366,8 @@ func main() {
 }
 ```
 
-# 结论
+## 结论
+
 - unsafe 包用于 Go 编译器，而不是 Go 运行时。
 - 使用 unsafe 作为程序包名称只是让你在使用此包是更加小心。
 - 使用 `unsafe.Pointer` 并不总是一个坏主意，有时我们必须使用它。

@@ -1,8 +1,8 @@
 ---
 title: DevOps vs GitOps
 date: 2022-10-15
-tags: [devops, gitops]
-categories: [ops]
+tags: [DevOps, GitOps]
+categories: [Ops]
 ---
 
 GitOps 和 DevOps 正迅速成为开发团队的黄金标准方法。DevOps 文化代表了从传统软件和技术开发的转变，传统的软件和技术开发涉及从构思和概念到发布的线性路径，并鼓励协作和快速反馈，而不是孤立地工作。在本文中，我们将仔细研究 GitOps 与 DevOps，以帮助确定 GitOps 是否适用于您的软件开发项目。

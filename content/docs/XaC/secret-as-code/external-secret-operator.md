@@ -2,7 +2,8 @@
 author: howieyuen
 date: 2022-11-2
 title: External Secrets Operator
-tag: [sac, secret, operator]
+tags: [ExternalSecret]
+categories: [SaC]
 ---
 
 ## 概述

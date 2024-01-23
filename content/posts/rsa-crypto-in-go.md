@@ -1,8 +1,8 @@
 ---
 title: Golang 中的 RSA 加解密算法
 date: 2022-11-01
-tags: [go, rsa, crypto]
-categories: [crypto]
+tags: [Crypto, RSA]
+categories: [Golang]
 ---
 
 本文受到 Gitlab 中 [`crypgo`](https://gitlab.com/rahasak-labs/crypgo) 项目启发，
@@ -11,7 +11,9 @@ categories: [crypto]
 
 <!--more-->
 
-> 仓库地址：[https://github.com/howieyuen/crypto](https://github.com/howieyuen/crypto)
+{{<hint info>}}
+仓库地址：[https://github.com/howieyuen/crypto](https://github.com/howieyuen/crypto)
+{{</hint>}}
 
 ## RSA 加解密简介
 

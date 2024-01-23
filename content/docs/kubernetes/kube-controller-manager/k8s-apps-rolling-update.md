@@ -2,16 +2,17 @@
 author: Yuan Hao
 date: 2020-10-12
 title: 无状态应用滚动更新
-tag: [rolling update, deployment]
+tags: [Deployment, controller]
+categories: [Kubernetes]
 ---
 
-# 1. 概念
+# 概念
 
 滚动更新，通常出现在软件或者是系统中。滚动更新与传统更新的不同之处在于：
 滚动更新不但提供了更新服务，而且通常还提供了滚动**进度查询**，滚动**历史记录**，
 以及最重要的**回滚**等能力。通俗地说，就是具有系统或是软件的主动降级的能力。
 
-# 2. Deployment 滚动更新
+# Deployment 滚动更新
 
 Deployment 更新方式有 2 种：
 - RollingUpdate
@@ -19,6 +20,7 @@ Deployment 更新方式有 2 种：
 
 其中，滚动更新是最常见的，阅读代码 `pkg/controller/deployment/deployment_controller.go:648`，
 可以看到 2 种方式分别对应的业务逻辑：
+
 ```go
 func (dc *DeploymentController) syncDeployment(key string) error {
     ...
@@ -34,6 +36,7 @@ func (dc *DeploymentController) syncDeployment(key string) error {
 
 根据 `d.Spec.Strategy.Type`，若更新策略为 `RollingUpdate`，
 则执行 `dc.rolloutRecreate()` 方法，具体逻辑如下：
+
 ```go
 func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*apps.ReplicaSet) error {
     // 1、获取所有的 rs，若没有 newRS 则创建
@@ -75,17 +78,19 @@ func (dc *DeploymentController) rolloutRolling(d *apps.Deployment, rsList []*app
 }
 ```
 
-## 2.1 滚动更新概述
+## 滚动更新概述
 
 上面代码中 5 个重要的步骤总结如下：
 1. 调用 `getAllReplicaSetsAndSyncRevision()` 获取所有的 rs，若没有 newRS 则创建；
-2. 调用 `reconcileNewReplicaSet()` 判断是否需要对 newRS 进行 scaleUp 操作；如果需要 scaleUp，更新 Deployment 的 status，
-添加相关的 condition，该 condition 的 type 是 Progressing，表明该 deployment 正在更新中，然后直接返回；
+2. 调用 `reconcileNewReplicaSet()` 判断是否需要对 newRS 进行 scaleUp 操作；
+   如果需要 scaleUp，更新 Deployment 的 status，
+   添加相关的 condition，该 condition 的 type 是 Progressing，
+   表明该 deployment 正在更新中，然后直接返回；
 3. 调用 `reconcileOldReplicaSets()` 判断是否需要为 oldRS 进行 scaleDown 操作；如果需要 scaleDown，
-把 oldRS 关联的 pod 删掉 maxScaledDown 个，然后更新 Deployment 的 status，添加相关的 condition，直接返回。
-这样一来就保证了在滚动更新过程中，新老版本的 Pod 都存在；
+   把 oldRS 关联的 pod 删掉 maxScaledDown 个，然后更新 Deployment 的 status，添加相关的 condition，直接返回。
+   这样一来就保证了在滚动更新过程中，新老版本的 Pod 都存在；
 4. 如果两者都不是则滚动升级很可能已经完成，此时需要检查 `deployment.Status` 是否已经达到期望状态，
-并且根据 `deployment.Spec.RevisionHistoryLimit` 的值清理 oldRSs；
+   并且根据 `deployment.Spec.RevisionHistoryLimit` 的值清理 oldRSs；
 5. 最后，同步 deployment 的状态，使其与期望一致；
 
 从上面的步骤可以看出，滚动更新的过程主要分成一下三个阶段：
@@ -102,9 +107,10 @@ graph LR
     x3 --> stop
 {{< /mermaid >}}
 
-### 2.1.1 newRS scale up
+### newRS scale up
 
 阅读代码 `pkg/controller/deployment/rolling.go:68`，详细如下： 
+
 ```go
 func (dc *DeploymentController) reconcileNewReplicaSet(allRSs []*apps.ReplicaSet, newRS *apps.ReplicaSet, deployment *apps.Deployment) (bool, error) {
     // 1、判断副本数是否已达到了期望值
@@ -131,6 +137,7 @@ func (dc *DeploymentController) reconcileNewReplicaSet(allRSs []*apps.ReplicaSet
 	return scaled, err
 }
 ```
+
 从上面的源码可以得出，`reconcileNewReplicaSet()` 的主要逻辑如下：
 1. 判断 `newRS.Spec.Replicas` 和 `deployment.Spec.Replicas` 是否相等，
    如果相等则直接返回，说明已经达到期望状态；
@@ -145,6 +152,7 @@ func (dc *DeploymentController) reconcileNewReplicaSet(allRSs []*apps.ReplicaSet
 
 其中，计算 newRS 的副本数，是滚动更新核心过程的第一步，
 阅读源码 `pkg/controller/deployment/util/deployment_util.go:816`：
+
 ```go
 func NewRSNewReplicas(deployment *apps.Deployment, allRSs []*apps.ReplicaSet, newRS *apps.ReplicaSet) (int32, error) {
 	switch deployment.Spec.Strategy.Type {
@@ -182,9 +190,10 @@ func NewRSNewReplicas(deployment *apps.Deployment, allRSs []*apps.ReplicaSet, ne
 3. 通过 allRSs 计算 currentPodCount 的值；
 4. 最后计算 scaleUpCount 值；
 
-### 2.1.2 oldRS scale down
+### oldRS scale down
 
 同理，oldRS 规模缩小，阅读源码 `pkg/controller/deployment/rolling.go:68`:
+
 ```go
 func (dc *DeploymentController) reconcileOldReplicaSets(allRSs []*apps.ReplicaSet, oldRSs []*apps.ReplicaSet, newRS *apps.ReplicaSet, deployment *apps.Deployment) (bool, error) {
     // 1、计算 oldPodsCount
@@ -231,13 +240,13 @@ func (dc *DeploymentController) reconcileOldReplicaSets(allRSs []*apps.ReplicaSe
 通过上面的代码可知，`reconcileOldReplicaSets()`  的主要逻辑如下：
 1. 通过 oldRSs 和 allRSs 获取 oldPodsCount 和 allPodsCount；
 2. 计算 deployment 的 maxUnavailable、minAvailable、newRSUnavailablePodCount、maxScaledDown 值，
-当 deployment 的 maxSurge 和 maxUnavailable 值为百分数时，
-计算 maxSurge 向上取整而 maxUnavailable 则向下取整；
-3. 清理异常的 rs；
-4. 计算 oldRS 的 scaleDownCount；
-5. 最后 oldRS 缩容；
+   当 deployment 的 maxSurge 和 maxUnavailable 值为百分数时，
+   计算 maxSurge 向上取整而 maxUnavailable 则向下取整；
+1. 清理异常的 rs；
+2. 计算 oldRS 的 scaleDownCount；
+3. 最后 oldRS 缩容；
 
-## 2.2 滚动更新总结
+## 滚动更新总结
 
 通过上面的代码可以看出，滚动更新过程中主要是通过调用 `reconcileNewReplicaSet()` 对 newRS 不断扩容，
 调用 `reconcileOldReplicaSets()` 对 oldRS 不断缩容，最终达到期望状态，并且在整个升级过程中，
@@ -256,9 +265,10 @@ graph LR
     op3(dc.scaleReplicaSetAndRecordEvent) --> op4(dc.scaleReplicaSet)
 {{< /mermaid >}}
 
-## 2.3 滚动更新示例
+## 滚动更新示例
 
 1. 创建一个 deployment，replica = 10
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -284,6 +294,7 @@ spec:
 ```
 
 10 个 Pod 创建成功后如下所示：
+
 ```shell script
 $ kubectl get rs
 NAME                          DESIRED   CURRENT   READY   AGE
@@ -291,11 +302,13 @@ nginx-deployment-67dfd6c8f9   10        10        10      70s
 ```
 
 2. 更新 nginx-deployment 的镜像，默认使用滚动更新的方式
+
 ```shell script
 $ kubectl set image deploy/nginx-deployment nginx-deployment=nginx:1.19.1
 ```
 
 此时通过源码可知会计算该 deployment 的 maxSurge=3，maxUnavailable=2，maxAvailable=13，计算方法如下所示：
+
 ```go
 // 向上取整 maxSurge = 10 * 0.25 = 3
 maxSurge = replicas * deployment.spec.strategy.rollingUpdate.maxSurge
@@ -309,6 +322,7 @@ maxAvailable = replicas + MaxSurge
 此时计算出 replicas 结果为 3，然后更新 deployment 的 annotation，创建 events，本次 syncLoop 完成。
 等到下一个 syncLoop 时，所有 rs 的 replicas 已经达到最大值 10 + 3 = 13，此时需要 oldRS 缩容。
 scale down 的数量是通过以下公式得到的：
+
 ```go
 // 13 = 10 + 3
 allPodsCount := deploymentutil.GetReplicaCountForReplicaSets(allRSs)
@@ -327,6 +341,7 @@ allPodsCount = 13，minAvailable = 8 ，newRSUnavailablePodCount 此时不确定
 此时 newRS 需要更新 replicase 增加 2。以此轮询直到 newRS 扩容到 10，oldRS 缩容至 0。
 
 对于上面的示例，可以使用 kubectl get rs -w 进行观察，以下为输出：
+
 ```shell script
 $ kubectl get rs -w
 NAME                          DESIRED   CURRENT   READY   AGE

@@ -1,7 +1,7 @@
 ---
 title: 语言指南（proto3）
 date: 2022-05-10
-categories: [protobuf]
+categories: [Protobuf]
 weight: 2
 ---
 
