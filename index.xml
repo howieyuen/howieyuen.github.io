@@ -75,7 +75,7 @@
       <link>https://howieyuen.github.io/posts/10-design-principles-for-delightful-clis/</link>
       <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
       <guid>https://howieyuen.github.io/posts/10-design-principles-for-delightful-clis/</guid>
-      <description></description>
+      <description>原文链接： 10 design principles for delightful CLIs 与既定惯例保持一致 # 自计算机诞生以来，CLI 几乎就已经存在，因此你无需重新发明轮子来创造令人愉悦的体验。&#xA;已经有许多既定的约定和指南可用于设计 CLI，例如 Heroku 的 CLI 风格指南和 Microsoft 风格指南。 使用你的用户已经熟悉的现存的模式，你可以确保他们很容易习惯你的工具。&#xA;构造 help 命令 # 在 CLI 中添加 --help 命令可为用户提供重要的文档。 它让新用户发现所有可用的命令和选项，而更有经验的用户可以在使用 CLI 的整个过程中将其作为参考。&#xA;为了帮助你的用户完成他们的任务，--help 部分应该提供一个完整的命令列表、子命令和任何具有简单描述的短命令。&#xA;你还应该确保你的用户可以在任何特定命令之后运行 --help 标志，以快速查看他们可以用来处理该命令的完整语法（用法、参数和选项）。&#xA;可视化执行过程 # 虽然系统状态的可见性是适用于任何界面设计，但在设计 CLI 的纯文本界面时尤其重要。 如果没有图形用户界面 (GUI) 来提供即时的视觉反馈，CLI 并不总是能很好地让用户了解幕后发生的事情。&#xA;我们建议你使用进度条、旋转器和其他视觉设备来显示正在发生的事情。 我们还建议你将长时间运行的任务分解为一系列有意义的步骤，以帮助将系统状态传达给你的用户。&#xA;增加执行反馈 # CLI 并不总是清楚地表明何时发生了操作。 对于用户执行的每项操作，你的 CLI 都应提供平等且适当的反应，清楚地突出显示当前系统状态。&#xA;例如，在 Forge CLI 中，如果登录用户键入 forge logout，则会显示一条消息，明确指示操作已成功。&#xA;可读的错误信息 # 错误是意料之中的，甚至（我们敢说）是使用任何 CLI 的重要组成部分。&#xA;在测试 Forge CLI 时，我们观察到错误是阻止开发人员构建其应用程序的主要障碍之一。</description>
     </item>
     <item>
       <title>Secrets Store CSI Driver</title>
@@ -120,11 +120,11 @@
       <description>&lt;p&gt;CircleCI 是基于云的 CI/CD 工具，可自动执行软件构建和交付过程。它提供快速的配置和维护，没有任何复杂性。&#xA;由于它是基于云的 CI/CD 工具，因此消除了专用服务器的困扰，并降低了维护本地服务器的成本。&#xA;此外，基于云的服务器是可扩展的，健壮的，并有助于更快地部署应用程序。&lt;/p&gt;</description>
     </item>
     <item>
-      <title>使用 Argo CD ApplicationSet 管理多集群</title>
+      <title>使用 ArgoCD ApplicationSet 管理多集群</title>
       <link>https://howieyuen.github.io/docs/XaC/cicd/argocd/</link>
       <pubDate>Thu, 21 Oct 2021 00:00:00 +0000</pubDate>
       <guid>https://howieyuen.github.io/docs/XaC/cicd/argocd/</guid>
-      <description>本文翻译自 Manage More Clusters with Less Hassle, with Argo CD Application Sets - Jonathan and Kshama&#xA;ApplicationSet # Applicationset 是一种新的Kubernetes自定义资源（CR）和控制器，它与现有的 Argo CD 一起工作。 Applicationset 是 Argo CD 应用程序的工厂：ApplicationSet CR 描述了创建/管理的应用程序，Argo CD 负责部署它们。&#xA;特征：&#xA;将大量 Argo CD 应用程序作为单个单元管理 你集群的 Deployment 可以来自各种数据源的自动化和自定义： 例如，随着新的集群添加到基础架构中，添加了新的 Git Repo，将添加新的 Repo 到 Github/Gitlab 等 对外变更自动作出反应 基于外部事件的一致性是快速且可自定义的：在飞行中创建/更新/删除应用程序 Applicationset 基于 Argo CD 应用，可利用 Argo CD 带来的所有能力 GitOps 介绍 # Git 来源于事实 所需的软件状态在 Git 仓库中以文件形式存储 GitOps 代理将确保所需的软件状态已在运行时环境中部署 Argo CD 介绍 # 基于 GitOps 的 K8S 的持续性传输工具。 使用 Git Repo 作为事实来源。 声明式持续性交付工具。 支持各种配置管理工具（ksonnet、jsonnet、kustomize 和 helm）。 作为 K8S 控制器和 CRD 实现。 提供具有强大的资源管理功能的 Kubernetes 仪表板。 自动同步应用程序的当前实时状态到期望状态。 Argo CD 关键特性 # 强大、实时的网络 UI 支持多个配置管理/模板工具 多集群支持 SSO 集成 资源健康评估 自动配置漂移检测和差异 自动或手动将应用程序同步到其期望状态 自动化 CLI 和 CI 集成 审计活动 Prometheus 度量标准 GnuPG 签名验证 同步的前置/后置钩子 多租户和 RBAC 授权策略 Argo CD Application 自定义资源 # 定义了 Argo CD 做什么的核心实例是 Application 的 CR。</description>
+      <description>本文翻译自 Manage More Clusters with Less Hassle, with ArgoCD Application Sets - Jonathan and Kshama&#xA;ApplicationSet # Applicationset 是一种新的Kubernetes自定义资源（CR）和控制器，它与现有的 ArgoCD 一起工作。 Applicationset 是 ArgoCD 应用程序的工厂：ApplicationSet CR 描述了创建/管理的应用程序，ArgoCD 负责部署它们。&#xA;特征：&#xA;将大量 ArgoCD 应用程序作为单个单元管理 你集群的 Deployment 可以来自各种数据源的自动化和自定义： 例如，随着新的集群添加到基础架构中，添加了新的 Git Repo，将添加新的 Repo 到 Github/Gitlab 等 对外变更自动作出反应 基于外部事件的一致性是快速且可自定义的：在飞行中创建/更新/删除应用程序 Applicationset 基于 ArgoCD 应用，可利用 ArgoCD 带来的所有能力 GitOps 介绍 # Git 来源于事实 所需的软件状态在 Git 仓库中以文件形式存储 GitOps 代理将确保所需的软件状态已在运行时环境中部署 ArgoCD 介绍 # 基于 GitOps 的 K8S 的持续性传输工具。 使用 Git Repo 作为事实来源。 声明式持续性交付工具。 支持各种配置管理工具（ksonnet、jsonnet、kustomize 和 helm）。 作为 K8S 控制器和 CRD 实现。 提供具有强大的资源管理功能的 Kubernetes 仪表板。 自动同步应用程序的当前实时状态到期望状态。 ArgoCD 关键特性 # 强大、实时的网络 UI 支持多个配置管理/模板工具 多集群支持 SSO 集成 资源健康评估 自动配置漂移检测和差异 自动或手动将应用程序同步到其期望状态 自动化 CLI 和 CI 集成 审计活动 Prometheus 度量标准 GnuPG 签名验证 同步的前置/后置钩子 多租户和 RBAC 授权策略 ArgoCD Application 自定义资源 # 定义了 ArgoCD 做什么的核心实例是 Application 的 CR。</description>
     </item>
     <item>
       <title>pprof</title>

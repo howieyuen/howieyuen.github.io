@@ -6,6 +6,7 @@
     <description>Recent content in CI/CD on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
+    <lastBuildDate>Tue, 27 Feb 2024 19:55:28 +0800</lastBuildDate>
     <atom:link href="https://howieyuen.github.io/categories/CI/CD/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Circle CI</title>
@@ -15,11 +16,11 @@
       <description>&lt;p&gt;CircleCI 是基于云的 CI/CD 工具，可自动执行软件构建和交付过程。它提供快速的配置和维护，没有任何复杂性。&#xA;由于它是基于云的 CI/CD 工具，因此消除了专用服务器的困扰，并降低了维护本地服务器的成本。&#xA;此外，基于云的服务器是可扩展的，健壮的，并有助于更快地部署应用程序。&lt;/p&gt;</description>
     </item>
     <item>
-      <title>使用 Argo CD ApplicationSet 管理多集群</title>
+      <title>使用 ArgoCD ApplicationSet 管理多集群</title>
       <link>https://howieyuen.github.io/docs/XaC/cicd/argocd/</link>
       <pubDate>Thu, 21 Oct 2021 00:00:00 +0000</pubDate>
       <guid>https://howieyuen.github.io/docs/XaC/cicd/argocd/</guid>
-      <description>本文翻译自 Manage More Clusters with Less Hassle, with Argo CD Application Sets - Jonathan and Kshama&#xA;ApplicationSet # Applicationset 是一种新的Kubernetes自定义资源（CR）和控制器，它与现有的 Argo CD 一起工作。 Applicationset 是 Argo CD 应用程序的工厂：ApplicationSet CR 描述了创建/管理的应用程序，Argo CD 负责部署它们。&#xA;特征：&#xA;将大量 Argo CD 应用程序作为单个单元管理 你集群的 Deployment 可以来自各种数据源的自动化和自定义： 例如，随着新的集群添加到基础架构中，添加了新的 Git Repo，将添加新的 Repo 到 Github/Gitlab 等 对外变更自动作出反应 基于外部事件的一致性是快速且可自定义的：在飞行中创建/更新/删除应用程序 Applicationset 基于 Argo CD 应用，可利用 Argo CD 带来的所有能力 GitOps 介绍 # Git 来源于事实 所需的软件状态在 Git 仓库中以文件形式存储 GitOps 代理将确保所需的软件状态已在运行时环境中部署 Argo CD 介绍 # 基于 GitOps 的 K8S 的持续性传输工具。 使用 Git Repo 作为事实来源。 声明式持续性交付工具。 支持各种配置管理工具（ksonnet、jsonnet、kustomize 和 helm）。 作为 K8S 控制器和 CRD 实现。 提供具有强大的资源管理功能的 Kubernetes 仪表板。 自动同步应用程序的当前实时状态到期望状态。 Argo CD 关键特性 # 强大、实时的网络 UI 支持多个配置管理/模板工具 多集群支持 SSO 集成 资源健康评估 自动配置漂移检测和差异 自动或手动将应用程序同步到其期望状态 自动化 CLI 和 CI 集成 审计活动 Prometheus 度量标准 GnuPG 签名验证 同步的前置/后置钩子 多租户和 RBAC 授权策略 Argo CD Application 自定义资源 # 定义了 Argo CD 做什么的核心实例是 Application 的 CR。</description>
+      <description>本文翻译自 Manage More Clusters with Less Hassle, with ArgoCD Application Sets - Jonathan and Kshama&#xA;ApplicationSet # Applicationset 是一种新的Kubernetes自定义资源（CR）和控制器，它与现有的 ArgoCD 一起工作。 Applicationset 是 ArgoCD 应用程序的工厂：ApplicationSet CR 描述了创建/管理的应用程序，ArgoCD 负责部署它们。&#xA;特征：&#xA;将大量 ArgoCD 应用程序作为单个单元管理 你集群的 Deployment 可以来自各种数据源的自动化和自定义： 例如，随着新的集群添加到基础架构中，添加了新的 Git Repo，将添加新的 Repo 到 Github/Gitlab 等 对外变更自动作出反应 基于外部事件的一致性是快速且可自定义的：在飞行中创建/更新/删除应用程序 Applicationset 基于 ArgoCD 应用，可利用 ArgoCD 带来的所有能力 GitOps 介绍 # Git 来源于事实 所需的软件状态在 Git 仓库中以文件形式存储 GitOps 代理将确保所需的软件状态已在运行时环境中部署 ArgoCD 介绍 # 基于 GitOps 的 K8S 的持续性传输工具。 使用 Git Repo 作为事实来源。 声明式持续性交付工具。 支持各种配置管理工具（ksonnet、jsonnet、kustomize 和 helm）。 作为 K8S 控制器和 CRD 实现。 提供具有强大的资源管理功能的 Kubernetes 仪表板。 自动同步应用程序的当前实时状态到期望状态。 ArgoCD 关键特性 # 强大、实时的网络 UI 支持多个配置管理/模板工具 多集群支持 SSO 集成 资源健康评估 自动配置漂移检测和差异 自动或手动将应用程序同步到其期望状态 自动化 CLI 和 CI 集成 审计活动 Prometheus 度量标准 GnuPG 签名验证 同步的前置/后置钩子 多租户和 RBAC 授权策略 ArgoCD Application 自定义资源 # 定义了 ArgoCD 做什么的核心实例是 Application 的 CR。</description>
     </item>
   </channel>
 </rss>
