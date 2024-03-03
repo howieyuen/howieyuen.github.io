@@ -5,7 +5,10 @@ tags: [Prometheus]
 categories: [Design Doc]
 ---
 
-> 原文链接：[https://prometheus-operator.dev/docs/operator/design/](https://prometheus-operator.dev/docs/operator/design/)
+{{< hint info>}}
+原文链接：[Prometheus Operator Design](https://prometheus-operator.dev/docs/operator/design/)
+{{< /hint >}}
+<!--more-->
 
 本文将阐述 Prometheus Operator 管理的 CRD 之间的设计和交互。由 Prometheus Operator 管理的 CRD 有：
 - [Prometheus](https://prometheus-operator.dev/docs/operator/design/#prometheus)
@@ -16,8 +19,6 @@ categories: [Design Doc]
 - [Probe](https://prometheus-operator.dev/docs/operator/design/#probe)
 - [PrometheusRule](https://prometheus-operator.dev/docs/operator/design/#prometheusrule)
 - [AlertmanagerConfig](https://prometheus-operator.dev/docs/operator/design/#alertmanagerconfig)
-
-<!--more-->
 
 ## Prometheus
 

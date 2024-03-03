@@ -5,11 +5,11 @@ tags: [CLI]
 categories: [design doc]
 ---
 
-<!--more-->
-
 {{< hint info>}}
 原文链接：[10 design principles for delightful CLIs](https://blog.developer.atlassian.com/10-design-principles-for-delightful-clis/)
 {{< /hint >}}
+
+<!--more-->
 
 ## 与既定惯例保持一致
 
