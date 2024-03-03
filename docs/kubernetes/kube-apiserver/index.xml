@@ -8,18 +8,18 @@
     <language>en</language>
     <atom:link href="https://howieyuen.github.io/docs/kubernetes/kube-apiserver/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>鉴权机制</title>
-      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</link>
-      <pubDate>Tue, 29 Dec 2020 00:00:00 +0000</pubDate>
-      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</guid>
-      <description>&lt;p&gt;在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。&#xA;如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。&#xA;只要有一个鉴权模块通过，则鉴权成功。&lt;/p&gt;</description>
-    </item>
-    <item>
       <title>认证机制</title>
       <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/</link>
       <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
       <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authentication/</guid>
       <description>所有 Kubernetes 集群都有两类用户：由 Kubernetes 管理的 ServiceAccount 和普通用户。&#xA;Kubernetes 中的用户 # 对于与普通用户，Kuernetes 使用以下方式管理：&#xA;负责分发私钥的管理员 类似 Keystone 或者 Google Accounts 这类用户数据库 包含用户名和密码列表的文件 因此，kubernetes 并不提供普通用户的定义，普通用户是无法通过 API 调用写入到集群中的。&#xA;尽管如此，通过集群的证书机构签名的合法证书的用户，kubernetes 依旧可以认为是合法用户。基于此，kubernetes 使用证书中的 subject.CommonName 字段来确定用户名，接下来，通过 RBAC 确认用户对某资源是否存在要求的操作权限。&#xA;与此不同的 ServiceAccount，与 Namespace 绑定，与一组 Secret 所包含的凭据有关。这些凭据会挂载到 Pod 中，从而允许访问 kubernetes 的 API。&#xA;API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他的视为匿名请求。这意味着集群内和集群外的每个进程向 kube-apiserver 发起请求时，都必须通过身份认证，否则会被视为匿名用户。&#xA;认证机制 # 目前 kubernetes 提供的认证机制丰富多样，尤其是身份验证，更是五花八门：&#xA;身份验证 X509 Client Cert Static Token File Bootstrap Tokens Static Password File（deprecated in v1.16） ServiceAccount Token OpenID Connect Token Webhook Token Authentication Proxy 匿名请求 用户伪装 client-go 凭据插件 身份验证策略 # X509 Client Cert # X509 客户端证书认证，也被称为 TLS 双向认证，即为服务端和客户端互相验证证书的正确性。使用此认证方式，只要是 CA 签名过的证书都能通过认证。</description>
+    </item>
+    <item>
+      <title>鉴权机制</title>
+      <link>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</link>
+      <pubDate>Tue, 29 Dec 2020 00:00:00 +0000</pubDate>
+      <guid>https://howieyuen.github.io/docs/kubernetes/kube-apiserver/authorization/</guid>
+      <description>&lt;p&gt;在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。&#xA;如果开启多个鉴权模块，则按照顺序执行鉴权模块，排在前面的鉴权模块有较高的优先级来允许或者拒绝请求。&#xA;只要有一个鉴权模块通过，则鉴权成功。&lt;/p&gt;</description>
     </item>
     <item>
       <title>垃圾回收</title>

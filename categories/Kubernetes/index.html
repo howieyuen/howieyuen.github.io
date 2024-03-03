@@ -15,7 +15,7 @@
 <link rel="icon" href="/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
   <script defer src="/flexsearch.min.js"></script>
-  <script defer src="/en.search.min.cb7fbe0a2b5fdbeb70dfc02cf3085cf1a7ed6f7ac0dd5ed1d9a97b843d7c92c8.js" integrity="sha256-y3&#43;&#43;Citf2&#43;tw38As8whc8aftb3rA3V7R2al7hD18ksg=" crossorigin="anonymous"></script>
+  <script defer src="/en.search.min.b5b6482a43fb0fd5edbcb6decc699fa34ac8de01afbf582980fdc0c285f46df2.js" integrity="sha256-tbZIKkP7D9XtvLbezGmfo0rI3gGvv1gpgP3AwoX0bfI=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 <link rel="alternate" type="application/rss+xml" href="https://howieyuen.github.io/categories/Kubernetes/index.xml" title="袁昊的学习笔记" />
@@ -292,7 +292,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
+    <a href="/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
   
 
         </li>
@@ -305,7 +305,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/kubernetes/kube-apiserver/authentication/" class="">认证机制</a>
+    <a href="/docs/kubernetes/kube-apiserver/authorization/" class="">鉴权机制</a>
   
 
         </li>
@@ -1219,10 +1219,10 @@ https://github.com/alex-shpak/hugo-book
   
   <article class="markdown book-post">
     <h2>
-      <a href="/docs/kubernetes/sig-network/svc-ep-epslice/">Service 与 Endpoints、EndpointSlice 那些事</a>
+      <a href="/docs/kubernetes/kube-apiserver/authentication/">认证机制</a>
     </h2>
     
-  <h5>January 31, 2023</h5>
+  <h5>November 22, 2020</h5>
 
 
 
@@ -1234,15 +1234,25 @@ https://github.com/alex-shpak/hugo-book
   
 
   
+  <div>
+    
+      <a href="/tags/kube-apiserver/">Kube-Apiserver</a>, 
+      <a href="/tags/authentication/">Authentication</a>
+  </div>
+  
 
 
 
 
-    <p>Service 与 Endpoints、EndpointSlice 那些事 # Service 资源 # k8s Service 定义了这样一种抽象：逻辑上的一组 Pod，一种可以访问它们的策略 —— 通常称为微服务。 Service 所针对的 Pod 集合通常是通过 LabelSelector 来确定的。 LabelSelector 选中的 Pod，将会自动创建与 Service 同名且同 Namespace 的 Endpoint 对象，将 Pod 的 IP 写入其中。
-如果没有 LabelSelector，用户可能是希望 Service 关联的后端是集群外的服务，或者是其他 Namespace； 如果用户还想要使用负载均衡服务，需要自行创建与 Service 同名的 Endpoints 对象。
-Service 类型 # k8s Service 分为 4 种类型（svc.spec.type）：
-ClusterIP：通过集群的内部 IP 暴露服务，选择该值时服务只能够在集群内部访问。 这也是默认的 ServiceType。 NodePort：通过每个节点上的 IP 和静态端口（NodePort）暴露服务。 NodePort 服务会路由到自动创建的 ClusterIP 服务。 通过请求 &lt;node ip&gt;:&lt;node port&gt;，你可以从集群的外部访问一个 NodePort 服务。 LoadBalance：使用云提供商的负载均衡器向外部暴露服务。 外部负载均衡器可以将流量路由到自动创建的 NodePort 服务和 ClusterIP 服务上。 ExternalName：通过返回 CNAME 和对应值，可以将服务映射到 externalName 字段的内容； 例如，foo.
-        <a href="/docs/kubernetes/sig-network/svc-ep-epslice/">...</a>
+    <p>所有 Kubernetes 集群都有两类用户：由 Kubernetes 管理的 ServiceAccount 和普通用户。
+Kubernetes 中的用户 # 对于与普通用户，Kuernetes 使用以下方式管理：
+负责分发私钥的管理员 类似 Keystone 或者 Google Accounts 这类用户数据库 包含用户名和密码列表的文件 因此，kubernetes 并不提供普通用户的定义，普通用户是无法通过 API 调用写入到集群中的。
+尽管如此，通过集群的证书机构签名的合法证书的用户，kubernetes 依旧可以认为是合法用户。基于此，kubernetes 使用证书中的 subject.CommonName 字段来确定用户名，接下来，通过 RBAC 确认用户对某资源是否存在要求的操作权限。
+与此不同的 ServiceAccount，与 Namespace 绑定，与一组 Secret 所包含的凭据有关。这些凭据会挂载到 Pod 中，从而允许访问 kubernetes 的 API。
+API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他的视为匿名请求。这意味着集群内和集群外的每个进程向 kube-apiserver 发起请求时，都必须通过身份认证，否则会被视为匿名用户。
+认证机制 # 目前 kubernetes 提供的认证机制丰富多样，尤其是身份验证，更是五花八门：
+身份验证 X509 Client Cert Static Token File Bootstrap Tokens Static Password File（deprecated in v1.16） ServiceAccount Token OpenID Connect Token Webhook Token Authentication Proxy 匿名请求 用户伪装 client-go 凭据插件 身份验证策略 # X509 Client Cert # X509 客户端证书认证，也被称为 TLS 双向认证，即为服务端和客户端互相验证证书的正确性。使用此认证方式，只要是 CA 签名过的证书都能通过认证。
+        <a href="/docs/kubernetes/kube-apiserver/authentication/">...</a>
       
     </p>
   </article>
@@ -1284,10 +1294,10 @@ ClusterIP：通过集群的内部 IP 暴露服务，选择该值时服务只能�
   
   <article class="markdown book-post">
     <h2>
-      <a href="/docs/kubernetes/kube-apiserver/authentication/">认证机制</a>
+      <a href="/docs/kubernetes/sig-network/svc-ep-epslice/">Service 与 Endpoints、EndpointSlice 那些事</a>
     </h2>
     
-  <h5>November 22, 2020</h5>
+  <h5>January 31, 2023</h5>
 
 
 
@@ -1299,25 +1309,15 @@ ClusterIP：通过集群的内部 IP 暴露服务，选择该值时服务只能�
   
 
   
-  <div>
-    
-      <a href="/tags/kube-apiserver/">Kube-Apiserver</a>, 
-      <a href="/tags/authentication/">Authentication</a>
-  </div>
-  
 
 
 
 
-    <p>所有 Kubernetes 集群都有两类用户：由 Kubernetes 管理的 ServiceAccount 和普通用户。
-Kubernetes 中的用户 # 对于与普通用户，Kuernetes 使用以下方式管理：
-负责分发私钥的管理员 类似 Keystone 或者 Google Accounts 这类用户数据库 包含用户名和密码列表的文件 因此，kubernetes 并不提供普通用户的定义，普通用户是无法通过 API 调用写入到集群中的。
-尽管如此，通过集群的证书机构签名的合法证书的用户，kubernetes 依旧可以认为是合法用户。基于此，kubernetes 使用证书中的 subject.CommonName 字段来确定用户名，接下来，通过 RBAC 确认用户对某资源是否存在要求的操作权限。
-与此不同的 ServiceAccount，与 Namespace 绑定，与一组 Secret 所包含的凭据有关。这些凭据会挂载到 Pod 中，从而允许访问 kubernetes 的 API。
-API 请求要么与普通用户相关，要么与 ServiceAccount 相关，其他的视为匿名请求。这意味着集群内和集群外的每个进程向 kube-apiserver 发起请求时，都必须通过身份认证，否则会被视为匿名用户。
-认证机制 # 目前 kubernetes 提供的认证机制丰富多样，尤其是身份验证，更是五花八门：
-身份验证 X509 Client Cert Static Token File Bootstrap Tokens Static Password File（deprecated in v1.16） ServiceAccount Token OpenID Connect Token Webhook Token Authentication Proxy 匿名请求 用户伪装 client-go 凭据插件 身份验证策略 # X509 Client Cert # X509 客户端证书认证，也被称为 TLS 双向认证，即为服务端和客户端互相验证证书的正确性。使用此认证方式，只要是 CA 签名过的证书都能通过认证。
-        <a href="/docs/kubernetes/kube-apiserver/authentication/">...</a>
+    <p>Service 与 Endpoints、EndpointSlice 那些事 # Service 资源 # k8s Service 定义了这样一种抽象：逻辑上的一组 Pod，一种可以访问它们的策略 —— 通常称为微服务。 Service 所针对的 Pod 集合通常是通过 LabelSelector 来确定的。 LabelSelector 选中的 Pod，将会自动创建与 Service 同名且同 Namespace 的 Endpoint 对象，将 Pod 的 IP 写入其中。
+如果没有 LabelSelector，用户可能是希望 Service 关联的后端是集群外的服务，或者是其他 Namespace； 如果用户还想要使用负载均衡服务，需要自行创建与 Service 同名的 Endpoints 对象。
+Service 类型 # k8s Service 分为 4 种类型（svc.spec.type）：
+ClusterIP：通过集群的内部 IP 暴露服务，选择该值时服务只能够在集群内部访问。 这也是默认的 ServiceType。 NodePort：通过每个节点上的 IP 和静态端口（NodePort）暴露服务。 NodePort 服务会路由到自动创建的 ClusterIP 服务。 通过请求 &lt;node ip&gt;:&lt;node port&gt;，你可以从集群的外部访问一个 NodePort 服务。 LoadBalance：使用云提供商的负载均衡器向外部暴露服务。 外部负载均衡器可以将流量路由到自动创建的 NodePort 服务和 ClusterIP 服务上。 ExternalName：通过返回 CNAME 和对应值，可以将服务映射到 externalName 字段的内容； 例如，foo.
+        <a href="/docs/kubernetes/sig-network/svc-ep-epslice/">...</a>
       
     </p>
   </article>

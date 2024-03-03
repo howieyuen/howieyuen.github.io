@@ -6,14 +6,14 @@
     <description>Recent content in CLI on 袁昊的学习笔记</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 27 Feb 2024 19:55:28 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 03 Mar 2024 20:47:18 +0800</lastBuildDate>
     <atom:link href="https://howieyuen.github.io/tags/CLI/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>令人愉悦的 CLI 的 10 条设计原则</title>
       <link>https://howieyuen.github.io/posts/10-design-principles-for-delightful-clis/</link>
       <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
       <guid>https://howieyuen.github.io/posts/10-design-principles-for-delightful-clis/</guid>
-      <description>原文链接： 10 design principles for delightful CLIs 与既定惯例保持一致 # 自计算机诞生以来，CLI 几乎就已经存在，因此你无需重新发明轮子来创造令人愉悦的体验。&#xA;已经有许多既定的约定和指南可用于设计 CLI，例如 Heroku 的 CLI 风格指南和 Microsoft 风格指南。 使用你的用户已经熟悉的现存的模式，你可以确保他们很容易习惯你的工具。&#xA;构造 help 命令 # 在 CLI 中添加 --help 命令可为用户提供重要的文档。 它让新用户发现所有可用的命令和选项，而更有经验的用户可以在使用 CLI 的整个过程中将其作为参考。&#xA;为了帮助你的用户完成他们的任务，--help 部分应该提供一个完整的命令列表、子命令和任何具有简单描述的短命令。&#xA;你还应该确保你的用户可以在任何特定命令之后运行 --help 标志，以快速查看他们可以用来处理该命令的完整语法（用法、参数和选项）。&#xA;可视化执行过程 # 虽然系统状态的可见性是适用于任何界面设计，但在设计 CLI 的纯文本界面时尤其重要。 如果没有图形用户界面 (GUI) 来提供即时的视觉反馈，CLI 并不总是能很好地让用户了解幕后发生的事情。&#xA;我们建议你使用进度条、旋转器和其他视觉设备来显示正在发生的事情。 我们还建议你将长时间运行的任务分解为一系列有意义的步骤，以帮助将系统状态传达给你的用户。&#xA;增加执行反馈 # CLI 并不总是清楚地表明何时发生了操作。 对于用户执行的每项操作，你的 CLI 都应提供平等且适当的反应，清楚地突出显示当前系统状态。&#xA;例如，在 Forge CLI 中，如果登录用户键入 forge logout，则会显示一条消息，明确指示操作已成功。&#xA;可读的错误信息 # 错误是意料之中的，甚至（我们敢说）是使用任何 CLI 的重要组成部分。&#xA;在测试 Forge CLI 时，我们观察到错误是阻止开发人员构建其应用程序的主要障碍之一。</description>
+      <description>&lt;blockquote class=&#34;book-hint info&#34;&gt;&#xA;  原文链接：&#xA;  &lt;a href=&#34;https://blog.developer.atlassian.com/10-design-principles-for-delightful-clis/&#34;&gt;10 design principles for delightful CLIs&lt;/a&gt;&#xA;&lt;/blockquote&gt;</description>
     </item>
   </channel>
 </rss>
