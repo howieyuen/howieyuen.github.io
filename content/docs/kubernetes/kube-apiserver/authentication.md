@@ -4,6 +4,7 @@ date: 2020-11-22
 title: 认证机制
 tags: [kube-apiserver, authentication]
 categories: [Kubernetes]
+weight: 1
 ---
 
 

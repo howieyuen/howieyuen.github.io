@@ -4,6 +4,7 @@ date: 2020-12-29
 title: 鉴权机制
 tags: [kube-apiserver, authorization]
 categories: [Kubernetes]
+weight: 2
 ---
 
 在客户端请求通过认证后，会进入鉴权阶段，kube-apiserver 同样支持多种鉴权机制，并支持同时开启多个鉴权模块。
